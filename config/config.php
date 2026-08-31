@@ -549,6 +549,10 @@ $MODULES = [
                 'budget-disbursement',
                 'project-milestones',
             ],
+            'Outputs & Records' => [
+                'publications-ip',
+                'document-repository',
+            ],
             'Research Documents' => [
                 'documentation-publication-management',
                 'final-manuscript-review',
@@ -577,6 +581,8 @@ $MODULES = [
             ['slug' => 'funded-research', 'title' => 'Conduct Funded Research'],
             ['slug' => 'budget-disbursement', 'title' => 'Budget & Disbursement'],
             ['slug' => 'project-milestones', 'title' => 'Project Milestones'],
+            ['slug' => 'publications-ip', 'title' => 'Publications & IP'],
+            ['slug' => 'document-repository', 'title' => 'Document Repository'],
             ['slug' => 'documentation-publication-management', 'title' => 'Documentation & Publication Management'],
             ['slug' => 'final-manuscript-review', 'title' => 'Final Manuscript Review'],
             ['slug' => 'revision-compliance', 'title' => 'Revision & Compliance'],

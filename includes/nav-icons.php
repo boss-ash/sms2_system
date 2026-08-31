@@ -49,6 +49,8 @@ if (!function_exists('smsNavPageIcon')) {
             'reviewer-evaluation' => 'fa-clipboard-check',
             'grant-opportunities' => 'fa-hand-holding-usd',
             'proposals-applications' => 'fa-file-alt',
+            'publications-ip' => 'fa-book-open',
+            'document-repository' => 'fa-archive',
             'revisions-requested' => 'fa-edit',
             'approved-research' => 'fa-clipboard-check',
             'retrieve-approved-research' => 'fa-download',
