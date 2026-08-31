@@ -1,0 +1,519 @@
+/**
+ * SMS 2 – Responsive & Device-Adaptive Styles
+ */
+
+/* ============================================================
+   Base
+   ============================================================ */
+html { overflow-x: hidden; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body.sms-app { overflow-x: hidden; }
+
+/* Safe area (notched phones) */
+.sms-navbar  { padding-top: env(safe-area-inset-top,0); padding-left: env(safe-area-inset-left,0); padding-right: env(safe-area-inset-right,0); }
+.sms-sidebar { padding-bottom: env(safe-area-inset-bottom,0); padding-left: env(safe-area-inset-left,0); }
+.sms-footer  { padding-bottom: calc(0.85rem + env(safe-area-inset-bottom,0)); }
+
+/* ============================================================
+   Typography — fluid
+   ============================================================ */
+.page-header h1 { font-size: clamp(1.15rem,2.5vw,1.45rem); word-break: break-word; }
+.page-header p  { font-size: clamp(0.8rem,2vw,0.88rem); }
+.breadcrumb     { font-size: clamp(0.72rem,1.8vw,0.79rem); flex-wrap: wrap; }
+.breadcrumb-item + .breadcrumb-item { padding-left: 0.35rem; }
+
+/* ============================================================
+   Touch targets
+   ============================================================ */
+.sidebar-nav .nav-link,
+.sms-navbar .btn-link,
+.btn-sms-primary,
+.quick-module .card { min-height: 44px; }
+
+/* Disable sticky hover on touch */
+@media (pointer: coarse) {
+    .card.hover-card:hover,
+    .module-card:hover,
+    .quick-module:hover .card { transform: none; box-shadow: var(--sms-shadow-xs); }
+}
+
+/* Hover lift — mouse only */
+@media (hover: hover) and (pointer: fine) {
+    .card.hover-card:hover    { transform: translateY(-3px); }
+    .module-card:hover        { transform: translateY(-3px); }
+    .quick-module:hover .card { transform: translateY(-4px); }
+}
+
+/* ============================================================
+   Main content — fluid padding
+   ============================================================ */
+.sms-main {
+    padding: clamp(1rem,2.5vw,1.6rem) clamp(0.75rem,3vw,1.75rem);
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+.sms-content { min-width: 0; box-sizing: border-box; }
+.sms-main > .row > [class*="col-"],
+.sms-main .card .row > [class*="col-"] { min-width: 0; }
+
+/* ============================================================
+   Cards — fluid sizing
+   ============================================================ */
+.card { border-radius: clamp(8px,1.5vw,12px); }
+
+.module-card .card-icon {
+    width: clamp(40px,10vw,48px); height: clamp(40px,10vw,48px);
+    font-size: clamp(1rem,2.5vw,1.2rem); flex-shrink: 0;
+}
+.module-card h6 { font-size: clamp(0.8rem,2vw,1rem); word-break: break-word; }
+
+.stat-card .stat-icon {
+    width: clamp(40px,9vw,46px); height: clamp(40px,9vw,46px);
+    font-size: clamp(1rem,2.5vw,1.15rem); flex-shrink: 0;
+}
+.stat-card .card-body { min-width: 0; }
+.stat-card h4 { font-size: clamp(1.1rem,3vw,1.45rem); }
+
+.module-grid > [class*="col-"] { min-width: 0; }
+
+.quick-module .card i  { font-size: clamp(1.5rem,4vw,2rem); }
+.quick-module .card p  { word-break: break-word; hyphens: auto; line-height: 1.3; }
+
+.placeholder-badge { font-size: clamp(0.65rem,1.5vw,0.72rem); white-space: nowrap; }
+
+/* ============================================================
+   Navbar — fluid
+   ============================================================ */
+.sms-navbar .navbar-brand {
+    font-size: clamp(0.85rem,2.5vw,1.05rem);
+    max-width: calc(100vw - 140px);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sms-navbar .container-fluid {
+    padding-left: clamp(0.5rem,2vw,1rem);
+    padding-right: clamp(0.5rem,2vw,1rem);
+}
+
+/* ============================================================
+   Welcome & Login — fluid
+   ============================================================ */
+/* Welcome — see assets/css/welcome.css */
+.login-page { padding: clamp(1rem,4vw,2rem); align-items: center; }
+.login-shell { min-height: min(560px,calc(100vh - 2rem)); }
+.login-showcase, .login-card { min-height: min(560px,calc(100vh - 2rem)); }
+
+/* ============================================================
+   Footer — fluid
+   ============================================================ */
+.sms-footer .row > div { font-size: clamp(0.72rem,1.8vw,0.79rem); }
+
+/* ============================================================
+   14" laptops / medium desktops  (992px – 1399px)
+   ============================================================ */
+@media (min-width: 992px) and (max-width: 1399.98px) {
+    :root { --sms-sidebar-width: 242px; }
+
+    .sidebar-nav > ul > .nav-item > .nav-link { font-size: 0.80rem; padding: 0.58rem 0.9rem 0.58rem 1rem; }
+    .sidebar-submenu .nav-link { font-size: 0.75rem; padding-left: 2.3rem; }
+
+    /* Stats: 2 per row */
+    .dashboard-stats > .col-xl-3 { flex: 0 0 50%; max-width: 50%; }
+
+    /* Modules: 3 per row */
+    .module-grid > .col-xl-2,
+    .module-grid > .col-lg-3  { flex: 0 0 33.333333%; max-width: 33.333333%; }
+
+    .quick-module .card i { font-size: 1.6rem; }
+    .quick-module .card p { font-size: 0.74rem; }
+}
+
+/* ── 992px–1199px: tighten further for 13–14" laptops ── */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    :root { --sms-sidebar-width: 220px; }
+
+    .sms-main { padding: 1.2rem 1.1rem; }
+
+    /* 4 stat cards → 2×2 grid */
+    .dashboard-stats > .col-xl-3,
+    .dashboard-stats > .col-6  { flex: 0 0 50%; max-width: 50%; }
+
+    /* stat card body a little more compact */
+    .stat-card .card-body { padding: 0.85rem 0.95rem; }
+    .stat-card h4         { font-size: 1.2rem; }
+    .stat-card .stat-icon { width: 38px; height: 38px; font-size: 0.95rem; }
+}
+
+/* ============================================================
+   Tablets / overlay drawer  (≤ 991px)
+   ============================================================ */
+@media (max-width: 991.98px) {
+    :root { --sms-sidebar-width: min(280px,85vw); }
+
+    .login-shell { max-width: 560px; min-height: 0; grid-template-columns: 1fr; }
+    .login-showcase { min-height: 300px; padding: 32px 28px; }
+    .login-card { min-height: 0; padding: 36px 28px; }
+
+    .page-header.d-flex { flex-direction: column; align-items: flex-start !important; }
+    .dashboard-stats .col-sm-6 { flex: 0 0 50%; max-width: 50%; }
+
+    /* stat cards always 2×2 on tablet */
+    .dashboard-stats > .col-xl-3 { flex: 0 0 50%; max-width: 50%; }
+    .dashboard-stats > .col-6    { flex: 0 0 50%; max-width: 50%; }
+
+    .sms-main { padding: 1.1rem 1rem; }
+}
+
+/* ============================================================
+   Large phones  (≤ 767px)
+   ============================================================ */
+@media (max-width: 767.98px) {
+    .stat-card .card-body { padding: 0.85rem 1rem; }
+    .quick-module .card-body { padding: 0.9rem 0.6rem !important; }
+    .sms-footer .row > div { text-align: center !important; margin-bottom: 0.2rem; }
+    .sms-footer .row > div:last-child { margin-bottom: 0; }
+    .dropdown-menu { max-width: calc(100vw - 2rem); }
+
+    /* stat cards: 2 per row on phones */
+    .dashboard-stats > .col-xl-3 { flex: 0 0 50%; max-width: 50%; }
+    .dashboard-stats > .col-6    { flex: 0 0 50%; max-width: 50%; }
+
+    .sms-main { padding: 0.9rem 0.85rem; }
+
+    /* page header stack */
+    .page-header { margin-bottom: 1rem; }
+    .page-header h1 { font-size: 1.15rem; }
+
+    /* filter bars wrap nicely */
+    .um-filter-bar .form-select,
+    .um-filter-bar .form-control { max-width: 100% !important; width: 100%; }
+}
+
+/* ============================================================
+   Small phones  (≤ 575px)
+   ============================================================ */
+@media (max-width: 575.98px) {
+    :root { --sms-sidebar-width: min(265px,90vw); }
+    .login-page { padding: 1rem; }
+    .login-shell { border-radius: 18px; }
+    .login-showcase { min-height: 250px; padding: 28px 24px; }
+    .login-showcase h1 { font-size: 2.1rem; }
+    .login-card { padding: 30px 22px; }
+    .login-heading h1 { font-size: 2.35rem; }
+    .breadcrumb-item.active { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .page-header h1 i { display: block; margin-bottom: 0.25rem; margin-right: 0 !important; }
+
+    /* stat cards full width on small phones */
+    .dashboard-stats > .col-xl-3,
+    .dashboard-stats > .col-6,
+    .dashboard-stats > [class*="col-"] { flex: 0 0 100%; max-width: 100%; }
+
+    /* compact stat card */
+    .stat-card .card-body { padding: 0.75rem 0.9rem; }
+    .stat-card h4         { font-size: 1.1rem; }
+    .stat-card .stat-icon { width: 36px; height: 36px; font-size: 0.9rem; }
+
+    .sms-main { padding: 0.75rem; }
+}
+
+/* ============================================================
+   Very small  (≤ 380px)
+   ============================================================ */
+@media (max-width: 380px) {
+    .notification-badge { display: none; }
+    .sms-navbar .navbar-brand span { display: none !important; }
+    .dashboard-stats .col-sm-6 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* ============================================================
+   Landscape phones
+   ============================================================ */
+@media (max-height: 500px) and (orientation: landscape) {
+    .login-page { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .sms-welcome-main { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .login-shell { min-height: 0; }
+    .login-showcase { display: none; }
+    .login-card { min-height: 0; padding-top: 1.5rem; padding-bottom: 1.5rem; }
+}
+
+/* ============================================================
+   Large desktops  (≥ 1400px)
+   ============================================================ */
+@media (min-width: 1400px) {
+    :root { --sms-sidebar-width: 265px; }
+    .sms-main { max-width: 100%; }
+}
+
+/* ============================================================
+   Fluid shell — auto-adjust on minimize / maximize / sidebar
+   ============================================================ */
+.sms-wrapper,
+.sms-content,
+.sms-main,
+.crad-process,
+.report-scope-banner,
+.module-button-grid,
+.page-header {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.sms-main > * {
+    max-width: 100%;
+}
+
+.navbar-inner {
+    min-width: 0;
+    flex-wrap: nowrap;
+}
+
+.navbar-right {
+    min-width: 0;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
+
+/* Keep search from colliding into the steady clock/actions cluster */
+.navbar-center {
+    max-width: min(500px, calc(100vw - 22rem));
+}
+
+/* Mid desktop with sidebar open: content gets tight */
+@media (max-width: 1280px) {
+    .sms-main { padding-left: 1.15rem; padding-right: 1.15rem; }
+    .navbar-center { max-width: min(420px, calc(100vw - 20rem)); }
+}
+
+@media (max-width: 991.98px) {
+    .navbar-center {
+        max-width: min(320px, calc(100vw - 18rem));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .navbar-right .dropdown .btn-link span.d-none { display: none !important; }
+    .navbar-center { max-width: min(240px, calc(100vw - 16rem)); }
+}
+
+/* Process / report boards fill available width */
+.crad-process,
+.report-scope-banner {
+    width: 100% !important;
+}
+
+/* ============================================================
+   Cross-device layout guards
+   ============================================================ */
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+}
+
+img,
+video {
+    height: auto;
+}
+
+.card,
+.dropdown-menu,
+.alert,
+.list-group,
+.table-responsive,
+.mpl-panel,
+.ra-card,
+.ra-summary {
+    max-width: 100%;
+}
+
+.row,
+.d-flex,
+.input-group,
+.btn-toolbar,
+.btn-group,
+.pagination,
+.breadcrumb,
+.nav,
+.navbar-inner,
+.navbar-left,
+.navbar-right,
+.page-header,
+.student-portal-header,
+.ra-summary-tools,
+.mpl-toolbar,
+.mpl-filters {
+    min-width: 0;
+}
+
+.card-body,
+.card-header,
+.card-footer,
+.modal-body,
+.modal-header,
+.modal-footer,
+.dropdown-item,
+.form-label,
+.form-text,
+.text-muted,
+.page-header p,
+.page-header h1,
+.student-detail-list strong,
+.student-detail-list span,
+.student-record-grid strong,
+.student-record-grid span {
+    overflow-wrap: anywhere;
+}
+
+.table-responsive,
+.mpl-table-wrap,
+.ra-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    max-width: 100%;
+}
+
+.form-control,
+.form-select,
+.btn {
+    max-width: 100%;
+}
+
+.btn,
+.dropdown-item,
+.nav-link,
+.module-link-btn,
+.mpl-btn,
+.ra-export-btn {
+    white-space: normal;
+}
+
+.btn i,
+.nav-link i,
+.module-link-btn i,
+.mpl-btn i,
+.ra-export-btn i {
+    flex: 0 0 auto;
+}
+
+@media (min-width: 992px) and (max-width: 1180px) {
+    .sms-navbar .navbar-ph-clock {
+        min-width: 6.4rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        font-size: 0.72rem;
+    }
+
+    .navbar-right .dropdown-menu:not(.sms-notification-dropdown) {
+        max-width: min(320px, calc(100vw - 1.5rem));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .card-body,
+    .card-header,
+    .card-footer {
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+    }
+
+    .btn,
+    .module-link-btn,
+    .mpl-btn,
+    .ra-export-btn {
+        min-height: 42px;
+    }
+
+    .dropdown-menu {
+        right: 0 !important;
+        left: auto !important;
+    }
+}
+
+/* ============================================================
+   Print
+   ============================================================ */
+@media (max-width: 991.98px) {
+    .sms-navbar .navbar-ph-clock {
+        display: none !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .sms-navbar .navbar-center {
+        position: fixed;
+        inset: calc(var(--sms-navbar-height) + 0.5rem) 0.75rem auto;
+        left: 0.75rem;
+        right: 0.75rem;
+        max-width: none;
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-6px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    }
+
+    .sms-navbar.search-open .navbar-center {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    .sms-modal.modal .modal-dialog,
+    .modal.sms-modal .modal-dialog {
+        margin: 0;
+        max-width: none;
+        min-height: 100%;
+    }
+
+    .sms-modal.modal .modal-content,
+    .modal.sms-modal .modal-content {
+        min-height: 100vh;
+        border-radius: 0;
+    }
+}
+
+/* Focus rings for keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.nav-link:focus-visible {
+    outline: 2px solid var(--sms-primary-light);
+    outline-offset: 2px;
+}
+
+.sidebar-nav .nav-link[aria-current="page"] {
+    background: var(--sms-sidebar-active);
+    font-weight: 700;
+    box-shadow: inset 3px 0 0 var(--sms-sidebar-active-accent);
+}
+
+@media print {
+    .sms-sidebar,
+    .sms-navbar,
+    .sidebar-overlay,
+    .sidebar-toggle,
+    .breadcrumb,
+    nav[aria-label="breadcrumb"] {
+        display: none !important;
+    }
+    .sms-content,
+    .sms-main {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+    .sms-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+    }
+}

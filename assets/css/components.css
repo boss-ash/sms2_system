@@ -497,6 +497,119 @@
     align-self: center;
 }
 
+.sms-confirm-form {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.sms-confirm-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+    color: var(--sms-heading);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.sms-confirm-label .ti {
+    font-size: 0.95em;
+    color: var(--sms-primary);
+}
+
+.sms-confirm-input {
+    min-height: 44px;
+    border: 1px solid var(--sms-border);
+    border-radius: 10px;
+    background: var(--sms-input-bg, var(--sms-surface-muted));
+    color: var(--sms-text);
+}
+
+.sms-confirm-input:focus {
+    border-color: var(--sms-primary-light);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+.sms-confirm-link {
+    color: var(--sms-primary) !important;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.sms-confirm-link:hover {
+    color: var(--sms-primary-dark, var(--sms-primary)) !important;
+    text-decoration: underline;
+}
+
+.sms-confirm-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.sms-confirm-notice .ti {
+    flex: 0 0 auto;
+    margin-top: 0.1rem;
+    font-size: 1rem;
+}
+
+.sms-confirm-notice--danger {
+    border-color: rgba(220, 38, 38, 0.24);
+    background: rgba(220, 38, 38, 0.1);
+    color: #b91c1c;
+}
+
+.sms-confirm-notice--info {
+    border-color: rgba(37, 99, 235, 0.22);
+    background: rgba(37, 99, 235, 0.1);
+    color: #1d4ed8;
+}
+
+.sms-confirm-notice--warning {
+    border-color: rgba(217, 119, 6, 0.24);
+    background: rgba(217, 119, 6, 0.1);
+    color: #b45309;
+}
+
+[data-theme="dark"] .sms-confirm-notice--danger {
+    border-color: rgba(248, 113, 113, 0.28);
+    background: rgba(220, 38, 38, 0.14);
+    color: #fecaca;
+}
+
+[data-theme="dark"] .sms-confirm-notice--info {
+    border-color: rgba(96, 165, 250, 0.28);
+    background: rgba(37, 99, 235, 0.14);
+    color: #bfdbfe;
+}
+
+[data-theme="dark"] .sms-confirm-notice--warning {
+    border-color: rgba(251, 191, 36, 0.28);
+    background: rgba(217, 119, 6, 0.14);
+    color: #fde68a;
+}
+
+.sms-pk-verify[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 575.98px) {
+    .sms-confirm-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .sms-confirm-footer .btn {
+        width: 100%;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .sms-confirm-content,
     .um-confirm-content { animation: none; }

@@ -223,7 +223,7 @@ $archiveUrl  = $accountsUrl . '?view=archive';
 $currentUserId = (int) getCurrentUserId();
 ?>
 
-<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=um-icons-1" rel="stylesheet">
+<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=um-modal-1" rel="stylesheet">
 <meta name="csrf-token" content="<?= e($csrf) ?>">
 
 <?php

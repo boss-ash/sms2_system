@@ -304,24 +304,64 @@
 }
 
 /* ── Modal user form ────────────────────────────────────────── */
+#umUserModal .modal-dialog {
+    width: min(480px, calc(100vw - 2rem));
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.um-user-modal .modal-content {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.um-user-modal .modal-header,
+.um-user-modal .modal-footer {
+    padding: 0.85rem 1.15rem;
+}
+
+.um-user-modal .modal-body {
+    padding: 0.35rem 1.15rem 1rem;
+}
+
+.um-user-modal .modal-title {
+    font-size: 1rem;
+}
+
+.um-user-modal .form-label {
+    font-size: 0.8rem;
+    margin-bottom: 0.35rem;
+}
+
+.um-user-modal .form-control,
+.um-user-modal .form-select {
+    min-height: 38px;
+    font-size: 0.84rem;
+}
+
+.um-user-modal textarea.form-control {
+    min-height: 72px;
+}
+
 .um-modal-avatar-row {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 0 0.5rem;
+    gap: 0.35rem;
+    padding: 0.35rem 0 0.65rem;
 }
 .um-modal-avatar {
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     display: grid;
     place-items: center;
-    font-size: 1.5rem;
+    font-size: 1.15rem;
     font-weight: 800;
     color: #fff;
     background: linear-gradient(145deg,#2563eb,#38bdf8);
-    box-shadow: 0 8px 22px rgba(37,99,235,0.28);
+    box-shadow: 0 6px 16px rgba(37,99,235,0.24);
 }
 .um-filter-bar {
     display: flex;
