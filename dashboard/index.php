@@ -632,6 +632,13 @@ if (smsIsGrantedAdminRole($roleKey)) {
     ];
 }
 
+require_once __DIR__ . '/period-filter.php';
+$dashboardPeriodKey    = smsDashboardCurrentPeriod();
+$dashboardPeriods      = smsDashboardPeriods();
+$dashboardPeriodMeta   = $dashboardPeriods[$dashboardPeriodKey];
+$dashboardPeriodFactor = $dashboardPeriodMeta['factor'];
+$statCards             = smsDashboardScaleStatCards($statCards, $dashboardPeriodFactor);
+
 require_once __DIR__ . '/glass-board.php';
 ?>
 

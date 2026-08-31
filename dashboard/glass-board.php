@@ -551,6 +551,19 @@ if (smsIsGrantedAdminRole($roleKey)) {
     $pipelineGaugeLabel = 'Finalized';
     $dashboardIntro = 'Live research director defense scheduling board.';
 }
+
+require_once __DIR__ . '/period-filter.php';
+$dashboardPeriodKey    = $dashboardPeriodKey ?? smsDashboardCurrentPeriod();
+$dashboardPeriods      = $dashboardPeriods ?? smsDashboardPeriods();
+$dashboardPeriodMeta   = $dashboardPeriodMeta ?? $dashboardPeriods[$dashboardPeriodKey];
+$dashboardPeriodFactor = $dashboardPeriodFactor ?? $dashboardPeriodMeta['factor'];
+
+$donutCenterValue = smsDashboardScaleMetricValue((string) $donutCenterValue, $dashboardPeriodFactor);
+$trendBig         = smsDashboardScaleMetricValue((string) $trendBig, $dashboardPeriodFactor);
+$inflow           = smsDashboardScaleMetricValue((string) $inflow, $dashboardPeriodFactor);
+$outflow          = smsDashboardScaleMetricValue((string) $outflow, $dashboardPeriodFactor);
+$netFlow          = smsDashboardScaleMetricValue((string) $netFlow, $dashboardPeriodFactor);
+$trendDelta       = smsDashboardScaleDelta((string) $trendDelta, $dashboardPeriodFactor);
 ?>
 
 <div class="dashboard-shell glass-dashboard academic-dashboard">
@@ -560,9 +573,25 @@ if (smsIsGrantedAdminRole($roleKey)) {
             <h1>Overview</h1>
             <p>Welcome back, <?= htmlspecialchars(getCurrentUserName()) ?>. <?= htmlspecialchars($dashboardIntro) ?></p>
         </div>
-        <div class="dash-period">
+        <div class="dash-period glass-period-filter dropdown">
             <?= smsIcon('calendar-alt', ['aria-hidden' => 'true']) ?>
-            <span>SY 2025–2026 · This month</span>
+            <button type="button"
+                    class="glass-period-btn dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    aria-label="Select reporting period">
+                <span><?= htmlspecialchars($dashboardPeriodMeta['sy'] . ' · ' . $dashboardPeriodMeta['label']) ?></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end glass-period-menu">
+                <?php foreach ($dashboardPeriods as $periodKey => $periodMeta): ?>
+                    <li>
+                        <a class="dropdown-item<?= $periodKey === $dashboardPeriodKey ? ' active' : '' ?>"
+                           href="<?= htmlspecialchars(smsDashboardPeriodUrl($periodKey)) ?>">
+                            <?= htmlspecialchars($periodMeta['label']) ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
         </div>
     </div>
 
@@ -579,7 +608,11 @@ if (smsIsGrantedAdminRole($roleKey)) {
         </div>
     </section>
 
-    <div class="glass-board" id="glassBoard" data-role="<?= htmlspecialchars($roleKey) ?>">
+    <div class="glass-board"
+         id="glassBoard"
+         data-role="<?= htmlspecialchars($roleKey) ?>"
+         data-period="<?= htmlspecialchars($dashboardPeriodKey) ?>"
+         data-period-factor="<?= htmlspecialchars((string) $dashboardPeriodFactor) ?>">
 
         <section class="glass-panel">
             <div class="glass-panel-body">
