@@ -307,7 +307,7 @@ $researchDirectorNavGroups = [
     ],
 ];
 ?>
-<aside class="sms-sidebar <?= smsIsGrantedAdminRole($roleKey) ? 'admin-sidebar' : '' ?> admin-sidebar-collapsible <?= ($roleKey === 'research_director' && $sidebarMode === 'faculty_workspace') ? 'research-director-sidebar' : '' ?>" id="smsSidebar" aria-label="Main navigation">
+<aside class="sms-sidebar <?= smsIsGrantedAdminRole($roleKey) ? 'admin-sidebar' : '' ?> admin-sidebar-collapsible <?= $sidebarMode === 'faculty_workspace' ? 'workspace-sidebar' : '' ?> <?= ($roleKey === 'research_director' && $sidebarMode === 'faculty_workspace') ? 'research-director-sidebar' : '' ?>" id="smsSidebar" aria-label="Main navigation">
     <nav class="sidebar-nav" id="smsSidebarAccordion">
         <ul class="nav flex-column">
             <?php if ($sidebarMode === 'student'): ?>
@@ -385,9 +385,18 @@ $researchDirectorNavGroups = [
                 } elseif ($roleKey === 'panel') {
                     $accountNavGroups = $panelNavGroups;
                 }
-                $facultyWorkspaceExpandFirst = ($activePage === '' && $onDashboard);
                 $facultyWorkspaceFirstGroup = true;
                 ?>
+                <li class="nav-item sidebar-home-item">
+                    <a class="nav-link sidebar-home-link <?= $roleHomeActive ? 'active' : '' ?>"
+                       href="<?= htmlspecialchars($roleHomeUrl) ?>"
+                       data-overview-url="<?= htmlspecialchars($roleHomeUrl) ?>"
+                       data-title="<?= htmlspecialchars($roleHomeLabel) ?>"
+                       title="<?= htmlspecialchars($roleHomeLabel) ?>">
+                        <?= smsIcon('home', ['aria-hidden' => 'true']) ?>
+                        <span><?= htmlspecialchars($roleHomeLabel) ?></span>
+                    </a>
+                </li>
                 <?php foreach ($accountNavGroups as $groupLabel => $groupItems): ?>
                     <?php
                     $groupCollapseId = 'navGrp_' . preg_replace('/[^a-z0-9_]/', '_', strtolower((string) $groupLabel));
