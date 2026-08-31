@@ -39,6 +39,7 @@ $selectedId = (int) ($_GET['id'] ?? 0);
 $selected   = null;
 $existingEval = null;
 $committeeEval = null;
+$adviserEval = null;
 $approvalDetail = null;
 $canSignApproval = false;
 
@@ -59,6 +60,13 @@ if ($crad) {
                 $existingEval = grantGetAdviserEvaluationByApplication($crad, $selectedId);
                 $approvalDetail = grantGetApprovalWorkflowDetail($crad, $selectedId);
                 $canSignApproval = !empty($approvalDetail['can_act']);
+            } elseif ($selected && $isApproverView) {
+                require_once __DIR__ . '/../includes/grant-approval-helpers.php';
+                $evals = grantGetLatestEvaluationsForApplications($crad, [$selectedId]);
+                $committeeEval = $evals[$selectedId] ?? null;
+                $adviserEval = grantGetLatestAdviserEvaluationByApplication($crad, $selectedId);
+                $approvalDetail = grantGetApprovalWorkflowDetail($crad, $selectedId);
+                $canSignApproval = !empty($approvalDetail['can_act']);
             } elseif ($selected) {
                 $existingEval = grantGetEvaluationByApplication($crad, $selectedId);
             }
@@ -71,12 +79,14 @@ if ($crad) {
     $dbError = 'CRAD database connection unavailable.';
 }
 
-$pendingCount = $isAdviserView
-    ? count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])))
+$pendingCount = ($isAdviserView || $isApproverView)
+    ? count($queue)
     : count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
 $scoredCount  = $isAdviserView
     ? ($crad ? grantAdviserEvaluationScoredCount($crad) : 0)
-    : count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])));
+    : ($isApproverView
+        ? ($crad ? grantApproverSignoffCount($crad) : 0)
+        : count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id']))));
 
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
@@ -97,13 +107,15 @@ renderBreadcrumbs($breadcrumbs);
         <h1><?= smsIcon('clipboard-check', ['class' => 'me-2', 'style' => 'color:var(--sms-primary);']) ?>Reviewer Evaluation</h1>
         <?php if ($isAdviserView): ?>
         <p>Score proposals using the rubric first. After you submit your evaluation, you can sign off in <strong>Approval Workflows</strong>.</p>
+        <?php elseif ($isApproverView): ?>
+        <p>Review committee and adviser scores, then sign off in <strong>Approval Workflows</strong>.</p>
         <?php else: ?>
         <p>Proposals with <strong>Pending Evaluation</strong> in Proposals &amp; Applications appear here for rubric scoring.</p>
         <?php endif; ?>
     </div>
     <div class="gre-stat-row">
-        <span class="gre-stat pending"><strong data-eval-pending-count><?= $pendingCount ?></strong> <?= $isAdviserView ? 'in review' : 'awaiting score' ?></span>
-        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> scored by you</span>
+        <span class="gre-stat pending"><strong data-eval-pending-count><?= $pendingCount ?></strong> <?= ($isAdviserView || $isApproverView) ? 'in review' : 'awaiting score' ?></span>
+        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> <?= $isApproverView ? 'signed off' : 'scored by you' ?></span>
         <span class="gre-live-badge"><?= smsIcon('sync-alt') ?> Live</span>
     </div>
 </div>
