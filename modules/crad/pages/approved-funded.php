@@ -105,7 +105,7 @@ renderBreadcrumbs($breadcrumbs);
                 <tbody>
                 <?php if ($records === []): ?>
                     <tr>
-                        <td colspan="<?= $canManage ? 8 : 7 ?>" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
+                        <td colspan="<?= ($canManage || grantUserCanConductFundedResearch()) ? 8 : 7 ?>" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
                             No proposals are approved and funded yet.
                         </td>
                     </tr>
