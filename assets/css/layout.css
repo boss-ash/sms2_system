@@ -58,8 +58,8 @@
 
 .navbar-search {
     position: relative;
-    width: 360px;
-    max-width: min(360px, 100%);
+    width: 480px;
+    max-width: min(480px, 100%);
     min-width: 0;
     flex: 0 0 auto;
 }
@@ -1085,8 +1085,8 @@ body.sidebar-open {
     top: calc(100% + 4px);
     left: 0;
     transform: none;
-    width: 380px;
-    max-width: min(380px, calc(100vw - 1.5rem));
+    width: 500px;
+    max-width: min(500px, calc(100vw - 1.5rem));
     background: var(--sms-dropdown-bg);
     border: 1px solid var(--sms-dropdown-border);
     border-radius: 12px;
@@ -1282,7 +1282,7 @@ body.sidebar-open {
 
 @media (max-width: 991.98px) {
     .navbar-left { min-width: 0; }
-    .navbar-search-dropdown { width: min(380px, calc(100vw - 1.5rem)); }
+    .navbar-search-dropdown { width: min(500px, calc(100vw - 1.5rem)); }
 }
 
 /* ============================================================
