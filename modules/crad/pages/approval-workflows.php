@@ -182,12 +182,34 @@ renderBreadcrumbs($breadcrumbs);
                         </button>
                     </div>
                 </div>
-                <?php elseif ($isMonitor && $wfStatus === 'In Progress'): ?>
-                <div class="gaw-monitor-note">
-                    <?= smsIcon('eye', ['class' => 'me-1']) ?>
-                    Monitoring mode — current stage:
-                    <strong><?= htmlspecialchars((string) ($detail['current_step']['step_label'] ?? '')) ?></strong>
-                    (<?= htmlspecialchars(grantApprovalRoleLabel((string) ($detail['current_step']['approver_role_key'] ?? ''))) ?>)
+                <?php elseif ($isMonitor): ?>
+                <div class="gaw-monitor-panel">
+                    <?php if (!empty($detail['committee_eval']) || !empty($detail['adviser_eval'])): ?>
+                    <div class="gaw-monitor-scores">
+                        <?php if (!empty($detail['committee_eval'])): ?>
+                        <span class="gaw-monitor-score-pill">
+                            <?= smsIcon('users', ['class' => 'me-1']) ?>Committee:
+                            <strong><?= number_format((float) ($detail['committee_eval']['total_score'] ?? 0), 1) ?>/100</strong>
+                        </span>
+                        <?php endif; ?>
+                        <?php if (!empty($detail['adviser_eval'])): ?>
+                        <span class="gaw-monitor-score-pill">
+                            <?= smsIcon('user-tie', ['class' => 'me-1']) ?>Adviser:
+                            <strong><?= number_format((float) ($detail['adviser_eval']['total_score'] ?? 0), 1) ?>/100</strong>
+                        </span>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
+                    <div class="gaw-monitor-note">
+                        <?= smsIcon($wfStatus === 'Completed' ? 'check' : 'eye', ['class' => 'me-1']) ?>
+                        <?php if ($detail['monitor_stage_hint'] !== ''): ?>
+                            <?= htmlspecialchars((string) $detail['monitor_stage_hint']) ?>
+                        <?php else: ?>
+                            Monitoring mode — current stage:
+                            <strong><?= htmlspecialchars((string) ($detail['current_step']['step_label'] ?? '')) ?></strong>
+                            (<?= htmlspecialchars(grantApprovalRoleLabel((string) ($detail['current_step']['approver_role_key'] ?? ''))) ?>)
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <?php endif; ?>
             <?php endif; ?>
@@ -230,5 +252,5 @@ renderBreadcrumbs($breadcrumbs);
     </div>
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=5"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=6"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

@@ -166,15 +166,35 @@
                 '<i class="ti ti-x"></i> Return to Proponent for Revision</button>' +
                 '</div></div>';
         } else if (detail.is_monitor) {
-            if (wfStatus === 'Completed') {
-                actionHtml = '<div class="gaw-monitor-note">' +
-                    '<i class="ti ti-check me-1"></i> Monitoring mode — all sign-offs completed for this proposal.</div>';
+            var scoresHtml = '';
+            var committee = detail.committee_eval || null;
+            var adviser = detail.adviser_eval || null;
+            if (committee || adviser) {
+                scoresHtml = '<div class="gaw-monitor-scores">';
+                if (committee && committee.total_score != null) {
+                    scoresHtml += '<span class="gaw-monitor-score-pill"><i class="ti ti-users me-1"></i>Committee: <strong>'
+                        + esc(Number(committee.total_score).toFixed(1)) + '/100</strong></span>';
+                }
+                if (adviser && adviser.total_score != null) {
+                    scoresHtml += '<span class="gaw-monitor-score-pill"><i class="ti ti-user me-1"></i>Adviser: <strong>'
+                        + esc(Number(adviser.total_score).toFixed(1)) + '/100</strong></span>';
+                }
+                scoresHtml += '</div>';
+            }
+
+            var hint = esc(detail.monitor_stage_hint || '');
+            if (hint) {
+                actionHtml = '<div class="gaw-monitor-panel">' + scoresHtml +
+                    '<div class="gaw-monitor-note"><i class="ti ti-eye me-1"></i> ' + hint + '</div></div>';
+            } else if (wfStatus === 'Completed') {
+                actionHtml = '<div class="gaw-monitor-panel">' + scoresHtml +
+                    '<div class="gaw-monitor-note"><i class="ti ti-check me-1"></i> Monitoring mode — all sign-offs completed for this proposal.</div></div>';
             } else if (detail.current_step) {
                 var approverLabel = esc(detail.current_approver_label || detail.current_step.approver_role_key || '');
-                actionHtml = '<div class="gaw-monitor-note">' +
-                    '<i class="ti ti-eye me-1"></i> Monitoring mode — current stage: ' +
+                actionHtml = '<div class="gaw-monitor-panel">' + scoresHtml +
+                    '<div class="gaw-monitor-note"><i class="ti ti-eye me-1"></i> Monitoring mode — current stage: ' +
                     '<strong>' + esc(detail.current_step.step_label) + '</strong>' +
-                    (approverLabel ? ' (' + approverLabel + ')' : '') + '</div>';
+                    (approverLabel ? ' (' + approverLabel + ')' : '') + '</div></div>';
             }
         }
 
