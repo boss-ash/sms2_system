@@ -729,6 +729,19 @@ function grantApprovalWorkflowList(PDO $crad): array
         $placeholders = implode(',', array_fill(0, count($stepRoleKeys), '?'));
         $sql .= " WHERE cs.approver_role_key IN ({$placeholders}) AND w.workflow_status = 'In Progress'";
         $params = $stepRoleKeys;
+
+        if ($roleKey === 'finance') {
+            $sql .= " AND w.current_step_key = 'finance'
+                      AND cs.step_key = 'finance'
+                      AND cs.status = 'Pending'
+                      AND EXISTS (
+                            SELECT 1
+                              FROM grant_proposal_approval_steps vp
+                             WHERE vp.workflow_id = w.id
+                               AND vp.step_key = 'vpaa'
+                               AND vp.status = 'Approved'
+                      )";
+        }
     } else {
         $sql .= " WHERE 1=1";
     }
@@ -905,6 +918,13 @@ function grantSubmitApprovalSignoff(
                SET status = 'Pending', updated_at = NOW()
              WHERE workflow_id = ? AND step_key = ?
         ")->execute([$workflowId, $nextStep['key']]);
+
+        if (($nextStep['key'] ?? '') === 'finance') {
+            $app = grantGetApplicationForEvaluation($crad, $applicationId);
+            if ($app !== null) {
+                grantNotifyFinancePendingSignoff($crad, $app);
+            }
+        }
 
         $crad->commit();
 
