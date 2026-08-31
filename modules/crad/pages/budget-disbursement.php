@@ -62,7 +62,8 @@ renderBreadcrumbs($breadcrumbs);
 <div class="gfd"
      data-grant-funding-live="1"
      data-selected-id="<?= (int) $selectedId ?>"
-     data-can-release="<?= $canRelease ? '1' : '0' ?>">
+     data-can-release="<?= $canRelease ? '1' : '0' ?>"
+     data-proposal-ref="<?= htmlspecialchars((string) ($detail['application']['proposal_reference'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
 
     <header class="gfd-page-header">
         <div class="gfd-page-header-main">
@@ -181,6 +182,7 @@ renderBreadcrumbs($breadcrumbs);
                                 class="gfd-btn gfd-btn-release gfdReleaseTrancheBtn"
                                 data-disbursement-id="<?= (int) ($tranche['id'] ?? 0) ?>"
                                 data-tranche-label="<?= htmlspecialchars($trancheLabel) ?>"
+                                data-tranche-number="<?= (int) ($tranche['tranche_number'] ?? 0) ?>"
                                 data-default-amount="<?= htmlspecialchars((string) $amount) ?>">
                             <?= smsIcon('money-bill-wave') ?> Record Release
                         </button>
@@ -210,7 +212,8 @@ renderBreadcrumbs($breadcrumbs);
                 <input type="date" id="gfdReleaseDate" name="release_date" required>
 
                 <label for="gfdReleaseReference">Reference Number</label>
-                <input type="text" id="gfdReleaseReference" name="reference_number" placeholder="Auto-generated if blank">
+                <input type="text" id="gfdReleaseReference" name="reference_number" placeholder="Leave blank to auto-generate" autocomplete="off">
+                <p class="gfd-field-hint" id="gfdReleaseReferenceHint">Leave blank to auto-generate: <strong id="gfdReleaseReferencePreview">—</strong></p>
 
                 <label for="gfdReleaseRemarks">Remarks</label>
                 <textarea id="gfdReleaseRemarks" name="remarks" rows="3" placeholder="Optional notes for audit trail…"></textarea>
@@ -226,5 +229,5 @@ renderBreadcrumbs($breadcrumbs);
 </div>
 <?php endif; ?>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-funding-live.js?v=1"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-funding-live.js?v=3"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
