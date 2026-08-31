@@ -615,6 +615,9 @@ $researchDirectorNavGroups = [
                         $pageTitles[$p['slug']] = $p['title'];
                     }
                     $showModuleOverview = empty($module['hide_overview']);
+                    if ($navModuleKey === 'payment' && $roleKey === 'finance') {
+                        $showModuleOverview = false;
+                    }
                     $onModuleOverview = ($activeModule === $navModuleKey && $activePage === '');
                     $showModuleGroups = $hasGroups;
                     ?>
