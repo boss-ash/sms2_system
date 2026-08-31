@@ -283,12 +283,16 @@ if ($roleKey === 'adviser') {
     foreach ($facultyAccountNavGroups as $groupKey => $groupItems) {
         if ($groupKey === 'System') {
             $facultyInsert['Core System'] = $coreSystemItems;
+            $facultyInsert['Funded Research'] = $fundedResearchItems;
             $facultyInsert['Review & Workflow'] = $reviewWorkflowItems;
         }
         $facultyInsert[$groupKey] = $groupItems;
     }
     if (!isset($facultyInsert['Core System'])) {
         $facultyInsert['Core System'] = $coreSystemItems;
+    }
+    if (!isset($facultyInsert['Funded Research'])) {
+        $facultyInsert['Funded Research'] = $fundedResearchItems;
     }
     if (!isset($facultyInsert['Review & Workflow'])) {
         $facultyInsert['Review & Workflow'] = $reviewWorkflowItems;
