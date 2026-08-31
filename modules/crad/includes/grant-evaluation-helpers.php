@@ -165,19 +165,15 @@ function grantRequireEvaluateAccess(): void
 
 function grantReviewerEvaluationUrl(int $applicationId = 0): string
 {
+    if (!function_exists('grantReviewWorkflowPageUrl')) {
+        require_once dirname(__DIR__, 3) . '/includes/grant-review-workflow-urls.php';
+    }
+
     $moduleKey = defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')
         ? (string) SMS2_GRANT_APPROVAL_SHELL_MODULE
         : grantEvaluationActiveModuleKey();
 
-    $url = $moduleKey === 'payment'
-        ? BASE_URL . '/modules/payment/pages/reviewer-evaluation.php'
-        : BASE_URL . '/modules/crad/pages/reviewer-evaluation.php';
-
-    if ($applicationId > 0) {
-        $url .= '?id=' . $applicationId;
-    }
-
-    return $url;
+    return grantReviewWorkflowPageUrl('reviewer-evaluation', $applicationId, $moduleKey);
 }
 
 function grantEvaluationActiveModuleKey(): string

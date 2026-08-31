@@ -7,7 +7,29 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/grant-helpers.php';
+require_once dirname(__DIR__, 3) . '/includes/grant-review-workflow-urls.php';
 require_once __DIR__ . '/grant-evaluation-helpers.php';
+
+/**
+ * Send approvers to their module shell (Faculty / Accreditation / Payment) when opened via CRAD paths.
+ */
+function grantRedirectReviewWorkflowShellIfNeeded(string $pageSlug): void
+{
+    if (defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')) {
+        return;
+    }
+
+    $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+    $moduleKey = grantReviewWorkflowModuleKeyForRole($roleKey);
+    if ($moduleKey === 'crad') {
+        return;
+    }
+
+    $applicationId = (int) ($_GET['id'] ?? 0);
+    $redirect = grantReviewWorkflowPageUrl($pageSlug, $applicationId, $moduleKey);
+    header('Location: ' . $redirect);
+    exit;
+}
 
 /** @return list<array{key: string, order: int, label: string, short: string, role: string}> */
 function grantApprovalStepDefinitions(): array
@@ -162,11 +184,7 @@ function grantApprovalWorkflowListUrl(): string
         ? (string) SMS2_GRANT_APPROVAL_SHELL_MODULE
         : grantApprovalActiveModuleKey();
 
-    if ($moduleKey === 'payment') {
-        return BASE_URL . '/modules/payment/pages/approval-workflows.php';
-    }
-
-    return BASE_URL . '/modules/crad/pages/approval-workflows.php';
+    return grantReviewWorkflowPageUrl('approval-workflows', 0, $moduleKey);
 }
 
 /**
@@ -201,7 +219,7 @@ function grantNotifyFinancePendingSignoff(PDO $crad, array $application): void
     $ref = trim((string) ($application['proposal_reference'] ?? ''));
     $refLabel = $ref !== '' ? $ref : ('Proposal #' . $applicationId);
     $title = trim((string) ($application['research_title'] ?? 'Research proposal'));
-    $url = BASE_URL . '/modules/payment/pages/approval-workflows.php?id=' . $applicationId;
+    $url = grantReviewWorkflowPageUrl('approval-workflows', $applicationId, 'payment');
     $body = sprintf(
         '%s is pending Finance Office final approval after VPAA sign-off. Review it under Payment Management → Approval Workflows.',
         $refLabel

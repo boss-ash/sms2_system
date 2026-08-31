@@ -19,14 +19,7 @@ if (function_exists('getCurrentUserRoleKey') && getCurrentUserRoleKey() === 'cra
 
 grantRequireEvaluateAccess();
 
-if (getCurrentUserRoleKey() === 'finance' && !defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')) {
-    $redirect = grantReviewerEvaluationUrl();
-    if (!empty($_GET['id'])) {
-        $redirect .= (str_contains($redirect, '?') ? '&' : '?') . 'id=' . (int) $_GET['id'];
-    }
-    header('Location: ' . $redirect);
-    exit;
-}
+grantRedirectReviewWorkflowShellIfNeeded('reviewer-evaluation');
 
 $pageTitle             = 'Reviewer Evaluation';
 $activeModule          = grantEvaluationActiveModuleKey();

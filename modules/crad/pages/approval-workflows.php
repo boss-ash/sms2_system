@@ -13,14 +13,7 @@ require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
 requireAuth();
 grantRequireApprovalAccess();
 
-if (getCurrentUserRoleKey() === 'finance' && !defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')) {
-    $redirect = BASE_URL . '/modules/payment/pages/approval-workflows.php';
-    if (!empty($_GET['id'])) {
-        $redirect .= '?id=' . (int) $_GET['id'];
-    }
-    header('Location: ' . $redirect);
-    exit;
-}
+grantRedirectReviewWorkflowShellIfNeeded('approval-workflows');
 
 $pageTitle             = 'Approval Workflows';
 $activeModule          = defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')
