@@ -637,13 +637,13 @@ $MODULES = [
             'Funding Management' => [
                 'approved-funded',
                 'budget-disbursement',
+                'project-milestones',
                 'fund-release',
                 'disbursement-records',
                 'funding-status',
             ],
             'Research Monitoring' => [
                 'funded-research',
-                'project-milestones',
                 'progress-tracking',
             ],
             'Research Output' => [
