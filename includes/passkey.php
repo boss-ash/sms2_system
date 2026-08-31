@@ -694,6 +694,6 @@ function smsRenderPasskeyCard(int $userId, string $csrfToken, bool $asBox = fals
         </div>
     </div>
     </div>
-    <script src="<?= BASE_URL ?>/assets/js/passkey.js?v=10"></script>
+    <script src="<?= BASE_URL ?>/assets/js/passkey.js?v=11"></script>
     <?php
 }
