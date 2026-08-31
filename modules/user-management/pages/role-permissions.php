@@ -106,15 +106,8 @@ $pageBannerDescription = 'Check or uncheck modules per role. Super Admin uses Us
 renderBreadcrumbs($breadcrumbs);
 ?>
 
-<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-2">
-    <div></div>
-    <div class="d-flex gap-2 align-items-center flex-wrap">
-        <span id="permSaveStatus" class="text-muted" style="font-size:.78rem;"></span>
-        <button type="button" class="btn btn-outline-warning btn-sm" id="permResetBtn">
-            <?= smsIcon('undo', ['class' => 'me-1']) ?>Reset to Defaults
-        </button>
-        <span class="placeholder-badge"><?= smsIcon('lock', ['class' => 'me-1']) ?>Superadmin Only</span>
-    </div>
+<div class="page-header d-flex justify-content-end align-items-start flex-wrap gap-2">
+    <span id="permSaveStatus" class="text-muted" style="font-size:.78rem;"></span>
 </div>
 
 <div class="alert alert-info py-2 px-3 mb-4 d-flex align-items-start gap-2" style="font-size:.84rem;">
@@ -369,39 +362,6 @@ renderBreadcrumbs($breadcrumbs);
             cb.checked = !granted; // revert
             if (status) status.textContent = '';
             toast('Network error — permission not saved.', 'danger');
-        });
-    }
-
-    /* ── Reset all overrides ────────────────────────────────── */
-    document.getElementById('permResetBtn').addEventListener('click', function () {
-        if (!window.confirm) {
-            doReset();
-            return;
-        }
-        /* Use custom confirm if available */
-        if (typeof window.umConfirm === 'function') {
-            window.umConfirm(
-                'Reset all permissions to their original defaults?',
-                doReset,
-                { type: 'warning', title: 'Reset to defaults' }
-            );
-        } else {
-            if (window.confirm('Reset all permissions to their original defaults?')) doReset();
-        }
-    });
-
-    function doReset() {
-        fetch(ENDPOINT, {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ role: '__reset__', module: '__all__', granted: false, csrf_token: CSRF }),
-        })
-        .then(function () {
-            toast('Permissions reset to defaults. Reloading…', 'info');
-            setTimeout(function () { location.reload(); }, 1200);
-        })
-        .catch(function () {
-            toast('Network error during reset.', 'danger');
         });
     }
 
