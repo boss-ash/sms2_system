@@ -51,3 +51,21 @@ Useful options:
 
 Docker startup option:
   Set SMS2_RUN_MIGRATIONS=1 to run database/migrate.php before Apache starts.
+
+InfinityFree (free hosting)
+---------------------------
+InfinityFree has no SSH, so use the web deploy helper instead of CLI migrate.
+
+1. Sign up at https://infinityfree.net and create a hosting account.
+2. vPanel → MySQL Databases: create one database. Copy hostname, db name, user, password.
+3. Copy config/local.infinityfree.example.php to config/local.php on the server.
+   Fill in MySQL values. Use the SAME db name for all module defines (free plan = 1 database).
+4. Upload the project to htdocs via FTP (FileZilla). Put files in htdocs root if possible.
+5. Replace .htaccess with .htaccess.infinityfree if the site shows HTTP 500
+   (InfinityFree often blocks php_value in .htaccess).
+6. Open: https://YOUR-SITE.infinityfreeapp.com/setup/deploy-db.php?token=YOUR_TOKEN
+7. Open: https://YOUR-SITE.infinityfreeapp.com/setup/ and create the Super Admin.
+8. Remove SMS2_DEPLOY_TOKEN from config/local.php after migration succeeds.
+
+Alternative: import database/sms2_db.sql and modules/crad/database/crad_db.sql
+via phpMyAdmin instead of step 6.
