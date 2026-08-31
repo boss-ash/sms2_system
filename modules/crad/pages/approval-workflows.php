@@ -139,10 +139,11 @@ renderBreadcrumbs($breadcrumbs);
                 $steps = $detail['steps'];
                 $ref = htmlspecialchars((string) ($wf['proposal_reference'] ?? 'Proposal'));
                 $canAct = !empty($detail['can_act']);
+                $canReturn = !empty($detail['can_return']);
                 $wfStatus = (string) ($wf['workflow_status'] ?? '');
                 $currentStepKey = (string) ($wf['current_step_key'] ?? '');
-                $adviserEvalComplete = !empty($detail['adviser_eval_complete']);
                 $needsRubricScore = !empty($detail['needs_rubric_score']) || !empty($detail['needs_adviser_score']);
+                $returnRecord = $detail['return_record'] ?? null;
                 $pipelineScorePills = $detail['pipeline_score_pills'] ?? [];
                 ?>
                 <h2 class="gaw-pipeline-title">Sign-off Sequence for <?= $ref ?></h2>
