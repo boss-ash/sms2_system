@@ -475,6 +475,11 @@ table {
         transform: none;
     }
 
+    .sms-navbar.search-open .navbar-search {
+        width: 100%;
+        max-width: none;
+    }
+
     .sms-modal.modal .modal-dialog,
     .modal.sms-modal .modal-dialog {
         margin: 0;

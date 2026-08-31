@@ -1632,12 +1632,12 @@ hr { border-color: var(--sms-border); opacity: 1; }
    Theme toggle button
    ============================================================ */
 .theme-toggle {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid rgba(255,255,255,0.18);
     background: rgba(255,255,255,0.10);
     color: rgba(255,255,255,0.9) !important;

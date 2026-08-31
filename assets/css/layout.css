@@ -1282,7 +1282,7 @@ body.sidebar-open {
 
 @media (max-width: 991.98px) {
     .navbar-left { min-width: 0; }
-    .navbar-search-dropdown { width: min(340px, calc(100vw - 1.5rem)); }
+    .navbar-search-dropdown { width: min(260px, calc(100vw - 1.5rem)); }
 }
 
 /* ============================================================
