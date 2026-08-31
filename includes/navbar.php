@@ -274,7 +274,8 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
                     <li>
                         <a class="dropdown-item text-danger"
                            href="<?= BASE_URL ?>/login/logout.php"
-                           data-logout-confirm>
+                           data-logout-confirm
+                           data-no-loader>
                             <?= smsIcon('logout', ['class' => 'me-2']) ?>Logout
                         </a>
                     </li>
@@ -297,7 +298,7 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <a class="btn btn-danger" href="<?= BASE_URL ?>/login/logout.php" id="logoutConfirmBtn">
+                <a class="btn btn-danger" href="<?= BASE_URL ?>/login/logout.php" id="logoutConfirmBtn" data-loader-message="Signing out…">
                     <span class="logout-confirm-idle">Yes, logout</span>
                     <span class="logout-confirm-loading d-none">
                         <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Logging out...
@@ -453,6 +454,12 @@ document.addEventListener('DOMContentLoaded', function () {
         logoutModal.show();
     });
 
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        if (window.SMS2Loader && typeof window.SMS2Loader.forceHide === 'function') {
+            window.SMS2Loader.forceHide();
+        }
+    });
+
     if (confirmBtn) {
         confirmBtn.addEventListener('click', function () {
             const idle = confirmBtn.querySelector('.logout-confirm-idle');
@@ -463,6 +470,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             confirmBtn.classList.add('disabled');
             confirmBtn.setAttribute('aria-disabled', 'true');
+
+            if (window.SMS2Loader && typeof window.SMS2Loader.show === 'function') {
+                window.SMS2Loader.show(confirmBtn.getAttribute('data-loader-message') || 'Signing out…');
+            }
         });
     }
 });

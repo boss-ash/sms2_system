@@ -127,7 +127,7 @@ $loaderCrestUrl = is_readable(ROOT_PATH . '/images/bcp-crest.png')
         <span class="sms-loader-label">Loading…</span>
     </div>
 </div>
-<script src="<?= BASE_URL ?>/assets/js/loader.js?v=3"></script>
+<script src="<?= BASE_URL ?>/assets/js/loader.js?v=4"></script>
 <?php else: ?>
 <script>document.documentElement.classList.add('sms-app-ready');</script>
 <?php endif; ?>

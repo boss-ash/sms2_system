@@ -54,13 +54,19 @@
         setPageLoading(true);
     }
 
-    function finishLoader() {
+    function hideLoader(force) {
         var loader = getLoader();
-        if (!loader || loader.classList.contains('is-done') || loader.classList.contains('is-leaving')) {
+        if (!loader) {
             setPageLoading(false);
             return;
         }
 
+        if (!force && (loader.classList.contains('is-done') || loader.classList.contains('is-leaving'))) {
+            setPageLoading(false);
+            return;
+        }
+
+        hideScheduled = true;
         loader.classList.remove('is-active');
         loader.classList.add('is-leaving');
         setPageLoading(false);
@@ -69,7 +75,12 @@
             loader.classList.add('is-done');
             loader.setAttribute('aria-busy', 'false');
             loader.setAttribute('aria-hidden', 'true');
+            loader.classList.remove('is-leaving');
         }, FADE_MS);
+    }
+
+    function finishLoader() {
+        hideLoader(false);
     }
 
     var hideScheduled = false;
@@ -105,7 +116,9 @@
     function shouldShowForLink(anchor, event) {
         if (!anchor || !anchor.href) return false;
         if (anchor.hasAttribute('data-no-loader') || anchor.hasAttribute('download')) return false;
+        if (anchor.hasAttribute('data-logout-confirm') || anchor.id === 'logoutConfirmBtn') return false;
         if (anchor.target === '_blank' || anchor.dataset.bsToggle || anchor.getAttribute('data-bs-toggle')) return false;
+        if (anchor.closest('[data-no-loader]')) return false;
 
         if (event) {
             if (event.defaultPrevented) return false;
@@ -167,6 +180,7 @@
 
     window.SMS2Loader = {
         show: showLoader,
-        hide: finishLoader
+        hide: finishLoader,
+        forceHide: function () { hideLoader(true); }
     };
 })();
