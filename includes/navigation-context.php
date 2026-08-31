@@ -185,7 +185,7 @@ if (!function_exists('smsRoleHomeUrl')) {
             'panel'                => BASE_URL . '/modules/faculty/pages/assigned-defenses.php',
             'research_director'    => BASE_URL . '/modules/faculty/pages/research-director.php?view=overview',
             'adviser'              => BASE_URL . '/modules/faculty/pages/assigned-research.php',
-            'research_grant'       => BASE_URL . '/modules/crad/index.php',
+            'research_grant'       => BASE_URL . '/modules/crad/pages/grant-opportunities.php',
         ];
 
         if (isset($homes[$roleKey])) {
@@ -249,7 +249,8 @@ if (!function_exists('smsRoleHomeIsActive')) {
             'research_director' => str_contains($scriptPath, '/research-director.php')
                 && (($activePage === '') || $activePage === 'overview'),
             'adviser'           => $activePage === 'assigned-research',
-            'research_coordinator', 'crad_officer', 'research_grant' => str_contains($scriptPath, '/modules/crad/index.php'),
+            'research_coordinator', 'crad_officer' => str_contains($scriptPath, '/modules/crad/index.php'),
+            'research_grant' => str_contains($scriptPath, '/modules/crad/pages/grant-opportunities.php'),
             'student'           => str_contains($scriptPath, '/modules/student-portal/pages/dashboard.php'),
             default             => str_ends_with($scriptPath, '/dashboard/index.php'),
         };

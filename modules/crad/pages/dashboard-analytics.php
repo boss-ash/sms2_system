@@ -15,14 +15,10 @@ require_once __DIR__ . '/../includes/grant-helpers.php';
 
 requireAuth();
 
-$roleKey = getCurrentUserRoleKey();
-if (!smsRoleAllowedForModule(['crad_officer'], 'crad')) {
-    header('Location: ' . BASE_URL . '/dashboard/index.php');
-    exit;
-}
+grantRequireManageAccess();
 
 $pageTitle             = 'Dashboard & Analytics';
-$activeModule          = 'crad';
+$activeModule          = grantActiveModuleKey();
 $activePage            = 'dashboard-analytics';
 $pageBannerIcon        = 'fa-chart-pie';
 $pageBannerDescription = 'Real-time grant management overview — opportunities, applications, and funding status.';

@@ -24,7 +24,7 @@ $pageBannerIcon        = 'fa-hand-holding-usd';
 $pageBannerDescription = 'Manage published grant calls and submit research grant proposals.';
 
 $breadcrumbs = [
-    ['label' => 'CRAD',               'url' => BASE_URL . '/modules/crad/index.php'],
+    ['label' => $activeModule === 'crad_grant' ? 'Research Grant' : 'CRAD', 'url' => BASE_URL . '/modules/crad/index.php'],
     ['label' => 'Grant Opportunities', 'url' => null],
 ];
 
@@ -979,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchPublishToken(); getPublishModal().show();
     }
 
-    document.getElementById('btnOpenPublishForm').addEventListener('click', openPublishForm);
+    document.getElementById('btnOpenPublishForm')?.addEventListener('click', openPublishForm);
     var btnEmpty = document.getElementById('btnOpenPublishFormEmpty');
     if (btnEmpty) btnEmpty.addEventListener('click', openPublishForm);
 
