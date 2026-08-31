@@ -103,9 +103,12 @@ switch ($action) {
         echo json_encode([
             'success'   => true,
             'message'   => !empty($result['completed'])
-                ? 'Proposal fully approved.'
+                ? (!empty($result['funded'])
+                    ? 'Proposal approved and funded. Status is now APPROVED & FUNDED.'
+                    : 'Proposal fully approved.')
                 : 'Sign-off recorded. Proposal advanced to the next approval level.',
             'completed' => !empty($result['completed']),
+            'funded'    => !empty($result['funded']),
             'detail'    => grantGetApprovalWorkflowDetail($crad, $applicationId),
         ]);
         break;

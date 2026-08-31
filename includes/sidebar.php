@@ -313,7 +313,7 @@ $deanGrantNavGroups = [
     ],
 ];
 
-$grantApprovalSidebarRoles = ['qa', 'vpaa', 'department_chair', 'research_office'];
+$grantApprovalSidebarRoles = ['qa', 'vpaa', 'department_chair', 'research_office', 'finance'];
 $grantApprovalSidebarItems = [
     [
         'slug' => 'reviewer-evaluation',

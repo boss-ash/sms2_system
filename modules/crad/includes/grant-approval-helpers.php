@@ -526,7 +526,7 @@ function grantBackfillApprovalWorkflows(PDO $crad): void
               LEFT JOIN grant_proposal_approval_workflows w
                 ON w.grant_application_id = ga.id
              WHERE w.id IS NULL
-               AND ga.status NOT IN ('Rejected', 'Revision Required', 'Denied', 'Withdrawn')
+               AND ga.status NOT IN ('Rejected', 'Revision Required', 'Denied', 'Withdrawn', 'Approved & Funded')
         ")->fetchAll(PDO::FETCH_COLUMN) ?: [];
 
         foreach ($rows as $appId) {
