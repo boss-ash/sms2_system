@@ -87,74 +87,74 @@ renderBreadcrumbs($breadcrumbs);
 <?php if ($dbError === ''): ?>
 
 <?php if (!$selected): ?>
-<section class="mpl-panel">
+<section class="mpl-panel gre-queue-section">
     <div class="mpl-panel-head">
         <div>
-            <h2>Evaluation Queue</h2>
-            <p>Select a proposal to score using the review committee rubric (total 100 points).</p>
+            <h2>Assigned Review Queue</h2>
+            <p>Click a proposal title to view details, then score using the rubric (100 points).</p>
         </div>
     </div>
-    <div class="mpl-table-wrap">
-        <table class="mpl-table" id="greQueueTable">
-            <thead>
-                <tr>
-                    <th>Reference</th>
-                    <th>Grant Program</th>
-                    <th>Lead Proponent</th>
-                    <th>Research Title</th>
-                    <th>College / Dept</th>
-                    <th>Budget</th>
-                    <th>Submitted</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="greQueueBody">
-            <?php if (empty($queue)): ?>
-                <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
-                    No proposals are waiting for committee evaluation.
-                </td></tr>
-            <?php else: ?>
-                <?php foreach ($queue as $row):
-                    $isScored = !empty($row['my_evaluation_id']);
-                    $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
-                ?>
-                <tr data-app-id="<?= (int) $row['id'] ?>">
-                    <td style="font-weight:800;color:var(--sms-primary);white-space:nowrap;">
-                        <?= htmlspecialchars((string) ($row['proposal_reference'] ?? ('#' . (int) $row['id']))) ?>
-                        <div style="font-size:.7rem;font-weight:500;color:var(--sms-text-muted);">
-                            v<?= max(1, (int) ($row['current_version'] ?? 1)) ?>
+    <?php if (empty($queue)): ?>
+        <div class="gre-queue-empty">No proposals are waiting for committee evaluation.</div>
+    <?php else: ?>
+        <div class="gre-queue-list" id="greQueueList">
+            <?php foreach ($queue as $row):
+                $isScored = !empty($row['my_evaluation_id']);
+                $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
+                $title = (string) ($row['research_title'] ?? 'Untitled Proposal');
+            ?>
+            <details class="gre-queue-card">
+                <summary class="gre-queue-summary">
+                    <span class="gre-queue-title-text"><?= htmlspecialchars($title) ?></span>
+                    <?= smsIcon('chevron-down', ['class' => 'gre-queue-chevron', 'aria-hidden' => 'true']) ?>
+                </summary>
+                <div class="gre-queue-body">
+                    <div class="gre-queue-meta-grid">
+                        <div>
+                            <span class="gre-queue-label">Reference</span>
+                            <strong><?= htmlspecialchars((string) ($row['proposal_reference'] ?? ('#' . (int) $row['id']))) ?></strong>
+                            <small>Version <?= max(1, (int) ($row['current_version'] ?? 1)) ?></small>
                         </div>
-                    </td>
-                    <td style="font-weight:600;max-width:180px;"><?= htmlspecialchars((string) $row['funding_title']) ?></td>
-                    <td><?= htmlspecialchars((string) $row['applicant_name']) ?></td>
-                    <td style="max-width:220px;font-size:.86rem;"><?= htmlspecialchars((string) ($row['research_title'] ?? '—')) ?></td>
-                    <td style="font-size:.84rem;"><?= htmlspecialchars((string) ($row['college_dept'] ?? '—')) ?></td>
-                    <td style="font-weight:700;white-space:nowrap;">
-                        <?= $row['requested_budget'] !== null ? '₱' . number_format((float) $row['requested_budget'], 0) : '—' ?>
-                    </td>
-                    <td style="font-size:.82rem;white-space:nowrap;">
-                        <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $row['submitted_at']))) ?>
-                    </td>
-                    <td>
-                        <?php if ($isScored): ?>
-                            <span class="mpl-status completed">Scored (<?= number_format((float) $row['my_total_score'], 1) ?>/100)</span>
-                        <?php else: ?>
-                            <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
-                        <?php endif; ?>
-                    </td>
-                    <td>
+                        <div>
+                            <span class="gre-queue-label">Status</span>
+                            <?php if ($isScored): ?>
+                                <span class="mpl-status completed">Scored (<?= number_format((float) $row['my_total_score'], 1) ?>/100)</span>
+                            <?php else: ?>
+                                <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <div>
+                            <span class="gre-queue-label">Grant Program</span>
+                            <span><?= htmlspecialchars((string) $row['funding_title']) ?></span>
+                        </div>
+                        <div>
+                            <span class="gre-queue-label">Lead Proponent</span>
+                            <span><?= htmlspecialchars((string) $row['applicant_name']) ?></span>
+                        </div>
+                        <div>
+                            <span class="gre-queue-label">College / Dept</span>
+                            <span><?= htmlspecialchars((string) ($row['college_dept'] ?? '—')) ?></span>
+                        </div>
+                        <div>
+                            <span class="gre-queue-label">Requested Budget</span>
+                            <span><?= $row['requested_budget'] !== null ? '₱' . number_format((float) $row['requested_budget'], 0) : '—' ?></span>
+                        </div>
+                        <div>
+                            <span class="gre-queue-label">Submitted</span>
+                            <span><?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $row['submitted_at']))) ?></span>
+                        </div>
+                    </div>
+                    <div class="gre-queue-actions">
                         <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
                            href="?id=<?= (int) $row['id'] ?>">
-                            <?= $isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score' ?>
+                            <?= $isScored ? smsIcon('eye') . ' View Evaluation' : smsIcon('star-half-alt') . ' Score Proposal' ?>
                         </a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+                    </div>
+                </div>
+            </details>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </section>
 
 <?php else: ?>
