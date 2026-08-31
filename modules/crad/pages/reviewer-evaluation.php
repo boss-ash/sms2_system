@@ -98,6 +98,7 @@ renderBreadcrumbs($breadcrumbs);
         <table class="mpl-table" id="greQueueTable">
             <thead>
                 <tr>
+                    <th>Reference</th>
                     <th>Grant Program</th>
                     <th>Lead Proponent</th>
                     <th>Research Title</th>
