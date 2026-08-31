@@ -1,0 +1,80 @@
+<?php
+/**
+ * CRAD Grant Proposal Evaluation API (Review Committee).
+ */
+declare(strict_types=1);
+
+header('Content-Type: application/json');
+
+require_once __DIR__ . '/../../../config/config.php';
+require_once __DIR__ . '/../../../includes/authentication.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
+
+requireAuth();
+
+if (!grantUserCanEvaluate()) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Access denied.']);
+    exit;
+}
+
+$method = $_SERVER['REQUEST_METHOD'];
+$action = trim((string) ($_GET['action'] ?? ($_POST['action'] ?? '')));
+
+try {
+    $crad = getCradDatabaseConnection();
+    grantEnsureEvaluationTables($crad);
+} catch (Throwable $e) {
+    http_response_code(503);
+    echo json_encode(['success' => false, 'message' => 'CRAD database unavailable.']);
+    exit;
+}
+
+switch ($action) {
+    case 'get_queue':
+        $queue = grantEvaluationQueue($crad);
+        $pending = count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
+        $scored  = count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])));
+        echo json_encode([
+            'success' => true,
+            'queue'   => $queue,
+            'pending' => $pending,
+            'scored'  => $scored,
+            'count'   => count($queue),
+        ]);
+        break;
+
+    case 'submit_evaluation':
+        if ($method !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed.']);
+            exit;
+        }
+
+        $applicationId = (int) ($_POST['grant_application_id'] ?? 0);
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid proposal selected.']);
+            exit;
+        }
+
+        $result = grantSubmitProposalEvaluation($crad, $applicationId, $_POST);
+        if ($result['ok']) {
+            echo json_encode([
+                'success'     => true,
+                'message'     => 'Evaluation submitted successfully.',
+                'id'          => $result['id'],
+                'total_score' => $result['total_score'],
+            ]);
+        } else {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => $result['error'] ?? 'Failed to save evaluation.']);
+        }
+        break;
+
+    default:
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid action.']);
+        break;
+}

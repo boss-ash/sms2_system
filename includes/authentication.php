@@ -182,6 +182,7 @@ function smsDefaultModulesForRole(string $roleKey): array
         'crad_officer' => ['crad'],
         'research_coordinator' => ['crad'],
         'research_grant' => ['crad_grant'],
+        'review_committee' => ['crad_grant'],
         'finance'      => ['payment'],
         'hr'           => ['faculty'],
         'adviser'      => ['faculty'],
@@ -324,6 +325,10 @@ function getVisibleModules(array $modules): array
         $visible['crad'] = smsResearchCoordinatorCradModule();
     }
 
+    if (getCurrentUserRoleKey() === 'review_committee' && isset($visible['crad_grant'])) {
+        $visible['crad_grant'] = smsReviewCommitteeGrantModule();
+    }
+
     if (in_array('student_portal', $allowedModules, true) && !isset($visible['student_portal'])) {
         $visible['student_portal'] = [
             'label' => 'Student Portal',
@@ -417,6 +422,26 @@ function smsResearchCoordinatorCradModule(): array
     ];
 }
 
+function smsReviewCommitteeGrantModule(): array
+{
+    return [
+        'label' => 'Research Grant',
+        'icon'  => 'fa-hand-holding-usd',
+        'groups' => [
+            'Review & Workflow' => [
+                'reviewer-evaluation',
+            ],
+            'System' => [
+                'security-settings',
+            ],
+        ],
+        'pages' => [
+            ['slug' => 'reviewer-evaluation', 'title' => 'Reviewer Evaluation'],
+            ['slug' => 'security-settings', 'title' => 'Security Settings'],
+        ],
+    ];
+}
+
 function smsPostLoginRedirectUrl(): string
 {
     require_once __DIR__ . '/navigation-context.php';
@@ -498,6 +523,30 @@ function requireModuleAccess(string $moduleKey): void
     }
 
     if (!userCanAccessModule($key) && !userCanAccessModule($moduleKey)) {
+        $grantResearcherPages = [
+            '/modules/crad/pages/grant-opportunities.php',
+            '/modules/crad/pages/proposals-applications.php',
+        ];
+        $grantReviewerPages = [
+            '/modules/crad/pages/reviewer-evaluation.php',
+            '/modules/crad/grant-proposal-file.php',
+        ];
+        $roleKey = getCurrentUserRoleKey();
+        if (in_array($roleKey, ['student', 'adviser'], true)) {
+            foreach ($grantResearcherPages as $allowedPath) {
+                if (str_ends_with($scriptPath, $allowedPath)) {
+                    return;
+                }
+            }
+        }
+        if ($roleKey === 'review_committee') {
+            foreach ($grantReviewerPages as $allowedPath) {
+                if (str_ends_with($scriptPath, $allowedPath)) {
+                    return;
+                }
+            }
+        }
+
         header('Location: ' . BASE_URL . '/dashboard/index.php');
         exit;
     }

@@ -78,6 +78,7 @@ $accountContext = [
     'research_coordinator' => ['module' => 'crad', 'label' => 'Research Coordinator', 'icon' => 'fa-microscope'],
     'crad_officer' => ['module' => 'crad', 'label' => 'CRAD Officer', 'icon' => 'fa-flask'],
     'research_grant' => ['module' => 'crad_grant', 'label' => 'Research Grant Account', 'icon' => 'fa-hand-holding-usd'],
+    'review_committee' => ['module' => 'crad_grant', 'label' => 'Review Committee Account', 'icon' => 'fa-clipboard-check'],
     'finance' => ['module' => 'payment', 'label' => 'Finance Account', 'icon' => 'fa-credit-card'],
     'registrar' => ['module' => $moduleKey, 'label' => 'Registrar Account', 'icon' => 'fa-folder-open'],
     'osa' => ['module' => 'cocurricular', 'label' => 'OSA Account', 'icon' => 'fa-users'],

@@ -167,6 +167,10 @@ $studentNavGroups = [
         ['slug' => 'submission-status', 'href' => BASE_URL . '/modules/student-portal/pages/submission-status.php', 'icon' => 'fa-chart-line', 'label' => 'Submission Status', 'locked' => false],
         ['slug' => 'submission-history', 'href' => BASE_URL . '/modules/student-portal/pages/submission-history.php', 'icon' => 'fa-history', 'label' => 'Submission History', 'locked' => false],
     ],
+    'Core System' => [
+        ['slug' => 'grant-opportunities', 'href' => BASE_URL . '/modules/crad/pages/grant-opportunities.php', 'icon' => 'fa-hand-holding-usd', 'label' => 'Grant Opportunities', 'locked' => false],
+        ['slug' => 'proposals-applications', 'href' => BASE_URL . '/modules/crad/pages/proposals-applications.php', 'icon' => 'fa-file-alt', 'label' => 'Proposals & Applications', 'locked' => false],
+    ],
     'System' => [
         ['slug' => 'security-settings', 'href' => BASE_URL . '/account/module-security.php?module=student_portal', 'icon' => 'fa-shield-alt', 'label' => 'Security Settings', 'locked' => false],
     ],
@@ -255,6 +259,25 @@ $facultyAccountNavGroups += [
 //    deleted; their navigation entries are suppressed for the Adviser role only.
 if ($roleKey === 'adviser' && isset($facultyAccountNavGroups['My Research'])) {
     unset($facultyAccountNavGroups['My Research']);
+}
+
+// ── Adviser: Core System grant pages (researchers apply to published calls) ──
+if ($roleKey === 'adviser') {
+    $coreSystemItems = [
+        ['slug' => 'grant-opportunities', 'href' => BASE_URL . '/modules/crad/pages/grant-opportunities.php', 'icon' => 'fa-hand-holding-usd', 'label' => 'Grant Opportunities'],
+        ['slug' => 'proposals-applications', 'href' => BASE_URL . '/modules/crad/pages/proposals-applications.php', 'icon' => 'fa-file-alt', 'label' => 'Proposals & Applications'],
+    ];
+    $facultyInsert = [];
+    foreach ($facultyAccountNavGroups as $groupKey => $groupItems) {
+        if ($groupKey === 'System') {
+            $facultyInsert['Core System'] = $coreSystemItems;
+        }
+        $facultyInsert[$groupKey] = $groupItems;
+    }
+    if (!isset($facultyInsert['Core System'])) {
+        $facultyInsert['Core System'] = $coreSystemItems;
+    }
+    $facultyAccountNavGroups = $facultyInsert;
 }
 
 $grammarianNavGroups = [
@@ -477,7 +500,11 @@ $researchDirectorNavGroups = [
                 <?php foreach ($visibleModules as $navModuleKey => $module): ?>
                     <?php
                     $isModuleActive = ($highlightModule === $navModuleKey);
-                    $moduleFolder = $navModuleKey === 'student_portal' ? 'student-portal' : $navModuleKey;
+                    $moduleFolder = match ($navModuleKey) {
+                        'student_portal' => 'student-portal',
+                        'crad_grant'     => 'crad',
+                        default          => $navModuleKey,
+                    };
                     $overviewUrl = BASE_URL . '/modules/' . $moduleFolder . '/index.php';
                     $moduleInMaint = smsIsModuleInMaintenance((string) $navModuleKey);
                     $moduleIcon = (string) ($module['icon'] ?? 'fa-folder');

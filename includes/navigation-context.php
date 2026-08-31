@@ -159,6 +159,8 @@ if (!function_exists('smsShowsMainDashboard')) {
             'grammarian',
             'research_director',
             'research_coordinator',
+            'research_grant',
+            'review_committee',
         ], true)) {
             return false;
         }
@@ -186,6 +188,7 @@ if (!function_exists('smsRoleHomeUrl')) {
             'research_director'    => BASE_URL . '/modules/faculty/pages/research-director.php?view=overview',
             'adviser'              => BASE_URL . '/modules/faculty/pages/assigned-research.php',
             'research_grant'       => BASE_URL . '/modules/crad/pages/grant-opportunities.php',
+            'review_committee'     => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php',
         ];
 
         if (isset($homes[$roleKey])) {
@@ -224,6 +227,7 @@ if (!function_exists('smsRoleHomeLabel')) {
             'adviser'              => 'Home',
             'crad_officer'         => 'Dashboard',
             'research_grant'       => 'Home',
+            'review_committee'     => 'Home',
         ];
 
         return $labels[$roleKey] ?? (smsShowsMainDashboard($roleKey) ? 'Dashboard' : 'Home');
@@ -251,6 +255,7 @@ if (!function_exists('smsRoleHomeIsActive')) {
             'adviser'           => $activePage === 'assigned-research',
             'research_coordinator', 'crad_officer' => str_contains($scriptPath, '/modules/crad/index.php'),
             'research_grant' => str_contains($scriptPath, '/modules/crad/pages/grant-opportunities.php'),
+            'review_committee' => str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),
             'student'           => str_contains($scriptPath, '/modules/student-portal/pages/dashboard.php'),
             default             => str_ends_with($scriptPath, '/dashboard/index.php'),
         };

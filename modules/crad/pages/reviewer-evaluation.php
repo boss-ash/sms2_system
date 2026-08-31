@@ -1,0 +1,384 @@
+<?php
+/**
+ * SMS 2 - Review Committee · Reviewer Evaluation
+ * Score pending grant proposals using the institutional rubric (100 pts).
+ */
+require_once __DIR__ . '/../../../config/config.php';
+require_once __DIR__ . '/../config/config.php';
+require_once ROOT_PATH . '/includes/authentication.php';
+require_once ROOT_PATH . '/includes/security.php';
+require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
+
+requireAuth();
+grantRequireEvaluateAccess();
+
+$pageTitle             = 'Reviewer Evaluation';
+$activeModule          = grantEvaluationActiveModuleKey();
+$activePage            = 'reviewer-evaluation';
+$pageBannerIcon        = 'fa-clipboard-check';
+$pageBannerDescription = 'Score research grant proposals submitted for committee review.';
+
+$breadcrumbs = [
+    ['label' => 'Research Grant', 'url' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php'],
+    ['label' => 'Reviewer Evaluation', 'url' => null],
+];
+
+require_once ROOT_PATH . '/includes/breadcrumbs.php';
+
+$crad    = cradDb();
+$queue   = [];
+$dbError = '';
+$selectedId = (int) ($_GET['id'] ?? 0);
+$selected   = null;
+$existingEval = null;
+
+$rubric = grantRubricCriteria();
+
+if ($crad) {
+    try {
+        $queue = grantEvaluationQueue($crad);
+        if ($selectedId > 0) {
+            $selected = grantGetApplicationForEvaluation($crad, $selectedId);
+            if ($selected && !in_array((string) ($selected['status'] ?? ''), ['Submitted', 'Under Review'], true)) {
+                $selected = null;
+            }
+            if ($selected) {
+                $existingEval = grantGetEvaluationByApplication($crad, $selectedId);
+            }
+        }
+    } catch (Throwable $e) {
+        $dbError = htmlspecialchars($e->getMessage());
+        error_log('reviewer-evaluation: ' . $e->getMessage());
+    }
+} else {
+    $dbError = 'CRAD database connection unavailable.';
+}
+
+$pendingCount = count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
+$scoredCount  = count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])));
+
+require_once ROOT_PATH . '/includes/layout-start.php';
+renderBreadcrumbs($breadcrumbs);
+?>
+<link href="<?= BASE_URL ?>/assets/css/module-process-list.css?v=2" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=1" rel="stylesheet">
+
+<?php if ($dbError !== ''): ?>
+<div class="mpl-alert" role="alert" style="background:rgba(239,68,68,.08);color:#b91c1c;margin-bottom:1rem;">
+    <?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?>
+</div>
+<?php endif; ?>
+
+<div class="mpl gre" data-grant-eval-live="1">
+
+<div class="gre-header">
+    <div>
+        <h1><?= smsIcon('clipboard-check', ['class' => 'me-2', 'style' => 'color:var(--sms-primary);']) ?>Reviewer Evaluation</h1>
+        <p>Proposals with <strong>Pending Evaluation</strong> in Proposals &amp; Applications appear here for rubric scoring.</p>
+    </div>
+    <div class="gre-stat-row">
+        <span class="gre-stat pending"><strong data-eval-pending-count><?= $pendingCount ?></strong> awaiting score</span>
+        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> scored by you</span>
+        <span class="gre-live-badge"><?= smsIcon('sync-alt') ?> Live</span>
+    </div>
+</div>
+
+<?php if ($dbError === ''): ?>
+
+<?php if (!$selected): ?>
+<section class="mpl-panel">
+    <div class="mpl-panel-head">
+        <div>
+            <h2>Evaluation Queue</h2>
+            <p>Select a proposal to score using the review committee rubric (total 100 points).</p>
+        </div>
+    </div>
+    <div class="mpl-table-wrap">
+        <table class="mpl-table" id="greQueueTable">
+            <thead>
+                <tr>
+                    <th>Grant Program</th>
+                    <th>Lead Proponent</th>
+                    <th>Research Title</th>
+                    <th>College / Dept</th>
+                    <th>Budget</th>
+                    <th>Submitted</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="greQueueBody">
+            <?php if (empty($queue)): ?>
+                <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
+                    No proposals are waiting for committee evaluation.
+                </td></tr>
+            <?php else: ?>
+                <?php foreach ($queue as $row):
+                    $isScored = !empty($row['my_evaluation_id']);
+                    $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
+                ?>
+                <tr data-app-id="<?= (int) $row['id'] ?>">
+                    <td style="font-weight:600;max-width:180px;"><?= htmlspecialchars((string) $row['funding_title']) ?></td>
+                    <td><?= htmlspecialchars((string) $row['applicant_name']) ?></td>
+                    <td style="max-width:220px;font-size:.86rem;"><?= htmlspecialchars((string) ($row['research_title'] ?? '—')) ?></td>
+                    <td style="font-size:.84rem;"><?= htmlspecialchars((string) ($row['college_dept'] ?? '—')) ?></td>
+                    <td style="font-weight:700;white-space:nowrap;">
+                        <?= $row['requested_budget'] !== null ? '₱' . number_format((float) $row['requested_budget'], 0) : '—' ?>
+                    </td>
+                    <td style="font-size:.82rem;white-space:nowrap;">
+                        <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $row['submitted_at']))) ?>
+                    </td>
+                    <td>
+                        <?php if ($isScored): ?>
+                            <span class="mpl-status completed">Scored (<?= number_format((float) $row['my_total_score'], 1) ?>/100)</span>
+                        <?php else: ?>
+                            <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
+                           href="?id=<?= (int) $row['id'] ?>">
+                            <?= $isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score' ?>
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<?php else: ?>
+<div class="gre-layout">
+    <aside class="gre-info-panel">
+        <a class="mpl-btn mpl-btn-ghost mpl-btn-sm mb-3" href="<?= BASE_URL ?>/modules/crad/pages/reviewer-evaluation.php">
+            <?= smsIcon('arrow-left') ?> Back to Queue
+        </a>
+        <h2><?= htmlspecialchars((string) ($selected['research_title'] ?? 'Research Proposal')) ?></h2>
+        <dl class="gre-meta">
+            <div><dt>Grant Program</dt><dd><?= htmlspecialchars((string) $selected['funding_title']) ?></dd></div>
+            <div><dt>Lead Proponent</dt><dd><?= htmlspecialchars((string) $selected['applicant_name']) ?></dd></div>
+            <div><dt>College / Dept</dt><dd><?= htmlspecialchars((string) ($selected['college_dept'] ?? '—')) ?></dd></div>
+            <div><dt>Requested Budget</dt><dd>₱<?= number_format((float) ($selected['requested_budget'] ?? 0), 0) ?>
+                <small>of ₱<?= number_format((float) ($selected['max_funding_cap'] ?? 0), 0) ?> cap</small></dd></div>
+            <div><dt>Eligibility</dt><dd><?= htmlspecialchars((string) ($selected['eligibility'] ?? '')) ?></dd></div>
+            <div><dt>Submitted</dt><dd><?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $selected['submitted_at']))) ?></dd></div>
+        </dl>
+        <?php if (!empty($selected['abstract'])): ?>
+        <div class="gre-block">
+            <h3>Executive Abstract</h3>
+            <p><?= nl2br(htmlspecialchars((string) $selected['abstract'])) ?></p>
+        </div>
+        <?php endif; ?>
+        <?php if (!empty($selected['objectives'])): ?>
+        <div class="gre-block">
+            <h3>Objectives</h3>
+            <p><?= nl2br(htmlspecialchars((string) $selected['objectives'])) ?></p>
+        </div>
+        <?php endif; ?>
+        <div class="gre-docs">
+            <?php if (!empty($selected['proposal_pdf'])): ?>
+            <a class="mpl-btn mpl-btn-soft mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'proposal')) ?>" target="_blank" rel="noopener">
+                <?= smsIcon('file-pdf') ?> Proposal Document
+            </a>
+            <?php endif; ?>
+            <?php if (!empty($selected['supporting_docs'])): ?>
+            <a class="mpl-btn mpl-btn-ghost mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'supporting')) ?>" target="_blank" rel="noopener">
+                <?= smsIcon('paperclip') ?> Supporting Docs
+            </a>
+            <?php endif; ?>
+            <?php if (!empty($selected['ethics_doc'])): ?>
+            <a class="mpl-btn mpl-btn-ghost mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'ethics')) ?>" target="_blank" rel="noopener">
+                <?= smsIcon('shield-alt') ?> Ethics Clearance
+            </a>
+            <?php endif; ?>
+        </div>
+    </aside>
+
+    <section class="gre-score-panel">
+        <?php if ($existingEval): ?>
+        <div class="gre-scored-banner">
+            <?= smsIcon('check-circle', ['class' => 'me-2']) ?>
+            Evaluation submitted on <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $existingEval['submitted_at']))) ?>
+            — Total: <strong><?= number_format((float) $existingEval['total_score'], 1) ?> / 100</strong>
+        </div>
+        <table class="gre-rubric-table gre-rubric-readonly">
+            <thead><tr><th>Criteria</th><th>Maximum</th><th>Your Score</th></tr></thead>
+            <tbody>
+            <?php foreach ($rubric as $key => $max):
+                $col = 'score_' . $key;
+                $label = ucwords(str_replace('_', ' ', $key));
+            ?>
+                <tr><td><?= htmlspecialchars($label) ?></td><td><?= $max ?></td><td><strong><?= number_format((float) ($existingEval[$col] ?? 0), 1) ?></strong></td></tr>
+            <?php endforeach; ?>
+                <tr class="gre-total-row"><td colspan="2"><strong>Total Score</strong></td><td><strong><?= number_format((float) $existingEval['total_score'], 1) ?></strong></td></tr>
+            </tbody>
+        </table>
+        <?php if (!empty($existingEval['comments'])): ?><div class="gre-block"><h3>Comments</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['comments'])) ?></p></div><?php endif; ?>
+        <?php if (!empty($existingEval['recommendations'])): ?><div class="gre-block"><h3>Recommendations</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['recommendations'])) ?></p></div><?php endif; ?>
+        <?php if (!empty($existingEval['required_corrections'])): ?><div class="gre-block"><h3>Required Corrections</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['required_corrections'])) ?></p></div><?php endif; ?>
+
+        <?php else: ?>
+        <h2><?= smsIcon('star-half-alt', ['class' => 'me-2 text-primary']) ?>Score Proposal Using Rubric</h2>
+        <p class="text-muted mb-3">Enter scores for each criterion. Total is computed automatically (max 100).</p>
+
+        <div id="greEvalAlert" class="mpl-alert" style="display:none;" role="alert"></div>
+
+        <form id="greEvalForm" data-no-loader novalidate>
+            <input type="hidden" name="grant_application_id" value="<?= (int) $selected['id'] ?>">
+
+            <table class="gre-rubric-table">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th style="width:90px;">Maximum</th>
+                        <th style="width:140px;">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($rubric as $key => $max):
+                    $label = ucwords(str_replace('_', ' ', $key));
+                    $inputId = 'score_' . $key;
+                ?>
+                    <tr>
+                        <td><?= htmlspecialchars($label) ?></td>
+                        <td class="text-center"><?= $max ?></td>
+                        <td>
+                            <input type="number" class="go-form-input gre-score-input"
+                                   id="<?= htmlspecialchars($inputId) ?>"
+                                   name="<?= htmlspecialchars($inputId) ?>"
+                                   min="0" max="<?= $max ?>" step="0.5" required
+                                   data-max="<?= $max ?>"
+                                   aria-label="<?= htmlspecialchars($label) ?> score">
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                    <tr class="gre-total-row">
+                        <td colspan="2"><strong>Total Score</strong></td>
+                        <td><strong id="greTotalScore">0</strong> / 100</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="gre-form-group">
+                <label for="greComments" class="go-form-label">Comments</label>
+                <textarea id="greComments" name="comments" class="go-form-input" rows="3"
+                          placeholder="General comments on the proposal…"></textarea>
+            </div>
+            <div class="gre-form-group">
+                <label for="greRecommendations" class="go-form-label">Recommendations</label>
+                <textarea id="greRecommendations" name="recommendations" class="go-form-input" rows="3"
+                          placeholder="Committee recommendations…"></textarea>
+            </div>
+            <div class="gre-form-group">
+                <label for="greCorrections" class="go-form-label">Required Corrections</label>
+                <textarea id="greCorrections" name="required_corrections" class="go-form-input" rows="3"
+                          placeholder="List required corrections, if any…"></textarea>
+            </div>
+
+            <button type="submit" class="mpl-btn mpl-btn-primary" id="greSubmitBtn">
+                <?= smsIcon('check', ['class' => 'me-1']) ?>Submit Evaluation
+            </button>
+        </form>
+        <?php endif; ?>
+    </section>
+</div>
+<?php endif; ?>
+
+<?php endif; ?>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    'use strict';
+
+    var apiBase = '<?= BASE_URL ?>/modules/crad/api/grant-evaluation.php';
+    var inputs = document.querySelectorAll('.gre-score-input');
+    var totalEl = document.getElementById('greTotalScore');
+    var form = document.getElementById('greEvalForm');
+
+    function updateTotal() {
+        if (!totalEl) return;
+        var sum = 0;
+        inputs.forEach(function (inp) {
+            var v = parseFloat(inp.value);
+            if (!isNaN(v) && v >= 0) sum += v;
+        });
+        totalEl.textContent = sum.toFixed(1).replace(/\.0$/, '');
+        totalEl.style.color = sum > 100 ? '#b91c1c' : '';
+    }
+
+    inputs.forEach(function (inp) {
+        inp.addEventListener('input', updateTotal);
+    });
+    updateTotal();
+
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (window.SMS2Loader) window.SMS2Loader.forceHide();
+
+            var alertEl = document.getElementById('greEvalAlert');
+            alertEl.style.display = 'none';
+
+            var total = 0;
+            var valid = true;
+            inputs.forEach(function (inp) {
+                var v = parseFloat(inp.value);
+                var max = parseFloat(inp.getAttribute('data-max') || '0');
+                if (isNaN(v) || v < 0 || v > max) valid = false;
+                else total += v;
+            });
+
+            if (!valid) {
+                alertEl.style.display = '';
+                alertEl.style.background = 'rgba(239,68,68,.08)';
+                alertEl.style.color = '#b91c1c';
+                alertEl.textContent = 'Please enter valid scores within each criterion maximum.';
+                return;
+            }
+            if (total > 100) {
+                alertEl.style.display = '';
+                alertEl.style.background = 'rgba(239,68,68,.08)';
+                alertEl.style.color = '#b91c1c';
+                alertEl.textContent = 'Total score cannot exceed 100.';
+                return;
+            }
+
+            var btn = document.getElementById('greSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Submitting…';
+
+            var fd = new FormData(form);
+            fd.set('action', 'submit_evaluation');
+
+            fetch(apiBase, { method: 'POST', credentials: 'same-origin', body: fd })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        window.location.href = '?id=<?= (int) ($selected['id'] ?? 0) ?>&saved=1';
+                    } else {
+                        alertEl.style.display = '';
+                        alertEl.style.background = 'rgba(239,68,68,.08)';
+                        alertEl.style.color = '#b91c1c';
+                        alertEl.textContent = data.message || 'Failed to submit evaluation.';
+                        btn.disabled = false;
+                        btn.innerHTML = '<?= smsIcon('check', ['class' => 'me-1']) ?>Submit Evaluation';
+                    }
+                })
+                .catch(function () {
+                    alertEl.style.display = '';
+                    alertEl.style.background = 'rgba(239,68,68,.08)';
+                    alertEl.style.color = '#b91c1c';
+                    alertEl.textContent = 'Network error. Please try again.';
+                    btn.disabled = false;
+                    btn.innerHTML = '<?= smsIcon('check', ['class' => 'me-1']) ?>Submit Evaluation';
+                });
+        });
+    }
+});
+</script>
+<script src="<?= BASE_URL ?>/assets/js/grant-evaluation-live.js?v=1"></script>
+
+<?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

@@ -16,16 +16,21 @@ require_once __DIR__ . '/../includes/grant-helpers.php';
 
 requireAuth();
 
-grantRequireManageAccess();
+grantRequireViewAccess();
+
+$canManage = grantUserCanManage();
+$canApply  = grantUserCanApply();
 
 $pageTitle             = 'Proposals & Applications';
 $activeModule          = grantActiveModuleKey();
-$activePage            = 'grant-applications';
+$activePage            = 'proposals-applications';
 $pageBannerIcon        = 'fa-file-alt';
-$pageBannerDescription = 'Review all research grant proposals submitted to published grant opportunities.';
+$pageBannerDescription = $canManage
+    ? 'Review all research grant proposals submitted to published grant opportunities.'
+    : 'Track your submitted grant proposals and application status.';
 
 $breadcrumbs = [
-    ['label' => 'CRAD',                    'url' => BASE_URL . '/modules/crad/index.php'],
+    ['label' => grantBreadcrumbModuleLabel(), 'url' => grantBreadcrumbModuleUrl()],
     ['label' => 'Proposals & Applications', 'url' => null],
 ];
 
@@ -40,7 +45,11 @@ $dbError      = '';
 if ($crad) {
     try {
         grantEnsureTables($crad);
-        $applications  = grantGetApplications($crad);
+        if ($canManage) {
+            $applications  = grantGetApplications($crad);
+        } else {
+            $applications = grantGetMyApplications($crad);
+        }
         $opportunities = grantGetOpportunities($crad);
     } catch (Throwable $e) {
         $dbError = htmlspecialchars($e->getMessage());
@@ -84,11 +93,14 @@ function paStatusBadge(string $status): string
     </div>
 <?php endif; ?>
 
-<div class="mpl" data-mpl data-proposals-page>
+<div class="mpl" data-mpl data-proposals-page data-grant-live="1">
 
     <!-- ── Top bar ──────────────────────────────────────────────────────── -->
     <div class="mpl-top">
-        <p>All research grant proposals submitted to published grant opportunities. Records are sourced directly from the database.</p>
+        <p><?= $canManage
+            ? 'All research grant proposals submitted to published grant opportunities. Records are sourced directly from the database.'
+            : 'Your submitted grant proposals and their current evaluation status.' ?></p>
+        <?php if ($canManage): ?>
         <div class="mpl-toolbar">
             <a class="mpl-btn mpl-btn-soft"
                href="<?= BASE_URL ?>/modules/crad/pages/core-system-dashboard.php">
@@ -99,6 +111,14 @@ function paStatusBadge(string $status): string
                 <?= smsIcon('hand-holding-usd', ['aria-hidden' => 'true']) ?>Grant Opportunities
             </a>
         </div>
+        <?php else: ?>
+        <div class="mpl-toolbar">
+            <a class="mpl-btn mpl-btn-primary"
+               href="<?= BASE_URL ?>/modules/crad/pages/grant-opportunities.php">
+                <?= smsIcon('hand-holding-usd', ['aria-hidden' => 'true']) ?>Browse Grant Opportunities
+            </a>
+        </div>
+        <?php endif; ?>
     </div>
 
     <?php if ($dbError === ''): ?>
@@ -398,5 +418,6 @@ function paStatusBadge(string $status): string
     if (oppFilter)    oppFilter.addEventListener('change',    filterTable);
 })();
 </script>
+<script src="<?= BASE_URL ?>/assets/js/grant-opportunities-live.js?v=1"></script>
 
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

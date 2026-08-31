@@ -20,6 +20,7 @@ if (smsIsGrantedAdminRole($role)) {
         'crad_officer' => 'crad',
         'research_coordinator' => 'crad',
         'research_grant' => 'crad_grant',
+    'review_committee' => 'crad_grant',
         'finance' => 'payment',
         'osa' => 'cocurricular',
         'it_office' => 'lms',

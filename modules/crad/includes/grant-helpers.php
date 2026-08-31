@@ -41,13 +41,62 @@ function grantUserCanManage(): bool
 }
 
 /**
- * Sidebar / layout module key for the current grant-management user.
+ * Roles that can browse grant calls and submit proposals (researchers).
+ */
+function grantUserCanApply(): bool
+{
+    $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+
+    return in_array($roleKey, ['student', 'adviser'], true);
+}
+
+/**
+ * Anyone who may open grant opportunity / proposal pages.
+ */
+function grantUserCanView(): bool
+{
+    return grantUserCanManage() || grantUserCanApply();
+}
+
+/**
+ * Sidebar / layout module key for the current grant page user.
  */
 function grantActiveModuleKey(): string
 {
     $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
 
-    return $roleKey === 'research_grant' ? 'crad_grant' : 'crad';
+    return match ($roleKey) {
+        'research_grant' => 'crad_grant',
+        'student'        => 'student_portal',
+        'adviser'        => 'faculty',
+        default          => 'crad',
+    };
+}
+
+/**
+ * Breadcrumb parent label on grant pages.
+ */
+function grantBreadcrumbModuleLabel(): string
+{
+    return match (grantActiveModuleKey()) {
+        'crad_grant'     => 'Research Grant',
+        'student_portal' => 'Student Portal',
+        'faculty'        => 'Faculty',
+        default          => 'CRAD',
+    };
+}
+
+/**
+ * Breadcrumb parent URL on grant pages.
+ */
+function grantBreadcrumbModuleUrl(): string
+{
+    return match (grantActiveModuleKey()) {
+        'student_portal' => BASE_URL . '/modules/student-portal/pages/dashboard.php',
+        'faculty'        => BASE_URL . '/modules/faculty/pages/approved-research.php',
+        'crad_grant'     => BASE_URL . '/modules/crad/pages/grant-opportunities.php',
+        default          => BASE_URL . '/modules/crad/index.php',
+    };
 }
 
 /**
@@ -59,6 +108,26 @@ function grantRequireManageAccess(): void
         return;
     }
 
+    grantRedirectUnauthorized();
+}
+
+/**
+ * Redirect users who cannot view or apply on grant pages.
+ */
+function grantRequireViewAccess(): void
+{
+    if (grantUserCanView()) {
+        return;
+    }
+
+    grantRedirectUnauthorized();
+}
+
+/**
+ * @internal
+ */
+function grantRedirectUnauthorized(): void
+{
     require_once dirname(__DIR__, 3) . '/config/config.php';
     require_once dirname(__DIR__, 3) . '/includes/navigation-context.php';
 
@@ -341,6 +410,26 @@ function grantGetApplications(PDO $crad, ?int $opportunityId = null): array
     }
 
     return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+}
+
+/**
+ * Fetch grant applications for the current researcher (student / adviser).
+ *
+ * @param  PDO $crad
+ * @return array<int, array<string, mixed>>
+ */
+function grantGetMyApplications(PDO $crad): array
+{
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    if ($userId <= 0) {
+        return [];
+    }
+
+    $all = grantGetApplications($crad);
+    return array_values(array_filter(
+        $all,
+        static fn(array $row): bool => (int) ($row['applicant_user_id'] ?? 0) === $userId
+    ));
 }
 
 /**

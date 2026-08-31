@@ -42,7 +42,8 @@ if ($pdo) {
                 ('research_director', 'Research Director', 'Research defense scheduling director account', 1),
                 ('grammarian', 'Grammarian', 'Research grammar and manuscript evaluation account', 1),
                 ('panel', 'Panel Member', 'Research defense panel account', 1),
-                ('research_grant', 'CRAD Officer', 'Research grant management access', 1)"
+                ('research_grant', 'CRAD Officer', 'Research grant management access', 1),
+                ('review_committee', 'Review Committee', 'Grant proposal review and rubric evaluation', 1)"
         )->execute();
         $pdo->prepare(
             "UPDATE roles
@@ -109,6 +110,20 @@ if ($pdo) {
         $pdo->prepare(
             "INSERT INTO role_permissions (role_key, module_key, granted)
              VALUES ('research_grant', 'crad_grant', 1)
+             ON DUPLICATE KEY UPDATE granted = VALUES(granted)"
+        )->execute();
+
+        // Review Committee account (grant proposal evaluator)
+        $rcHash = password_hash('@reviewcommittee123', PASSWORD_DEFAULT);
+        $pdo->prepare(
+            "INSERT IGNORE INTO users
+                (username, email, password_hash, full_name, role_key, student_id, status, password_changed_at, must_change_password, failed_login_attempts, locked_until)
+             VALUES
+                ('reviewcommittee', 'reviewcommittee@bestlink.edu.ph', ?, 'Review Committee Member', 'review_committee', NULL, 'active', NOW(), 0, 0, NULL)"
+        )->execute([$rcHash]);
+        $pdo->prepare(
+            "INSERT INTO role_permissions (role_key, module_key, granted)
+             VALUES ('review_committee', 'crad_grant', 1)
              ON DUPLICATE KEY UPDATE granted = VALUES(granted)"
         )->execute();
     } catch (Throwable $e) {
@@ -188,6 +203,9 @@ foreach ($users as &$u) {
     if ($u['role'] === 'panel') {
         $u['roleLabel'] = 'Panel Member';
     }
+    if ($u['role'] === 'review_committee') {
+        $u['roleLabel'] = 'Review Committee';
+    }
 }
 unset($u);
 
@@ -204,6 +222,7 @@ function umRoleBadgeClass(string $role, string $label = ''): string
         'admission_office' => 'admission',
         'crad_officer' => 'crad',
         'research_grant' => 'crad',
+        'review_committee' => 'review_committee',
         'research_coordinator' => 'research_coordinator',
         'research_director' => 'research_director',
         'grammarian' => 'grammarian',
@@ -325,6 +344,7 @@ renderBreadcrumbs($breadcrumbs);
             <option value="crad">CRAD Officer</option>
             <option value="research_coordinator">Research Coordinator</option>
             <option value="research_grant">Research Grant</option>
+            <option value="review_committee">Review Committee</option>
             <option value="student">Student</option>
         </select>
         <select id="umStatusFilter" class="form-select form-select-sm">
@@ -538,6 +558,7 @@ renderBreadcrumbs($breadcrumbs);
                                 <option value="crad">CRAD Officer</option>
                                 <option value="research_coordinator">Research Coordinator</option>
                                 <option value="research_grant">Research Grant (CRAD Officer)</option>
+                                <option value="review_committee">Review Committee</option>
                                 <option value="student">Student</option>
                             </select>
                         </div>

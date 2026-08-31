@@ -15,16 +15,21 @@ require_once __DIR__ . '/../includes/grant-helpers.php';
 
 requireAuth();
 
-grantRequireManageAccess();
+grantRequireViewAccess();
+
+$canManage = grantUserCanManage();
+$canApply  = grantUserCanApply();
 
 $pageTitle             = 'Grant Opportunities';
 $activeModule          = grantActiveModuleKey();
 $activePage            = 'grant-opportunities';
 $pageBannerIcon        = 'fa-hand-holding-usd';
-$pageBannerDescription = 'Manage published grant calls and submit research grant proposals.';
+$pageBannerDescription = $canManage
+    ? 'Publish grant calls and monitor applications from researchers.'
+    : 'Browse published grant calls and submit your research grant proposal.';
 
 $breadcrumbs = [
-    ['label' => $activeModule === 'crad_grant' ? 'Research Grant' : 'CRAD', 'url' => BASE_URL . '/modules/crad/index.php'],
+    ['label' => grantBreadcrumbModuleLabel(), 'url' => grantBreadcrumbModuleUrl()],
     ['label' => 'Grant Opportunities', 'url' => null],
 ];
 
@@ -109,7 +114,9 @@ renderBreadcrumbs($breadcrumbs);
 </div>
 <?php endif; ?>
 
-<div class="mpl" data-mpl data-grant-opp-page>
+<div class="mpl" data-mpl data-grant-opp-page data-grant-live="1"
+     data-can-apply="<?= $canApply ? '1' : '0' ?>"
+     data-can-manage="<?= $canManage ? '1' : '0' ?>">
 
 <!-- PAGE HEADER -->
 <div class="go-page-header">
@@ -118,13 +125,17 @@ renderBreadcrumbs($breadcrumbs);
             <?= smsIcon('hand-holding-usd', ['class' => 'me-2', 'aria-hidden' => 'true', 'style' => 'color:var(--sms-primary);font-size:1.1rem;']) ?>
             Grant Opportunities &amp; Funding Programs
         </h1>
-        <p>Internal institutional grants and external funding calls &mdash; CHED, DOST, industry, and institutional programs.</p>
+        <p><?= $canManage
+            ? 'Publish institutional grant calls. Researchers see open calls in their Student Portal or Faculty workspace.'
+            : 'Internal institutional grants and external funding calls — apply to open grant opportunities in real time.' ?></p>
     </div>
+    <?php if ($canManage): ?>
     <div class="go-page-header-actions">
         <button type="button" class="mpl-btn mpl-btn-primary" id="btnOpenPublishForm">
             <?= smsIcon('plus', ['aria-hidden' => 'true']) ?>Publish New Grant Call
         </button>
     </div>
+    <?php endif; ?>
 </div>
 
 <?php if ($dbError === ''): ?>
@@ -184,9 +195,11 @@ renderBreadcrumbs($breadcrumbs);
     <div class="go-empty-icon"><?= smsIcon('hand-holding-usd', ['aria-hidden' => 'true']) ?></div>
     <h3>No Grant Opportunities Yet</h3>
     <p>Publish a new grant call to make research funding opportunities available to eligible researchers.</p>
+    <?php if ($canManage): ?>
     <button type="button" class="mpl-btn mpl-btn-primary" id="btnOpenPublishFormEmpty">
         <?= smsIcon('plus', ['aria-hidden' => 'true']) ?>Publish First Grant Call
     </button>
+    <?php endif; ?>
 </div>
 
 <?php else: ?>
@@ -261,7 +274,7 @@ renderBreadcrumbs($breadcrumbs);
                 <br><span style="font-size:.68rem;opacity:.75;">by <?= htmlspecialchars($publishedBy) ?></span>
             <?php endif; ?>
         </div>
-        <?php if ($isOpen): ?>
+        <?php if ($canApply && $isOpen): ?>
             <button type="button" class="go-btn-apply"
                     data-grant-id="<?= (int) $opp['id'] ?>"
                     data-grant-title="<?= htmlspecialchars((string) $opp['funding_title']) ?>"
@@ -272,7 +285,7 @@ renderBreadcrumbs($breadcrumbs);
                     aria-label="Apply for <?= htmlspecialchars((string) $opp['funding_title']) ?>">
                 <?= smsIcon('paper-plane', ['aria-hidden' => 'true']) ?>Apply Now
             </button>
-        <?php else: ?>
+        <?php elseif ($canApply): ?>
             <button type="button" class="go-btn-apply go-btn-disabled" disabled
                     aria-label="<?= htmlspecialchars($statusRaw) ?> — applications not accepted"
                     title="<?= htmlspecialchars($statusRaw) ?>">
@@ -282,6 +295,10 @@ renderBreadcrumbs($breadcrumbs);
                     <?= smsIcon('lock', ['aria-hidden' => 'true']) ?>Closed
                 <?php endif; ?>
             </button>
+        <?php elseif ($canManage): ?>
+            <span class="go-card-published" style="text-align:right;font-size:.75rem;">
+                <strong><?= (int) $appCount ?></strong> application<?= $appCount !== 1 ? 's' : '' ?> received
+            </span>
         <?php endif; ?>
     </div>
 </article>
@@ -298,6 +315,7 @@ renderBreadcrumbs($breadcrumbs);
      Full-screen scrollable modal. Opens when user clicks Apply Now.
      grant_opportunity_id is injected from the card's data-grant-id attribute.
      ══════════════════════════════════════════════════════════════════════════ -->
+<?php if ($canApply): ?>
 <div class="modal fade" id="proposalModal" tabindex="-1"
      aria-labelledby="proposalModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl"
@@ -545,9 +563,11 @@ renderBreadcrumbs($breadcrumbs);
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 
-<!-- PUBLISH NEW GRANT CALL MODAL (unchanged) -->
+<!-- PUBLISH NEW GRANT CALL MODAL (officer only) -->
+<?php if ($canManage): ?>
 <div class="modal fade" id="publishFormModal" tabindex="-1" aria-labelledby="publishFormTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:600px;width:min(600px,95vw);">
         <div class="modal-content" style="border-radius:14px;overflow:hidden;">
@@ -639,7 +659,7 @@ renderBreadcrumbs($breadcrumbs);
         </div>
     </div>
 </div>
-
+<?php endif; ?>
 
 <style>
 .go-form-group  { display:flex; flex-direction:column; gap:.3rem; }
@@ -781,6 +801,7 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ═══════════════════════════════════════════════════════════════════════
        SUBMIT RESEARCH GRANT PROPOSAL MODAL
        ════════════════════════════════════════════════════════════════════ */
+    <?php if ($canApply): ?>
     // Lazy: create the Bootstrap Modal instance only when first needed.
     var _propModalInstance = null;
     function getPropModal() {
@@ -871,6 +892,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (proposalFormEl) {
         proposalFormEl.addEventListener('submit', function(e){
             e.preventDefault();
+            if (window.SMS2Loader) window.SMS2Loader.forceHide();
             document.getElementById('proposalAlert').style.display = 'none';
 
             var grantId      = document.getElementById('propGrantId').value;
@@ -948,9 +970,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (numEl) numEl.textContent = (parseInt(numEl.textContent,10)||0)+1;
         });
     }
+    <?php endif; ?>
 
+    <?php if ($canManage): ?>
     /* ═══════════════════════════════════════════════════════════════════════
-       PUBLISH NEW GRANT CALL (logic unchanged)
+       PUBLISH NEW GRANT CALL
        ════════════════════════════════════════════════════════════════════ */
     function fetchPublishToken(){
         fetch(apiBase+'?action=generate_token',{credentials:'same-origin',cache:'no-store',headers:{'Accept':'application/json'}})
@@ -993,6 +1017,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('publishGrantForm').addEventListener('submit',function(e){
         e.preventDefault();
+        if (window.SMS2Loader) window.SMS2Loader.forceHide();
         document.getElementById('publishFormAlert').style.display='none';
         var title=document.getElementById('fundingTitle').value.trim();
         var cap=parseFloat(document.getElementById('maxFundingCap').value);
@@ -1017,12 +1042,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function doPublish(){
         if (!pendingPublish) return;
+        if (window.SMS2Loader) window.SMS2Loader.forceHide();
         var btn=document.getElementById('btnPublishSubmit');
         btn.disabled=true; btn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Publishing…';
         fetch(apiBase,{method:'POST',credentials:'same-origin',body:pendingPublish})
-        .then(function(r){return r.json();})
+        .then(function(r){
+            if (!r.ok) {
+                return r.json().catch(function(){ return { success: false, message: 'Server error (' + r.status + ').' }; });
+            }
+            return r.json();
+        })
         .then(function(data){
-            if (data.success) { window.location.reload(); }
+            if (data && data.success) { window.location.reload(); }
             else {
                 getPublishModal().show();
                 showPubAlert(data.message||'Failed to publish. Please try again.');
@@ -1043,8 +1074,10 @@ document.addEventListener('DOMContentLoaded', function () {
         el.style.display=''; el.style.background='rgba(239,68,68,.08)'; el.style.color='#b91c1c';
         el.innerHTML='<?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?>'+escHtml(msg);
     }
+    <?php endif; ?>
 
 }); // end DOMContentLoaded
 </script>
+<script src="<?= BASE_URL ?>/assets/js/grant-opportunities-live.js?v=1"></script>
 
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

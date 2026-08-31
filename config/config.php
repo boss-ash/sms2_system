@@ -574,6 +574,9 @@ $MODULES = [
                 'post-publish-grant-call',
                 'grant-applications',
             ],
+            'Review & Workflow' => [
+                'reviewer-evaluation',
+            ],
             'Proposal Evaluation' => [
                 'for-evaluation',
                 'evaluation-scoring',
@@ -610,6 +613,7 @@ $MODULES = [
             ['slug' => 'grant-opportunities',       'title' => 'Grant Opportunities'],
             ['slug' => 'post-publish-grant-call',   'title' => 'Post / Publish Grant Call'],
             ['slug' => 'grant-applications',        'title' => 'Grant Applications'],
+            ['slug' => 'reviewer-evaluation',       'title' => 'Reviewer Evaluation'],
             ['slug' => 'for-evaluation',            'title' => 'For Evaluation'],
             ['slug' => 'evaluation-scoring',        'title' => 'Evaluation & Scoring'],
             ['slug' => 'evaluation-history',        'title' => 'Evaluation History'],

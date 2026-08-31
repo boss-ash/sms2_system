@@ -33,6 +33,7 @@ $roles = [
     ['research_coordinator', 'Research Coordinator', 'Research coordination access'],
     ['research_director', 'Research Director', 'Research defense scheduling director account'],
     ['grammarian', 'Grammarian', 'Research grammar and manuscript evaluation account'],
+    ['review_committee', 'Review Committee', 'Grant proposal review and rubric evaluation'],
     ['panel', 'Panel Member', 'Research defense panel account'],
     ['student', 'Student', 'Student portal only'],
 ];
@@ -57,6 +58,7 @@ $perms = [
     'research_coordinator' => ['crad'],
     'research_director' => ['faculty'],
     'grammarian'   => ['faculty'],
+    'review_committee' => ['crad_grant'],
     'panel'        => ['faculty'],
     'finance'      => ['payment'],
     'osa'          => ['cocurricular'],
@@ -133,6 +135,14 @@ $accounts = [
         'password' => '@grammarian123',
         'full_name' => 'Grammarian',
         'role_key' => 'grammarian',
+        'student_id' => null,
+    ],
+    [
+        'username' => 'reviewcommittee',
+        'email' => 'reviewcommittee@bestlink.edu.ph',
+        'password' => '@reviewcommittee123',
+        'full_name' => 'Review Committee Member',
+        'role_key' => 'review_committee',
         'student_id' => null,
     ],
     [

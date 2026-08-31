@@ -37,7 +37,7 @@ require_once __DIR__ . '/../includes/grant-helpers.php';
 
 requireAuth();
 
-if (!grantUserCanManage()) {
+if (!grantUserCanView()) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Access denied.']);
     exit;
@@ -91,10 +91,20 @@ switch ($action) {
     // ── Token generation ──────────────────────────────────────────────────────
 
     case 'generate_token':
+        if (!grantUserCanManage()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            exit;
+        }
         echo json_encode(['success' => true, 'token' => _mintSessionToken('crad_grant_tokens')]);
         break;
 
     case 'generate_apply_token':
+        if (!grantUserCanApply()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            exit;
+        }
         echo json_encode(['success' => true, 'token' => _mintSessionToken('crad_apply_tokens')]);
         break;
 
@@ -111,13 +121,28 @@ switch ($action) {
 
     case 'get_applications':
         $oppId = isset($_GET['opportunity_id']) ? (int) $_GET['opportunity_id'] : null;
-        $apps  = grantGetApplications($crad, $oppId);
+        if (grantUserCanManage()) {
+            $apps = grantGetApplications($crad, $oppId);
+        } else {
+            $apps = grantGetMyApplications($crad);
+            if ($oppId !== null && $oppId > 0) {
+                $apps = array_values(array_filter(
+                    $apps,
+                    static fn(array $row): bool => (int) ($row['grant_opportunity_id'] ?? 0) === $oppId
+                ));
+            }
+        }
         echo json_encode(['success' => true, 'applications' => $apps, 'count' => count($apps)]);
         break;
 
     // ── Publish a new grant call (officer only) ───────────────────────────────
 
     case 'publish_opportunity':
+        if (!grantUserCanManage()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            exit;
+        }
         if ($method !== 'POST') {
             http_response_code(405);
             echo json_encode(['success' => false, 'message' => 'Method not allowed.']);
@@ -177,6 +202,11 @@ switch ($action) {
     // ── Submit a full research grant proposal (BRGFAMS Form 1) ───────────────
 
     case 'submit_proposal':
+        if (!grantUserCanApply()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            exit;
+        }
         if ($method !== 'POST') {
             http_response_code(405);
             echo json_encode(['success' => false, 'message' => 'Method not allowed.']);

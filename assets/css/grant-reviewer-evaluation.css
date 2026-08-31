@@ -1,0 +1,182 @@
+/* Review Committee — Grant Proposal Evaluation */
+.gre-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.gre-header h1 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0 0 .35rem;
+    color: var(--sms-heading);
+}
+.gre-header p {
+    margin: 0;
+    font-size: .88rem;
+    color: var(--sms-text-muted);
+    max-width: 560px;
+}
+.gre-stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+.gre-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .78rem;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    border: 1px solid var(--sms-border);
+    background: var(--sms-surface-muted, #f8fafc);
+}
+.gre-stat.pending strong { color: #b45309; }
+.gre-stat.scored strong { color: #059669; }
+.gre-live-badge {
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--sms-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+}
+.gre-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+@media (max-width: 991px) {
+    .gre-layout { grid-template-columns: 1fr; }
+}
+.gre-info-panel,
+.gre-score-panel {
+    background: var(--sms-card-bg, #fff);
+    border: 1px solid var(--sms-border);
+    border-radius: 14px;
+    padding: 1.25rem;
+}
+.gre-info-panel h2 {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0 0 1rem;
+    line-height: 1.35;
+}
+.gre-meta {
+    margin: 0 0 1rem;
+}
+.gre-meta div {
+    margin-bottom: .65rem;
+}
+.gre-meta dt {
+    font-size: .62rem;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--sms-text-muted);
+    margin-bottom: .1rem;
+}
+.gre-meta dd {
+    margin: 0;
+    font-size: .86rem;
+    font-weight: 600;
+    color: var(--sms-heading);
+}
+.gre-meta dd small {
+    display: block;
+    font-weight: 500;
+    color: var(--sms-text-muted);
+    font-size: .75rem;
+}
+.gre-block {
+    margin-bottom: 1rem;
+}
+.gre-block h3 {
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--sms-text-muted);
+    margin: 0 0 .35rem;
+}
+.gre-block p {
+    margin: 0;
+    font-size: .84rem;
+    line-height: 1.55;
+    color: var(--sms-text);
+}
+.gre-docs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+.gre-score-panel h2 {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0 0 .5rem;
+}
+.gre-rubric-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    font-size: .88rem;
+}
+.gre-rubric-table th,
+.gre-rubric-table td {
+    padding: .55rem .65rem;
+    border-bottom: 1px solid var(--sms-border);
+    text-align: left;
+}
+.gre-rubric-table thead th {
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--sms-text-muted);
+    background: var(--sms-surface-muted, #f8fafc);
+}
+.gre-rubric-table .gre-total-row td {
+    border-top: 2px solid var(--sms-primary);
+    background: rgba(37, 99, 235, .04);
+    font-size: .95rem;
+}
+.gre-rubric-readonly .gre-total-row td {
+    color: var(--sms-primary);
+}
+.gre-form-group {
+    margin-bottom: .85rem;
+}
+.gre-form-group .go-form-label {
+    display: block;
+    font-size: .84rem;
+    font-weight: 700;
+    margin-bottom: .3rem;
+}
+.gre-form-group .go-form-input {
+    width: 100%;
+    border: 1.5px solid var(--sms-border);
+    border-radius: 8px;
+    padding: .5rem .75rem;
+    font-size: .88rem;
+    background: var(--sms-surface-muted, #f8fafc);
+}
+.gre-scored-banner {
+    background: rgba(5, 150, 105, .08);
+    border: 1px solid rgba(5, 150, 105, .2);
+    color: #065f46;
+    border-radius: 10px;
+    padding: .75rem 1rem;
+    margin-bottom: 1rem;
+    font-size: .88rem;
+    font-weight: 600;
+}
+.gre-score-input {
+    max-width: 120px;
+    text-align: center;
+}
