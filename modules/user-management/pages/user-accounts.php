@@ -586,12 +586,35 @@ renderBreadcrumbs($breadcrumbs);
         }).then(function (r) { return r.json(); });
     }
 
+    function passwordMeetsPolicy(form, password) {
+        if (!password) return false;
+        var box = form.querySelector('.pw-strength');
+        var minLen = box ? parseInt(box.getAttribute('data-pw-min') || '8', 10) : 8;
+        return password.length >= minLen
+            && /[A-Z]/.test(password)
+            && /[a-z]/.test(password)
+            && /[0-9]/.test(password)
+            && /[^A-Za-z0-9]/.test(password);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         var form = document.getElementById('umUserForm');
         if (form) {
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 var fd = new FormData(form);
+                var userId = fd.get('user_id') || '';
+                var password = fd.get('password') || '';
+                if (!userId && !password) {
+                    if (typeof umShowToast === 'function') umShowToast('Password is required for new users.', 'danger');
+                    else alert('Password is required for new users.');
+                    return;
+                }
+                if ((!userId || password) && password && !passwordMeetsPolicy(form, password)) {
+                    if (typeof umShowToast === 'function') umShowToast('Password does not meet security requirements.', 'danger');
+                    else alert('Password does not meet security requirements.');
+                    return;
+                }
                 var payload = {
                     action: 'save',
                     user_id: fd.get('user_id') || '',
