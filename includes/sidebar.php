@@ -653,6 +653,7 @@ $researchDirectorNavGroups = [
                                         $groupCollapseId = $moduleCollapseId . '_grp_' . preg_replace('/[^a-z0-9_]/', '_', strtolower((string) $groupLabel));
                                         $isGroupActive = ($activeGroupLabel === (string) $groupLabel);
                                         $reportSidebarItems = null;
+                                        $outputsSidebarItems = null;
                                         if ($navModuleKey === 'crad' && $groupLabel === 'Reports') {
                                             $reportSidebarItems = [
                                                 ['slug' => 'capstone-analytics', 'label' => 'Capstone Analytics', 'icon' => 'fa-chart-pie'],
@@ -663,6 +664,13 @@ $researchDirectorNavGroups = [
                                                 ['slug' => 'publication-reports', 'label' => 'Publication Reports', 'icon' => 'fa-book-open'],
                                             ];
                                         }
+                                        if (in_array($navModuleKey, ['crad', 'crad_grant'], true) && $groupLabel === 'Outputs & Records') {
+                                            $outputsSidebarItems = [
+                                                ['slug' => 'publications-ip', 'label' => 'Publications & IP', 'icon' => 'fa-book-open', 'badge_key' => 'pending-verify'],
+                                                ['slug' => 'document-repository', 'label' => 'Document Repository', 'icon' => 'fa-archive', 'badge_key' => 'pending-archive'],
+                                            ];
+                                        }
+                                        $customSidebarItems = $outputsSidebarItems ?? $reportSidebarItems;
                                         ?>
                                         <li class="nav-item admin-subgroup-item">
                                             <button type="button"
@@ -676,7 +684,7 @@ $researchDirectorNavGroups = [
                                             <div class="admin-subgroup-body <?= $isGroupActive ? 'show' : '' ?>"
                                                  id="<?= htmlspecialchars($groupCollapseId) ?>">
                                                 <ul class="nav flex-column">
-                                                    <?php foreach (($reportSidebarItems ?? array_map(static fn(string $slug): array => ['slug' => $slug], $groupSlugs)) as $sidebarItem): ?>
+                                                    <?php foreach (($customSidebarItems ?? array_map(static fn(string $slug): array => ['slug' => $slug], $groupSlugs)) as $sidebarItem): ?>
                                                         <?php
                                                         $slug = (string) ($sidebarItem['slug'] ?? '');
                                                         if ($reportSidebarItems !== null) {
@@ -684,6 +692,12 @@ $researchDirectorNavGroups = [
                                                             $pageHref = BASE_URL . '/modules/crad/pages/research-analytics-reporting.php?report=' . rawurlencode($slug);
                                                             $pageIcon = (string) ($sidebarItem['icon'] ?? 'fa-chart-bar');
                                                             $isPageActive = $isModuleActive && $activePage === 'research-analytics-reporting' && (string) ($_GET['report'] ?? 'capstone-analytics') === $slug;
+                                                        } elseif ($outputsSidebarItems !== null) {
+                                                            if (!isset($pageTitles[$slug])) { continue; }
+                                                            $isPageActive = ($isModuleActive && $activePage === $slug);
+                                                            $pageHref = BASE_URL . '/modules/' . $moduleFolder . '/pages/' . $slug . '.php';
+                                                            $sidebarPageTitle = (string) ($sidebarItem['label'] ?? $pageTitles[$slug]);
+                                                            $pageIcon = (string) ($sidebarItem['icon'] ?? smsNavPageIcon($slug));
                                                         } else {
                                                             if (!isset($pageTitles[$slug])) { continue; }
                                                             if ($roleKey === 'crad_officer' && in_array($slug, ['research-defense-scheduling', 'reviewer-evaluation'], true)) { continue; }
@@ -703,6 +717,9 @@ $researchDirectorNavGroups = [
                                                                title="<?= htmlspecialchars($sidebarPageTitle) ?>">
                                                                 <?= smsIcon($pageIcon, ['aria-hidden' => 'true']) ?>
                                                                 <span><?= htmlspecialchars($sidebarPageTitle) ?></span>
+                                                                <?php if ($outputsSidebarItems !== null && !empty($sidebarItem['badge_key'])): ?>
+                                                                <span class="sidebar-outputs-badge" data-outputs-badge="<?= htmlspecialchars((string) $sidebarItem['badge_key']) ?>" hidden></span>
+                                                                <?php endif; ?>
                                                             </a>
                                                         </li>
                                                     <?php endforeach; ?>
