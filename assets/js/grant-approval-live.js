@@ -145,7 +145,7 @@
             return { state: 'approved', label: 'Approved', date: date };
         }
         if (status === 'Returned') {
-            return { state: 'returned', label: 'Returned', date: '' };
+            return { state: 'returned', label: 'Returned', date: formatActedAt(actedAt) };
         }
         if (workflowStatus !== 'In Progress') {
             return { state: 'queued', label: 'Queued', date: '--' };
@@ -211,8 +211,6 @@
         var wf = detail.workflow;
         var steps = detail.steps || [];
         var ref = esc(wf.proposal_reference || 'Proposal');
-        var canAct = !!detail.can_act;
-        var needsRubricScore = !!(detail.needs_rubric_score || detail.needs_adviser_score);
         var wfStatus = wf.workflow_status || '';
         var currentStepKey = wf.current_step_key || '';
         var roleLabel = esc(detail.role_label || '');
