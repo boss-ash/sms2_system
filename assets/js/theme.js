@@ -66,12 +66,6 @@
             btn.dataset.nextTheme = next;
         });
 
-        document.querySelectorAll('[data-theme-set]').forEach(function (btn) {
-            var isActive = btn.getAttribute('data-theme-set') === theme;
-            btn.classList.toggle('active', isActive);
-            btn.setAttribute('aria-current', isActive ? 'true' : 'false');
-        });
-
         applyChartDefaults();
 
         if (!options || options.silent !== true) {
@@ -98,17 +92,6 @@
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 toggleTheme();
-            });
-        });
-
-        document.querySelectorAll('[data-theme-set]').forEach(function (btn) {
-            if (btn.dataset.themeBound === '1') return;
-            btn.dataset.themeBound = '1';
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                var theme = normalize(btn.getAttribute('data-theme-set'));
-                storeTheme(theme);
-                applyTheme(theme);
             });
         });
     }

@@ -88,11 +88,11 @@ if ($isCradPage && strpos(' ' . $bodyClass . ' ', ' crad-app ') === false) {
     $isWelcomeLanding = strpos(' ' . ($bodyClass ?? '') . ' ', ' welcome-page ') !== false;
     if (!$isWelcomeLanding):
     ?>
-    <link href="<?= BASE_URL ?>/assets/css/theme.css?v=7" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/theme.css?v=8" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/layout.css?v=5" rel="stylesheet">
-    <link href="<?= BASE_URL ?>/assets/css/responsive.css?v=6" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/responsive.css?v=7" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/components.css?v=5" rel="stylesheet">
-    <link href="<?= BASE_URL ?>/assets/css/navbar-components.css?v=6" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/navbar-components.css?v=7" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/dashboard-academic.css?v=1" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/loader.css?v=3" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/sms-security-ui.css?v=20" rel="stylesheet">
