@@ -1,5 +1,6 @@
 # Machine-specific config (copy from config/local.example.php)
 config/local.php
+config/local.infinityfree.php
 
 # Secrets and generated keys
 storage/keys/*
