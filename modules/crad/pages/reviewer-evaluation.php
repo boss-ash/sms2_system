@@ -121,7 +121,7 @@ renderBreadcrumbs($breadcrumbs);
 </div>
 <?php endif; ?>
 
-<div class="mpl gre" data-grant-eval-live="1">
+<div class="mpl gre" data-grant-eval-live="1"<?= $selectedId > 0 ? ' data-grant-eval-app-id="' . (int) $selectedId . '"' : '' ?>>
 
 <div class="gre-header">
     <div>
@@ -344,7 +344,7 @@ renderBreadcrumbs($breadcrumbs);
         <?php if (!empty($existingEval['required_corrections'])): ?><div class="gre-block"><h3>Required Corrections</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['required_corrections'])) ?></p></div><?php endif; ?>
 
         <div class="gre-adviser-actions">
-            <a class="mpl-btn mpl-btn-primary" href="<?= BASE_URL ?>/modules/crad/pages/approval-workflows.php?id=<?= (int) $selected['id'] ?>">
+            <a class="mpl-btn mpl-btn-primary" href="<?= htmlspecialchars(grantApprovalWorkflowListUrl() . '?id=' . (int) $selected['id']) ?>">
                 <?= smsIcon('signature', ['class' => 'me-1']) ?>Go to Approval Workflows
             </a>
             <p class="gre-adviser-hint mb-0">You may now sign and approve this proposal in Approval Workflows.</p>
@@ -511,7 +511,7 @@ renderBreadcrumbs($breadcrumbs);
         <?php endif; ?>
 
         <div class="gre-adviser-actions">
-            <a class="mpl-btn mpl-btn-primary" href="<?= BASE_URL ?>/modules/crad/pages/approval-workflows.php?id=<?= (int) $selected['id'] ?>">
+            <a class="mpl-btn mpl-btn-primary" href="<?= htmlspecialchars(grantApprovalWorkflowListUrl() . '?id=' . (int) $selected['id']) ?>">
                 <?= smsIcon('signature', ['class' => 'me-1']) ?>Go to Approval Workflows
             </a>
             <p class="gre-adviser-hint mb-0">
