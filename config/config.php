@@ -547,6 +547,7 @@ $MODULES = [
             'Financial & Tracking' => [
                 'approved-funded',
                 'budget-disbursement',
+                'project-milestones',
             ],
             'Research Documents' => [
                 'documentation-publication-management',

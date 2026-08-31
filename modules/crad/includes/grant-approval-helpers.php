@@ -1083,7 +1083,9 @@ function grantSubmitApprovalSignoff(
             $app = grantGetApplicationForEvaluation($crad, $applicationId);
             if ($app !== null) {
                 require_once __DIR__ . '/grant-funding-helpers.php';
+                require_once __DIR__ . '/grant-milestone-helpers.php';
                 grantInitializeFundingDisbursementPlan($crad, $applicationId);
+                grantInitializeFundedProjectMilestones($crad, $applicationId);
                 grantNotifyApplicantApprovedFunded($crad, $app, $userName);
             }
 
