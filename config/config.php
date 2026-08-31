@@ -647,7 +647,7 @@ $MODULES = [
                 'funded-research',
                 'progress-tracking',
             ],
-            'Research Output' => [
+            'Outputs & Records' => [
                 'publications-ip',
             ],
             'Reports' => [
