@@ -252,7 +252,7 @@ renderBreadcrumbs($breadcrumbs);
 <?php else: ?>
 <div class="gre-layout">
     <aside class="gre-info-panel">
-        <a class="mpl-btn mpl-btn-ghost mpl-btn-sm mb-3" href="<?= BASE_URL ?>/modules/crad/pages/reviewer-evaluation.php">
+        <a class="mpl-btn mpl-btn-ghost mpl-btn-sm mb-3" href="<?= htmlspecialchars(grantReviewerEvaluationUrl()) ?>">
             <?= smsIcon('arrow-left') ?> Back to Queue
         </a>
 
