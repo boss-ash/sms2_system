@@ -432,12 +432,13 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
     }
 
     $adviserEvalComplete = false;
+    $needsAdviserScore = false;
     if ($currentStepKey === 'adviser') {
-        $adviserEvalComplete = grantHasAdviserEvaluation(
-            $crad,
-            $applicationId,
-            (int) ($_SESSION['user_id'] ?? 0)
-        );
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
+        $adviserEvalComplete = grantHasAdviserEvaluation($crad, $applicationId, $userId);
+        $needsAdviserScore = $roleKey === 'adviser'
+            && !$adviserEvalComplete
+            && (string) ($workflow['workflow_status'] ?? '') === 'In Progress';
     }
 
     return [
@@ -446,6 +447,7 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
         'current_step'           => $currentStep,
         'can_act'                => $canAct,
         'adviser_eval_complete'  => $adviserEvalComplete,
+        'needs_adviser_score'    => $needsAdviserScore,
         'role_label'             => grantApprovalRoleLabel($roleKey),
         'is_monitor'             => grantUserCanMonitorApprovalWorkflow(),
     ];
@@ -530,6 +532,7 @@ function grantApprovalDetailFingerprint(?array $detail): string
         (string) ($wf['updated_at'] ?? ''),
         !empty($detail['can_act']) ? '1' : '0',
         !empty($detail['adviser_eval_complete']) ? '1' : '0',
+        !empty($detail['needs_adviser_score']) ? '1' : '0',
     ];
 
     foreach ($detail['steps'] ?? [] as $step) {

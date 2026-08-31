@@ -264,6 +264,15 @@
     color: #334155;
 }
 
+.gaw-action-panel-warn {
+    background: #fff7ed;
+    border-color: #fdba74;
+}
+
+.gaw-action-panel-warn h3 {
+    color: #c2410c;
+}
+
 .gaw-action-buttons {
     display: flex;
     flex-wrap: wrap;

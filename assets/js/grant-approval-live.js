@@ -98,9 +98,16 @@
         var steps = detail.steps || [];
         var ref = esc(wf.proposal_reference || 'Proposal');
         var canAct = !!detail.can_act;
+        var needsAdviserScore = !!detail.needs_adviser_score;
         var wfStatus = wf.workflow_status || '';
         var currentStepKey = wf.current_step_key || '';
         var roleLabel = esc(detail.role_label || '');
+        var reviewerEvalUrl = (function () {
+            var path = window.location.pathname || '';
+            var idx = path.indexOf('/modules/');
+            var base = idx === -1 ? '' : path.slice(0, idx);
+            return base + '/modules/crad/pages/reviewer-evaluation.php?id=' + encodeURIComponent(wf.grant_application_id || selectedId);
+        })();
 
         var stepperHtml = steps.map(function (step) {
             var display = stepDisplayState(step, currentStepKey, wfStatus);
@@ -119,7 +126,13 @@
         }).join('');
 
         var actionHtml = '';
-        if (canAct) {
+        if (needsAdviserScore) {
+            actionHtml = '<div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">' +
+                '<h3><i class="ti ti-clipboard-check me-1"></i>Adviser Evaluation Required</h3>' +
+                '<p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here.</p>' +
+                '<a class="gaw-btn-approve" href="' + reviewerEvalUrl + '" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">' +
+                '<i class="ti ti-star-half-filled"></i> Go to Reviewer Evaluation</a></div>';
+        } else if (canAct) {
             actionHtml = '<div class="gaw-action-panel" id="gawActionPanel">' +
                 '<h3>Administrative Sign-off Action Panel</h3>' +
                 '<p>Logged in as: <strong>' + roleLabel + '</strong>. Signatures are timestamped and logged in the permanent audit trail.</p>' +

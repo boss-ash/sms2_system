@@ -213,5 +213,5 @@ renderBreadcrumbs($breadcrumbs);
     </div>
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=3"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=4"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
