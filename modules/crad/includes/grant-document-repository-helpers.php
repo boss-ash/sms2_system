@@ -447,8 +447,8 @@ function grantBuildDocumentRepositoryManifest(PDO $crad, int $applicationId): ar
             $budgetSummary .= sprintf(
                 "\n- %s: %s (%s)%s",
                 (string) ($disb['tranche_label'] ?? 'Tranche'),
-                grantFormatPeso((float) ($disb['released_amount'] ?? 0)),
-                (string) ($disb['release_status'] ?? 'Pending'),
+                grantFormatPeso((float) ($disb['amount_released'] ?? 0)),
+                (string) ($disb['status'] ?? 'Pending'),
                 !empty($disb['reference_number']) ? ' Ref: ' . $disb['reference_number'] : ''
             );
         }
