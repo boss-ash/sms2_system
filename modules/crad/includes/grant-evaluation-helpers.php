@@ -346,25 +346,36 @@ function grantNotifyApplicantEvaluationDecision(
             $titleShort,
             number_format($totalScore, 1)
         );
+        $notifUrl = grantProposalsApplicationsUrl();
     } elseif ($recommendation === 'require_revisions') {
         $type = 'grant_revision_required';
-        $notifTitle = 'Grant Proposal Revisions Required';
+        $notifTitle = 'Revise Grant Proposal';
+        $ref = trim((string) ($application['proposal_reference'] ?? ''));
+        $refLabel = $ref !== '' ? $ref : ('Proposal #' . $applicationId);
         $reasonPreview = trim((string) $revisionReason);
         if ($reasonPreview !== '') {
             $reasonPreview = mb_strimwidth($reasonPreview, 0, 120, '…');
             $body = sprintf(
-                'Your grant proposal "%s" requires revisions. Reason: %s',
-                $titleShort,
+                '%s requires revisions. %s Tap to revise and resubmit.',
+                $refLabel,
                 $reasonPreview
             );
         } else {
             $body = sprintf(
-                'Your grant proposal "%s" requires revisions. Please review committee feedback in Proposals & Applications.',
-                $titleShort
+                '%s requires revisions. Review committee feedback is ready — tap to revise and resubmit.',
+                $refLabel
             );
         }
+        $notifUrl = grantReviseProposalUrl($applicationId);
     } else {
         return;
+    }
+
+    $recipientRole = (string) ($_SESSION['user_role_key'] ?? '');
+    if ($recipientRole === '' && function_exists('db')) {
+        $userStmt = db()->prepare('SELECT role_key FROM users WHERE id = ? LIMIT 1');
+        $userStmt->execute([$recipientUserId]);
+        $recipientRole = (string) ($userStmt->fetchColumn() ?: 'student');
     }
 
     $eventKey = 'grant-proposal:' . $type . ':' . $applicationId
@@ -375,7 +386,7 @@ function grantNotifyApplicantEvaluationDecision(
             (event_key, recipient_user_id, recipient_role, recipient_email,
              grant_application_id, type, title, body, url)
         VALUES
-            (?, ?, '', '', ?, ?, ?, ?, ?)
+            (?, ?, ?, '', ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             title = VALUES(title),
             body = VALUES(body),
@@ -386,11 +397,12 @@ function grantNotifyApplicantEvaluationDecision(
     $stmt->execute([
         $eventKey,
         $recipientUserId,
+        $recipientRole !== '' ? $recipientRole : 'student',
         $applicationId,
         $type,
         $notifTitle,
         $body,
-        $recommendation === 'require_revisions' ? grantRevisionsRequestedUrl() : grantProposalsApplicationsUrl(),
+        $notifUrl,
     ]);
 }
 
@@ -560,6 +572,68 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
 function grantProposalFileUrl(int $applicationId, string $field = 'proposal'): string
 {
     return BASE_URL . '/modules/crad/grant-proposal-file.php?id=' . $applicationId . '&field=' . rawurlencode($field);
+}
+
+/**
+ * Ensure revision/rejection notifications exist for the researcher's pending decisions.
+ */
+function grantBackfillApplicantDecisionNotifications(PDO $crad, ?int $userId = null): void
+{
+    static $done = [];
+    $userId = $userId ?? (int) ($_SESSION['user_id'] ?? 0);
+    if ($userId <= 0 || isset($done[$userId])) {
+        return;
+    }
+    $done[$userId] = true;
+
+    grantEnsureEvaluationTables($crad);
+
+    try {
+        $stmt = $crad->prepare("
+            SELECT ga.*
+              FROM grant_applications ga
+             WHERE ga.applicant_user_id = ?
+               AND ga.status IN ('Revision Required', 'Rejected')
+        ");
+        $stmt->execute([$userId]);
+        $apps = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        if ($apps === []) {
+            return;
+        }
+
+        $appIds = array_map(static fn(array $row): int => (int) ($row['id'] ?? 0), $apps);
+        $evals  = grantGetLatestEvaluationsForApplications($crad, $appIds);
+
+        foreach ($apps as $app) {
+            $appId = (int) ($app['id'] ?? 0);
+            if ($appId <= 0) {
+                continue;
+            }
+
+            $eval = $evals[$appId] ?? null;
+            $rec  = $eval ? (string) ($eval['recommendation'] ?? '') : '';
+            if ((string) ($app['status'] ?? '') === 'Revision Required' && $rec !== 'require_revisions') {
+                $rec = 'require_revisions';
+            } elseif ((string) ($app['status'] ?? '') === 'Rejected' && $rec !== 'disapprove') {
+                $rec = 'disapprove';
+            }
+
+            if (!in_array($rec, ['require_revisions', 'disapprove'], true)) {
+                continue;
+            }
+
+            grantNotifyApplicantEvaluationDecision(
+                $crad,
+                $app,
+                $rec,
+                (float) ($eval['total_score'] ?? 0),
+                (string) ($eval['evaluator_name'] ?? 'Review Committee'),
+                $eval ? (string) ($eval['revision_reason'] ?? '') : null
+            );
+        }
+    } catch (Throwable $e) {
+        error_log('grantBackfillApplicantDecisionNotifications: ' . $e->getMessage());
+    }
 }
 
 /**
