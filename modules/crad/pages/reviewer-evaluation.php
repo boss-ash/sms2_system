@@ -779,6 +779,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-<script src="<?= BASE_URL ?>/assets/js/grant-evaluation-live.js?v=2"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-evaluation-live.js?v=3"></script>
 
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
