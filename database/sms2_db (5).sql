@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 31, 2026 at 07:46 PM
+-- Generation Time: Aug 31, 2026 at 08:18 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -2043,7 +2043,11 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `user_name`, `role_key`, `action`,
 (2007, 475, 'Grammarian', 'grammarian', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 09:42:40'),
 (2008, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 09:43:13'),
 (2009, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 09:44:45'),
-(2010, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 09:44:56');
+(2010, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 09:44:56'),
+(2011, 9, 'Student User', 'student', 'logout', 'student_portal', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 10:13:35'),
+(2012, 54, 'Dr. Roberto M. Santos', 'adviser', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 10:13:45'),
+(2013, 54, 'Dr. Roberto M. Santos', 'adviser', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 10:16:53'),
+(2014, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 10:17:13');
 
 -- --------------------------------------------------------
 
@@ -2330,11 +2334,11 @@ INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `full_name`, `r
 (6, 'itofficer', 'itofficer@bestlink.edu.ph', '$2y$10$h1GQBrr0K5SM8whZCT2QxOmvpIN2aPKslctCSX3VMflxoiHVIdWGC', 'IT Officer', 'it_office', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:19', NULL, NULL, NULL, NULL, '2026-07-22 22:54:00', '2026-08-31 07:50:19'),
 (7, 'qualityassurance', 'qualityassurance@bestlink.edu.ph', '$2y$10$cqKm0cN1jMdxpdS5l3yee.ygI3KG05tRBGw5cyagSwNFT.6YaytVq', 'Quality Assurance', 'qa', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:20', NULL, NULL, NULL, NULL, '2026-07-22 22:54:00', '2026-08-31 07:50:20'),
 (8, 'dean', 'dean@bestlink.edu.ph', '$2y$10$WU3FSM1vVIz3HqzXEHAWHOdKlvImfKYlOiGSd7r1XWIgF4IVJdtci', 'Dean', 'hr', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:20', '2026-08-07 14:11:03', NULL, '::1', NULL, '2026-07-22 22:54:00', '2026-08-31 07:50:20'),
-(9, 's230000001', 's230000001@bestlink.edu.ph', '$2y$10$oFkiHM6jHKgiRWylpzl.7OiCMx627rzLUmUbyQhZYQQ63YgGq/gsy', 'Student User', 'student', 'S230000001', 'active', 0, 0, NULL, '2026-08-31 07:55:09', '2026-08-31 09:24:42', '2026-09-01 01:46:38', '::1', NULL, '2026-07-22 22:54:00', '2026-08-31 09:46:38'),
+(9, 's230000001', 's230000001@bestlink.edu.ph', '$2y$10$oFkiHM6jHKgiRWylpzl.7OiCMx627rzLUmUbyQhZYQQ63YgGq/gsy', 'Student User', 'student', 'S230000001', 'active', 0, 0, NULL, '2026-08-31 07:55:09', '2026-08-31 09:24:42', NULL, '::1', NULL, '2026-07-22 22:54:00', '2026-08-31 10:13:35'),
 (20, 'admission', 'admission@bestlink.edu.ph', '$2y$10$1M./oyAWOwzHhIjWoxGCWu5wm/6F/Jc3bzmYeF7hLt/jnhzg6KW9u', 'Admission', 'admission', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:19', NULL, NULL, NULL, NULL, '2026-08-08 17:25:20', '2026-08-31 07:50:19'),
 (40, 'researchcoordinator', 'researchcoordinator@bestlink.edu.ph', '$2y$10$f6AGY/ZDFdykQTCiSK5YYePxBGti0SMMIqIOBuLU0OtnNY6Xwpcn2', 'Mrs. Kris Guevarra', 'research_coordinator', NULL, 'active', 0, 0, NULL, '2026-08-31 08:04:22', '2026-08-31 09:43:13', NULL, '::1', NULL, '2026-08-08 18:09:48', '2026-08-31 09:44:45'),
-(54, 'rsantos', 'rsantos@bestlink.edu.ph', '$2y$10$8K5JenMWtmwLwKeqq2086.AXlEED4PzOs/BZvilw.zVzq2Wdc0M.u', 'Dr. Roberto M. Santos', 'adviser', NULL, 'active', 0, 0, NULL, '2026-08-31 08:04:55', '2026-08-31 09:33:02', NULL, '::1', NULL, '2026-08-08 21:35:14', '2026-08-31 09:37:54'),
-(116, 'researchdirector', 'research.director@bestlink.edu.ph', '$2y$10$xyO2oPPFEo9x3xs.Jpx12.TyHHtvsiniPa7/qVH6AIiQI.v5O14ZK', 'Research Director', 'research_director', NULL, 'active', 0, 0, NULL, '2026-08-31 08:06:29', '2026-08-31 09:44:56', '2026-09-01 01:46:28', '::1', NULL, '2026-08-09 19:31:14', '2026-08-31 09:46:28'),
+(54, 'rsantos', 'rsantos@bestlink.edu.ph', '$2y$10$8K5JenMWtmwLwKeqq2086.AXlEED4PzOs/BZvilw.zVzq2Wdc0M.u', 'Dr. Roberto M. Santos', 'adviser', NULL, 'active', 0, 0, NULL, '2026-08-31 08:04:55', '2026-08-31 10:13:45', NULL, '::1', NULL, '2026-08-08 21:35:14', '2026-08-31 10:16:53'),
+(116, 'researchdirector', 'research.director@bestlink.edu.ph', '$2y$10$xyO2oPPFEo9x3xs.Jpx12.TyHHtvsiniPa7/qVH6AIiQI.v5O14ZK', 'Research Director', 'research_director', NULL, 'active', 0, 0, NULL, '2026-08-31 08:06:29', '2026-08-31 10:17:13', '2026-09-01 02:17:59', '::1', NULL, '2026-08-09 19:31:14', '2026-08-31 10:17:59'),
 (222, 'researchgrant', 'researchgrant@bestlink.edu.ph', '$2y$10$Kmx3XLgjIdLL3S4rP0Bs.uKL0oqNZyDRN4DpDwhtbYc249mAcYx8i', 'Research Grant', 'research_grant', NULL, 'active', 0, 0, NULL, '2026-08-10 20:07:43', '2026-08-13 08:34:27', NULL, '::1', NULL, '2026-08-10 20:01:49', '2026-08-13 08:34:35'),
 (475, 'grammarian', 'grammarian@bestlink.edu.ph', '$2y$10$DOubhW7dlaxRDFenQkOz2u0I.zVI3mF17NAGenmLyYU8cvYS4x9CS', 'Grammarian', 'grammarian', NULL, 'active', 0, 0, NULL, '2026-08-31 08:06:20', '2026-08-31 09:39:44', NULL, '::1', NULL, '2026-08-14 11:06:49', '2026-08-31 09:42:40'),
 (491, 'jobert.valentino', 'jobert.valentino@bestlink.edu.ph', '$2y$10$AkCzL7RmKfYgXNwrujBK6.nJh7BRnDK3Lb.iwkgJ8r8SVYSJU5.Ge', 'Dr. Jobert Valentino', 'panel', NULL, 'active', 0, 0, NULL, '2026-08-31 08:06:08', '2026-08-31 06:27:41', NULL, '::1', NULL, '2026-08-15 17:07:16', '2026-08-31 08:06:08'),
@@ -2474,7 +2478,7 @@ ALTER TABLE `user_passkeys`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2011;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2015;
 
 --
 -- AUTO_INCREMENT for table `password_resets`

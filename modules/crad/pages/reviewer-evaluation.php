@@ -129,6 +129,8 @@ renderBreadcrumbs($breadcrumbs);
             <h2>Evaluation Queue</h2>
             <?php if ($isAdviserView): ?>
             <p>Select a proposal to score before administrative sign-off.</p>
+            <?php elseif ($isApproverView): ?>
+            <p>Select a proposal to review before your approval sign-off.</p>
             <?php else: ?>
             <p>Select a proposal to score using the review committee rubric (total 100 points).</p>
             <?php endif; ?>
@@ -154,13 +156,18 @@ renderBreadcrumbs($breadcrumbs);
                 <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
                     <?= $isAdviserView
                         ? 'No grant proposals are awaiting Academic Adviser review.'
-                        : 'No proposals are waiting for committee evaluation.' ?>
+                        : ($isApproverView
+                            ? 'No grant proposals are awaiting your approval review.'
+                            : 'No proposals are waiting for committee evaluation.') ?>
                 </td></tr>
             <?php else: ?>
                 <?php foreach ($queue as $row):
                     $isScored = !empty($row['my_evaluation_id']);
                     if ($isAdviserView) {
                         $statusLabel = $isScored ? 'Scored' : 'In Review';
+                    } elseif ($isApproverView) {
+                        $statusLabel = 'In Review';
+                        $isScored = false;
                     } else {
                         $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
                     }
