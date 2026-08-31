@@ -381,6 +381,48 @@ function paStatusBadge(string $status): string
                                         </div>
                                         <?php endif; ?>
 
+                                        <?php if ($evaluation && in_array((string) $app['status'], ['Rejected', 'Revision Required'], true)): ?>
+                                        <div style="grid-column:1/-1;border-top:1px solid var(--sms-border);padding-top:.85rem;">
+                                            <div style="font-size:.63rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--sms-text-muted);margin-bottom:.45rem;">Committee Review Feedback</div>
+                                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem 1rem;">
+                                                <div>
+                                                    <div style="font-size:.72rem;color:var(--sms-text-muted);">Reviewer</div>
+                                                    <div style="font-weight:700;"><?= htmlspecialchars((string) ($evaluation['evaluator_name'] ?? 'Review Committee')) ?></div>
+                                                </div>
+                                                <div>
+                                                    <div style="font-size:.72rem;color:var(--sms-text-muted);">Score</div>
+                                                    <div style="font-weight:700;"><?= number_format((float) ($evaluation['total_score'] ?? 0), 1) ?> / 100</div>
+                                                </div>
+                                                <div>
+                                                    <div style="font-size:.72rem;color:var(--sms-text-muted);">Decision</div>
+                                                    <div style="font-weight:700;"><?= htmlspecialchars(grantRecommendationLabel((string) ($evaluation['recommendation'] ?? ''))) ?></div>
+                                                </div>
+                                                <div>
+                                                    <div style="font-size:.72rem;color:var(--sms-text-muted);">Reviewed On</div>
+                                                    <div style="font-weight:700;"><?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) ($evaluation['submitted_at'] ?? 'now')))) ?></div>
+                                                </div>
+                                            </div>
+                                            <?php if (!empty($evaluation['comments'])): ?>
+                                            <div style="margin-top:.75rem;">
+                                                <div style="font-size:.72rem;color:var(--sms-text-muted);margin-bottom:.2rem;">Comments</div>
+                                                <div style="line-height:1.55;white-space:pre-wrap;"><?= htmlspecialchars((string) $evaluation['comments']) ?></div>
+                                            </div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($evaluation['revision_reason'])): ?>
+                                            <div style="margin-top:.75rem;">
+                                                <div style="font-size:.72rem;color:var(--sms-text-muted);margin-bottom:.2rem;">Revision Reason</div>
+                                                <div style="line-height:1.55;white-space:pre-wrap;"><?= htmlspecialchars((string) $evaluation['revision_reason']) ?></div>
+                                            </div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($evaluation['required_corrections'])): ?>
+                                            <div style="margin-top:.75rem;">
+                                                <div style="font-size:.72rem;color:var(--sms-text-muted);margin-bottom:.2rem;">Required Corrections</div>
+                                                <div style="line-height:1.55;white-space:pre-wrap;"><?= htmlspecialchars((string) $evaluation['required_corrections']) ?></div>
+                                            </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <?php endif; ?>
+
                                     </div>
                                 </div>
                             </td>
