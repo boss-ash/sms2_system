@@ -277,6 +277,47 @@ function grantUserCanActOnApprovalStep(string $stepRoleKey): bool
     return in_array($stepRoleKey, grantApprovalUserStepRoleKeys($roleKey), true);
 }
 
+/**
+ * Institutional label shown when a proposal is returned (e.g. "College Dean").
+ *
+ * @param array<string, mixed> $step
+ */
+function grantApprovalReturnedByLabel(array $step): string
+{
+    $label = trim((string) ($step['step_label'] ?? ''));
+    if ($label !== '') {
+        return $label;
+    }
+
+    return grantApprovalRoleLabel((string) ($step['approver_role_key'] ?? ''));
+}
+
+/**
+ * @param array<string, mixed> $step
+ * @return array<string, mixed>|null
+ */
+function grantBuildApprovalReturnRecord(array $step): ?array
+{
+    if ((string) ($step['status'] ?? '') !== 'Returned') {
+        return null;
+    }
+
+    $actedAt = (string) ($step['acted_at'] ?? '');
+    $displayAt = '';
+    if ($actedAt !== '') {
+        $ts = strtotime($actedAt);
+        $displayAt = $ts !== false ? date('M d, Y g:i A', $ts) : $actedAt;
+    }
+
+    return [
+        'returned_by'         => grantApprovalReturnedByLabel($step),
+        'approval_level'      => (int) ($step['step_order'] ?? 0),
+        'reason'              => trim((string) ($step['remarks'] ?? '')),
+        'returned_at'         => $actedAt,
+        'returned_at_display' => $displayAt,
+    ];
+}
+
 function grantEnsureApprovalTables(PDO $crad): void
 {
     grantEnsureTables($crad);
@@ -702,14 +743,17 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
     $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
     $currentStepKey = (string) ($workflow['current_step_key'] ?? '');
     $canAct = false;
+    $canReturn = false;
     $currentStep = null;
 
     foreach ($steps as $step) {
         if ((string) ($step['step_key'] ?? '') === $currentStepKey) {
             $currentStep = $step;
-            $canAct = ((string) ($workflow['workflow_status'] ?? '') === 'In Progress')
+            $atCurrentStep = ((string) ($workflow['workflow_status'] ?? '') === 'In Progress')
                 && in_array((string) ($step['status'] ?? ''), ['Pending', 'Queued'], true)
                 && grantUserCanActOnApprovalStep((string) ($step['approver_role_key'] ?? ''));
+            $canReturn = $atCurrentStep;
+            $canAct = $atCurrentStep;
             if ($canAct && $currentStepKey === 'adviser' && $roleKey === 'adviser') {
                 $userId = (int) ($_SESSION['user_id'] ?? 0);
                 $canAct = grantHasAdviserEvaluation($crad, $applicationId, $userId);
@@ -785,11 +829,18 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
         }
     }
 
+    $returnRecord = null;
+    if ((string) ($workflow['workflow_status'] ?? '') === 'Returned' && $currentStep !== null) {
+        $returnRecord = grantBuildApprovalReturnRecord($currentStep);
+    }
+
     return [
         'workflow'               => $workflow,
         'steps'                  => $steps,
         'current_step'           => $currentStep,
         'can_act'                => $canAct,
+        'can_return'             => $canReturn,
+        'return_record'          => $returnRecord,
         'adviser_eval_complete'  => $adviserEvalComplete,
         'approver_eval_complete' => $approverEvalComplete,
         'needs_adviser_score'    => $needsAdviserScore,
@@ -921,6 +972,15 @@ function grantApprovalDetailFingerprint(?array $detail): string
     }
     if (!empty($detail['adviser_eval']['total_score'])) {
         $parts[] = 'a:' . $detail['adviser_eval']['total_score'];
+    }
+    if (!empty($detail['return_record']) && is_array($detail['return_record'])) {
+        $rr = $detail['return_record'];
+        $parts[] = 'ret:' . implode(':', [
+            $rr['returned_by'] ?? '',
+            $rr['approval_level'] ?? '',
+            $rr['reason'] ?? '',
+            $rr['returned_at'] ?? '',
+        ]);
     }
 
     return md5(implode('|', $parts));
@@ -1083,7 +1143,7 @@ function grantReturnProposalFromApproval(
         return ['ok' => false, 'error' => 'Approval workflow not found.'];
     }
 
-    if (empty($detail['can_act'])) {
+    if (empty($detail['can_return'])) {
         return ['ok' => false, 'error' => 'You are not authorized to return this proposal.'];
     }
 
@@ -1095,6 +1155,7 @@ function grantReturnProposalFromApproval(
 
     $workflowId = (int) ($workflow['id'] ?? 0);
     $stepKey    = (string) ($currentStep['step_key'] ?? '');
+    $returnedByLabel = grantApprovalReturnedByLabel($currentStep);
 
     try {
         $crad->beginTransaction();
@@ -1108,7 +1169,7 @@ function grantReturnProposalFromApproval(
                    acted_at = NOW(),
                    updated_at = NOW()
              WHERE workflow_id = ? AND step_key = ?
-        ")->execute([$userId > 0 ? $userId : null, $userName, $remarks, $workflowId, $stepKey]);
+        ")->execute([$userId > 0 ? $userId : null, $returnedByLabel, $remarks, $workflowId, $stepKey]);
 
         $crad->prepare("
             UPDATE grant_proposal_approval_workflows
