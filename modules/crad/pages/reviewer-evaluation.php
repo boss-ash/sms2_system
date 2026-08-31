@@ -136,12 +136,19 @@ renderBreadcrumbs($breadcrumbs);
             <tbody id="greQueueBody">
             <?php if (empty($queue)): ?>
                 <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
-                    No proposals are waiting for committee evaluation.
+                    <?= $isAdviserView
+                        ? 'No grant proposals are awaiting Academic Adviser review.'
+                        : 'No proposals are waiting for committee evaluation.' ?>
                 </td></tr>
             <?php else: ?>
                 <?php foreach ($queue as $row):
-                    $isScored = !empty($row['my_evaluation_id']);
-                    $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
+                    if ($isAdviserView) {
+                        $isScored = false;
+                        $statusLabel = 'In Review';
+                    } else {
+                        $isScored = !empty($row['my_evaluation_id']);
+                        $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
+                    }
                 ?>
                 <tr data-app-id="<?= (int) $row['id'] ?>">
                     <td style="font-weight:800;color:var(--sms-primary);white-space:nowrap;">
@@ -163,6 +170,8 @@ renderBreadcrumbs($breadcrumbs);
                     <td>
                         <?php if ($isScored): ?>
                             <span class="mpl-status completed">Scored (<?= number_format((float) $row['my_total_score'], 1) ?>/100)</span>
+                        <?php elseif ($isAdviserView): ?>
+                            <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
                         <?php else: ?>
                             <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
                         <?php endif; ?>
@@ -170,7 +179,9 @@ renderBreadcrumbs($breadcrumbs);
                     <td>
                         <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
                            href="?id=<?= (int) $row['id'] ?>">
-                            <?= $isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score' ?>
+                            <?= $isAdviserView
+                                ? smsIcon('eye') . ' Review'
+                                : ($isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score') ?>
                         </a>
                     </td>
                 </tr>
