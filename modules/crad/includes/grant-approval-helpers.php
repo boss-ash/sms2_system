@@ -442,6 +442,34 @@ function grantApprovalWorkflowFingerprint(array $workflows): string
 }
 
 /**
+ * Fingerprint for the selected workflow detail (step statuses + action state).
+ */
+function grantApprovalDetailFingerprint(?array $detail): string
+{
+    if ($detail === null || empty($detail['workflow'])) {
+        return '';
+    }
+
+    $wf = $detail['workflow'];
+    $parts = [
+        (string) ($wf['current_step_key'] ?? ''),
+        (string) ($wf['workflow_status'] ?? ''),
+        (string) ($wf['updated_at'] ?? ''),
+        !empty($detail['can_act']) ? '1' : '0',
+    ];
+
+    foreach ($detail['steps'] ?? [] as $step) {
+        $parts[] = implode(':', [
+            $step['step_key'] ?? '',
+            $step['status'] ?? '',
+            $step['acted_at'] ?? '',
+        ]);
+    }
+
+    return md5(implode('|', $parts));
+}
+
+/**
  * @return array{ok: bool, error?: string, completed?: bool}
  */
 function grantSubmitApprovalSignoff(

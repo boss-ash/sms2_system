@@ -47,7 +47,8 @@ switch ($action) {
             'success'     => true,
             'workflows'   => $workflows,
             'detail'      => $detail,
-            'fingerprint' => grantApprovalWorkflowFingerprint($workflows),
+            'fingerprint' => grantApprovalWorkflowFingerprint($workflows)
+                . ':' . grantApprovalDetailFingerprint($detail),
             'count'       => count($workflows),
             'in_progress' => count(array_filter(
                 $workflows,

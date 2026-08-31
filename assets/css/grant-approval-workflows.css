@@ -168,16 +168,24 @@
 }
 
 .gaw-step.active .gaw-step-icon {
-    border: 3px solid var(--gaw-orange);
-    color: var(--gaw-orange-dark);
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(249, 115, 22, .12);
+    background: var(--gaw-orange);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 10px rgba(249, 115, 22, .45);
+}
+
+.gaw-step.active .gaw-step-name {
+    color: #1e293b;
 }
 
 .gaw-step.queued .gaw-step-icon {
     border: 2px solid #e2e8f0;
     color: #94a3b8;
     background: #f8fafc;
+}
+
+.gaw-step.queued .gaw-step-name {
+    color: #94a3b8;
 }
 
 .gaw-step.returned .gaw-step-icon {
@@ -216,12 +224,24 @@
     font-weight: 600;
 }
 
+.gaw-step.approved .gaw-step-name {
+    color: #1e293b;
+}
+
+.gaw-step.approved .gaw-step-date {
+    color: #64748b;
+}
+
+.gaw-step.active .gaw-step-date {
+    color: #94a3b8;
+}
+
 .gaw-action-panel {
     margin-top: .5rem;
     padding: 1.15rem 1.25rem;
     border-radius: 10px;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
 }
 
 .gaw-action-panel h3 {
@@ -229,7 +249,7 @@
     font-size: .68rem;
     font-weight: 900;
     letter-spacing: .1em;
-    color: #64748b;
+    color: #1e40af;
     text-transform: uppercase;
 }
 
@@ -275,9 +295,9 @@
     display: inline-flex;
     align-items: center;
     gap: .45rem;
-    background: #fff !important;
-    border: 1px solid #fecaca !important;
-    color: #dc2626 !important;
+    background: #dc2626 !important;
+    border: 1px solid #dc2626 !important;
+    color: #fff !important;
     font-weight: 700;
     font-size: .86rem;
     padding: .6rem 1.1rem;
@@ -287,8 +307,20 @@
 }
 
 .gaw-btn-return:hover {
-    background: #fef2f2 !important;
-    color: #b91c1c !important;
+    background: #b91c1c !important;
+    border-color: #b91c1c !important;
+    color: #fff !important;
+}
+
+.gaw-btn-return-outline {
+    background: #fff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+.gaw-btn-return-outline:hover {
+    background: #f8fafc !important;
+    color: #334155 !important;
 }
 
 .gaw-monitor-note {
