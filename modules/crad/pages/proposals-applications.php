@@ -89,6 +89,7 @@ function paStatusLabel(string $status): string
         'Rejected'          => 'REJECTED',
         'Revision Required' => 'REVISION REQUIRED',
         'Resubmitted'       => 'RESUBMITTED',
+        'Approved & Funded' => 'APPROVED & FUNDED',
         default             => $status,
     };
 }
@@ -103,9 +104,10 @@ function paStatusBadge(string $status): string
         'REVISION REQUIRED'  => 'mpl-status processing',
         'RESUBMITTED'        => 'mpl-status pending',
         'Approved'           => 'mpl-status completed',
+        'APPROVED & FUNDED'  => 'mpl-status completed',
         'Denied'             => 'mpl-status cancelled',
         'Withdrawn'          => 'mpl-status cancelled',
-    ];
+    };
     $css = $map[$label] ?? ($map[$status] ?? 'mpl-status processing');
     return '<span class="' . htmlspecialchars($css) . '">' . htmlspecialchars($label) . '</span>';
 }
