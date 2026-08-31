@@ -157,6 +157,7 @@ function Invoke-GitSync {
             return
         }
 
+        $branch = (git rev-parse --abbrev-ref HEAD).Trim()
         $pushCode = Invoke-GitCommand @('push', 'origin', $branch)
         if ($pushCode -eq 0) {
             Write-SyncLog 'Push completed.'
@@ -176,14 +177,37 @@ function Invoke-GitSync {
     }
 }
 
+if ($PullOnly) {
+    if (Test-Path $LockFile) {
+        $lockAge = (Get-Date) - (Get-Item $LockFile).LastWriteTime
+        if ($lockAge.TotalMinutes -lt 5) {
+            return
+        }
+        Remove-Item $LockFile -Force -ErrorAction SilentlyContinue
+    }
+
+    New-Item -ItemType File -Path $LockFile -Force | Out-Null
+    try {
+        Invoke-GitPull | Out-Null
+    }
+    finally {
+        if (Test-Path $LockFile) {
+            Remove-Item $LockFile -Force -ErrorAction SilentlyContinue
+        }
+    }
+    return
+}
+
 if ($Watch) {
     Write-SyncLog 'File watcher started.'
     Write-Host "Watching $RepoRoot for changes..."
+    Write-Host "Polling GitHub every $PollIntervalSeconds second(s) for remote updates."
     Write-Host "Log: $LogFile"
     Write-Host 'Press Ctrl+C to stop.'
 
     $script:lastChange = $null
     $script:syncQueued = $false
+    $script:lastPoll = Get-Date
 
     $watcher = New-Object System.IO.FileSystemWatcher
     $watcher.Path = $RepoRoot
@@ -209,6 +233,13 @@ if ($Watch) {
     try {
         while ($true) {
             Start-Sleep -Seconds 1
+
+            $pollElapsed = ((Get-Date) - $script:lastPoll).TotalSeconds
+            if ($pollElapsed -ge $PollIntervalSeconds) {
+                $script:lastPoll = Get-Date
+                & $PSScriptRoot\git-auto-sync.ps1 -PullOnly
+            }
+
             if ($script:syncQueued -and $null -ne $script:lastChange) {
                 $elapsed = ((Get-Date) - $script:lastChange).TotalSeconds
                 if ($elapsed -ge $DebounceSeconds) {
