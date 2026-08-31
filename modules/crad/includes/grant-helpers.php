@@ -292,7 +292,8 @@ function _grantEnsureApplicationStatusEnum(PDO $crad): void
             return;
         }
         if (strpos($columnType, 'Rejected') !== false
-            && strpos($columnType, 'Revision Required') !== false) {
+            && strpos($columnType, 'Revision Required') !== false
+            && strpos($columnType, 'Resubmitted') !== false) {
             return;
         }
 
@@ -305,7 +306,8 @@ function _grantEnsureApplicationStatusEnum(PDO $crad): void
                 'Denied',
                 'Withdrawn',
                 'Rejected',
-                'Revision Required'
+                'Revision Required',
+                'Resubmitted'
             ) NOT NULL DEFAULT 'Submitted'
         ");
     } catch (Throwable $e) {
