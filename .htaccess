@@ -1,6 +1,11 @@
 Options -Indexes
 
 RewriteEngine On
+
+# Canonical lowercase path (matches htdocs folder name)
+RewriteCond %{THE_REQUEST} \s/+SMS2_system(\S*) [NC]
+RewriteRule ^ /sms2_system%1 [R=301,L,NE]
+
 RewriteRule ^up$ up.php [END]
 
 <IfModule mod_headers.c>
