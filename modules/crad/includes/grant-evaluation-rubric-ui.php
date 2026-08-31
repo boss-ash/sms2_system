@@ -150,6 +150,7 @@ function grantRenderRubricReadonlyCard(
  *   submit_label: string,
  *   form_attrs?: array<string, string>,
  *   show_recommendation?: bool,
+ *   recommendation_hint?: string,
  *   comments_placeholder?: string,
  *   recommendations_placeholder?: string,
  *   corrections_placeholder?: string,
@@ -163,7 +164,8 @@ function grantRenderRubricEvaluationForm(array $options): void
     $description   = (string) ($options['description'] ?? 'Enter scores for each criterion. Total is computed automatically (max 100).');
     $submitLabel   = (string) ($options['submit_label'] ?? 'Submit Evaluation');
     $formAttrs     = $options['form_attrs'] ?? [];
-    $showRecommendation = !empty($options['show_recommendation']);
+    $showRecommendation = ($options['show_recommendation'] ?? true);
+    $recommendationHint = (string) ($options['recommendation_hint'] ?? 'Disapprove ends the proposal. Require Revisions sends it back to the researcher. Recommend forwards it to the approval workflow.');
     $commentsPlaceholder = (string) ($options['comments_placeholder'] ?? 'General comments on the proposal…');
     $recommendationsPlaceholder = (string) ($options['recommendations_placeholder'] ?? 'Recommendations…');
     $correctionsPlaceholder = (string) ($options['corrections_placeholder'] ?? 'List required corrections, if any…');
@@ -241,7 +243,7 @@ function grantRenderRubricEvaluationForm(array $options): void
                 </label>
                 <?php endforeach; ?>
             </div>
-            <p class="gre-recommendation-hint">Disapprove ends the proposal. Require Revisions sends it back to the researcher. Recommend forwards it to the approval workflow.</p>
+            <p class="gre-recommendation-hint"><?= htmlspecialchars($recommendationHint) ?></p>
         </div>
 
         <div class="gre-form-group" id="greRevisionReasonGroup" style="display:none;">

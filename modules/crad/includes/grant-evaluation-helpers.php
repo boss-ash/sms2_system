@@ -1391,6 +1391,146 @@ function grantNotifyApplicantApprovedFunded(PDO $crad, array $application, strin
     );
 }
 
+function grantParseEvaluationRecommendationInput(array $input): array
+{
+    $recommendation = strtolower(trim((string) ($input['recommendation'] ?? '')));
+    if (!array_key_exists($recommendation, grantRecommendationOptions())) {
+        return ['ok' => false, 'error' => 'Please select a recommendation decision.'];
+    }
+
+    $revisionReason = trim((string) ($input['revision_reason'] ?? ''));
+    if ($recommendation === 'require_revisions' && $revisionReason === '') {
+        return ['ok' => false, 'error' => 'Revision reason is required when selecting Require Revisions.'];
+    }
+
+    return [
+        'ok'              => true,
+        'recommendation'  => $recommendation,
+        'revision_reason' => $revisionReason,
+    ];
+}
+
+/**
+ * Apply disapprove / require_revisions after a pipeline-stage rubric evaluation.
+ *
+ * @param array<string, mixed> $application
+ * @return array{recommendation: string, new_status: string}|null
+ */
+function grantApplyPipelineEvaluationRecommendation(
+    PDO $crad,
+    int $applicationId,
+    array $application,
+    string $recommendation,
+    string $revisionReason,
+    string $evaluatorName,
+    float $totalScore,
+    string $roleKey
+): ?array {
+    if ($recommendation === 'recommend') {
+        return null;
+    }
+
+    require_once __DIR__ . '/grant-approval-helpers.php';
+    grantEnsureApprovalTables($crad);
+
+    $evaluatorUserId = (int) ($_SESSION['user_id'] ?? 0);
+
+    if ($recommendation === 'disapprove') {
+        $crad->prepare("
+            UPDATE grant_applications
+               SET status = 'Rejected', updated_at = NOW()
+             WHERE id = ?
+        ")->execute([$applicationId]);
+
+        $workflow = grantGetApprovalWorkflowByApplicationId($crad, $applicationId);
+        if ($workflow !== null) {
+            $workflowId = (int) ($workflow['id'] ?? 0);
+            $crad->prepare("
+                UPDATE grant_proposal_approval_workflows
+                   SET workflow_status = 'Cancelled', updated_at = NOW()
+                 WHERE id = ?
+            ")->execute([$workflowId]);
+        }
+
+        grantNotifyApplicantEvaluationDecision(
+            $crad,
+            $application,
+            'disapprove',
+            $totalScore,
+            $evaluatorName,
+            $revisionReason !== '' ? $revisionReason : null
+        );
+
+        return ['recommendation' => 'disapprove', 'new_status' => 'Rejected'];
+    }
+
+    $workflow = grantGetApprovalWorkflowByApplicationId($crad, $applicationId);
+    $stepKey  = grantApprovalStepKeyForRole($roleKey) ?? '';
+
+    if ($workflow !== null && $stepKey !== '') {
+        $workflowId = (int) ($workflow['id'] ?? 0);
+        $currentStep = null;
+        foreach (grantGetApprovalSteps($crad, $workflowId) as $step) {
+            if ((string) ($step['step_key'] ?? '') === $stepKey) {
+                $currentStep = $step;
+                break;
+            }
+        }
+
+        $crad->prepare("
+            UPDATE grant_proposal_approval_steps
+               SET status = 'Returned',
+                   approver_user_id = ?,
+                   approver_name = ?,
+                   remarks = ?,
+                   acted_at = NOW(),
+                   updated_at = NOW()
+             WHERE workflow_id = ? AND step_key = ?
+        ")->execute([
+            $evaluatorUserId > 0 ? $evaluatorUserId : null,
+            $evaluatorName,
+            $revisionReason,
+            $workflowId,
+            $stepKey,
+        ]);
+
+        $crad->prepare("
+            UPDATE grant_proposal_approval_workflows
+               SET workflow_status = 'Returned', updated_at = NOW()
+             WHERE id = ?
+        ")->execute([$workflowId]);
+
+        if ($currentStep !== null) {
+            grantNotifyApplicantApprovalReturn(
+                $crad,
+                $application,
+                $currentStep,
+                $evaluatorName,
+                $revisionReason
+            );
+        }
+    }
+
+    $crad->prepare("
+        UPDATE grant_applications
+           SET status = 'Revision Required', updated_at = NOW()
+         WHERE id = ?
+    ")->execute([$applicationId]);
+
+    if ($workflow === null) {
+        grantNotifyApplicantEvaluationDecision(
+            $crad,
+            $application,
+            'require_revisions',
+            $totalScore,
+            $evaluatorName,
+            $revisionReason
+        );
+    }
+
+    return ['recommendation' => 'require_revisions', 'new_status' => 'Revision Required'];
+}
+
 function grantSubmitAdviserProposalEvaluation(PDO $crad, int $applicationId, array $input): array
 {
     grantEnsureEvaluationTables($crad);
@@ -1417,16 +1557,26 @@ function grantSubmitAdviserProposalEvaluation(PDO $crad, int $applicationId, arr
         return ['ok' => false, 'error' => 'You have already submitted your adviser evaluation for this proposal version.'];
     }
 
+    $parsedRecommendation = grantParseEvaluationRecommendationInput($input);
+    if (empty($parsedRecommendation['ok'])) {
+        return ['ok' => false, 'error' => $parsedRecommendation['error'] ?? 'Invalid recommendation.'];
+    }
+
     $parsed = grantValidateRubricScoresFromInput($input);
     if (empty($parsed['ok'])) {
         return ['ok' => false, 'error' => $parsed['error'] ?? 'Invalid rubric scores.'];
     }
 
-    $scores = $parsed['scores'];
-    $total  = (float) $parsed['total'];
+    $recommendation  = (string) $parsedRecommendation['recommendation'];
+    $revisionReason  = (string) $parsedRecommendation['revision_reason'];
+    $scores          = $parsed['scores'];
+    $total           = (float) $parsed['total'];
     $comments            = trim((string) ($input['comments'] ?? ''));
     $recommendations     = trim((string) ($input['recommendations'] ?? ''));
     $requiredCorrections = trim((string) ($input['required_corrections'] ?? ''));
+    if ($recommendation === 'require_revisions' && $requiredCorrections === '') {
+        $requiredCorrections = $revisionReason;
+    }
 
     try {
         $crad->beginTransaction();
@@ -1444,7 +1594,7 @@ function grantSubmitAdviserProposalEvaluation(PDO $crad, int $applicationId, arr
                  ?, ?, ?,
                  ?, ?, ?,
                  ?, ?, ?,
-                 NULL, NULL,
+                 ?, ?,
                  NOW(), NOW())
         ");
         $stmt->execute([
@@ -1462,15 +1612,34 @@ function grantSubmitAdviserProposalEvaluation(PDO $crad, int $applicationId, arr
             $comments !== '' ? $comments : null,
             $recommendations !== '' ? $recommendations : null,
             $requiredCorrections !== '' ? $requiredCorrections : null,
+            $recommendation,
+            $revisionReason !== '' ? $revisionReason : null,
         ]);
+
+        $decision = grantApplyPipelineEvaluationRecommendation(
+            $crad,
+            $applicationId,
+            $application,
+            $recommendation,
+            $revisionReason,
+            $evaluatorName,
+            $total,
+            'adviser'
+        );
 
         $crad->commit();
 
-        return [
+        $result = [
             'ok'          => true,
             'id'          => (int) $crad->lastInsertId(),
             'total_score' => $total,
+            'recommendation' => $recommendation,
         ];
+        if ($decision !== null) {
+            $result['new_status'] = $decision['new_status'];
+        }
+
+        return $result;
     } catch (Throwable $e) {
         if ($crad->inTransaction()) {
             $crad->rollBack();
@@ -1521,16 +1690,26 @@ function grantSubmitApproverProposalEvaluation(PDO $crad, int $applicationId, ar
         ];
     }
 
+    $parsedRecommendation = grantParseEvaluationRecommendationInput($input);
+    if (empty($parsedRecommendation['ok'])) {
+        return ['ok' => false, 'error' => $parsedRecommendation['error'] ?? 'Invalid recommendation.'];
+    }
+
     $parsed = grantValidateRubricScoresFromInput($input);
     if (empty($parsed['ok'])) {
         return ['ok' => false, 'error' => $parsed['error'] ?? 'Invalid rubric scores.'];
     }
 
-    $scores = $parsed['scores'];
-    $total  = (float) $parsed['total'];
+    $recommendation  = (string) $parsedRecommendation['recommendation'];
+    $revisionReason  = (string) $parsedRecommendation['revision_reason'];
+    $scores          = $parsed['scores'];
+    $total           = (float) $parsed['total'];
     $comments            = trim((string) ($input['comments'] ?? ''));
     $recommendations     = trim((string) ($input['recommendations'] ?? ''));
     $requiredCorrections = trim((string) ($input['required_corrections'] ?? ''));
+    if ($recommendation === 'require_revisions' && $requiredCorrections === '') {
+        $requiredCorrections = $revisionReason;
+    }
 
     try {
         $crad->beginTransaction();
@@ -1548,7 +1727,7 @@ function grantSubmitApproverProposalEvaluation(PDO $crad, int $applicationId, ar
                  ?, ?, ?,
                  ?, ?, ?,
                  ?, ?, ?,
-                 NULL, NULL,
+                 ?, ?,
                  NOW(), NOW())
         ");
         $stmt->execute([
@@ -1566,15 +1745,34 @@ function grantSubmitApproverProposalEvaluation(PDO $crad, int $applicationId, ar
             $comments !== '' ? $comments : null,
             $recommendations !== '' ? $recommendations : null,
             $requiredCorrections !== '' ? $requiredCorrections : null,
+            $recommendation,
+            $revisionReason !== '' ? $revisionReason : null,
         ]);
+
+        $decision = grantApplyPipelineEvaluationRecommendation(
+            $crad,
+            $applicationId,
+            $application,
+            $recommendation,
+            $revisionReason,
+            $evaluatorName,
+            $total,
+            $roleKey
+        );
 
         $crad->commit();
 
-        return [
-            'ok'          => true,
-            'id'          => (int) $crad->lastInsertId(),
-            'total_score' => $total,
+        $result = [
+            'ok'             => true,
+            'id'             => (int) $crad->lastInsertId(),
+            'total_score'    => $total,
+            'recommendation' => $recommendation,
         ];
+        if ($decision !== null) {
+            $result['new_status'] = $decision['new_status'];
+        }
+
+        return $result;
     } catch (Throwable $e) {
         if ($crad->inTransaction()) {
             $crad->rollBack();
