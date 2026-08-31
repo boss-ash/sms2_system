@@ -640,6 +640,7 @@ $MODULES = [
     'user-management' => [
         'label' => 'User Management',
         'icon'  => 'fa-users-cog',
+        'hide_overview' => true,
         'groups' => [
             'Accounts & Roles' => [
                 'user-accounts',

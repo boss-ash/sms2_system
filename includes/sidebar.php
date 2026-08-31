@@ -525,7 +525,6 @@ $researchDirectorNavGroups = [
                     }
                     $showModuleOverview = empty($module['hide_overview']);
                     $showModuleGroups = $hasGroups && !($isModuleActive && $activePage === '');
-                    $overviewLabel = ($navModuleKey === 'user-management') ? 'Dashboard' : 'Overview';
                     ?>
 
                     <li class="nav-item admin-module-item">
@@ -552,10 +551,10 @@ $researchDirectorNavGroups = [
                                 <li class="nav-item">
                                     <a class="nav-link sidebar-sub overview-link <?= ($isModuleActive && $activePage === '') ? 'active' : '' ?>"
                                        href="<?= htmlspecialchars($overviewUrl) ?>"
-                                       data-title="<?= htmlspecialchars($overviewLabel) ?>"
-                                       title="<?= htmlspecialchars($overviewLabel) ?>">
+                                       data-title="Overview"
+                                       title="Overview">
                                         <?= smsIcon('layout-grid', ['aria-hidden' => 'true']) ?>
-                                        <span><?= htmlspecialchars($overviewLabel) ?></span>
+                                        <span>Overview</span>
                                     </a>
                                 </li>
                                 <?php endif; ?>
