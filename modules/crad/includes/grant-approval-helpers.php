@@ -949,6 +949,7 @@ function grantApprovalDetailFingerprint(?array $detail): string
         (string) ($wf['workflow_status'] ?? ''),
         (string) ($wf['updated_at'] ?? ''),
         !empty($detail['can_act']) ? '1' : '0',
+        !empty($detail['can_return']) ? '1' : '0',
         !empty($detail['adviser_eval_complete']) ? '1' : '0',
         !empty($detail['approver_eval_complete']) ? '1' : '0',
         !empty($detail['needs_adviser_score']) ? '1' : '0',
