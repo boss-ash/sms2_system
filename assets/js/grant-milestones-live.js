@@ -126,6 +126,35 @@
         }
     }
 
+    function buildEvidenceRows(evidence) {
+        if (!evidence || evidence.length === 0) {
+            return '<tr><td colspan="5" class="gpm-muted" style="text-align:center;padding:1.25rem;">No researcher evidence submitted yet.</td></tr>';
+        }
+        return evidence.map(function (row) {
+            var file = row.has_file
+                ? '<a href="' + esc(row.file_url) + '" target="_blank" rel="noopener"><i class="ti ti-file"></i> ' +
+                    esc(row.file_original || 'View') + '</a>'
+                : '—';
+            return '<tr><td>' + esc(formatDateTime(row.created_at)) + '</td>' +
+                '<td>' + esc(row.milestone_name || '—') + '</td>' +
+                '<td>' + esc(row.evidence_title || '') + '</td>' +
+                '<td>' + file + '</td>' +
+                '<td><span class="gpm-status in-progress">' + esc(row.status || 'Submitted') + '</span></td></tr>';
+        }).join('');
+    }
+
+    function formatDateTime(value) {
+        if (!value) return '—';
+        try {
+            return new Date(String(value).replace(' ', 'T')).toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: 'numeric', minute: '2-digit'
+            });
+        } catch (e) {
+            return value;
+        }
+    }
+
     function buildMilestoneRows(milestones, canTrackRows) {
         return milestones.map(function (milestone) {
             var status = milestone.status || 'Pending';
@@ -169,9 +198,19 @@
 
         var app = detail.application;
         var milestones = detail.milestones || [];
+        var evidence = detail.evidence || [];
         var ref = esc(app.proposal_reference || 'Proposal');
         var canTrackRows = !!detail.can_track;
         var colSpan = canTrackRows ? 7 : 6;
+
+        var evidenceSection = canTrackRows
+            ? '<div class="gpm-panel" style="margin-top:1rem;padding:1rem 0 0;border-top:1px solid #e2e8f0;">' +
+                '<h3 class="gpm-section-title" style="margin:0 0 .85rem;font-size:.95rem;font-weight:800;">' +
+                '<i class="ti ti-folder me-1"></i>Researcher Progress Evidence</h3>' +
+                '<div class="gpm-table-wrap"><table class="gpm-table"><thead><tr>' +
+                '<th>Submitted</th><th>Milestone</th><th>Title</th><th>File</th><th>Status</th>' +
+                '</tr></thead><tbody>' + buildEvidenceRows(evidence) + '</tbody></table></div></div>'
+            : '';
 
         detailPanel.innerHTML =
             '<h2 class="gpm-panel-title">Milestones — ' + ref + '</h2>' +
