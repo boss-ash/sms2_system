@@ -342,7 +342,7 @@ function paStatusBadge(string $status): string
                         <!-- Expandable detail row -->
                         <tr class="pa-detail-row" id="paDetail-<?= (int) $app['id'] ?>"
                             style="display:none;">
-                            <td colspan="8" style="padding:0;">
+                            <td colspan="9" style="padding:0;">
                                 <div style="background:var(--sms-surface-muted,#f8fafc);
                                             border-top:2px solid var(--sms-primary-xlight,#dbeafe);
                                             padding:1.1rem 1.4rem;font-size:.85rem;">
