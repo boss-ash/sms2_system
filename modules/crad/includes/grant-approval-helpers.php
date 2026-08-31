@@ -14,10 +14,10 @@ function grantApprovalStepDefinitions(): array
 {
     return [
         ['key' => 'adviser',           'order' => 1, 'label' => 'Academic Adviser',    'short' => 'Adviser',          'role' => 'adviser'],
-        ['key' => 'department_chair',  'order' => 2, 'label' => 'Dept. Chair',         'short' => 'Dept. Chair',      'role' => 'research_coordinator'],
+        ['key' => 'department_chair',  'order' => 2, 'label' => 'Dept. Chair',         'short' => 'Dept. Chair',      'role' => 'department_chair'],
         ['key' => 'dean',              'order' => 3, 'label' => 'College Dean',        'short' => 'Dean',             'role' => 'hr'],
-        ['key' => 'research_office',   'order' => 4, 'label' => 'Research Office',     'short' => 'Research Office',  'role' => 'crad_officer'],
-        ['key' => 'vpaa',              'order' => 5, 'label' => 'VPAA Sign-off',       'short' => 'VPAA',             'role' => 'qa'],
+        ['key' => 'research_office',   'order' => 4, 'label' => 'Research Office',     'short' => 'Research Office',  'role' => 'research_office'],
+        ['key' => 'vpaa',              'order' => 5, 'label' => 'VPAA Sign-off',       'short' => 'VPAA',             'role' => 'vpaa'],
     ];
 }
 
@@ -38,6 +38,27 @@ function grantApprovalApproverRoleKeys(): array
     return array_values(array_unique(array_map(
         static fn(array $step): string => (string) $step['role'],
         grantApprovalStepDefinitions()
+    )));
+}
+
+/** @return list<string> */
+function grantApprovalLegacyStepRoleKeys(string $roleKey): array
+{
+    $legacy = [
+        'department_chair' => ['research_coordinator'],
+        'research_office'  => ['crad_officer'],
+        'vpaa'             => ['qa'],
+    ];
+
+    return $legacy[$roleKey] ?? [];
+}
+
+/** Role keys that match workflow steps for the logged-in approver (incl. legacy step roles). */
+function grantApprovalUserStepRoleKeys(string $userRoleKey): array
+{
+    return array_values(array_unique(array_merge(
+        [$userRoleKey],
+        grantApprovalLegacyStepRoleKeys($userRoleKey)
     )));
 }
 
@@ -81,8 +102,11 @@ function grantApprovalActiveModuleKey(): string
     return match ($roleKey) {
         'adviser'                => 'faculty',
         'research_coordinator'   => 'crad',
+        'department_chair'       => 'crad',
         'hr'                     => 'faculty',
         'qa'                     => 'accreditation',
+        'vpaa'                   => 'accreditation',
+        'research_office'        => 'crad',
         default                  => 'crad',
     };
 }
