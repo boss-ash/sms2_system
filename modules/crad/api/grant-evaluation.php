@@ -35,8 +35,8 @@ switch ($action) {
         case 'get_queue':
         $queue = grantEvaluationQueue($crad);
         if (grantIsAdviserEvaluationViewer()) {
-            $pending = count($queue);
-            $scored  = grantAdviserEvaluationSignedCount($crad);
+            $pending = count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
+            $scored  = grantAdviserEvaluationScoredCount($crad);
         } else {
             $pending = count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
             $scored  = count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])));
@@ -66,8 +66,9 @@ switch ($action) {
 
         $result = grantSubmitProposalEvaluation($crad, $applicationId, $_POST);
         if ($result['ok']) {
-            $message = 'Evaluation submitted successfully.';
-            if (($result['recommendation'] ?? '') === 'disapprove') {
+            if (grantIsAdviserEvaluationViewer()) {
+                $message = 'Adviser evaluation submitted. You may now sign off in Approval Workflows.';
+            } elseif (($result['recommendation'] ?? '') === 'disapprove') {
                 $message = 'Proposal disapproved. The researcher has been notified.';
             } elseif (($result['recommendation'] ?? '') === 'require_revisions') {
                 $message = 'Revision request sent. The researcher has been notified.';
