@@ -556,6 +556,11 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
 
         $crad->commit();
 
+        if ($recommendation === 'recommend') {
+            require_once __DIR__ . '/grant-approval-helpers.php';
+            grantStartApprovalWorkflow($crad, $applicationId);
+        }
+
         return [
             'ok'             => true,
             'id'             => (int) $crad->lastInsertId(),
