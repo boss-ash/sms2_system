@@ -24,9 +24,7 @@
             '          <span class="sms-confirm-kicker" id="smsConfirmKicker">Confirm</span>',
             '          <h6 class="sms-confirm-title" id="smsConfirmTitle">Are you sure?</h6>',
             '        </div>',
-            '        <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close">'
-            + (window.smsIconHtml ? window.smsIconHtml('x', '', { 'aria-hidden': 'true' }) : '<span aria-hidden="true">&times;</span>')
-            + '</button>',
+            '        <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close"><span class="sms-confirm-close__glyph" aria-hidden="true">×</span></button>',
             '      </div>',
             '      <div class="sms-confirm-body">',
             '        <div class="sms-confirm-icon sms-confirm-icon--danger" id="smsConfirmIcon" aria-hidden="true"></div>',

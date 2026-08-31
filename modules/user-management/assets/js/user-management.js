@@ -76,8 +76,7 @@
             '          <h6 class="sms-confirm-title um-confirm-title" id="umConfirmTitle">Are you sure?</h6>',
             '        </div>',
             '        <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close">'
-            + (window.smsIconHtml ? window.smsIconHtml('x', '', { 'aria-hidden': 'true' }) : '<span aria-hidden="true">&times;</span>')
-            + '</button>',
+            + '<span class="sms-confirm-close__glyph" aria-hidden="true">×</span></button>',
             '      </div>',
             '      <div class="sms-confirm-body um-confirm-body">',
             '        <div class="sms-confirm-icon um-confirm-icon" id="umConfirmIcon" aria-hidden="true"></div>',

@@ -969,7 +969,7 @@ renderBreadcrumbs($breadcrumbs);
                                     <span class="sms-confirm-kicker">Password request</span>
                                     <h5 class="modal-title sms-confirm-title">Confirm approval</h5>
                                 </div>
-                                <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close"><?= smsIcon('x', ['aria-hidden' => 'true']) ?></button>
+                                <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close"><span class="sms-confirm-close__glyph" aria-hidden="true">×</span></button>
                             </div>
                             <div class="sms-confirm-body">
                                 <div class="sms-confirm-icon sms-confirm-icon--primary" aria-hidden="true">
@@ -1000,7 +1000,7 @@ renderBreadcrumbs($breadcrumbs);
                                     <span class="sms-confirm-kicker">Password request</span>
                                     <h5 class="modal-title sms-confirm-title">Reject request</h5>
                                 </div>
-                                <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close"><?= smsIcon('x', ['aria-hidden' => 'true']) ?></button>
+                                <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close"><span class="sms-confirm-close__glyph" aria-hidden="true">×</span></button>
                             </div>
                             <div class="sms-confirm-body sms-confirm-body--form">
                                 <div class="sms-confirm-icon sms-confirm-icon--danger" aria-hidden="true">
