@@ -123,7 +123,7 @@ require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
 <link href="<?= BASE_URL ?>/assets/css/module-process-list.css?v=2" rel="stylesheet">
-<link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=6" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=7" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="mpl-alert" role="alert" style="background:rgba(239,68,68,.08);color:#b91c1c;margin-bottom:1rem;">
@@ -391,6 +391,33 @@ renderBreadcrumbs($breadcrumbs);
             <strong>In Review</strong> — Score this proposal before signing off in Approval Workflows.
         </div>
 
+        <?php grantRenderRubricEvaluationForm([
+            'application_id' => (int) $selected['id'],
+            'rubric' => $rubric,
+            'title' => $approverRoleLabel . ' Evaluation',
+            'description' => 'Enter your scores for each criterion. Total is computed automatically (max 100).',
+            'submit_label' => 'Submit ' . $approverRoleLabel . ' Evaluation',
+            'form_attrs' => ['data-approver-eval' => '1'],
+            'comments_placeholder' => 'Your comments on the proposal…',
+            'recommendations_placeholder' => 'Your recommendations…',
+        ]); ?>
+
+        <?php
+        $hasPriorEvals = false;
+        foreach (grantPipelineEvaluationTypes() as $pipelineType) {
+            if ($pipelineType === $currentApproverEvalType) {
+                break;
+            }
+            if (!empty($pipelineEvals[$pipelineType])) {
+                $hasPriorEvals = true;
+                break;
+            }
+        }
+        if ($hasPriorEvals):
+        ?>
+        <div class="gre-prior-eval-section">
+            <h3 class="gre-prior-eval-heading"><?= smsIcon('history', ['class' => 'me-1']) ?>Prior Evaluation Scores</h3>
+            <p class="text-muted gre-prior-eval-note">Reference scores from earlier review stages.</p>
         <?php
         foreach (grantPipelineEvaluationTypes() as $pipelineType) {
             if ($pipelineType === $currentApproverEvalType) {
@@ -404,20 +431,13 @@ renderBreadcrumbs($breadcrumbs);
                 $priorEval,
                 grantEvaluationStepLabel($pipelineType) . ' Evaluation',
                 $rubric,
-                grantPipelineScorePillIcon($pipelineType)
+                grantPipelineScorePillIcon($pipelineType),
+                false
             );
         }
         ?>
-
-        <?php grantRenderRubricEvaluationForm([
-            'application_id' => (int) $selected['id'],
-            'rubric' => $rubric,
-            'title' => $approverRoleLabel . ' Evaluation',
-            'submit_label' => 'Submit ' . $approverRoleLabel . ' Evaluation',
-            'form_attrs' => ['data-approver-eval' => '1'],
-            'comments_placeholder' => 'Your comments on the proposal…',
-            'recommendations_placeholder' => 'Your recommendations…',
-        ]); ?>
+        </div>
+        <?php endif; ?>
         <?php endif; ?>
 
         <?php elseif ($isMonitorView): ?>

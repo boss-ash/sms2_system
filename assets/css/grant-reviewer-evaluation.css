@@ -307,6 +307,24 @@
     color: var(--sms-text-muted);
 }
 
+.gre-prior-eval-section {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--sms-border);
+}
+
+.gre-prior-eval-heading {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0 0 .35rem;
+    color: var(--sms-heading);
+}
+
+.gre-prior-eval-note {
+    font-size: .84rem;
+    margin: 0 0 1rem;
+}
+
 .gre-committee-ref {
     margin: 0 0 1.25rem;
     border: 1px solid var(--sms-border);
