@@ -271,8 +271,17 @@ function grantAdviserEvaluationQueue(PDO $crad): array
 {
     require_once __DIR__ . '/grant-approval-helpers.php';
     grantEnsureApprovalTables($crad);
+    grantEnsureEvaluationTables($crad);
 
-    $stmt = $crad->query("
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    if ($userId <= 0) {
+        return [];
+    }
+
+    $committeeType = grantEvaluationTypeCommittee();
+    $adviserType   = grantEvaluationTypeAdviser();
+
+    $stmt = $crad->prepare("
         SELECT
             ga.id,
             ga.grant_opportunity_id,
@@ -306,7 +315,10 @@ function grantAdviserEvaluationQueue(PDO $crad): array
             adviser_step.acted_at AS adviser_acted_at,
             committee_eval.id AS committee_evaluation_id,
             committee_eval.total_score AS committee_total_score,
-            committee_eval.submitted_at AS committee_evaluated_at
+            committee_eval.submitted_at AS committee_evaluated_at,
+            my_eval.id AS my_evaluation_id,
+            my_eval.total_score AS my_total_score,
+            my_eval.submitted_at AS my_evaluated_at
         FROM grant_proposal_approval_workflows w
         INNER JOIN grant_applications ga ON ga.id = w.grant_application_id
         INNER JOIN grant_opportunities go ON go.id = ga.grant_opportunity_id
@@ -319,20 +331,26 @@ function grantAdviserEvaluationQueue(PDO $crad): array
                       FROM grant_proposal_evaluations e2
                      WHERE e2.grant_application_id = ga.id
                        AND e2.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
+                       AND e2.evaluation_type = ?
                )
+        LEFT JOIN grant_proposal_evaluations my_eval
+               ON my_eval.grant_application_id = ga.id
+              AND my_eval.evaluator_user_id = ?
+              AND my_eval.evaluation_type = ?
+              AND my_eval.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
         WHERE w.workflow_status = 'In Progress'
           AND w.current_step_key = 'adviser'
           AND adviser_step.status IN ('Pending', 'Queued')
         ORDER BY w.updated_at ASC, ga.id ASC
     ");
+    $stmt->execute([$committeeType, $userId, $adviserType]);
 
-    return $stmt ? ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) : [];
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
-function grantAdviserEvaluationSignedCount(PDO $crad): int
+function grantAdviserEvaluationScoredCount(PDO $crad): int
 {
-    require_once __DIR__ . '/grant-approval-helpers.php';
-    grantEnsureApprovalTables($crad);
+    grantEnsureEvaluationTables($crad);
 
     $userId = (int) ($_SESSION['user_id'] ?? 0);
     if ($userId <= 0) {
@@ -341,30 +359,75 @@ function grantAdviserEvaluationSignedCount(PDO $crad): int
 
     $stmt = $crad->prepare("
         SELECT COUNT(*)
-          FROM grant_proposal_approval_steps s
-          INNER JOIN grant_proposal_approval_workflows w ON w.id = s.workflow_id
-         WHERE s.step_key = 'adviser'
-           AND s.status = 'Approved'
-           AND s.approver_user_id = ?
+          FROM grant_proposal_evaluations
+         WHERE evaluator_user_id = ?
+           AND evaluation_type = ?
     ");
-    $stmt->execute([$userId]);
+    $stmt->execute([$userId, grantEvaluationTypeAdviser()]);
 
     return (int) $stmt->fetchColumn();
+}
+
+function grantGetAdviserEvaluationByApplication(
+    PDO $crad,
+    int $applicationId,
+    ?int $evaluatorUserId = null,
+    ?int $proposalVersion = null
+): ?array {
+    grantEnsureEvaluationTables($crad);
+
+    $evaluatorUserId = $evaluatorUserId ?? (int) ($_SESSION['user_id'] ?? 0);
+    if ($evaluatorUserId <= 0) {
+        return null;
+    }
+
+    if ($proposalVersion === null) {
+        $app = grantGetApplicationForEvaluation($crad, $applicationId);
+        $proposalVersion = max(1, (int) ($app['current_version'] ?? 1));
+    }
+
+    $stmt = $crad->prepare("
+        SELECT *
+          FROM grant_proposal_evaluations
+         WHERE grant_application_id = ?
+           AND evaluator_user_id = ?
+           AND evaluation_type = ?
+           AND proposal_version = ?
+         LIMIT 1
+    ");
+    $stmt->execute([
+        $applicationId,
+        $evaluatorUserId,
+        grantEvaluationTypeAdviser(),
+        $proposalVersion,
+    ]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: null;
+}
+
+function grantHasAdviserEvaluation(PDO $crad, int $applicationId, ?int $evaluatorUserId = null): bool
+{
+    return grantGetAdviserEvaluationByApplication($crad, $applicationId, $evaluatorUserId) !== null;
 }
 
 function grantApplicationOpenForEvaluationViewer(PDO $crad, int $applicationId): bool
 {
     if (grantIsAdviserEvaluationViewer()) {
         require_once __DIR__ . '/grant-approval-helpers.php';
-        $detail = grantGetApprovalWorkflowDetail($crad, $applicationId);
-        if ($detail === null) {
-            return false;
-        }
+        grantEnsureApprovalTables($crad);
 
-        $workflow = $detail['workflow'];
+        $stmt = $crad->prepare("
+            SELECT w.id
+              FROM grant_proposal_approval_workflows w
+             WHERE w.grant_application_id = ?
+               AND w.workflow_status = 'In Progress'
+               AND w.current_step_key = 'adviser'
+             LIMIT 1
+        ");
+        $stmt->execute([$applicationId]);
 
-        return (string) ($workflow['current_step_key'] ?? '') === 'adviser'
-            && (string) ($workflow['workflow_status'] ?? '') === 'In Progress';
+        return (bool) $stmt->fetchColumn();
     }
 
     $application = grantGetApplicationForEvaluation($crad, $applicationId);
