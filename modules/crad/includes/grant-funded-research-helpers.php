@@ -77,7 +77,48 @@ function grantGetFundedResearchOverview(PDO $crad): array
 {
     grantEnsureFundedResearchTables($crad);
 
-    return grantGetFundedMilestoneOverview($crad);
+    $rows = grantGetFundedMilestoneOverview($crad);
+    if ($rows === []) {
+        return [];
+    }
+
+    $ids = array_map(static fn(array $row): int => (int) ($row['grant_application_id'] ?? 0), $rows);
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+    $evidenceMap = [];
+    $evStmt = $crad->prepare("
+        SELECT grant_application_id, COUNT(*) AS evidence_count, MAX(created_at) AS evidence_updated_at
+          FROM grant_funded_progress_evidence
+         WHERE grant_application_id IN ({$placeholders})
+         GROUP BY grant_application_id
+    ");
+    $evStmt->execute($ids);
+    foreach ($evStmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $evRow) {
+        $evidenceMap[(int) ($evRow['grant_application_id'] ?? 0)] = $evRow;
+    }
+
+    $fundingRows = grantGetFundedDisbursementOverview($crad);
+    $fundingMap = [];
+    foreach ($fundingRows as $fundingRow) {
+        $fundingMap[(int) ($fundingRow['grant_application_id'] ?? 0)] = $fundingRow;
+    }
+
+    foreach ($rows as &$row) {
+        $appId = (int) ($row['grant_application_id'] ?? 0);
+        $evStats = $evidenceMap[$appId] ?? [];
+        $fundStats = $fundingMap[$appId] ?? [];
+        $row['evidence_count'] = (int) ($evStats['evidence_count'] ?? 0);
+        $row['evidence_updated_at'] = (string) ($evStats['evidence_updated_at'] ?? '');
+        $row['released_count'] = (int) ($fundStats['released_count'] ?? 0);
+        $row['pending_tranche_count'] = (int) ($fundStats['pending_count'] ?? 0);
+        $row['disbursement_updated_at'] = (string) ($fundStats['disbursement_updated_at'] ?? '');
+        $row['funding_status_label'] = (string) ($fundStats['funding_status_label'] ?? '');
+        $row['total_released'] = (float) ($fundStats['total_released'] ?? 0);
+        $row['balance_pending'] = (float) ($fundStats['balance_pending'] ?? 0);
+    }
+    unset($row);
+
+    return $rows;
 }
 
 /**
