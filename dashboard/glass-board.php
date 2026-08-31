@@ -621,7 +621,26 @@ $trendDelta       = smsDashboardScaleDelta((string) $trendDelta, $dashboardPerio
                         <h2 class="glass-panel-title">Key metrics</h2>
                         <p class="glass-panel-sub">Summary for your workspace</p>
                     </div>
-                    <span class="glass-chip"><?= smsIcon('filter', ['aria-hidden' => 'true']) ?> This month</span>
+                    <div class="glass-period-filter dropdown">
+                        <button type="button"
+                                class="glass-chip glass-chip-btn dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                aria-label="Filter metrics by period">
+                            <?= smsIcon('filter', ['aria-hidden' => 'true']) ?>
+                            <span><?= htmlspecialchars($dashboardPeriodMeta['label']) ?></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end glass-period-menu">
+                            <?php foreach ($dashboardPeriods as $periodKey => $periodMeta): ?>
+                                <li>
+                                    <a class="dropdown-item<?= $periodKey === $dashboardPeriodKey ? ' active' : '' ?>"
+                                       href="<?= htmlspecialchars(smsDashboardPeriodUrl($periodKey)) ?>">
+                                        <?= htmlspecialchars($periodMeta['label']) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
                 </div>
                 <div class="perf-grid">
                     <?php foreach ($statCards as $i => $card): ?>
