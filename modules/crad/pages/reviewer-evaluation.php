@@ -143,11 +143,10 @@ renderBreadcrumbs($breadcrumbs);
                 </td></tr>
             <?php else: ?>
                 <?php foreach ($queue as $row):
+                    $isScored = !empty($row['my_evaluation_id']);
                     if ($isAdviserView) {
-                        $isScored = false;
-                        $statusLabel = 'In Review';
+                        $statusLabel = $isScored ? 'Scored' : 'In Review';
                     } else {
-                        $isScored = !empty($row['my_evaluation_id']);
                         $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
                     }
                 ?>
@@ -171,8 +170,6 @@ renderBreadcrumbs($breadcrumbs);
                     <td>
                         <?php if ($isScored): ?>
                             <span class="mpl-status completed">Scored (<?= number_format((float) $row['my_total_score'], 1) ?>/100)</span>
-                        <?php elseif ($isAdviserView): ?>
-                            <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
                         <?php else: ?>
                             <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
                         <?php endif; ?>
@@ -181,7 +178,7 @@ renderBreadcrumbs($breadcrumbs);
                         <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
                            href="?id=<?= (int) $row['id'] ?>">
                             <?= $isAdviserView
-                                ? smsIcon('eye') . ' Review'
+                                ? ($isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score')
                                 : ($isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score') ?>
                         </a>
                     </td>
