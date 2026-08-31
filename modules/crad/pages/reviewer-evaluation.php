@@ -87,238 +87,163 @@ renderBreadcrumbs($breadcrumbs);
 <?php if ($dbError === ''): ?>
 
 <?php if (!$selected): ?>
-<section class="mpl-panel gre-queue-section">
+<section class="mpl-panel">
     <div class="mpl-panel-head">
         <div>
-            <h2>Assigned Review Queue</h2>
-            <p>Click a proposal title to view details, then score using the rubric (100 points).</p>
+            <h2>Evaluation Queue</h2>
+            <p>Select a proposal to score using the review committee rubric (total 100 points).</p>
         </div>
     </div>
-    <?php if (empty($queue)): ?>
-        <div class="gre-queue-empty">No proposals are waiting for committee evaluation.</div>
-    <?php else: ?>
-        <div class="gre-queue-list" id="greQueueList">
-            <?php foreach ($queue as $row):
-                $isScored = !empty($row['my_evaluation_id']);
-                $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
-                $title = (string) ($row['research_title'] ?? 'Untitled Proposal');
-            ?>
-            <details class="gre-queue-card">
-                <summary class="gre-queue-summary">
-                    <span class="gre-queue-title-text"><?= htmlspecialchars($title) ?></span>
-                    <?= smsIcon('chevron-down', ['class' => 'gre-queue-chevron', 'aria-hidden' => 'true']) ?>
-                </summary>
-                <div class="gre-queue-body">
-                    <div class="gre-queue-meta-grid">
-                        <div>
-                            <span class="gre-queue-label">Reference</span>
-                            <strong><?= htmlspecialchars((string) ($row['proposal_reference'] ?? ('#' . (int) $row['id']))) ?></strong>
-                            <small>Version <?= max(1, (int) ($row['current_version'] ?? 1)) ?></small>
+    <div class="mpl-table-wrap">
+        <table class="mpl-table" id="greQueueTable">
+            <thead>
+                <tr>
+                    <th>Reference</th>
+                    <th>Grant Program</th>
+                    <th>Lead Proponent</th>
+                    <th>Research Title</th>
+                    <th>College / Dept</th>
+                    <th>Budget</th>
+                    <th>Submitted</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="greQueueBody">
+            <?php if (empty($queue)): ?>
+                <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
+                    No proposals are waiting for committee evaluation.
+                </td></tr>
+            <?php else: ?>
+                <?php foreach ($queue as $row):
+                    $isScored = !empty($row['my_evaluation_id']);
+                    $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
+                ?>
+                <tr data-app-id="<?= (int) $row['id'] ?>">
+                    <td style="font-weight:800;color:var(--sms-primary);white-space:nowrap;">
+                        <?= htmlspecialchars((string) ($row['proposal_reference'] ?? ('#' . (int) $row['id']))) ?>
+                        <div style="font-size:.7rem;font-weight:500;color:var(--sms-text-muted);">
+                            v<?= max(1, (int) ($row['current_version'] ?? 1)) ?>
                         </div>
-                        <div>
-                            <span class="gre-queue-label">Status</span>
-                            <?php if ($isScored): ?>
-                                <span class="mpl-status completed">Scored (<?= number_format((float) $row['my_total_score'], 1) ?>/100)</span>
-                            <?php else: ?>
-                                <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
-                            <?php endif; ?>
-                        </div>
-                        <div>
-                            <span class="gre-queue-label">Grant Program</span>
-                            <span><?= htmlspecialchars((string) $row['funding_title']) ?></span>
-                        </div>
-                        <div>
-                            <span class="gre-queue-label">Lead Proponent</span>
-                            <span><?= htmlspecialchars((string) $row['applicant_name']) ?></span>
-                        </div>
-                        <div>
-                            <span class="gre-queue-label">College / Dept</span>
-                            <span><?= htmlspecialchars((string) ($row['college_dept'] ?? '—')) ?></span>
-                        </div>
-                        <div>
-                            <span class="gre-queue-label">Requested Budget</span>
-                            <span><?= $row['requested_budget'] !== null ? '₱' . number_format((float) $row['requested_budget'], 0) : '—' ?></span>
-                        </div>
-                        <div>
-                            <span class="gre-queue-label">Submitted</span>
-                            <span><?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $row['submitted_at']))) ?></span>
-                        </div>
-                    </div>
-                    <div class="gre-queue-actions">
+                    </td>
+                    <td style="font-weight:600;max-width:180px;"><?= htmlspecialchars((string) $row['funding_title']) ?></td>
+                    <td><?= htmlspecialchars((string) $row['applicant_name']) ?></td>
+                    <td style="max-width:220px;font-size:.86rem;"><?= htmlspecialchars((string) ($row['research_title'] ?? '—')) ?></td>
+                    <td style="font-size:.84rem;"><?= htmlspecialchars((string) ($row['college_dept'] ?? '—')) ?></td>
+                    <td style="font-weight:700;white-space:nowrap;">
+                        <?= $row['requested_budget'] !== null ? '₱' . number_format((float) $row['requested_budget'], 0) : '—' ?>
+                    </td>
+                    <td style="font-size:.82rem;white-space:nowrap;">
+                        <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $row['submitted_at']))) ?>
+                    </td>
+                    <td>
+                        <?php if ($isScored): ?>
+                            <span class="mpl-status completed">Scored (<?= number_format((float) $row['my_total_score'], 1) ?>/100)</span>
+                        <?php else: ?>
+                            <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
                         <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
                            href="?id=<?= (int) $row['id'] ?>">
-                            <?= $isScored ? smsIcon('eye') . ' View Evaluation' : smsIcon('star-half-alt') . ' Score Proposal' ?>
+                            <?= $isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score' ?>
                         </a>
-                    </div>
-                </div>
-            </details>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </section>
 
 <?php else: ?>
 <div class="gre-layout">
     <aside class="gre-info-panel">
-        <a class="mpl-btn mpl-btn-ghost mpl-btn-sm mb-2" href="<?= BASE_URL ?>/modules/crad/pages/reviewer-evaluation.php">
+        <a class="mpl-btn mpl-btn-ghost mpl-btn-sm mb-3" href="<?= BASE_URL ?>/modules/crad/pages/reviewer-evaluation.php">
             <?= smsIcon('arrow-left') ?> Back to Queue
         </a>
-
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Research Title</summary>
-            <div class="gre-accordion-body"><?= htmlspecialchars((string) ($selected['research_title'] ?? 'Research Proposal')) ?></div>
-        </details>
-
-        <?php if (!empty($selected['proposal_reference'])): ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Reference</summary>
-            <div class="gre-accordion-body">
-                <?= htmlspecialchars((string) $selected['proposal_reference']) ?>
-                <div class="gre-accordion-sub">Version <?= max(1, (int) ($selected['current_version'] ?? 1)) ?> — <?= htmlspecialchars(grantVersionLabel((int) ($selected['current_version'] ?? 1))) ?></div>
-            </div>
-        </details>
-        <?php endif; ?>
-
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Grant Program</summary>
-            <div class="gre-accordion-body"><?= htmlspecialchars((string) $selected['funding_title']) ?></div>
-        </details>
-
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Lead Proponent</summary>
-            <div class="gre-accordion-body"><?= htmlspecialchars((string) $selected['applicant_name']) ?></div>
-        </details>
-
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">College / Dept</summary>
-            <div class="gre-accordion-body"><?= htmlspecialchars((string) ($selected['college_dept'] ?? '—')) ?></div>
-        </details>
-
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Requested Budget</summary>
-            <div class="gre-accordion-body">
-                ₱<?= number_format((float) ($selected['requested_budget'] ?? 0), 0) ?>
-                <div class="gre-accordion-sub">of ₱<?= number_format((float) ($selected['max_funding_cap'] ?? 0), 0) ?> cap</div>
-            </div>
-        </details>
-
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Eligibility</summary>
-            <div class="gre-accordion-body"><?= htmlspecialchars((string) ($selected['eligibility'] ?? '')) ?></div>
-        </details>
-
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Submitted</summary>
-            <div class="gre-accordion-body"><?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $selected['submitted_at']))) ?></div>
-        </details>
-
+        <h2><?= htmlspecialchars((string) ($selected['research_title'] ?? 'Research Proposal')) ?></h2>
+        <dl class="gre-meta">
+            <?php if (!empty($selected['proposal_reference'])): ?>
+            <div><dt>Reference</dt><dd><?= htmlspecialchars((string) $selected['proposal_reference']) ?>
+                <small>Version <?= max(1, (int) ($selected['current_version'] ?? 1)) ?> — <?= htmlspecialchars(grantVersionLabel((int) ($selected['current_version'] ?? 1))) ?></small>
+            </dd></div>
+            <?php endif; ?>
+            <div><dt>Grant Program</dt><dd><?= htmlspecialchars((string) $selected['funding_title']) ?></dd></div>
+            <div><dt>Lead Proponent</dt><dd><?= htmlspecialchars((string) $selected['applicant_name']) ?></dd></div>
+            <div><dt>College / Dept</dt><dd><?= htmlspecialchars((string) ($selected['college_dept'] ?? '—')) ?></dd></div>
+            <div><dt>Requested Budget</dt><dd>₱<?= number_format((float) ($selected['requested_budget'] ?? 0), 0) ?>
+                <small>of ₱<?= number_format((float) ($selected['max_funding_cap'] ?? 0), 0) ?> cap</small></dd></div>
+            <div><dt>Eligibility</dt><dd><?= htmlspecialchars((string) ($selected['eligibility'] ?? '')) ?></dd></div>
+            <div><dt>Submitted</dt><dd><?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $selected['submitted_at']))) ?></dd></div>
+        </dl>
         <?php if (!empty($selected['abstract'])): ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Executive Abstract</summary>
-            <div class="gre-accordion-body"><?= nl2br(htmlspecialchars((string) $selected['abstract'])) ?></div>
-        </details>
+        <div class="gre-block">
+            <h3>Executive Abstract</h3>
+            <p><?= nl2br(htmlspecialchars((string) $selected['abstract'])) ?></p>
+        </div>
         <?php endif; ?>
-
         <?php if (!empty($selected['objectives'])): ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Objectives</summary>
-            <div class="gre-accordion-body"><?= nl2br(htmlspecialchars((string) $selected['objectives'])) ?></div>
-        </details>
+        <div class="gre-block">
+            <h3>Objectives</h3>
+            <p><?= nl2br(htmlspecialchars((string) $selected['objectives'])) ?></p>
+        </div>
         <?php endif; ?>
-
-        <?php if (!empty($selected['proposal_pdf']) || !empty($selected['supporting_docs']) || !empty($selected['ethics_doc'])): ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Documents</summary>
-            <div class="gre-accordion-body gre-docs">
-                <?php if (!empty($selected['proposal_pdf'])): ?>
-                <a class="mpl-btn mpl-btn-soft mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'proposal')) ?>" target="_blank" rel="noopener">
-                    <?= smsIcon('file-pdf') ?> Proposal Document
-                </a>
-                <?php endif; ?>
-                <?php if (!empty($selected['supporting_docs'])): ?>
-                <a class="mpl-btn mpl-btn-ghost mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'supporting')) ?>" target="_blank" rel="noopener">
-                    <?= smsIcon('paperclip') ?> Supporting Docs
-                </a>
-                <?php endif; ?>
-                <?php if (!empty($selected['ethics_doc'])): ?>
-                <a class="mpl-btn mpl-btn-ghost mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'ethics')) ?>" target="_blank" rel="noopener">
-                    <?= smsIcon('shield-alt') ?> Ethics Clearance
-                </a>
-                <?php endif; ?>
-            </div>
-        </details>
-        <?php endif; ?>
+        <div class="gre-docs">
+            <?php if (!empty($selected['proposal_pdf'])): ?>
+            <a class="mpl-btn mpl-btn-soft mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'proposal')) ?>" target="_blank" rel="noopener">
+                <?= smsIcon('file-pdf') ?> Proposal Document
+            </a>
+            <?php endif; ?>
+            <?php if (!empty($selected['supporting_docs'])): ?>
+            <a class="mpl-btn mpl-btn-ghost mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'supporting')) ?>" target="_blank" rel="noopener">
+                <?= smsIcon('paperclip') ?> Supporting Docs
+            </a>
+            <?php endif; ?>
+            <?php if (!empty($selected['ethics_doc'])): ?>
+            <a class="mpl-btn mpl-btn-ghost mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'ethics')) ?>" target="_blank" rel="noopener">
+                <?= smsIcon('shield-alt') ?> Ethics Clearance
+            </a>
+            <?php endif; ?>
+        </div>
     </aside>
 
     <section class="gre-score-panel">
         <?php if ($existingEval): ?>
-        <details class="gre-accordion gre-accordion-highlight">
-            <summary class="gre-accordion-title">Evaluation Summary</summary>
-            <div class="gre-accordion-body">
-                <div class="gre-scored-banner gre-scored-banner-inline">
-                    <?= smsIcon('check-circle', ['class' => 'me-2']) ?>
-                    Submitted on <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $existingEval['submitted_at']))) ?>
-                    — Total: <strong><?= number_format((float) $existingEval['total_score'], 1) ?> / 100</strong>
-                </div>
-            </div>
-        </details>
-
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Rubric Scores</summary>
-            <div class="gre-accordion-body gre-accordion-body-flush">
-                <table class="gre-rubric-table gre-rubric-readonly">
-                    <thead><tr><th>Criteria</th><th>Maximum</th><th>Your Score</th></tr></thead>
-                    <tbody>
-                    <?php foreach ($rubric as $key => $max):
-                        $col = 'score_' . $key;
-                        $label = ucwords(str_replace('_', ' ', $key));
-                    ?>
-                        <tr><td><?= htmlspecialchars($label) ?></td><td><?= $max ?></td><td><strong><?= number_format((float) ($existingEval[$col] ?? 0), 1) ?></strong></td></tr>
-                    <?php endforeach; ?>
-                        <tr class="gre-total-row"><td colspan="2"><strong>Total Score</strong></td><td><strong><?= number_format((float) $existingEval['total_score'], 1) ?></strong></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </details>
-
-        <?php if (!empty($existingEval['comments'])): ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Comments</summary>
-            <div class="gre-accordion-body"><?= nl2br(htmlspecialchars((string) $existingEval['comments'])) ?></div>
-        </details>
-        <?php endif; ?>
-
-        <?php if (!empty($existingEval['recommendations'])): ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Recommendations</summary>
-            <div class="gre-accordion-body"><?= nl2br(htmlspecialchars((string) $existingEval['recommendations'])) ?></div>
-        </details>
-        <?php endif; ?>
-
-        <?php if (!empty($existingEval['required_corrections'])): ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Required Corrections</summary>
-            <div class="gre-accordion-body"><?= nl2br(htmlspecialchars((string) $existingEval['required_corrections'])) ?></div>
-        </details>
-        <?php endif; ?>
-
+        <div class="gre-scored-banner">
+            <?= smsIcon('check-circle', ['class' => 'me-2']) ?>
+            Evaluation submitted on <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $existingEval['submitted_at']))) ?>
+            — Total: <strong><?= number_format((float) $existingEval['total_score'], 1) ?> / 100</strong>
+        </div>
+        <table class="gre-rubric-table gre-rubric-readonly">
+            <thead><tr><th>Criteria</th><th>Maximum</th><th>Your Score</th></tr></thead>
+            <tbody>
+            <?php foreach ($rubric as $key => $max):
+                $col = 'score_' . $key;
+                $label = ucwords(str_replace('_', ' ', $key));
+            ?>
+                <tr><td><?= htmlspecialchars($label) ?></td><td><?= $max ?></td><td><strong><?= number_format((float) ($existingEval[$col] ?? 0), 1) ?></strong></td></tr>
+            <?php endforeach; ?>
+                <tr class="gre-total-row"><td colspan="2"><strong>Total Score</strong></td><td><strong><?= number_format((float) $existingEval['total_score'], 1) ?></strong></td></tr>
+            </tbody>
+        </table>
+        <?php if (!empty($existingEval['comments'])): ?><div class="gre-block"><h3>Comments</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['comments'])) ?></p></div><?php endif; ?>
+        <?php if (!empty($existingEval['recommendations'])): ?><div class="gre-block"><h3>Recommendations</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['recommendations'])) ?></p></div><?php endif; ?>
+        <?php if (!empty($existingEval['required_corrections'])): ?><div class="gre-block"><h3>Required Corrections</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['required_corrections'])) ?></p></div><?php endif; ?>
         <?php if (!empty($existingEval['recommendation'])): ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title">Recommendation Decision</summary>
-            <div class="gre-accordion-body">
-                <strong><?= htmlspecialchars(grantRecommendationLabel((string) $existingEval['recommendation'])) ?></strong>
-                <?php if (!empty($existingEval['revision_reason'])): ?>
-                    <div class="gre-accordion-sub mt-2">Revision reason:<br><?= nl2br(htmlspecialchars((string) $existingEval['revision_reason'])) ?></div>
-                <?php endif; ?>
-            </div>
-        </details>
+        <div class="gre-block">
+            <h3>Recommendation Decision</h3>
+            <p><strong><?= htmlspecialchars(grantRecommendationLabel((string) $existingEval['recommendation'])) ?></strong></p>
+            <?php if (!empty($existingEval['revision_reason'])): ?>
+                <p class="mb-0"><span style="font-size:.75rem;font-weight:700;color:var(--sms-text-muted);">Revision reason:</span><br><?= nl2br(htmlspecialchars((string) $existingEval['revision_reason'])) ?></p>
+            <?php endif; ?>
+        </div>
         <?php endif; ?>
 
         <?php else: ?>
-        <details class="gre-accordion">
-            <summary class="gre-accordion-title"><?= smsIcon('star-half-alt', ['class' => 'me-1']) ?> Score Proposal Using Rubric</summary>
-            <div class="gre-accordion-body">
-        <p class="text-muted mb-3" style="font-size:.84rem;">Enter scores for each criterion. Total is computed automatically (max 100).</p>
+        <h2><?= smsIcon('star-half-alt', ['class' => 'me-2 text-primary']) ?>Score Proposal Using Rubric</h2>
+        <p class="text-muted mb-3">Enter scores for each criterion. Total is computed automatically (max 100).</p>
 
         <div id="greEvalAlert" class="mpl-alert" style="display:none;" role="alert"></div>
 
@@ -397,8 +322,6 @@ renderBreadcrumbs($breadcrumbs);
                 <?= smsIcon('check', ['class' => 'me-1']) ?>Submit Evaluation
             </button>
         </form>
-            </div>
-        </details>
         <?php endif; ?>
     </section>
 </div>
