@@ -423,17 +423,31 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
             $canAct = ((string) ($workflow['workflow_status'] ?? '') === 'In Progress')
                 && in_array((string) ($step['status'] ?? ''), ['Pending', 'Queued'], true)
                 && grantUserCanActOnApprovalStep((string) ($step['approver_role_key'] ?? ''));
+            if ($canAct && $currentStepKey === 'adviser' && $roleKey === 'adviser') {
+                $userId = (int) ($_SESSION['user_id'] ?? 0);
+                $canAct = grantHasAdviserEvaluation($crad, $applicationId, $userId);
+            }
             break;
         }
     }
 
+    $adviserEvalComplete = false;
+    if ($currentStepKey === 'adviser') {
+        $adviserEvalComplete = grantHasAdviserEvaluation(
+            $crad,
+            $applicationId,
+            (int) ($_SESSION['user_id'] ?? 0)
+        );
+    }
+
     return [
-        'workflow'     => $workflow,
-        'steps'        => $steps,
-        'current_step' => $currentStep,
-        'can_act'      => $canAct,
-        'role_label'   => grantApprovalRoleLabel($roleKey),
-        'is_monitor'   => grantUserCanMonitorApprovalWorkflow(),
+        'workflow'               => $workflow,
+        'steps'                  => $steps,
+        'current_step'           => $currentStep,
+        'can_act'                => $canAct,
+        'adviser_eval_complete'  => $adviserEvalComplete,
+        'role_label'             => grantApprovalRoleLabel($roleKey),
+        'is_monitor'             => grantUserCanMonitorApprovalWorkflow(),
     ];
 }
 
@@ -515,6 +529,7 @@ function grantApprovalDetailFingerprint(?array $detail): string
         (string) ($wf['workflow_status'] ?? ''),
         (string) ($wf['updated_at'] ?? ''),
         !empty($detail['can_act']) ? '1' : '0',
+        !empty($detail['adviser_eval_complete']) ? '1' : '0',
     ];
 
     foreach ($detail['steps'] ?? [] as $step) {
@@ -547,6 +562,12 @@ function grantSubmitApprovalSignoff(
     }
 
     if (empty($detail['can_act'])) {
+        $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+        $stepKey = (string) ($detail['current_step']['step_key'] ?? '');
+        if ($roleKey === 'adviser' && $stepKey === 'adviser' && empty($detail['adviser_eval_complete'])) {
+            return ['ok' => false, 'error' => 'Complete your Adviser Evaluation score before signing off.'];
+        }
+
         return ['ok' => false, 'error' => 'You are not authorized to sign off at this stage.'];
     }
 

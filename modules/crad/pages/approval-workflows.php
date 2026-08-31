@@ -111,8 +111,11 @@ renderBreadcrumbs($breadcrumbs);
                 $steps = $detail['steps'];
                 $ref = htmlspecialchars((string) ($wf['proposal_reference'] ?? 'Proposal'));
                 $canAct = !empty($detail['can_act']);
-                $wfStatus = (string) ($wf['workflow_status'] ?? '');
-                $currentStepKey = (string) ($wf['current_step_key'] ?? '');
+                $adviserEvalComplete = !empty($detail['adviser_eval_complete']);
+                $needsAdviserScore = $roleKey === 'adviser'
+                    && $currentStepKey === 'adviser'
+                    && !$adviserEvalComplete
+                    && $wfStatus === 'In Progress';
                 ?>
                 <h2 class="gaw-pipeline-title">Sign-off Sequence for <?= $ref ?></h2>
 
