@@ -2442,7 +2442,7 @@ renderBreadcrumbs($breadcrumbs);
                             <input type="number" id="aiExpectedAttendees" min="1" max="500" value="15" inputmode="numeric">
                         </label>
                         <button type="button" class="director-ai-generate-btn" id="aiGenerateSlotsBtn">
-                            <?= smsIcon('wand-magic-sparkles', ['class' => 'me-1']) ?> Generate Optimal Slots
+                            <?= smsIcon('robot', ['class' => 'me-1']) ?> Generate Optimal Slots
                         </button>
                         <div class="director-ai-summary" id="aiScheduleSummary" role="status"></div>
                         <div class="director-ai-slot-hints" id="aiSlotHints"></div>
