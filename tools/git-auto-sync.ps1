@@ -1,7 +1,9 @@
 #Requires -Version 5.1
 param(
     [switch]$Watch,
-    [int]$DebounceSeconds = 8
+    [switch]$PullOnly,
+    [int]$DebounceSeconds = 8,
+    [int]$PollIntervalSeconds = 60
 )
 
 $ErrorActionPreference = 'Stop'
@@ -55,6 +57,52 @@ function Invoke-GitCommand {
     return $code
 }
 
+function Invoke-GitPull {
+    Set-Location $RepoRoot
+
+    $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
+                [System.Environment]::GetEnvironmentVariable('Path', 'User')
+
+    git rev-parse --is-inside-work-tree 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        Write-SyncLog 'Skipped: not a git repository.'
+        return $false
+    }
+
+    $branch = (git rev-parse --abbrev-ref HEAD).Trim()
+    if ($branch -eq 'HEAD') {
+        Write-SyncLog 'Skipped: detached HEAD.'
+        return $false
+    }
+
+    Invoke-GitCommand @('fetch', 'origin', $branch) | Out-Null
+    $localHash = (git rev-parse HEAD).Trim()
+    $remoteRef = "origin/$branch"
+    git rev-parse --verify $remoteRef 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        return $true
+    }
+
+    $remoteHash = (git rev-parse $remoteRef).Trim()
+    if ($localHash -eq $remoteHash) {
+        return $true
+    }
+
+    Write-SyncLog "Remote updates found on $branch"
+    $mergeBase = (git merge-base HEAD $remoteRef).Trim()
+    if ($mergeBase -eq $remoteHash) {
+        $pullCode = Invoke-GitCommand @('pull', '--rebase', 'origin', $branch)
+        return $pullCode -eq 0
+    }
+    if ($mergeBase -eq $localHash) {
+        $pullCode = Invoke-GitCommand @('pull', '--ff-only', 'origin', $branch)
+        return $pullCode -eq 0
+    }
+
+    Write-SyncLog 'Pull skipped: local and remote diverged. Resolve manually.'
+    return $false
+}
+
 function Invoke-GitSync {
     $previousPreference = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
@@ -70,46 +118,9 @@ function Invoke-GitSync {
     New-Item -ItemType File -Path $LockFile -Force | Out-Null
 
     try {
-        Set-Location $RepoRoot
-
-        $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
-                    [System.Environment]::GetEnvironmentVariable('Path', 'User')
-
-        git rev-parse --is-inside-work-tree 2>$null | Out-Null
-        if ($LASTEXITCODE -ne 0) {
-            Write-SyncLog 'Skipped: not a git repository.'
+        Write-SyncLog 'Sync started'
+        if (-not (Invoke-GitPull)) {
             return
-        }
-
-        $branch = (git rev-parse --abbrev-ref HEAD).Trim()
-        if ($branch -eq 'HEAD') {
-            Write-SyncLog 'Skipped: detached HEAD.'
-            return
-        }
-
-        Write-SyncLog "Sync started on branch $branch"
-
-        Invoke-GitCommand @('fetch', 'origin', $branch) | Out-Null
-        $localHash = (git rev-parse HEAD).Trim()
-        $remoteRef = "origin/$branch"
-        git rev-parse --verify $remoteRef 2>$null | Out-Null
-        if ($LASTEXITCODE -eq 0) {
-            $remoteHash = (git rev-parse $remoteRef).Trim()
-            if ($localHash -ne $remoteHash) {
-                $mergeBase = (git merge-base HEAD $remoteRef).Trim()
-                if ($mergeBase -eq $remoteHash) {
-                    $pullCode = Invoke-GitCommand @('pull', '--rebase', 'origin', $branch)
-                    if ($pullCode -ne 0) { return }
-                }
-                elseif ($mergeBase -eq $localHash) {
-                    $pullCode = Invoke-GitCommand @('pull', '--ff-only', 'origin', $branch)
-                    if ($pullCode -ne 0) { return }
-                }
-                else {
-                    Write-SyncLog 'Pull skipped: local and remote diverged. Resolve manually.'
-                    return
-                }
-            }
         }
 
         git add -A
