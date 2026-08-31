@@ -546,7 +546,7 @@ function requireModuleAccess(string $moduleKey): void
                 }
             }
         }
-        if ($roleKey === 'review_committee') {
+        if (in_array($roleKey, ['review_committee', 'adviser'], true)) {
             foreach ($grantReviewerPages as $allowedPath) {
                 if (str_ends_with($scriptPath, $allowedPath)) {
                     return;
