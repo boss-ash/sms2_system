@@ -3,6 +3,8 @@
  * SMS 2 - Navigation context helpers for sidebar and layout.
  */
 
+require_once __DIR__ . '/grant-review-workflow-urls.php';
+
 if (!function_exists('smsSidebarMode')) {
     /**
      * Which sidebar template to render for the logged-in role.
