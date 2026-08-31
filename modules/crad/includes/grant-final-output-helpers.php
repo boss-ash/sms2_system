@@ -619,7 +619,7 @@ function grantVerifyFinalOutput(PDO $crad, int $applicationId, array $post, int 
         ]);
 
         $appUpdate = $crad->prepare('UPDATE grant_applications SET status = ?, updated_at = NOW() WHERE id = ?');
-        $appUpdate->execute([grantStatusPublicationVerified(), $applicationId]);
+        $appUpdate->execute([grantStatusOutputVerified(), $applicationId]);
 
         $crad->commit();
     } catch (Throwable $e) {
@@ -872,7 +872,7 @@ function grantNotifyApplicantFinalOutputVerified(
         $recipientRole,
         'grant_final_output_verified',
         'grant-proposal:final_output_verified:' . $applicationId,
-        'Publication Verified',
+        'Output Verified',
         $body,
         grantPublicationsIpUrl($applicationId)
     );
