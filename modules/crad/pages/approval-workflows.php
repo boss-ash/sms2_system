@@ -12,6 +12,15 @@ require_once __DIR__ . '/../includes/grant-approval-helpers.php';
 requireAuth();
 grantRequireApprovalAccess();
 
+if (getCurrentUserRoleKey() === 'finance' && !defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')) {
+    $redirect = BASE_URL . '/modules/payment/pages/approval-workflows.php';
+    if (!empty($_GET['id'])) {
+        $redirect .= '?id=' . (int) $_GET['id'];
+    }
+    header('Location: ' . $redirect);
+    exit;
+}
+
 $pageTitle             = 'Approval Workflows';
 $activeModule          = defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')
     ? (string) SMS2_GRANT_APPROVAL_SHELL_MODULE
@@ -97,8 +106,13 @@ renderBreadcrumbs($breadcrumbs);
         <div class="gaw-pipeline-card">
             <div class="gaw-detail-empty">
                 <?= smsIcon('inbox') ?>
+                <?php if ($roleKey === 'finance'): ?>
+                <p style="margin:0;font-weight:600;">No proposals pending Finance approval.</p>
+                <p style="margin:.35rem 0 0;font-size:.84rem;">Proposals appear here in real time after VPAA signs off. Only items at the Finance step (Level 6) are listed.</p>
+                <?php else: ?>
                 <p style="margin:0;font-weight:600;">No proposals in the approval workflow yet.</p>
                 <p style="margin:.35rem 0 0;font-size:.84rem;">Proposals appear here after the Review Committee recommends them for approval.</p>
+                <?php endif; ?>
             </div>
         </div>
     <?php else: ?>
