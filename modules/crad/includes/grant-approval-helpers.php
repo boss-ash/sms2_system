@@ -713,16 +713,28 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
                 $userId = (int) ($_SESSION['user_id'] ?? 0);
                 $canAct = grantHasAdviserEvaluation($crad, $applicationId, $userId);
             }
+            $approverStepKey = grantApprovalStepKeyForRole($roleKey);
+            if ($canAct
+                && $approverStepKey !== null
+                && $approverStepKey !== ''
+                && $approverStepKey !== 'adviser'
+                && $currentStepKey === $approverStepKey) {
+                $userId = (int) ($_SESSION['user_id'] ?? 0);
+                $canAct = grantHasApproverStepEvaluation($crad, $applicationId, $userId, $roleKey);
+            }
             break;
         }
     }
 
     $adviserEvalComplete = false;
+    $approverEvalComplete = false;
     $needsAdviserScore = false;
+    $needsRubricScore = false;
     $committeeEval = null;
     $adviserEval = null;
     $monitorStageHint = '';
     $isMonitor = grantUserCanMonitorApprovalWorkflow();
+    $approverStepKey = grantApprovalStepKeyForRole($roleKey);
 
     if ($currentStepKey === 'adviser') {
         $userId = (int) ($_SESSION['user_id'] ?? 0);
@@ -730,6 +742,17 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
         $needsAdviserScore = $roleKey === 'adviser'
             && !$adviserEvalComplete
             && (string) ($workflow['workflow_status'] ?? '') === 'In Progress';
+        $needsRubricScore = $needsAdviserScore;
+    } elseif ($approverStepKey !== null
+        && $approverStepKey !== ''
+        && $approverStepKey !== 'adviser'
+        && $currentStepKey === $approverStepKey
+        && (string) ($workflow['workflow_status'] ?? '') === 'In Progress'
+        && grantUserCanActOnApprovalStep($roleKey)) {
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
+        $approverEvalComplete = grantHasApproverStepEvaluation($crad, $applicationId, $userId, $roleKey);
+        $needsRubricScore = !$approverEvalComplete;
+        $needsAdviserScore = false;
     }
 
     if ($isMonitor) {
@@ -746,6 +769,17 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
                 $monitorStageHint = "Adviser scored {$score}/100 — awaiting administrative sign-off.";
             } else {
                 $monitorStageHint = 'Awaiting Academic Adviser rubric score and sign-off.';
+            }
+        } elseif ($currentStep !== null) {
+            $stepEval = grantGetEvaluationByTypeAndApplication($crad, $applicationId, $currentStepKey);
+            if ($stepEval) {
+                $score = number_format((float) ($stepEval['total_score'] ?? 0), 1);
+                $monitorStageHint = grantEvaluationStepLabel($currentStepKey)
+                    . " scored {$score}/100 — awaiting administrative sign-off.";
+            } else {
+                $monitorStageHint = 'Awaiting '
+                    . grantEvaluationStepLabel($currentStepKey)
+                    . ' rubric score before sign-off.';
             }
         } elseif ($currentStep !== null) {
             $monitorStageHint = 'Awaiting '
