@@ -10,15 +10,16 @@ require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/navigation-context.php';
 
 $roles = [
-    'student' => ['mode' => 'student', 'module' => 'student_portal'],
-    'registrar' => ['mode' => 'admin_modules', 'module' => 'registrar'],
-    'finance' => ['mode' => 'admin_modules', 'module' => 'payment'],
-    'crad_officer' => ['mode' => 'admin_modules', 'module' => 'crad'],
-    'panel' => ['mode' => 'faculty_workspace', 'module' => 'faculty'],
-    'grammarian' => ['mode' => 'faculty_workspace', 'module' => 'faculty'],
-    'research_director' => ['mode' => 'faculty_workspace', 'module' => 'faculty'],
-    'hr' => ['mode' => 'admin_modules', 'module' => 'faculty'],
-    'superadmin' => ['mode' => 'admin_modules', 'module' => 'user-management'],
+    'student' => ['mode' => 'student', 'module' => 'student_portal', 'dashboard' => false, 'home' => '/modules/student-portal/pages/dashboard.php'],
+    'registrar' => ['mode' => 'admin_modules', 'module' => 'registrar', 'dashboard' => true, 'home' => '/dashboard/index.php'],
+    'finance' => ['mode' => 'admin_modules', 'module' => 'payment', 'dashboard' => true, 'home' => '/dashboard/index.php'],
+    'crad_officer' => ['mode' => 'admin_modules', 'module' => 'crad', 'dashboard' => true, 'home' => '/dashboard/index.php'],
+    'research_coordinator' => ['mode' => 'admin_modules', 'module' => 'crad', 'dashboard' => false, 'home' => '/modules/crad/index.php'],
+    'panel' => ['mode' => 'faculty_workspace', 'module' => 'faculty', 'dashboard' => false, 'home' => '/modules/faculty/pages/assigned-defenses.php'],
+    'grammarian' => ['mode' => 'faculty_workspace', 'module' => 'faculty', 'dashboard' => false, 'home' => '/modules/faculty/pages/for-evaluation.php'],
+    'research_director' => ['mode' => 'faculty_workspace', 'module' => 'faculty', 'dashboard' => false, 'home' => '/modules/faculty/pages/research-director.php'],
+    'hr' => ['mode' => 'admin_modules', 'module' => 'faculty', 'dashboard' => true, 'home' => '/modules/faculty/index.php'],
+    'superadmin' => ['mode' => 'admin_modules', 'module' => 'user-management', 'dashboard' => true, 'home' => '/dashboard/index.php'],
 ];
 
 $_SERVER['SCRIPT_NAME'] = '/sms2_system/dashboard/index.php';
@@ -28,17 +29,21 @@ foreach ($roles as $roleKey => $expected) {
     $mode = smsSidebarMode($roleKey);
     $module = smsEffectiveActiveModule('dashboard', $roleKey);
     $highlight = smsSidebarHighlightModule('dashboard', $roleKey);
+    $home = smsRoleHomeUrl($roleKey);
+    $showsDashboard = smsShowsMainDashboard($roleKey);
 
     $ok = $mode === $expected['mode']
         && $module === $expected['module']
-        && $highlight === $expected['module'];
+        && $highlight === $expected['module']
+        && $showsDashboard === $expected['dashboard']
+        && str_contains($home, $expected['home']);
 
     if (!$ok) {
         $failed++;
-        echo "FAIL {$roleKey}: mode={$mode} module={$module} highlight={$highlight}\n";
-        echo "     expected mode={$expected['mode']} module={$expected['module']}\n";
+        echo "FAIL {$roleKey}: mode={$mode} module={$module} highlight={$highlight} dashboard=" . ($showsDashboard ? 'yes' : 'no') . " home={$home}\n";
+        echo "     expected mode={$expected['mode']} module={$expected['module']} dashboard=" . ($expected['dashboard'] ? 'yes' : 'no') . " home contains {$expected['home']}\n";
     } else {
-        echo "OK   {$roleKey}: {$mode} / {$module}\n";
+        echo "OK   {$roleKey}: {$mode} / home=" . basename(parse_url($home, PHP_URL_PATH) ?: '') . "\n";
     }
 }
 
