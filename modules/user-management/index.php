@@ -184,7 +184,7 @@ $subpages = [
 ];
 ?>
 
-<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css" rel="stylesheet">
+<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=grant-role-badges-1" rel="stylesheet">
 
 <?php
 $pageBannerIcon        = 'user-cog';
