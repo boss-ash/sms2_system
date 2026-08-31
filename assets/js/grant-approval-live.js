@@ -369,6 +369,9 @@
                     alert((data && data.message) || 'Sign-off failed.');
                     return;
                 }
+                if (data.funded) {
+                    alert(data.message || 'Proposal approved and funded.');
+                }
                 renderDetail(data.detail);
                 fetchWorkflows(false);
             })

@@ -130,7 +130,7 @@ switch ($action) {
         }
         echo json_encode([
             'success' => true,
-            'message' => 'Proposal returned to proponent for revision.',
+            'message' => 'Proposal returned to proponent for revision. The researcher was notified to open Revisions Requested.',
             'detail'  => grantGetApprovalWorkflowDetail($crad, $applicationId),
         ]);
         break;
