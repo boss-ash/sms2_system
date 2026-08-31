@@ -1108,6 +1108,174 @@ function grantDashboardStats(PDO $crad): array
 }
 
 /**
+ * Full grant dashboard metrics for CRAD Dashboard & Analytics (real-time).
+ *
+ * @return array<string, int|float|string>
+ */
+function grantGetDashboardMetrics(PDO $crad): array
+{
+    grantEnsureTables($crad);
+    grantExpireDeadlines($crad);
+
+    if (function_exists('grantEnsureFinalOutputTables')) {
+        require_once __DIR__ . '/grant-final-output-helpers.php';
+        grantEnsureFinalOutputTables($crad);
+    }
+    if (function_exists('grantEnsureDocumentRepositoryTables')) {
+        require_once __DIR__ . '/grant-document-repository-helpers.php';
+        grantEnsureDocumentRepositoryTables($crad);
+    }
+    if (function_exists('grantEnsureFundingTables')) {
+        require_once __DIR__ . '/grant-funding-helpers.php';
+        grantEnsureFundingTables($crad);
+    }
+
+    $defaults = grantDashboardMetricsDefaults();
+
+    try {
+        $defaults['total_grant_calls'] = (int) $crad->query(
+            'SELECT COUNT(*) FROM grant_opportunities'
+        )->fetchColumn();
+
+        $funded = grantStatusApprovedFunded();
+        $finalSubmitted = grantStatusFinalOutputSubmitted();
+        $outputVerified = grantStatusOutputVerified();
+        $archived = grantStatusArchived();
+
+        $appStmt = $crad->prepare("
+            SELECT
+                COUNT(*) AS submitted_proposals,
+                SUM(status = 'Under Review') AS under_review,
+                SUM(status = 'Revision Required') AS revision_required,
+                SUM(status IN ('Rejected', 'Denied')) AS rejected_proposals,
+                SUM(status = ?) AS approved_funded_projects,
+                SUM(status IN (?, ?)) AS ongoing_research,
+                SUM(status IN (?, ?)) AS completed_research,
+                COALESCE(SUM(
+                    CASE WHEN status IN (?, ?, ?, ?)
+                    THEN COALESCE(approved_budget, requested_budget, 0) ELSE 0 END
+                ), 0) AS total_funding
+            FROM grant_applications
+        ");
+        $appStmt->execute([
+            $funded,
+            $funded, $finalSubmitted,
+            $outputVerified, $archived,
+            $funded, $finalSubmitted, $outputVerified, $archived,
+        ]);
+        $app = $appStmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        $defaults['submitted_proposals']      = (int) ($app['submitted_proposals'] ?? 0);
+        $defaults['under_review']             = (int) ($app['under_review'] ?? 0);
+        $defaults['revision_required']        = (int) ($app['revision_required'] ?? 0);
+        $defaults['rejected_proposals']       = (int) ($app['rejected_proposals'] ?? 0);
+        $defaults['approved_funded_projects'] = (int) ($app['approved_funded_projects'] ?? 0);
+        $defaults['ongoing_research']         = (int) ($app['ongoing_research'] ?? 0);
+        $defaults['completed_research']       = (int) ($app['completed_research'] ?? 0);
+        $defaults['total_funding']            = (float) ($app['total_funding'] ?? 0);
+
+        $releasedStmt = $crad->query("
+            SELECT COALESCE(SUM(amount_released), 0)
+              FROM grant_funding_disbursements
+             WHERE status = 'Released'
+        ");
+        $releasedTotal = (float) ($releasedStmt ? $releasedStmt->fetchColumn() : 0);
+        if ($releasedTotal > 0) {
+            $defaults['total_funding'] = $releasedTotal;
+        }
+
+        $pubTable = $crad->query("SHOW TABLES LIKE 'grant_publications_ip_repository'")->fetchColumn();
+        if ($pubTable) {
+            $defaults['publications'] = (int) $crad->query(
+                'SELECT COUNT(*) FROM grant_publications_ip_repository'
+            )->fetchColumn();
+
+            $defaults['ip_records'] = (int) $crad->query("
+                SELECT COUNT(*) FROM grant_publications_ip_repository
+                 WHERE TRIM(COALESCE(copyright_info, '')) <> ''
+                    OR TRIM(COALESCE(patent_info, '')) <> ''
+                    OR TRIM(COALESCE(other_ip_info, '')) <> ''
+                    OR TRIM(COALESCE(ip_information, '')) <> ''
+            ")->fetchColumn();
+        }
+
+        $defaults['updated_at'] = date('Y-m-d H:i:s');
+    } catch (Throwable $e) {
+        error_log('grantGetDashboardMetrics: ' . $e->getMessage());
+    }
+
+    return $defaults;
+}
+
+/**
+ * @return array<string, int|float|string>
+ */
+function grantDashboardMetricsDefaults(): array
+{
+    return [
+        'total_grant_calls'          => 0,
+        'submitted_proposals'        => 0,
+        'under_review'               => 0,
+        'revision_required'          => 0,
+        'rejected_proposals'         => 0,
+        'approved_funded_projects'   => 0,
+        'total_funding'              => 0.0,
+        'ongoing_research'           => 0,
+        'completed_research'         => 0,
+        'publications'               => 0,
+        'ip_records'                 => 0,
+        'updated_at'                 => '',
+    ];
+}
+
+/**
+ * @return list<array{key: string, label: string, icon: string, tone: string, format: string}>
+ */
+function grantDashboardMetricDefinitions(): array
+{
+    return [
+        ['key' => 'total_grant_calls',        'label' => 'Total Grant Calls',          'icon' => 'fa-bullhorn',         'tone' => 'blue',   'format' => 'int'],
+        ['key' => 'submitted_proposals',      'label' => 'Submitted Proposals',        'icon' => 'fa-file-alt',         'tone' => 'purple', 'format' => 'int'],
+        ['key' => 'under_review',             'label' => 'Under Review',               'icon' => 'fa-search',           'tone' => 'amber',  'format' => 'int'],
+        ['key' => 'revision_required',        'label' => 'Revision Required',          'icon' => 'fa-edit',             'tone' => 'orange', 'format' => 'int'],
+        ['key' => 'rejected_proposals',       'label' => 'Rejected Proposals',         'icon' => 'fa-ban',              'tone' => 'red',    'format' => 'int'],
+        ['key' => 'approved_funded_projects', 'label' => 'Approved & Funded Projects', 'icon' => 'fa-check-circle',     'tone' => 'green',  'format' => 'int'],
+        ['key' => 'total_funding',            'label' => 'Total Funding',              'icon' => 'fa-peso-sign',        'tone' => 'green',  'format' => 'currency'],
+        ['key' => 'ongoing_research',         'label' => 'Ongoing Research',           'icon' => 'fa-flask',            'tone' => 'blue',   'format' => 'int'],
+        ['key' => 'completed_research',       'label' => 'Completed Research',         'icon' => 'fa-flag-checkered',   'tone' => 'purple', 'format' => 'int'],
+        ['key' => 'publications',             'label' => 'Publications',               'icon' => 'fa-book-open',        'tone' => 'teal',   'format' => 'int'],
+        ['key' => 'ip_records',               'label' => 'IP Records',                 'icon' => 'fa-shield-alt',       'tone' => 'indigo', 'format' => 'int'],
+    ];
+}
+
+/**
+ * @param array<string, int|float|string> $metrics
+ */
+function grantDashboardMetricsFingerprint(array $metrics): string
+{
+    $parts = [];
+    foreach (grantDashboardMetricDefinitions() as $def) {
+        $key = (string) ($def['key'] ?? '');
+        $parts[] = $key . ':' . (string) ($metrics[$key] ?? 0);
+    }
+
+    return md5(implode('|', $parts));
+}
+
+/**
+ * @param array<string, int|float|string> $metrics
+ */
+function grantFormatDashboardMetricValue(string $key, array $metrics): string
+{
+    $value = $metrics[$key] ?? 0;
+    if ($key === 'total_funding') {
+        return grantFormatPeso((float) $value);
+    }
+
+    return number_format((int) $value);
+}
+
+/**
  * Publish a new grant opportunity.
  * Returns ['ok' => true, 'id' => int] on success or ['ok' => false, 'error' => string] on failure.
  *

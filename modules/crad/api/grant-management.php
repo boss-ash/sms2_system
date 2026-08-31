@@ -119,6 +119,20 @@ switch ($action) {
         echo json_encode(['success' => true, 'stats' => grantDashboardStats($crad)]);
         break;
 
+    case 'get_dashboard_metrics':
+        if (!grantUserCanManage()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            exit;
+        }
+        $metrics = grantGetDashboardMetrics($crad);
+        echo json_encode([
+            'success'     => true,
+            'metrics'     => $metrics,
+            'fingerprint' => grantDashboardMetricsFingerprint($metrics),
+        ]);
+        break;
+
     case 'get_opportunities':
         $opps = grantGetOpportunities($crad);
         echo json_encode(['success' => true, 'opportunities' => $opps, 'count' => count($opps)]);
