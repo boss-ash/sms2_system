@@ -1249,72 +1249,17 @@ body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-link {
     display: none;
 }
 
-/* Responsive — hide search on very small screens, adjust center positioning */
-@media (max-width: 767px) {
+/* Hide keyboard hint when space is tight */
+@media (max-width: 1199.98px) {
+    .search-kbd-hint { display: none !important; }
+    .navbar-search-input { padding-right: 2.2rem !important; }
+}
+
+/* Responsive — compact search; mobile uses overlay via .search-open */
+@media (max-width: 767.98px) {
     .navbar-center { display: none; }
-}
-
-@media (max-width: 991px) {
-    .navbar-left { min-width: auto; }
-    .navbar-center { max-width: 300px; }
-    .navbar-search-dropdown { width: 300px; }
-}
-
-/* ============================================================
-   Navbar — responsive auto-adjust
-   Prevents right-side icons from overlapping the search bar
-   ============================================================ */
-
-/* ── 992px – 1199px: medium desktops / small laptops ── */
-@media (min-width: 992px) and (max-width: 1199.98px) {
-    .navbar-center {
-        max-width: 340px;
-    }
-    /* tighten right-side gaps so icons don't eat search space */
-    .navbar-right {
-        gap: 0.25rem !important;
-    }
-    .sms-navbar .navbar-brand span {
-        display: none; /* hide "SMS 2" text, keep icon */
-    }
-    .navbar-left {
-        min-width: 60px;
-    }
-}
-
-/* ── 768px – 991px: tablets / landscape phones ── */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    /* search visible but shorter, shifted left of right icons */
-    .navbar-center {
-        position: relative;
-        left: auto;
-        transform: none;
-        flex: 1 1 auto;
-        max-width: none;
-        padding: 0 0.5rem;
-        order: 2; /* left > search > right */
-    }
-    .navbar-inner {
-        flex-wrap: nowrap;
-    }
-    .navbar-left {
-        order: 1;
-        flex: 0 0 auto;
-        min-width: auto;
-    }
-    .navbar-right {
-        order: 3;
-        flex: 0 0 auto;
-        gap: 0.2rem !important;
-    }
-    /* hide lower-priority items to save space */
-    .sms-navbar .navbar-brand span { display: none; }
-    /* shrink message / notification btn padding */
-    .navbar-right .btn-link { padding: 0.25rem 0.4rem !important; }
-    .theme-toggle { width: 32px; height: 32px; border-radius: 8px; }
-    /* make search dropdown not overflow viewport */
     .navbar-search-dropdown {
-        width: min(340px, 90vw);
+        width: 100%;
         left: 0;
         transform: none;
     }
@@ -1324,25 +1269,32 @@ body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-link {
     }
 }
 
-/* ── ≤ 767px: phones — search hidden, right items compact ── */
+@media (max-width: 991.98px) {
+    .navbar-left { min-width: 0; }
+    .navbar-search-dropdown { width: min(340px, calc(100vw - 1.5rem)); }
+}
+
+/* ============================================================
+   Navbar — responsive auto-adjust
+   ============================================================ */
+
+/* ── 992px – 1199px: medium desktops / small laptops ── */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .navbar-right { gap: 0.25rem !important; }
+    .sms-navbar .navbar-brand span { display: none; }
+}
+
+/* ── ≤ 767px: phones — search hidden until toggled ── */
 @media (max-width: 767.98px) {
-    .navbar-center { display: none !important; }
-    .navbar-right {
-        gap: 0.1rem !important;
-    }
+    .navbar-right { gap: 0.1rem !important; }
     .navbar-right .btn-link { padding: 0.25rem 0.35rem !important; }
-    /* hide username label, keep icon */
     .navbar-right .d-none.d-md-inline { display: none !important; }
-    /* shrink theme toggle */
     .theme-toggle { width: 30px; height: 30px; border-radius: 8px; }
-    /* tighten notification badge */
     .notification-badge { min-width: 14px; padding: 0.15em 0.35em; font-size: 0.52rem; }
 }
 
-/* ── ≤ 480px: very small phones — further tighten ── */
+/* ── ≤ 480px: very small phones — hide messages, keep search toggle ── */
 @media (max-width: 480px) {
-    /* hide messages button entirely, keep notifications + user */
     .navbar-right > .dropdown:first-of-type { display: none !important; }
     .navbar-right { gap: 0.05rem !important; }
-    .sms-navbar .navbar-brand i { font-size: 1rem; }
 }

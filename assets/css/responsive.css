@@ -264,7 +264,6 @@ body.sms-app { overflow-x: hidden; }
 
 .navbar-inner {
     min-width: 0;
-    flex-wrap: nowrap;
 }
 
 .navbar-right {
@@ -273,26 +272,30 @@ body.sms-app { overflow-x: hidden; }
     flex-shrink: 0;
 }
 
-/* Keep search from colliding into the steady clock/actions cluster */
-.navbar-center {
-    max-width: min(500px, calc(100vw - 22rem));
+/* Dashboard & main content — full fluid width */
+.dashboard-shell,
+.glass-dashboard,
+.glass-board,
+.academic-dashboard,
+.module-page-banner,
+.sms-page-header {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
-/* Mid desktop with sidebar open: content gets tight */
+/* Hide messages dropdown when navbar is crowded */
+@media (max-width: 1100px) {
+    .navbar-right > .dropdown:first-of-type { display: none !important; }
+}
+
 @media (max-width: 1280px) {
     .sms-main { padding-left: 1.15rem; padding-right: 1.15rem; }
-    .navbar-center { max-width: min(420px, calc(100vw - 20rem)); }
 }
 
 @media (max-width: 991.98px) {
-    .navbar-center {
-        max-width: min(320px, calc(100vw - 18rem));
-    }
-}
-
-@media (max-width: 767.98px) {
-    .navbar-right .dropdown .btn-link span.d-none { display: none !important; }
-    .navbar-center { max-width: min(240px, calc(100vw - 16rem)); }
+    .sms-footer { padding-left: 1rem; padding-right: 1rem; }
 }
 
 /* Process / report boards fill available width */
@@ -448,6 +451,7 @@ table {
         inset: calc(var(--sms-navbar-height) + 0.5rem) 0.75rem auto;
         left: 0.75rem;
         right: 0.75rem;
+        display: block;
         max-width: none;
         z-index: 1040;
         opacity: 0;
@@ -462,6 +466,13 @@ table {
         visibility: visible;
         pointer-events: auto;
         transform: translateY(0);
+    }
+
+    .sms-navbar.search-open .navbar-search-dropdown {
+        width: 100%;
+        max-width: none;
+        left: 0;
+        transform: none;
     }
 
     .sms-modal.modal .modal-dialog,
