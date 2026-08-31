@@ -18,9 +18,12 @@ $activePage            = 'reviewer-evaluation';
 $pageBannerIcon        = 'fa-clipboard-check';
 $pageBannerDescription = grantIsAdviserEvaluationViewer()
     ? 'Review committee scores before your administrative sign-off.'
-    : 'Score research grant proposals submitted for committee review.';
+    : (grantIsGrantApproverEvaluationViewer()
+        ? 'Review committee and adviser scores before your approval sign-off.'
+        : 'Score research grant proposals submitted for committee review.');
 $hideModulePageBanner  = true;
 $isAdviserView         = grantIsAdviserEvaluationViewer();
+$isApproverView        = grantIsGrantApproverEvaluationViewer();
 
 $breadcrumbs = [
     ['label' => grantEvaluationBreadcrumbModuleLabel(), 'url' => grantEvaluationBreadcrumbModuleUrl()],

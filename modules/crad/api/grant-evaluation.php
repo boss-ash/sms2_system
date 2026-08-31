@@ -37,6 +37,9 @@ switch ($action) {
         if (grantIsAdviserEvaluationViewer()) {
             $pending = count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
             $scored  = grantAdviserEvaluationScoredCount($crad);
+        } elseif (grantIsGrantApproverEvaluationViewer()) {
+            $pending = count($queue);
+            $scored  = grantApproverSignoffCount($crad);
         } else {
             $pending = count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
             $scored  = count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])));
