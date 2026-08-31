@@ -558,9 +558,10 @@ function requireModuleAccess(string $moduleKey): void
         }
         $grantApproverRoles = ['research_coordinator', 'department_chair', 'hr', 'crad_officer', 'research_office', 'finance', 'qa', 'vpaa'];
         if (in_array($roleKey, $grantApproverRoles, true)) {
-            $grantApproverPages = array_merge($grantReviewerPages, [
-                '/modules/crad/pages/approval-workflows.php',
-            ]);
+            $grantApproverPages = ['/modules/crad/pages/approval-workflows.php'];
+            if ($roleKey !== 'crad_officer') {
+                $grantApproverPages = array_merge($grantReviewerPages, $grantApproverPages);
+            }
             foreach ($grantApproverPages as $allowedPath) {
                 if (str_ends_with($scriptPath, $allowedPath)) {
                     return;

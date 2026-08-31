@@ -52,10 +52,19 @@ if ($crad) {
     $dbError = 'CRAD database connection unavailable.';
 }
 
+$inProgressCount = count(array_filter(
+    $workflows,
+    static fn(array $r): bool => (string) ($r['workflow_status'] ?? '') === 'In Progress'
+));
+$completedCount = count(array_filter(
+    $workflows,
+    static fn(array $r): bool => (string) ($r['workflow_status'] ?? '') === 'Completed'
+));
+
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-approval-workflows.css?v=3" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-approval-workflows.css?v=4" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gaw-alert" role="alert" style="background:rgba(239,68,68,.08);color:#b91c1c;margin-bottom:1rem;padding:.75rem 1rem;border-radius:8px;font-size:.88rem;">
@@ -63,14 +72,22 @@ renderBreadcrumbs($breadcrumbs);
 </div>
 <?php endif; ?>
 
-<div class="gaw" data-grant-approval-live="1" data-selected-id="<?= (int) $selectedId ?>">
+<div class="gaw" data-grant-approval-live="1" data-selected-id="<?= (int) $selectedId ?>" data-monitor="<?= $isMonitor ? '1' : '0' ?>">
 
     <header class="gaw-page-header">
-        <h1>
-            Multi-Level Approval Pipeline
-            <span class="gaw-live-badge">Live</span>
-        </h1>
-        <p>Track sequential institutional sign-offs: <?= htmlspecialchars(grantApprovalPipelineLabel()) ?></p>
+        <div class="gaw-page-header-main">
+            <h1>
+                Multi-Level Approval Pipeline
+                <span class="gaw-live-badge">Live</span>
+            </h1>
+            <p>Track sequential institutional sign-offs: <?= htmlspecialchars(grantApprovalPipelineLabel()) ?></p>
+        </div>
+        <?php if ($isMonitor): ?>
+        <div class="gaw-stat-row" id="gawMonitorStats">
+            <span class="gaw-stat pending"><strong data-gaw-in-progress><?= $inProgressCount ?></strong> in progress</span>
+            <span class="gaw-stat completed"><strong data-gaw-completed><?= $completedCount ?></strong> completed</span>
+        </div>
+        <?php endif; ?>
     </header>
 
     <?php if ($workflows === []): ?>
@@ -213,5 +230,5 @@ renderBreadcrumbs($breadcrumbs);
     </div>
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=4"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=5"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

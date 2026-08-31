@@ -688,7 +688,7 @@ $researchDirectorNavGroups = [
                                                             $isPageActive = $isModuleActive && $activePage === 'research-analytics-reporting' && (string) ($_GET['report'] ?? 'capstone-analytics') === $slug;
                                                         } else {
                                                             if (!isset($pageTitles[$slug])) { continue; }
-                                                            if ($roleKey === 'crad_officer' && $slug === 'research-defense-scheduling') { continue; }
+                                                            if ($roleKey === 'crad_officer' && in_array($slug, ['research-defense-scheduling', 'reviewer-evaluation'], true)) { continue; }
                                                             $isPageActive = ($isModuleActive && $activePage === $slug);
                                                             $pageHref = BASE_URL . '/modules/' . $moduleFolder . '/pages/' . $slug . '.php';
                                                             $sidebarPageTitle = $pageTitles[$slug];

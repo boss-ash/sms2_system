@@ -625,6 +625,7 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
         'adviser_eval_complete'  => $adviserEvalComplete,
         'needs_adviser_score'    => $needsAdviserScore,
         'role_label'             => grantApprovalRoleLabel($roleKey),
+        'current_approver_label' => grantApprovalRoleLabel((string) ($currentStep['approver_role_key'] ?? '')),
         'is_monitor'             => grantUserCanMonitorApprovalWorkflow(),
     ];
 }

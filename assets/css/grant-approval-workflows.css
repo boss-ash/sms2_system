@@ -12,6 +12,54 @@
 
 .gaw-page-header {
     margin-bottom: 1.35rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.gaw-page-header-main {
+    flex: 1 1 320px;
+    min-width: 0;
+}
+
+.gaw-stat-row {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    flex-wrap: wrap;
+}
+
+.gaw-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .45rem .75rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.gaw-stat strong {
+    font-size: .92rem;
+    color: #0f172a;
+}
+
+.gaw-stat.pending {
+    background: rgba(249, 115, 22, .08);
+    border-color: rgba(249, 115, 22, .2);
+    color: #c2410c;
+}
+
+.gaw-stat.completed {
+    background: rgba(34, 197, 94, .08);
+    border-color: rgba(34, 197, 94, .2);
+    color: #15803d;
 }
 
 .gaw-page-header h1 {

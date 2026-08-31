@@ -10,6 +10,12 @@ require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
 
 requireAuth();
+
+if (grantIsGrantWorkflowMonitor()) {
+    header('Location: ' . BASE_URL . '/modules/crad/pages/approval-workflows.php');
+    exit;
+}
+
 grantRequireEvaluateAccess();
 
 $pageTitle             = 'Reviewer Evaluation';
