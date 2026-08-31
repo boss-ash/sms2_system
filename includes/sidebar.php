@@ -9,11 +9,17 @@ if (!isset($MODULES)) {
 require_once __DIR__ . '/authentication.php';
 require_once __DIR__ . '/module-controls.php';
 require_once __DIR__ . '/nav-icons.php';
+require_once __DIR__ . '/navigation-context.php';
 
 $activeModule = $activeModule ?? '';
 $activePage   = $activePage ?? '';
 $roleKey = getCurrentUserRoleKey();
-$isStudentPortal = $activeModule === 'student_portal';
+$sidebarMode = smsSidebarMode($roleKey);
+$onDashboard = str_ends_with(
+    str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? '')),
+    '/dashboard/index.php'
+);
+$highlightModule = smsSidebarHighlightModule((string) $activeModule, $roleKey);
 $visibleModules = getVisibleModules($MODULES);
 $securitySettingsModule = '';
 if (!smsIsGrantedAdminRole($roleKey)) {
@@ -300,10 +306,10 @@ $researchDirectorNavGroups = [
     ],
 ];
 ?>
-<aside class="sms-sidebar <?= smsIsGrantedAdminRole($roleKey) ? 'admin-sidebar' : '' ?> admin-sidebar-collapsible <?= ($roleKey === 'research_director' && $activeModule === 'faculty') ? 'research-director-sidebar' : '' ?>" id="smsSidebar" aria-label="Main navigation">
+<aside class="sms-sidebar <?= smsIsGrantedAdminRole($roleKey) ? 'admin-sidebar' : '' ?> admin-sidebar-collapsible <?= ($roleKey === 'research_director' && $sidebarMode === 'faculty_workspace') ? 'research-director-sidebar' : '' ?>" id="smsSidebar" aria-label="Main navigation">
     <nav class="sidebar-nav" id="smsSidebarAccordion">
         <ul class="nav flex-column">
-            <?php if ($isStudentPortal): ?>
+            <?php if ($sidebarMode === 'student'): ?>
                 <?php foreach ($studentNavGroups as $groupLabel => $groupItems): ?>
                     <?php
                     $groupCollapseId = 'navGrp_' . preg_replace('/[^a-z0-9_]/', '_', strtolower((string) $groupLabel));
@@ -368,7 +374,7 @@ $researchDirectorNavGroups = [
                     </li>
                 <?php endforeach; ?>
 
-            <?php elseif (in_array($roleKey, ['adviser', 'research_director', 'grammarian', 'panel'], true) && $activeModule === 'faculty'): ?>
+            <?php elseif ($sidebarMode === 'faculty_workspace'): ?>
                 <?php
                 $accountNavGroups = $facultyAccountNavGroups;
                 if ($roleKey === 'research_director') {
@@ -378,6 +384,8 @@ $researchDirectorNavGroups = [
                 } elseif ($roleKey === 'panel') {
                     $accountNavGroups = $panelNavGroups;
                 }
+                $facultyWorkspaceExpandFirst = ($activePage === '' && $onDashboard);
+                $facultyWorkspaceFirstGroup = true;
                 ?>
                 <?php foreach ($accountNavGroups as $groupLabel => $groupItems): ?>
                     <?php
@@ -388,9 +396,13 @@ $researchDirectorNavGroups = [
                         if ($groupOverviewUrl === '') {
                             $groupOverviewUrl = (string) ($groupItemProbe['href'] ?? '');
                         }
-                        if ($activeModule === 'faculty' && ($activePage ?? '') === ($groupItemProbe['slug'] ?? '')) {
+                        if (($activePage ?? '') === ($groupItemProbe['slug'] ?? '')) {
                             $isGroupActive = true;
                         }
+                    }
+                    if ($facultyWorkspaceExpandFirst && $facultyWorkspaceFirstGroup) {
+                        $isGroupActive = true;
+                        $facultyWorkspaceFirstGroup = false;
                     }
                     $groupIcon = (string) ($groupItems[0]['icon'] ?? 'fa-folder');
                     ?>
@@ -412,7 +424,7 @@ $researchDirectorNavGroups = [
                              id="<?= htmlspecialchars($groupCollapseId) ?>">
                             <ul class="nav flex-column">
                     <?php foreach ($groupItems as $item): ?>
-                        <?php $linkClass = ($activeModule === 'faculty' && $activePage === $item['slug']) ? 'active' : ''; ?>
+                        <?php $linkClass = ($activePage === $item['slug']) ? 'active' : ''; ?>
                         <li class="nav-item">
                             <a class="nav-link sidebar-sub <?= $linkClass ?>"
                                href="<?= htmlspecialchars($item['href']) ?>"
@@ -429,7 +441,7 @@ $researchDirectorNavGroups = [
                 <?php endforeach; ?>
 
             <?php else: ?>
-                <?php $dashboardActive = ($activeModule === 'dashboard'); ?>
+                <?php $dashboardActive = $onDashboard; ?>
                 <li class="nav-item">
                     <a class="nav-link <?= $dashboardActive ? 'active' : '' ?>"
                        href="<?= BASE_URL ?>/dashboard/index.php"
