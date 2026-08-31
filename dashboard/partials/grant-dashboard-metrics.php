@@ -6,8 +6,9 @@
  */
 $grantDashboardMetrics = $grantDashboardMetrics ?? grantDashboardMetricsDefaults();
 $grantDashboardAnalyticsUrl = BASE_URL . '/modules/crad/pages/dashboard-analytics.php';
+$grantDashboardMetricsHideLink = !empty($grantDashboardMetricsHideLink);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-dashboard-metrics.css?v=1" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-dashboard-metrics.css?v=2" rel="stylesheet">
 
 <section class="glass-panel gdm-panel" data-grant-dashboard-metrics="1" aria-label="Grant dashboard metrics">
     <div class="glass-panel-body">
@@ -20,9 +21,11 @@ $grantDashboardAnalyticsUrl = BASE_URL . '/modules/crad/pages/dashboard-analytic
                 <p>Automatically recalculated from grant calls, proposals, funding, research output, publications, and IP records.</p>
             </div>
             <div style="text-align:right;">
+                <?php if (!$grantDashboardMetricsHideLink): ?>
                 <a class="gdm-link" href="<?= htmlspecialchars($grantDashboardAnalyticsUrl) ?>">
                     <?= smsIcon('chart-pie') ?> Dashboard &amp; Analytics
                 </a>
+                <?php endif; ?>
                 <div class="gdm-updated" data-gdm-updated>
                     <?php if (!empty($grantDashboardMetrics['updated_at'])): ?>
                         Updated <?= htmlspecialchars(date('g:i:s A', strtotime((string) $grantDashboardMetrics['updated_at']))) ?>
@@ -54,4 +57,4 @@ $grantDashboardAnalyticsUrl = BASE_URL . '/modules/crad/pages/dashboard-analytic
     </div>
 </section>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-dashboard-metrics-live.js?v=1"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-dashboard-metrics-live.js?v=2"></script>

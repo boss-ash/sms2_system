@@ -637,7 +637,13 @@ $trendDelta       = smsDashboardScaleDelta((string) $trendDelta, $dashboardPerio
          id="glassBoard"
          data-role="<?= htmlspecialchars($roleKey) ?>"
          data-period="<?= htmlspecialchars($dashboardPeriodKey) ?>"
-         data-period-factor="<?= htmlspecialchars((string) $dashboardPeriodFactor) ?>">
+         data-period-factor="<?= htmlspecialchars((string) $dashboardPeriodFactor) ?>"
+         <?php if ($roleKey === 'crad_officer' && !empty($grantDashboardMetrics)): ?>
+         data-crad-donut="<?= htmlspecialchars(json_encode([
+             'ongoing' => (int) ($grantDashboardMetrics['ongoing_research'] ?? 0),
+             'completed' => (int) ($grantDashboardMetrics['completed_research'] ?? 0),
+         ], JSON_THROW_ON_ERROR), ENT_QUOTES, 'UTF-8') ?>"
+         <?php endif; ?>>
 
         <section class="glass-panel">
             <div class="glass-panel-body">

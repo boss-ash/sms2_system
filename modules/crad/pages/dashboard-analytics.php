@@ -32,6 +32,8 @@ require_once ROOT_PATH . '/includes/breadcrumbs.php';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 $crad    = cradDb();
+$grantDashboardMetrics = grantDashboardMetricsDefaults();
+$grantDashboardMetricsHideLink = true;
 $stats   = [
     'total_opportunities' => 0, 'open' => 0, 'closed' => 0, 'expired' => 0,
     'total_applications'  => 0, 'under_review' => 0, 'approved' => 0, 'denied' => 0,
@@ -46,6 +48,7 @@ $dbError = '';
 if ($crad) {
     try {
         grantEnsureTables($crad);
+        $grantDashboardMetrics = grantGetDashboardMetrics($crad);
         $base = grantDashboardStats($crad);
         $stats = array_merge($stats, $base);
 

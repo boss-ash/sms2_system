@@ -589,7 +589,12 @@ if (smsIsGrantedAdminRole($roleKey)) {
         ['icon'=>'fa-calendar-alt',       'label'=>'Next Visit',          'value'=>'Sep 2026', 'type'=>'info',    'delta'=>'On track', 'deltaDir'=>'neutral', 'deltaLabel'=>'schedule'],
     ];
 } elseif ($roleKey === 'crad_officer') {
-    $grantDashboardMetrics = grantDashboardMetricsDefaults();
+    $grantDashboardMetrics = [
+        'total_grant_calls' => 0, 'submitted_proposals' => 0, 'under_review' => 0,
+        'revision_required' => 0, 'rejected_proposals' => 0, 'approved_funded_projects' => 0,
+        'total_funding' => 0.0, 'ongoing_research' => 0, 'completed_research' => 0,
+        'publications' => 0, 'ip_records' => 0, 'updated_at' => '',
+    ];
     $grantDashStats = ['submitted' => 0, 'in_progress' => 0, 'completed' => 0, 'committee_scored' => 0];
     try {
         require_once ROOT_PATH . '/modules/crad/config/config.php';
