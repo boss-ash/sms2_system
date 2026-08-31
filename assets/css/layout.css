@@ -710,6 +710,10 @@ body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-link {
     text-decoration: none;
     transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
     box-shadow: none;
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+    cursor: pointer;
 }
 .admin-sidebar-collapsible .admin-subgroup-body .sidebar-sub > i:first-child {
     width: 18px;

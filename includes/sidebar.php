@@ -313,7 +313,7 @@ $deanGrantNavGroups = [
     ],
 ];
 
-$grantApprovalSidebarRoles = ['qa', 'vpaa', 'department_chair', 'research_office', 'crad_officer', 'research_grant'];
+$grantApprovalSidebarRoles = ['qa', 'vpaa', 'department_chair', 'research_office'];
 $grantApprovalSidebarItems = [
     [
         'slug' => 'reviewer-evaluation',
@@ -652,12 +652,6 @@ $researchDirectorNavGroups = [
                                 <?php if ($showModuleGroups): ?>
                                     <?php foreach ($module['groups'] as $groupLabel => $groupSlugs): ?>
                                         <?php
-                                        if ($roleKey === 'crad_officer' && (string) $groupLabel === 'Review & Workflow') {
-                                            continue;
-                                        }
-                                        if ($roleKey === 'research_grant' && in_array((string) $groupLabel, ['Review & Workflow', 'Approval Workflow'], true)) {
-                                            continue;
-                                        }
                                         $groupCollapseId = $moduleCollapseId . '_grp_' . preg_replace('/[^a-z0-9_]/', '_', strtolower((string) $groupLabel));
                                         $isGroupActive = ($activeGroupLabel === (string) $groupLabel);
                                         $reportSidebarItems = null;

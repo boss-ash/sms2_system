@@ -88,11 +88,12 @@ function grantUserCanEvaluate(): bool
         return true;
     }
 
-    if (!function_exists('smsRoleAllowedForModule')) {
+    if (!function_exists('smsHasGrantedModuleAdminAccess')) {
         require_once dirname(__DIR__, 3) . '/includes/authentication.php';
     }
 
-    return smsHasGrantedModuleAdminAccess('crad_grant');
+    return smsHasGrantedModuleAdminAccess('crad_grant')
+        || smsHasGrantedModuleAdminAccess('crad');
 }
 
 function grantEvaluationBreadcrumbModuleLabel(): string
@@ -105,6 +106,14 @@ function grantEvaluationBreadcrumbModuleLabel(): string
         require_once __DIR__ . '/grant-approval-helpers.php';
 
         return grantApprovalBreadcrumbModuleLabel();
+    }
+
+    if (!function_exists('smsHasGrantedModuleAdminAccess')) {
+        require_once dirname(__DIR__, 3) . '/includes/authentication.php';
+    }
+
+    if (smsHasGrantedModuleAdminAccess('crad')) {
+        return 'CRAD';
     }
 
     return 'Research Grant';
@@ -122,7 +131,15 @@ function grantEvaluationBreadcrumbModuleUrl(): string
         return grantApprovalBreadcrumbModuleUrl();
     }
 
-    return BASE_URL . '/modules/crad/pages/reviewer-evaluation.php';
+    if (!function_exists('smsHasGrantedModuleAdminAccess')) {
+        require_once dirname(__DIR__, 3) . '/includes/authentication.php';
+    }
+
+    if (smsHasGrantedModuleAdminAccess('crad')) {
+        return BASE_URL . '/modules/crad/index.php';
+    }
+
+    return BASE_URL . '/modules/crad/pages/grant-opportunities.php';
 }
 
 function grantRequireEvaluateAccess(): void
@@ -144,6 +161,14 @@ function grantEvaluationActiveModuleKey(): string
         require_once __DIR__ . '/grant-approval-helpers.php';
 
         return grantApprovalActiveModuleKey();
+    }
+
+    if (!function_exists('smsHasGrantedModuleAdminAccess')) {
+        require_once dirname(__DIR__, 3) . '/includes/authentication.php';
+    }
+
+    if (smsHasGrantedModuleAdminAccess('crad')) {
+        return 'crad';
     }
 
     return 'crad_grant';
