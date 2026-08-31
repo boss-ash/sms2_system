@@ -248,7 +248,7 @@ function umRoleBadgeClass(string $role, string $label = ''): string
         'admissionoffice' => 'admission',
         'admission_office' => 'admission',
         'crad_officer' => 'crad',
-        'research_grant' => 'crad',
+        'research_grant' => 'research_grant',
         'review_committee' => 'review_committee',
         'research_coordinator' => 'research_coordinator',
         'department_chair' => 'department_chair',
@@ -276,7 +276,7 @@ $archiveUrl  = $accountsUrl . '?view=archive';
 $currentUserId = (int) getCurrentUserId();
 ?>
 
-<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=um-modal-1" rel="stylesheet">
+<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=grant-role-badges-1" rel="stylesheet">
 <meta name="csrf-token" content="<?= e($csrf) ?>">
 
 <?php
