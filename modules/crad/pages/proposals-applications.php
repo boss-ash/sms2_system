@@ -84,7 +84,12 @@ renderBreadcrumbs($breadcrumbs);
  */
 function paStatusLabel(string $status): string
 {
-    return $status === 'Submitted' ? 'Pending Evaluation' : $status;
+    return match ($status) {
+        'Submitted'         => 'Pending Evaluation',
+        'Rejected'          => 'REJECTED',
+        'Revision Required' => 'REVISION REQUIRED',
+        default             => $status,
+    };
 }
 
 function paStatusBadge(string $status): string
@@ -93,6 +98,8 @@ function paStatusBadge(string $status): string
     $map   = [
         'Pending Evaluation' => 'mpl-status pending',
         'Under Review'       => 'mpl-status pending',
+        'REJECTED'           => 'mpl-status cancelled',
+        'REVISION REQUIRED'  => 'mpl-status processing',
         'Approved'           => 'mpl-status completed',
         'Denied'             => 'mpl-status cancelled',
         'Withdrawn'          => 'mpl-status cancelled',
@@ -145,7 +152,8 @@ function paStatusBadge(string $status): string
     $pendingEval = count(array_filter($applications, fn($a) => $a['status'] === 'Submitted'));
     $underReview = count(array_filter($applications, fn($a) => $a['status'] === 'Under Review'));
     $approved    = count(array_filter($applications, fn($a) => $a['status'] === 'Approved'));
-    $denied      = count(array_filter($applications, fn($a) => $a['status'] === 'Denied'));
+    $denied      = count(array_filter($applications, fn($a) => in_array($a['status'], ['Denied', 'Rejected'], true)));
+    $revisionReq = count(array_filter($applications, fn($a) => $a['status'] === 'Revision Required'));
     ?>
     <section class="mpl-stats" aria-label="Proposal summary">
         <article class="mpl-stat">
@@ -178,7 +186,9 @@ function paStatusBadge(string $status): string
             <option value="">All Status</option>
             <option value="pending evaluation">Pending Evaluation</option>
             <option value="under review">Under Review</option>
+            <option value="revision required">REVISION REQUIRED</option>
             <option value="approved">Approved</option>
+            <option value="rejected">REJECTED</option>
             <option value="denied">Denied</option>
             <option value="withdrawn">Withdrawn</option>
         </select>
@@ -249,6 +259,7 @@ function paStatusBadge(string $status): string
                             $hasProposalPdf   = !empty($app['proposal_pdf']);
                             $hasSupportingDoc = !empty($app['supporting_docs']);
                             $hasEthicsDoc     = !empty($app['ethics_doc']);
+                            $evaluation       = $evaluationsByApp[(int) $app['id']] ?? null;
                             $searchStr = strtolower(
                                 ($app['funding_title']  ?? '') . ' ' .
                                 ($app['applicant_name'] ?? '') . ' ' .
