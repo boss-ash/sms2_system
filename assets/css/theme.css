@@ -1018,6 +1018,14 @@ hr { border-color: var(--sms-border); opacity: 1; }
     -webkit-backdrop-filter: none;
     white-space: nowrap;
 }
+
+.dash-period.glass-period-filter {
+    padding-right: 0.65rem;
+}
+
+.dash-period .glass-period-btn {
+    color: var(--sms-text-muted);
+}
 .dash-section-head {
     display: flex;
     flex-direction: column;

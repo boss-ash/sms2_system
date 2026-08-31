@@ -37,11 +37,21 @@
         }
     }
 
+    function scaleSeries(values, factor) {
+        return values.map(function (value) {
+            return Math.max(1, Math.round(value * factor));
+        });
+    }
+
     function buildCharts() {
         var text = themeVar('--sms-chart-text', '#94a3b8');
         var grid = themeVar('--sms-chart-grid', 'rgba(148,163,184,0.12)');
         var doughnutBorder = themeVar('--sms-chart-doughnut-border', '#121c34');
         var role = board.getAttribute('data-role') || 'admin';
+        var periodFactor = parseFloat(board.getAttribute('data-period-factor') || '1');
+        if (!isFinite(periodFactor) || periodFactor <= 0) {
+            periodFactor = 1;
+        }
 
         Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.font.size = 11;
@@ -92,6 +102,9 @@
         if (role === 'adviser' || role === 'panel') trendData = [1, 2, 3, 5, 4, 7, 8, 11];
         if (role === 'research_director') trendData = [3, 4, 6, 8, 9, 13, 17, 21];
 
+        donutData = scaleSeries(donutData, periodFactor);
+        trendData = scaleSeries(trendData, periodFactor);
+
         var cashIn = [48, 52, 50, 64, 70, 78, 82, 90];
         var cashOut = [30, 34, 38, 42, 40, 48, 52, 55];
         var netParts = [64, 36];
@@ -120,6 +133,9 @@
             cashOut = [1, 1, 2, 2, 3, 3, 4, 4];
             netParts = [69, 31];
         }
+
+        cashIn = scaleSeries(cashIn, periodFactor);
+        cashOut = scaleSeries(cashOut, periodFactor);
 
         destroyAll();
 
