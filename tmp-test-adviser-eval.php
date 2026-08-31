@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . '/config/config.php';
+require __DIR__ . '/modules/crad/config/config.php';
 require __DIR__ . '/modules/crad/includes/grant-evaluation-helpers.php';
 
 $_SESSION['user_id'] = 54;
