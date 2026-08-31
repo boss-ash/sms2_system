@@ -69,10 +69,10 @@ if ($crad) {
 }
 
 $pendingCount = $isAdviserView
-    ? count($queue)
+    ? count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])))
     : count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
 $scoredCount  = $isAdviserView
-    ? ($crad ? grantAdviserEvaluationSignedCount($crad) : 0)
+    ? ($crad ? grantAdviserEvaluationScoredCount($crad) : 0)
     : count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])));
 
 require_once ROOT_PATH . '/includes/layout-start.php';
@@ -93,14 +93,14 @@ renderBreadcrumbs($breadcrumbs);
     <div>
         <h1><?= smsIcon('clipboard-check', ['class' => 'me-2', 'style' => 'color:var(--sms-primary);']) ?>Reviewer Evaluation</h1>
         <?php if ($isAdviserView): ?>
-        <p>Proposals recommended by the Review Committee appear here with status <strong>In Review</strong> before your sign-off in Approval Workflows.</p>
+        <p>Score proposals using the rubric first. After you submit your evaluation, you can sign off in <strong>Approval Workflows</strong>.</p>
         <?php else: ?>
         <p>Proposals with <strong>Pending Evaluation</strong> in Proposals &amp; Applications appear here for rubric scoring.</p>
         <?php endif; ?>
     </div>
     <div class="gre-stat-row">
         <span class="gre-stat pending"><strong data-eval-pending-count><?= $pendingCount ?></strong> <?= $isAdviserView ? 'in review' : 'awaiting score' ?></span>
-        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> <?= $isAdviserView ? 'signed by you' : 'scored by you' ?></span>
+        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> scored by you</span>
         <span class="gre-live-badge"><?= smsIcon('sync-alt') ?> Live</span>
     </div>
 </div>
@@ -113,7 +113,7 @@ renderBreadcrumbs($breadcrumbs);
         <div>
             <h2>Evaluation Queue</h2>
             <?php if ($isAdviserView): ?>
-            <p>Select a proposal to review committee scores before signing off.</p>
+            <p>Select a proposal to score before administrative sign-off.</p>
             <?php else: ?>
             <p>Select a proposal to score using the review committee rubric (total 100 points).</p>
             <?php endif; ?>
