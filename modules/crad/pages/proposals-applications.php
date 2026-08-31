@@ -16,15 +16,11 @@ require_once __DIR__ . '/../includes/grant-helpers.php';
 
 requireAuth();
 
-$roleKey = getCurrentUserRoleKey();
-if (!smsRoleAllowedForModule(['crad_officer'], 'crad')) {
-    header('Location: ' . BASE_URL . '/dashboard/index.php');
-    exit;
-}
+grantRequireManageAccess();
 
 $pageTitle             = 'Proposals & Applications';
-$activeModule          = 'crad';
-$activePage            = 'proposals-applications';
+$activeModule          = grantActiveModuleKey();
+$activePage            = 'grant-applications';
 $pageBannerIcon        = 'fa-file-alt';
 $pageBannerDescription = 'Review all research grant proposals submitted to published grant opportunities.';
 

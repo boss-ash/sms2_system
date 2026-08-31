@@ -19,6 +19,53 @@
 
 declare(strict_types=1);
 
+/**
+ * Roles that can publish grant calls and manage grant opportunities.
+ */
+function grantUserCanManage(): bool
+{
+    if (!function_exists('smsRoleAllowedForModule')) {
+        require_once dirname(__DIR__, 3) . '/includes/authentication.php';
+    }
+
+    if (smsRoleAllowedForModule(['crad_officer'], 'crad')) {
+        return true;
+    }
+
+    if (smsRoleAllowedForModule(['research_grant'], 'crad_grant')) {
+        return true;
+    }
+
+    return smsHasGrantedModuleAdminAccess('crad')
+        || smsHasGrantedModuleAdminAccess('crad_grant');
+}
+
+/**
+ * Sidebar / layout module key for the current grant-management user.
+ */
+function grantActiveModuleKey(): string
+{
+    $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+
+    return $roleKey === 'research_grant' ? 'crad_grant' : 'crad';
+}
+
+/**
+ * Redirect unauthorized users away from grant management pages.
+ */
+function grantRequireManageAccess(): void
+{
+    if (grantUserCanManage()) {
+        return;
+    }
+
+    require_once dirname(__DIR__, 3) . '/config/config.php';
+    require_once dirname(__DIR__, 3) . '/includes/navigation-context.php';
+
+    header('Location: ' . smsRoleHomeUrl(function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : ''));
+    exit;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Internal: safely add a column to a table only when it is absent.
 // Compatible with MySQL 5.7+ / MariaDB (no IF NOT EXISTS on ALTER in MySQL 5.7).

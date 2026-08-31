@@ -37,8 +37,7 @@ require_once __DIR__ . '/../includes/grant-helpers.php';
 
 requireAuth();
 
-$roleKey = getCurrentUserRoleKey();
-if (!smsRoleAllowedForModule(['crad_officer'], 'crad')) {
+if (!grantUserCanManage()) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Access denied.']);
     exit;
