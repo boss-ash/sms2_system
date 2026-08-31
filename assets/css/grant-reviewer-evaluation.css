@@ -333,3 +333,28 @@
     padding: 0 1rem 1rem;
     border-top: 1px solid var(--sms-border);
 }
+
+.gaw-monitor-scores,
+.gre-detail-scores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem;
+    margin: 0 0 1rem;
+}
+
+.gaw-monitor-score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .4rem .7rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+}
+
+.gaw-monitor-score-pill strong {
+    color: #0f172a;
+}
