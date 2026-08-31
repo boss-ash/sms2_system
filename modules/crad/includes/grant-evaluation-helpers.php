@@ -240,6 +240,8 @@ function grantValidateRubricScoresFromInput(array $input): array
 
     return ['ok' => true, 'scores' => $scores, 'total' => $total];
 }
+
+function _grantEnsureEvaluationVersionIndex(PDO $crad): void
 {
     try {
         $old = $crad->query("SHOW INDEX FROM grant_proposal_evaluations WHERE Key_name = 'uniq_gpe_app_evaluator'")->fetch();
