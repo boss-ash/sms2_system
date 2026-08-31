@@ -281,7 +281,7 @@ $panelNavGroups = [
         ['slug' => 'availability', 'href' => BASE_URL . '/modules/faculty/pages/availability.php', 'icon' => 'fa-user-check', 'label' => 'Availability'],
     ],
     'System' => [
-        ['slug' => 'security-settings', 'href' => BASE_URL . '/account/module-security.php?module=faculty', 'icon' => 'fa-shield-alt', 'label' => 'Security Setting'],
+        ['slug' => 'security-settings', 'href' => BASE_URL . '/account/module-security.php?module=faculty', 'icon' => 'fa-shield-alt', 'label' => 'Security Settings'],
     ],
 ];
 
@@ -408,14 +408,6 @@ $researchDirectorNavGroups = [
                         }
                         if (($activePage ?? '') === ($groupItemProbe['slug'] ?? '')) {
                             $isGroupActive = true;
-                        }
-                    }
-                    if (!$roleHomeActive && $facultyWorkspaceFirstGroup && ($activePage ?? '') !== '') {
-                        foreach ($groupItems as $groupItemProbe) {
-                            if (($activePage ?? '') === ($groupItemProbe['slug'] ?? '')) {
-                                $isGroupActive = true;
-                                break;
-                            }
                         }
                     }
                     if ($facultyWorkspaceFirstGroup) {
