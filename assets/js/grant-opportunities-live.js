@@ -10,7 +10,8 @@
 
     var isOppPage = root.hasAttribute('data-grant-opp-page');
     var isPropPage = root.hasAttribute('data-proposals-page');
-    if (!isOppPage && !isPropPage) return;
+    var isRevisionsPage = root.hasAttribute('data-revisions-page');
+    if (!isOppPage && !isPropPage && !isRevisionsPage) return;
 
     var apiBase = (function () {
         var path = window.location.pathname || '';
