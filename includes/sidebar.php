@@ -458,9 +458,9 @@ $researchDirectorNavGroups = [
                 <?php endforeach; ?>
 
             <?php else: ?>
-                <?php $dashboardActive = $onDashboard; ?>
-                <li class="nav-item">
-                    <a class="nav-link <?= $dashboardActive ? 'active' : '' ?>"
+                <?php if ($showMainDashboard): ?>
+                <li class="nav-item sidebar-home-item">
+                    <a class="nav-link sidebar-home-link <?= $onDashboard ? 'active' : '' ?>"
                        href="<?= BASE_URL ?>/dashboard/index.php"
                        data-overview-url="<?= BASE_URL ?>/dashboard/index.php"
                        data-title="Dashboard"
@@ -469,6 +469,18 @@ $researchDirectorNavGroups = [
                         <span>Dashboard</span>
                     </a>
                 </li>
+                <?php else: ?>
+                <li class="nav-item sidebar-home-item">
+                    <a class="nav-link sidebar-home-link <?= $roleHomeActive ? 'active' : '' ?>"
+                       href="<?= htmlspecialchars($roleHomeUrl) ?>"
+                       data-overview-url="<?= htmlspecialchars($roleHomeUrl) ?>"
+                       data-title="<?= htmlspecialchars($roleHomeLabel) ?>"
+                       title="<?= htmlspecialchars($roleHomeLabel) ?>">
+                        <?= smsIcon('home', ['aria-hidden' => 'true']) ?>
+                        <span><?= htmlspecialchars($roleHomeLabel) ?></span>
+                    </a>
+                </li>
+                <?php endif; ?>
 
                 <?php foreach ($visibleModules as $navModuleKey => $module): ?>
                     <?php
