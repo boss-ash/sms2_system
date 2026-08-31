@@ -402,6 +402,9 @@ function smsResearchCoordinatorCradModule(): array
             'Coordination' => [
                 'manage-assignments',
             ],
+            'Review & Workflow' => [
+                'approval-workflows',
+            ],
             'System' => [
                 'security-settings',
             ],
@@ -417,6 +420,7 @@ function smsResearchCoordinatorCradModule(): array
             ['slug' => 'check-panel-availability', 'title' => 'Check Panel Availability'],
             ['slug' => 'assign-panel-members', 'title' => 'Assign Panel Members'],
             ['slug' => 'manage-assignments', 'title' => 'View/Manage Assignments'],
+            ['slug' => 'approval-workflows', 'title' => 'Approval Workflows'],
             ['slug' => 'security-settings', 'title' => 'Security Settings'],
         ],
     ];
