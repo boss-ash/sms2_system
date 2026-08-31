@@ -362,6 +362,21 @@
     50% { opacity: .5; transform: scale(.85); }
 }
 
+.gaw-stepper-updated .gaw-step-icon {
+    animation: gaw-step-pop .6s ease;
+}
+
+@keyframes gaw-step-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+.gaw-step.approved .gaw-step-icon i,
+.gaw-step.active .gaw-step-icon {
+    transition: background .3s ease, color .3s ease, box-shadow .3s ease;
+}
+
 .gaw-signature-dialog {
     position: fixed;
     inset: 0;

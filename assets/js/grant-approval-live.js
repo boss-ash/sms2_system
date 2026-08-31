@@ -141,7 +141,7 @@
         bindActionButtons();
     }
 
-    function fetchWorkflows(reloadOnChange) {
+    function fetchWorkflows(isPoll) {
         var url = apiBase + '?action=get_workflows';
         if (selectedId > 0) url += '&id=' + encodeURIComponent(selectedId);
 
@@ -150,10 +150,7 @@
             .then(function (data) {
                 if (!data || !data.success) return;
                 var fp = data.fingerprint || '';
-                if (reloadOnChange && lastFingerprint !== '' && fp !== lastFingerprint) {
-                    window.location.href = window.location.pathname + (selectedId ? '?id=' + selectedId : '');
-                    return;
-                }
+                var changed = isPoll && lastFingerprint !== '' && fp !== lastFingerprint;
                 lastFingerprint = fp;
                 renderProjectSelect(data.workflows || []);
                 if (data.detail) {
@@ -161,8 +158,20 @@
                 } else if (selectedId > 0) {
                     fetchDetail();
                 }
+                if (changed) {
+                    flashLiveUpdate();
+                }
             })
             .catch(function () {});
+    }
+
+    function flashLiveUpdate() {
+        var stepper = document.getElementById('gawStepper');
+        if (!stepper) return;
+        stepper.classList.add('gaw-stepper-updated');
+        setTimeout(function () {
+            stepper.classList.remove('gaw-stepper-updated');
+        }, 1200);
     }
 
     function fetchDetail() {
