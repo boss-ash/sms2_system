@@ -816,6 +816,14 @@ body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-link {
 }
 .sidebar-overlay.show { display: block; }
 
+/* Mobile drawer — prevent background scroll (iOS) */
+body.sidebar-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    touch-action: none;
+}
+
 /* ============================================================
    Responsive
    ============================================================ */

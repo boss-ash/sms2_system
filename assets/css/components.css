@@ -759,3 +759,24 @@
         text-transform: uppercase;
     }
 }
+
+/* System-wide mobile overrides (load after modal width rules above) */
+@media (max-width: 767.98px) {
+    .sms-table-toolbar .form-control,
+    .sms-table-toolbar .form-select {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .sms-page-header > div,
+    .dashboard-page-header > div,
+    .module-page-banner__title {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .module-page-banner__action {
+        white-space: normal;
+        text-align: center;
+    }
+}

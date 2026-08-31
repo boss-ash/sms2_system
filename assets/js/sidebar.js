@@ -41,16 +41,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────────────────────────────────
 
     const DESKTOP_BREAKPOINT = 992;
+    let mobileScrollY = 0;
 
     function isDesktop() {
         return window.innerWidth >= DESKTOP_BREAKPOINT;
     }
 
     function openMobileSidebar() {
+        mobileScrollY = window.scrollY || window.pageYOffset || 0;
         sidebar.classList.add('show');
         if (overlay) overlay.classList.add('show');
         document.body.classList.add('sidebar-open');
         document.body.style.overflow = 'hidden';
+        document.body.style.top = '-' + mobileScrollY + 'px';
     }
 
     function closeMobileSidebar() {
@@ -58,6 +61,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (overlay) overlay.classList.remove('show');
         document.body.classList.remove('sidebar-open');
         document.body.style.overflow = '';
+        document.body.style.top = '';
+        window.scrollTo(0, mobileScrollY);
     }
 
     function collapseOpenMenus() {
@@ -217,16 +222,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Close drawer after navigation on mobile/tablet
-    sidebar.querySelectorAll('.nav-link').forEach(function (link) {
+    sidebar.querySelectorAll('a[href]').forEach(function (link) {
         link.addEventListener('click', function () {
-            if (!isDesktop()) {
-                if (link.classList.contains('sidebar-parent')
-                    || link.classList.contains('admin-module-toggle')
-                    || link.classList.contains('admin-subgroup-toggle')) {
-                    return;
-                }
-                closeMobileSidebar();
+            if (isDesktop()) return;
+            if (link.classList.contains('sidebar-parent')
+                || link.classList.contains('admin-module-toggle')
+                || link.classList.contains('admin-subgroup-toggle')) {
+                return;
             }
+            var href = link.getAttribute('href') || '';
+            if (href === '' || href === '#' || href.charAt(0) === '#') return;
+            closeMobileSidebar();
         });
     });
 

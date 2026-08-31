@@ -437,10 +437,16 @@
 
 @media (max-width: 991.98px) {
     .mpl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mpl-filters select,
+    .mpl-filters input[type="date"] {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
 }
 @media (max-width: 575.98px) {
     .mpl-stats { grid-template-columns: 1fr; }
     .mpl-toolbar { width: 100%; }
     .mpl-toolbar .mpl-btn,
     .mpl-add { width: 100%; justify-content: center; }
+    .mpl-btn { white-space: normal; text-align: center; }
 }

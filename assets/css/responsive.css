@@ -528,3 +528,103 @@ button:focus-visible,
         opacity: 1 !important;
     }
 }
+
+/* ============================================================
+   System-wide responsive — all authenticated pages
+   ============================================================ */
+
+/* Navbar: 2 columns on mobile (brand + actions; search via toggle) */
+@media (max-width: 767.98px) {
+    .navbar-inner {
+        grid-template-columns: auto 1fr;
+    }
+
+    .navbar-right {
+        justify-self: end;
+    }
+
+    .sms-page-header,
+    .dashboard-page-header,
+    .go-page-header,
+    .module-page-banner.sms-page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .sms-page-header .btn,
+    .dashboard-page-header .btn,
+    .module-page-banner__action,
+    .page-header.d-flex > .btn,
+    .page-header.d-flex > .btn-group {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .student-portal-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .student-term-badge {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .sms-table-toolbar,
+    .mpl-filters,
+    .mpl-toolbar,
+    .um-filter-bar,
+    .ra-filter-bar,
+    .ra-summary-tools,
+    .mpl-top {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sms-table-toolbar .form-control,
+    .sms-table-toolbar .form-select,
+    .mpl-filters select,
+    .mpl-filters input[type="date"],
+    .mpl-search,
+    .um-filter-bar .form-control,
+    .um-filter-bar .form-select {
+        max-width: 100% !important;
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .modal-dialog,
+    .modal:not(.sms-confirm-modal) .modal-dialog {
+        max-width: calc(100vw - 1rem) !important;
+        width: auto !important;
+        margin: 0.5rem auto;
+    }
+
+    .modal-dialog.modal-lg,
+    .modal-dialog.modal-xl {
+        max-width: calc(100vw - 1rem) !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .perm-table {
+        font-size: 0.72rem;
+    }
+
+    .perm-table .role-col-head {
+        min-width: 3.5rem;
+    }
+
+    .glass-badges {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

@@ -12,7 +12,7 @@
 <?php endif; ?>
 <?php if (empty($omitAppChromeJs)): ?>
 <script src="<?= BASE_URL ?>/assets/js/ph-clock.js"></script>
-<script src="<?= BASE_URL ?>/assets/js/sidebar.js?v=collapsible-all-1"></script>
+<script src="<?= BASE_URL ?>/assets/js/sidebar.js?v=collapsible-all-2"></script>
 <script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/sms-confirm.js?v=3"></script>
 <script src="<?= BASE_URL ?>/assets/js/sms-security-ui.js?v=6"></script>

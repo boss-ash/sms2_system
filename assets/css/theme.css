@@ -201,6 +201,12 @@ body {
     transition: background 0.25s ease, color 0.2s ease;
 }
 
+@media (max-width: 991.98px) {
+    body.sms-app {
+        background-attachment: scroll;
+    }
+}
+
 /* ============================================================
    Bootstrap 5 override — remap Bootstrap's own CSS vars to
    our SMS2 design tokens so that Bootstrap-rendered components
