@@ -86,14 +86,18 @@ if ($crad) {
     $dbError = 'CRAD database connection unavailable.';
 }
 
-$pendingCount = ($isAdviserView || $isApproverView)
-    ? count($queue)
-    : count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
+$pendingCount = $isMonitorView && $crad
+    ? grantMonitorEvaluationCounts($crad)['pending']
+    : (($isAdviserView || $isApproverView)
+        ? count($queue)
+        : count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id']))));
 $scoredCount  = $isAdviserView
     ? ($crad ? grantAdviserEvaluationScoredCount($crad) : 0)
     : ($isApproverView
         ? ($crad ? grantApproverSignoffCount($crad) : 0)
-        : count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id']))));
+        : ($isMonitorView
+            ? ($crad ? grantMonitorEvaluationCounts($crad)['scored'] : 0)
+            : count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])))));
 
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
