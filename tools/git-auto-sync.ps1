@@ -42,17 +42,17 @@ function Invoke-GitCommand {
     $ErrorActionPreference = 'Continue'
     try {
         $output = & git @Arguments 2>&1
-        $code = $LASTEXITCODE
+        $code = [int]$LASTEXITCODE
         foreach ($line in @($output)) {
             if ($null -ne $line -and "$line".Trim() -ne '') {
-                Write-SyncLog "$line"
+                [void](Write-SyncLog "$line")
             }
         }
-        return $code
     }
     finally {
         $ErrorActionPreference = $previous
     }
+    return $code
 }
 
 function Invoke-GitSync {
