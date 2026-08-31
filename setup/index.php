@@ -109,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = 'Could not create account. Email or username may already exist.';
                 }
             }
+            }
         }
     }
 }
