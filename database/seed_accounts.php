@@ -14,6 +14,7 @@ if (PHP_SAPI !== 'cli') {
 
 require_once __DIR__ . '/../config/config.php';
 require_once ROOT_PATH . '/config/database.php';
+require_once __DIR__ . '/official_accounts.php';
 
 $pdo = getDatabaseConnection();
 
@@ -90,7 +91,7 @@ $accounts = [
     [
         'username' => 'deptchair',
         'email' => 'deptchair@bestlink.edu.ph',
-        'password' => '@deptchair123',
+        'password' => '@Department123',
         'full_name' => 'Department Chair',
         'role_key' => 'department_chair',
         'student_id' => null,
@@ -98,7 +99,7 @@ $accounts = [
     [
         'username' => 'researchoffice',
         'email' => 'researchoffice@bestlink.edu.ph',
-        'password' => '@researchoffice123',
+        'password' => '@Research123',
         'full_name' => 'Research Office',
         'role_key' => 'research_office',
         'student_id' => null,
@@ -106,7 +107,7 @@ $accounts = [
     [
         'username' => 'vpaa',
         'email' => 'vpaa@bestlink.edu.ph',
-        'password' => '@vpaa123',
+        'password' => '@Vpaa123',
         'full_name' => 'VPAA',
         'role_key' => 'vpaa',
         'student_id' => null,
@@ -114,7 +115,7 @@ $accounts = [
     [
         'username' => 'superadmin',
         'email' => 'superadmin@bestlink.edu.ph',
-        'password' => '@superadmin123',
+        'password' => '@Superadmin123',
         'full_name' => 'Super Admin',
         'role_key' => 'superadmin',
         'student_id' => null,
