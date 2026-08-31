@@ -173,28 +173,59 @@ renderBreadcrumbs($breadcrumbs);
 
                 <?php grantRenderPipelineScorePills($pipelineScorePills); ?>
 
-                <?php if ($needsRubricScore): ?>
+                <?php if ($wfStatus === 'Returned' && is_array($returnRecord)): ?>
+                <div class="gaw-return-audit-panel">
+                    <h3><?= smsIcon('arrow-back-up', ['class' => 'me-1']) ?>Returned to Proponent for Revision</h3>
+                    <p class="gaw-return-audit-lead">Decision at this level: <strong>NO</strong> — proposal sent back to the researcher for revision and resubmission.</p>
+                    <div class="gaw-return-audit-grid">
+                        <div class="gaw-return-audit-row">
+                            <span>Returned By</span>
+                            <strong><?= htmlspecialchars((string) ($returnRecord['returned_by'] ?? '')) ?></strong>
+                        </div>
+                        <?php if ((int) ($returnRecord['approval_level'] ?? 0) > 0): ?>
+                        <div class="gaw-return-audit-row">
+                            <span>Approval Level</span>
+                            <strong><?= (int) $returnRecord['approval_level'] ?></strong>
+                        </div>
+                        <?php endif; ?>
+                        <div class="gaw-return-audit-row gaw-return-audit-reason">
+                            <span>Reason</span>
+                            <strong><?= htmlspecialchars((string) ($returnRecord['reason'] ?? '—')) ?></strong>
+                        </div>
+                        <div class="gaw-return-audit-row">
+                            <span>Date/Time</span>
+                            <strong><?= htmlspecialchars((string) ($returnRecord['returned_at_display'] ?? '')) ?></strong>
+                        </div>
+                    </div>
+                </div>
+                <?php elseif ($needsRubricScore): ?>
                 <div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">
                     <h3><?= smsIcon('clipboard-check', ['class' => 'me-1']) ?>Rubric Evaluation Required</h3>
-                    <p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here.</p>
+                    <p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here. You may still choose <strong>NO</strong> to return it for revision without approving.</p>
                     <a class="gaw-btn-approve" href="<?= htmlspecialchars(grantReviewerEvaluationUrl((int) $selectedId)) ?>" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">
                         <?= smsIcon('star-half-alt') ?> Go to Reviewer Evaluation
                     </a>
                 </div>
-                <?php elseif ($canAct): ?>
+                <?php endif; ?>
+
+                <?php if ($wfStatus !== 'Returned' && ($canAct || $canReturn)): ?>
                 <div class="gaw-action-panel" id="gawActionPanel">
-                    <h3>Administrative Sign-off Action Panel</h3>
-                    <p>Logged in as: <strong><?= htmlspecialchars($roleLabel) ?></strong>. Signatures are timestamped and logged in the permanent audit trail.</p>
+                    <h3>Decision at This Level: Approve?</h3>
+                    <p>Logged in as: <strong><?= htmlspecialchars($roleLabel) ?></strong>. Choose <strong>YES</strong> to sign and advance, or <strong>NO</strong> to return the proposal to the researcher (loops back to revise and resubmit).</p>
                     <div class="gaw-action-buttons">
+                        <?php if ($canAct): ?>
                         <button type="button" class="gaw-btn-approve" id="gawSignApproveBtn">
-                            <?= smsIcon('signature') ?> Sign &amp; Approve Current Level
+                            <?= smsIcon('signature') ?> YES — Sign &amp; Approve Current Level
                         </button>
+                        <?php endif; ?>
+                        <?php if ($canReturn): ?>
                         <button type="button" class="gaw-btn-return" id="gawReturnBtn">
-                            <?= smsIcon('x') ?> Return to Proponent for Revision
+                            <?= smsIcon('x') ?> NO — Return to Proponent for Revision
                         </button>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <?php elseif ($isMonitor): ?>
+                <?php elseif ($wfStatus !== 'Returned' && $isMonitor): ?>
                 <div class="gaw-monitor-panel">
                     <div class="gaw-monitor-note">
                         <?= smsIcon($wfStatus === 'Completed' ? 'check' : 'eye', ['class' => 'me-1']) ?>
@@ -235,9 +266,9 @@ renderBreadcrumbs($breadcrumbs);
 <div class="gaw-signature-dialog gaw-return-dialog" id="gawReturnDialog" role="dialog" aria-modal="true" aria-labelledby="gawReturnTitle">
     <div class="gaw-signature-box">
         <h3 id="gawReturnTitle" style="margin:0 0 .35rem;font-size:1rem;font-weight:800;color:#b91c1c;">
-            <?= smsIcon('x') ?> Return for Revision
+            <?= smsIcon('x') ?> NO — Return for Revision
         </h3>
-        <p style="margin:0 0 .75rem;color:#64748b;font-size:.86rem;">Provide remarks for the proponent. This will set the proposal status to Revision Required.</p>
+        <p style="margin:0 0 .75rem;color:#64748b;font-size:.86rem;">Decision: <strong>NO</strong>. Provide remarks for the proponent. Status becomes <strong>Revision Required</strong> and the researcher is notified under <strong>Revisions Requested</strong>.</p>
         <textarea id="gawReturnRemarks" placeholder="Enter revision instructions…" required></textarea>
         <div style="display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap;margin-top:.75rem;">
             <button type="button" class="gaw-btn-return gaw-btn-return-outline" id="gawReturnCancelBtn">Cancel</button>
@@ -248,5 +279,5 @@ renderBreadcrumbs($breadcrumbs);
     </div>
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=8"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=9"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
