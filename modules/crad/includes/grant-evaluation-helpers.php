@@ -371,11 +371,14 @@ function grantNotifyApplicantEvaluationDecision(
         return;
     }
 
-    $recipientRole = (string) ($_SESSION['user_role_key'] ?? '');
-    if ($recipientRole === '' && function_exists('db')) {
-        $userStmt = db()->prepare('SELECT role_key FROM users WHERE id = ? LIMIT 1');
-        $userStmt->execute([$recipientUserId]);
-        $recipientRole = (string) ($userStmt->fetchColumn() ?: 'student');
+    $recipientRole = 'student';
+    if (function_exists('db')) {
+        $mainDb = db();
+        if ($mainDb) {
+            $userStmt = $mainDb->prepare('SELECT role_key FROM users WHERE id = ? LIMIT 1');
+            $userStmt->execute([$recipientUserId]);
+            $recipientRole = (string) ($userStmt->fetchColumn() ?: 'student');
+        }
     }
 
     $eventKey = 'grant-proposal:' . $type . ':' . $applicationId
