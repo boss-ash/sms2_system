@@ -556,7 +556,7 @@ function requireModuleAccess(string $moduleKey): void
                 }
             }
         }
-        $grantApproverRoles = ['research_coordinator', 'department_chair', 'hr', 'crad_officer', 'research_office', 'qa', 'vpaa'];
+        $grantApproverRoles = ['research_coordinator', 'department_chair', 'hr', 'crad_officer', 'research_office', 'finance', 'qa', 'vpaa'];
         if (in_array($roleKey, $grantApproverRoles, true)) {
             $grantApproverPages = array_merge($grantReviewerPages, [
                 '/modules/crad/pages/approval-workflows.php',

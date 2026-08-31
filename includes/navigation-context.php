@@ -266,8 +266,9 @@ if (!function_exists('smsRoleHomeIsActive')) {
                 || str_contains($scriptPath, '/modules/crad/pages/approval-workflows.php')
                 || str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),
             'department_chair', 'research_office', 'vpaa' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true),
-            'research_coordinator', 'crad_officer' => str_contains($scriptPath, '/modules/crad/index.php'),
-            'research_grant' => str_contains($scriptPath, '/modules/crad/pages/grant-opportunities.php'),
+            'crad_officer', 'research_grant' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true)
+                || str_contains($scriptPath, '/modules/crad/pages/approval-workflows.php')
+                || str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),
             'review_committee' => str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),
             'student'           => str_contains($scriptPath, '/modules/student-portal/pages/dashboard.php'),
             default             => str_ends_with($scriptPath, '/dashboard/index.php'),
