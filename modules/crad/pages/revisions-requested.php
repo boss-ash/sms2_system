@@ -70,7 +70,7 @@ renderBreadcrumbs($breadcrumbs);
 <div class="mpl" data-grant-live="1" data-revisions-page="1">
 
     <div class="mpl-top">
-        <p>Proposals returned by the review committee for revision. Open a proposal to view evaluator comments and upload a revised document.</p>
+        <p>Proposals returned for revision — from the review committee or an approval level (Adviser through Finance). View the return reason, then revise and resubmit.</p>
         <div class="mpl-toolbar">
             <a class="mpl-btn mpl-btn-ghost" href="<?= BASE_URL ?>/modules/crad/pages/proposals-applications.php">
                 <?= smsIcon('file-alt') ?> All Proposals
@@ -83,7 +83,7 @@ renderBreadcrumbs($breadcrumbs);
         <div class="mpl-panel-head">
             <div>
                 <h2>Revisions Requested</h2>
-                <p>Same proposal reference — upload a new version when you are ready to resubmit.</p>
+                <p>Same proposal reference — upload a new version when you are ready to resubmit (loops back to committee review).</p>
             </div>
             <span class="gre-live-badge"><?= smsIcon('sync-alt') ?> Live</span>
         </div>
@@ -94,7 +94,8 @@ renderBreadcrumbs($breadcrumbs);
                         <th>Reference</th>
                         <th>Grant Program</th>
                         <th>Research Title</th>
-                        <th>Version</th>
+                        <th>Returned By</th>
+                        <th>Reason</th>
                         <th>Returned</th>
                         <th></th>
                     </tr>
@@ -102,7 +103,7 @@ renderBreadcrumbs($breadcrumbs);
                 <tbody id="revisionsTableBody">
                 <?php if (empty($revisions)): ?>
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
+                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
                             No proposals currently require revision.
                         </td>
                     </tr>
