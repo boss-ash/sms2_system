@@ -483,11 +483,12 @@ function grantEvaluationQueue(PDO $crad, ?int $evaluatorUserId = null): array
         LEFT JOIN grant_proposal_evaluations ev
                ON ev.grant_application_id = ga.id
               AND ev.evaluator_user_id = ?
+              AND ev.evaluation_type = ?
               AND ev.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
         WHERE ga.status IN ('Submitted', 'Under Review')
         ORDER BY ga.submitted_at ASC, ga.id ASC
     ");
-    $stmt->execute([$evaluatorUserId]);
+    $stmt->execute([$evaluatorUserId, grantEvaluationTypeCommittee()]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
@@ -533,10 +534,11 @@ function grantGetEvaluationByApplication(PDO $crad, int $applicationId, ?int $ev
         FROM grant_proposal_evaluations
         WHERE grant_application_id = ?
           AND evaluator_user_id = ?
+          AND evaluation_type = ?
           AND proposal_version = ?
         LIMIT 1
     ");
-    $stmt->execute([$applicationId, $evaluatorUserId, $proposalVersion]);
+    $stmt->execute([$applicationId, $evaluatorUserId, grantEvaluationTypeCommittee(), $proposalVersion]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     return $row ?: null;
@@ -568,6 +570,7 @@ function grantGetLatestEvaluationsForApplications(PDO $crad, array $applicationI
             INNER JOIN grant_applications ga2 ON ga2.id = e2.grant_application_id
             WHERE e2.grant_application_id IN ({$placeholders})
               AND e2.proposal_version = COALESCE(NULLIF(ga2.current_version, 0), 1)
+              AND e2.evaluation_type = ?
               AND (
                     ga2.status NOT IN ('Revision Required', 'Rejected')
                  OR (ga2.status = 'Revision Required' AND e2.recommendation = 'require_revisions')
@@ -576,7 +579,7 @@ function grantGetLatestEvaluationsForApplications(PDO $crad, array $applicationI
             GROUP BY e2.grant_application_id
         ) latest ON latest.latest_id = e.id
     ");
-    $stmt->execute($applicationIds);
+    $stmt->execute(array_merge($applicationIds, [grantEvaluationTypeCommittee()]));
 
     $map = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
@@ -681,6 +684,96 @@ function grantNotifyApplicantEvaluationDecision(
     ]);
 }
 
+function grantSubmitAdviserProposalEvaluation(PDO $crad, int $applicationId, array $input): array
+{
+    grantEnsureEvaluationTables($crad);
+
+    $evaluatorUserId = (int) ($_SESSION['user_id'] ?? 0);
+    $evaluatorName   = trim((string) ($_SESSION['full_name'] ?? $_SESSION['user_name'] ?? $_SESSION['username'] ?? ''));
+
+    if ($evaluatorUserId <= 0) {
+        return ['ok' => false, 'error' => 'Invalid evaluator session.'];
+    }
+
+    if (!grantApplicationOpenForEvaluationViewer($crad, $applicationId)) {
+        return ['ok' => false, 'error' => 'This proposal is not awaiting Academic Adviser evaluation.'];
+    }
+
+    $application = grantGetApplicationForEvaluation($crad, $applicationId);
+    if (!$application) {
+        return ['ok' => false, 'error' => 'Proposal not found.'];
+    }
+
+    $proposalVersion = max(1, (int) ($application['current_version'] ?? 1));
+
+    if (grantGetAdviserEvaluationByApplication($crad, $applicationId, $evaluatorUserId, $proposalVersion)) {
+        return ['ok' => false, 'error' => 'You have already submitted your adviser evaluation for this proposal version.'];
+    }
+
+    $parsed = grantValidateRubricScoresFromInput($input);
+    if (empty($parsed['ok'])) {
+        return ['ok' => false, 'error' => $parsed['error'] ?? 'Invalid rubric scores.'];
+    }
+
+    $scores = $parsed['scores'];
+    $total  = (float) $parsed['total'];
+    $comments            = trim((string) ($input['comments'] ?? ''));
+    $recommendations     = trim((string) ($input['recommendations'] ?? ''));
+    $requiredCorrections = trim((string) ($input['required_corrections'] ?? ''));
+
+    try {
+        $crad->beginTransaction();
+
+        $stmt = $crad->prepare("
+            INSERT INTO grant_proposal_evaluations
+                (grant_application_id, proposal_version, evaluator_user_id, evaluator_name, evaluation_type,
+                 score_rationale, score_methodology, score_budget,
+                 score_team_capability, score_compliance, total_score,
+                 comments, recommendations, required_corrections,
+                 recommendation, revision_reason,
+                 submitted_at, updated_at)
+            VALUES
+                (?, ?, ?, ?, ?,
+                 ?, ?, ?,
+                 ?, ?, ?,
+                 ?, ?, ?,
+                 NULL, NULL,
+                 NOW(), NOW())
+        ");
+        $stmt->execute([
+            $applicationId,
+            $proposalVersion,
+            $evaluatorUserId,
+            $evaluatorName,
+            grantEvaluationTypeAdviser(),
+            $scores['score_rationale'],
+            $scores['score_methodology'],
+            $scores['score_budget'],
+            $scores['score_team_capability'],
+            $scores['score_compliance'],
+            $total,
+            $comments !== '' ? $comments : null,
+            $recommendations !== '' ? $recommendations : null,
+            $requiredCorrections !== '' ? $requiredCorrections : null,
+        ]);
+
+        $crad->commit();
+
+        return [
+            'ok'          => true,
+            'id'          => (int) $crad->lastInsertId(),
+            'total_score' => $total,
+        ];
+    } catch (Throwable $e) {
+        if ($crad->inTransaction()) {
+            $crad->rollBack();
+        }
+        error_log('grantSubmitAdviserProposalEvaluation: ' . $e->getMessage());
+
+        return ['ok' => false, 'error' => 'Failed to save adviser evaluation. Please try again.'];
+    }
+}
+
 /**
  * @param array<string, mixed> $input
  * @return array{ok: bool, id?: int, total_score?: float, recommendation?: string, new_status?: string, error?: string}
@@ -690,7 +783,7 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
     grantEnsureEvaluationTables($crad);
 
     if (grantIsAdviserEvaluationViewer()) {
-        return ['ok' => false, 'error' => 'Academic Advisers review committee scores in Approval Workflows.'];
+        return grantSubmitAdviserProposalEvaluation($crad, $applicationId, $input);
     }
 
     $evaluatorUserId = (int) ($_SESSION['user_id'] ?? 0);
