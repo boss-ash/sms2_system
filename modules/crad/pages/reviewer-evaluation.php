@@ -9,8 +9,6 @@ require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
 
-requireAuth();
-
 if (function_exists('getCurrentUserRoleKey') && getCurrentUserRoleKey() === 'crad_officer') {
     header('Location: ' . BASE_URL . '/modules/crad/pages/approval-workflows.php');
     exit;
