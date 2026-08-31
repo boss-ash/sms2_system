@@ -290,7 +290,20 @@ if ($roleKey === 'adviser') {
     $facultyAccountNavGroups = $facultyInsert;
 }
 
+$deanFacultyBaseUrl = BASE_URL . '/modules/faculty/pages/';
 $deanGrantNavGroups = [
+    'Faculty Management' => [
+        ['slug' => 'faculty-profile', 'href' => $deanFacultyBaseUrl . 'faculty-profile.php', 'icon' => 'fa-id-badge', 'label' => 'Faculty Profile'],
+        ['slug' => 'subject-load-tracker', 'href' => $deanFacultyBaseUrl . 'subject-load-tracker.php', 'icon' => 'fa-tasks', 'label' => 'Subject Load Tracker'],
+        ['slug' => 'schedule-assignment', 'href' => $deanFacultyBaseUrl . 'schedule-assignment.php', 'icon' => 'fa-calendar-check', 'label' => 'Schedule Assignment'],
+        ['slug' => 'attendance-monitoring', 'href' => $deanFacultyBaseUrl . 'attendance-monitoring.php', 'icon' => 'fa-user-check', 'label' => 'Attendance Monitoring'],
+        ['slug' => 'leave-application-approval', 'href' => $deanFacultyBaseUrl . 'leave-application-approval.php', 'icon' => 'fa-plane-departure', 'label' => 'Leave Application & Approval'],
+        ['slug' => 'salary-grade-payroll-setup', 'href' => $deanFacultyBaseUrl . 'salary-grade-payroll-setup.php', 'icon' => 'fa-money-check-alt', 'label' => 'Salary Grade & Pay Set Up'],
+        ['slug' => 'teaching-history', 'href' => $deanFacultyBaseUrl . 'teaching-history.php', 'icon' => 'fa-history', 'label' => 'Teaching History'],
+        ['slug' => 'clearance-system', 'href' => $deanFacultyBaseUrl . 'clearance-system.php', 'icon' => 'fa-stamp', 'label' => 'Clearance System'],
+        ['slug' => 'evaluation-summary', 'href' => $deanFacultyBaseUrl . 'evaluation-summary.php', 'icon' => 'fa-star', 'label' => 'Evaluation Summary'],
+        ['slug' => 'faculty-directory', 'href' => $deanFacultyBaseUrl . 'faculty-directory.php', 'icon' => 'fa-address-book', 'label' => 'Faculty Directory'],
+    ],
     'Review & Workflow' => [
         ['slug' => 'reviewer-evaluation', 'href' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php', 'icon' => 'fa-clipboard-check', 'label' => 'Reviewer Evaluation'],
         ['slug' => 'approval-workflows', 'href' => BASE_URL . '/modules/crad/pages/approval-workflows.php', 'icon' => 'fa-tasks', 'label' => 'Approval Workflows'],
