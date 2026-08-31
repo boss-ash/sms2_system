@@ -664,6 +664,36 @@ $trendDelta       = smsDashboardScaleDelta((string) $trendDelta, $dashboardPerio
             </div>
         </section>
 
+        <?php if ($roleKey === 'crad_officer'):
+            require_once __DIR__ . '/../modules/crad/config/config.php';
+            require_once __DIR__ . '/../modules/crad/includes/grant-approval-helpers.php';
+        ?>
+        <section class="glass-panel gaw-dashboard-dock" data-crad-approval-dock="1">
+            <div class="glass-panel-body">
+                <div class="glass-panel-head">
+                    <div>
+                        <h2 class="glass-panel-title">
+                            Grant Approval Workflows
+                            <span class="gaw-live-badge">Live</span>
+                        </h2>
+                        <p class="glass-panel-sub">Same pipeline view as advisers and approvers — <?= htmlspecialchars(grantApprovalPipelineLabel()) ?></p>
+                    </div>
+                    <a class="glass-chip" href="<?= BASE_URL ?>/modules/crad/pages/approval-workflows.php">
+                        <?= smsIcon('external-link-alt', ['aria-hidden' => 'true']) ?>
+                        Open full pipeline
+                    </a>
+                </div>
+                <div id="cradApprovalDockStats" class="gaw-stat-row" style="margin-bottom:1rem;">
+                    <span class="gaw-stat pending"><strong data-gaw-in-progress>0</strong> in progress</span>
+                    <span class="gaw-stat completed"><strong data-gaw-completed>0</strong> completed</span>
+                </div>
+                <div id="cradApprovalDockList" class="gaw-dashboard-list">
+                    <p class="gaw-dashboard-empty">Loading approval workflows…</p>
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
+
         <?php if (!empty($visibleModules)): ?>
         <section class="glass-panel glass-quick-actions">
             <div class="glass-panel-body">

@@ -648,11 +648,17 @@ $dashboardPeriodKey    = smsDashboardCurrentPeriod();
 $dashboardPeriods      = smsDashboardPeriods();
 $dashboardPeriodMeta   = $dashboardPeriods[$dashboardPeriodKey];
 $dashboardPeriodFactor = $dashboardPeriodMeta['factor'];
-$statCards             = smsDashboardScaleStatCards($statCards, $dashboardPeriodFactor);
+if ($roleKey !== 'crad_officer') {
+    $statCards = smsDashboardScaleStatCards($statCards, $dashboardPeriodFactor);
+}
 
 require_once __DIR__ . '/glass-board.php';
 ?>
 
 <script src="<?= BASE_URL ?>/assets/js/dashboard-glass.js"></script>
+<?php if ($roleKey === 'crad_officer'): ?>
+<link href="<?= BASE_URL ?>/assets/css/grant-approval-workflows.css?v=4" rel="stylesheet">
+<script src="<?= BASE_URL ?>/assets/js/crad-approval-dashboard-live.js?v=1"></script>
+<?php endif; ?>
 
 <?php require_once __DIR__ . '/../includes/layout-end.php'; ?>
