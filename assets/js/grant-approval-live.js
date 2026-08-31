@@ -17,16 +17,11 @@
     })();
 
     var lastFingerprint = '';
-    var timer = null;
     var paused = false;
     var signing = false;
 
-    var queueList = document.getElementById('gawQueueList');
+    var projectSelect = document.getElementById('gawProjectSelect');
     var detailPanel = document.getElementById('gawDetailPanel');
-    var statInProgress = document.getElementById('gawStatInProgress');
-    var statCompleted = document.getElementById('gawStatCompleted');
-    var statTotal = document.getElementById('gawStatTotal');
-    var refreshBtn = document.getElementById('gawRefreshBtn');
 
     var signDialog = document.getElementById('gawSignDialog');
     var signCanvas = document.getElementById('gawSignCanvas');
@@ -39,12 +34,6 @@
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;');
-    }
-
-    function pillClass(status) {
-        if (status === 'Completed') return 'completed';
-        if (status === 'Returned') return 'returned';
-        return 'in-progress';
     }
 
     function stepDisplayState(step, currentStepKey, workflowStatus) {
@@ -61,62 +50,47 @@
                     });
                 } catch (e) { date = actedAt; }
             }
-            return { state: 'approved', label: 'Approved', sub: '', date: date };
+            return { state: 'approved', label: 'Approved', date: date };
         }
         if (status === 'Returned') {
-            return { state: 'returned', label: 'Returned', sub: '', date: '' };
+            return { state: 'returned', label: 'Returned', date: '' };
         }
         if (workflowStatus !== 'In Progress') {
-            return { state: 'queued', label: 'Queued', sub: '', date: '' };
+            return { state: 'queued', label: 'Queued', date: '--' };
         }
         if (stepKey === currentStepKey && (status === 'Pending' || status === 'Queued')) {
-            return { state: 'active', label: 'In Review', sub: 'Pending', date: '' };
+            return { state: 'active', label: 'In Review', date: 'Pending' };
         }
-        return { state: 'queued', label: 'Queued', sub: '', date: '' };
+        return { state: 'queued', label: 'Queued', date: '--' };
     }
 
-    function renderQueue(workflows) {
-        if (!queueList) return;
-        if (!Array.isArray(workflows) || workflows.length === 0) {
-            queueList.innerHTML = '<div class="gaw-detail-empty" style="padding:2rem 1rem;">' +
-                '<p style="margin:0;">No proposals in the approval workflow yet.</p></div>';
-            return;
-        }
+    function renderProjectSelect(workflows) {
+        if (!projectSelect) return;
+        if (!Array.isArray(workflows) || workflows.length === 0) return;
 
-        queueList.innerHTML = workflows.map(function (row) {
+        var current = selectedId;
+        projectSelect.innerHTML = workflows.map(function (row) {
             var appId = parseInt(row.grant_application_id, 10) || 0;
             var ref = esc(row.proposal_reference || 'Proposal');
             var title = esc(row.research_title || 'Untitled');
-            var wfStatus = row.workflow_status || '';
-            var stepLabel = esc(row.current_step_label || '');
-            var active = appId === selectedId ? ' active' : '';
-            var meta = '<span class="gaw-status-pill ' + pillClass(wfStatus) + '">' + esc(wfStatus) + '</span>';
-            if (stepLabel && wfStatus === 'In Progress') {
-                meta += ' · ' + stepLabel;
-            }
-            return '<button type="button" class="gaw-queue-item' + active + '" data-app-id="' + appId + '">' +
-                '<div class="gaw-queue-ref">' + ref + ' v' + (row.current_version || 1) + '</div>' +
-                '<div class="gaw-queue-title">' + title + '</div>' +
-                '<div class="gaw-queue-meta">' + meta + '</div></button>';
+            var selected = appId === current ? ' selected' : '';
+            return '<option value="' + appId + '"' + selected + '>' + ref + ': ' + title + '</option>';
         }).join('');
 
-        queueList.querySelectorAll('.gaw-queue-item').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                selectedId = parseInt(btn.getAttribute('data-app-id'), 10) || 0;
-                root.setAttribute('data-selected-id', String(selectedId));
-                queueList.querySelectorAll('.gaw-queue-item').forEach(function (b) {
-                    b.classList.toggle('active', b === btn);
-                });
-                fetchDetail();
-            });
-        });
+        if (current <= 0 && workflows.length > 0) {
+            selectedId = parseInt(workflows[0].grant_application_id, 10) || 0;
+            projectSelect.value = String(selectedId);
+            root.setAttribute('data-selected-id', String(selectedId));
+        }
     }
 
     function renderDetail(detail) {
         if (!detailPanel) return;
 
         if (!detail || !detail.workflow) {
-            detailPanel.innerHTML = '<div class="gaw-detail-empty"><p style="margin:0;">Select a proposal to view its sign-off sequence.</p></div>';
+            detailPanel.innerHTML = '<div class="gaw-detail-empty">' +
+                '<i class="ti ti-tasks" style="font-size:2.2rem;color:#cbd5e1;display:block;margin-bottom:.65rem;"></i>' +
+                '<p style="margin:0;">Select a project to view its sign-off sequence.</p></div>';
             return;
         }
 
@@ -132,43 +106,39 @@
             var display = stepDisplayState(step, currentStepKey, wfStatus);
             var order = step.step_order || 0;
             var icon = display.state === 'approved'
-                ? '<i class="ti ti-check" style="font-size:1rem;"></i>'
+                ? '<i class="ti ti-check"></i>'
                 : String(order);
-            var sub = display.sub ? '<div class="gaw-step-sub">' + esc(display.sub) + '</div>' : '';
-            var date = display.date ? '<div class="gaw-step-date">' + esc(display.date) + '</div>' : '';
+            var dateHtml = display.date
+                ? '<div class="gaw-step-date">' + esc(display.date) + '</div>'
+                : '';
             return '<div class="gaw-step ' + display.state + '">' +
                 '<div class="gaw-step-icon">' + icon + '</div>' +
                 '<div class="gaw-step-name">' + esc(step.step_label) + '</div>' +
                 '<div class="gaw-step-status">' + esc(display.label) + '</div>' +
-                sub + date + '</div>';
+                dateHtml + '</div>';
         }).join('');
 
         var actionHtml = '';
         if (canAct) {
             actionHtml = '<div class="gaw-action-panel" id="gawActionPanel">' +
-                '<h3>ADMINISTRATIVE SIGN-OFF ACTION PANEL</h3>' +
+                '<h3>Administrative Sign-off Action Panel</h3>' +
                 '<p>Logged in as: <strong>' + roleLabel + '</strong>. Signatures are timestamped and logged in the permanent audit trail.</p>' +
                 '<div class="gaw-action-buttons">' +
-                '<button type="button" class="mpl-btn gaw-btn-approve" id="gawSignApproveBtn">' +
+                '<button type="button" class="gaw-btn-approve" id="gawSignApproveBtn">' +
                 '<i class="ti ti-signature"></i> Sign &amp; Approve Current Level</button>' +
-                '<button type="button" class="mpl-btn gaw-btn-return" id="gawReturnBtn">' +
+                '<button type="button" class="gaw-btn-return" id="gawReturnBtn">' +
                 '<i class="ti ti-x"></i> Return to Proponent for Revision</button>' +
                 '</div></div>';
         } else if (detail.is_monitor && wfStatus === 'In Progress' && detail.current_step) {
-            actionHtml = '<p class="gaw-monitor-note">Monitoring mode — current stage: <strong>' +
-                esc(detail.current_step.step_label) + '</strong></p>';
+            actionHtml = '<div class="gaw-monitor-note">' +
+                '<i class="ti ti-eye me-1"></i> Monitoring mode — current stage: ' +
+                '<strong>' + esc(detail.current_step.step_label) + '</strong></div>';
         }
 
-        detailPanel.innerHTML = '<h2 class="gaw-detail-title">Sign-off Sequence for ' + ref + '</h2>' +
+        detailPanel.innerHTML = '<h2 class="gaw-pipeline-title">Sign-off Sequence for ' + ref + '</h2>' +
             '<div class="gaw-stepper" id="gawStepper">' + stepperHtml + '</div>' + actionHtml;
 
         bindActionButtons();
-    }
-
-    function updateStats(data) {
-        if (statInProgress) statInProgress.textContent = String(data.in_progress || 0);
-        if (statCompleted) statCompleted.textContent = String(data.completed || 0);
-        if (statTotal) statTotal.textContent = String(data.count || 0);
     }
 
     function fetchWorkflows(reloadOnChange) {
@@ -185,10 +155,11 @@
                     return;
                 }
                 lastFingerprint = fp;
-                updateStats(data);
-                renderQueue(data.workflows || []);
+                renderProjectSelect(data.workflows || []);
                 if (data.detail) {
                     renderDetail(data.detail);
+                } else if (selectedId > 0) {
+                    fetchDetail();
                 }
             })
             .catch(function () {});
@@ -207,7 +178,17 @@
             });
     }
 
-  // Signature pad
+    if (projectSelect) {
+        projectSelect.addEventListener('change', function () {
+            selectedId = parseInt(projectSelect.value, 10) || 0;
+            root.setAttribute('data-selected-id', String(selectedId));
+            var newUrl = window.location.pathname + (selectedId ? '?id=' + selectedId : '');
+            window.history.replaceState({}, '', newUrl);
+            fetchDetail();
+        });
+    }
+
+    // Signature pad
     var signCtx = null;
     var drawing = false;
 
@@ -351,25 +332,17 @@
     document.getElementById('gawReturnCancelBtn')?.addEventListener('click', closeReturnDialog);
     document.getElementById('gawReturnConfirmBtn')?.addEventListener('click', submitReturn);
 
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function () {
-            fetchWorkflows(false);
-        });
-    }
-
     bindActionButtons();
     initSignPad();
 
-    fetchWorkflows(false).then(function () {
-        lastFingerprint = lastFingerprint || '';
-    });
+    fetchWorkflows(false);
 
     function poll() {
         if (paused || document.hidden || signing) return;
         fetchWorkflows(true);
     }
 
-    timer = setInterval(poll, POLL_MS);
+    setInterval(poll, POLL_MS);
     document.addEventListener('visibilitychange', function () {
         if (!document.hidden) poll();
     });
