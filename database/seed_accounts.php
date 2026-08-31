@@ -69,6 +69,7 @@ $perms = [
     'osa'          => ['cocurricular'],
     'it_office'    => ['lms'],
     'qa'           => ['accreditation'],
+    'vpaa'         => ['accreditation'],
     'hr'           => ['faculty'],
     'student'      => ['student_portal'],
 ];
@@ -91,15 +92,7 @@ $accounts = [
         'email' => 'deptchair@bestlink.edu.ph',
         'password' => '@deptchair123',
         'full_name' => 'Department Chair',
-        'role_key' => 'research_coordinator',
-        'student_id' => null,
-    ],
-    [
-        'username' => 'researchoffice',
-        'email' => 'researchoffice@bestlink.edu.ph',
-        'password' => '@researchoffice123',
-        'full_name' => 'Research Office',
-        'role_key' => 'crad_officer',
+        'role_key' => 'department_chair',
         'student_id' => null,
     ],
     [
