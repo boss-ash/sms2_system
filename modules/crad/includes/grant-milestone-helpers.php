@@ -467,6 +467,11 @@ function grantUpdateFundedProjectMilestone(
 
         $applicationId = (int) ($row['grant_application_id'] ?? 0);
 
+        $updatedRow = $crad->prepare('SELECT * FROM grant_funded_project_milestones WHERE id = ? LIMIT 1');
+        $updatedRow->execute([$milestoneId]);
+        $milestoneRow = $updatedRow->fetch(PDO::FETCH_ASSOC) ?: $row;
+        grantNotifyApplicantMilestoneUpdated($crad, $applicationId, $milestoneRow, $userName);
+
         return [
             'ok'     => true,
             'detail' => grantGetFundedMilestoneDetail($crad, $applicationId),
@@ -539,4 +544,77 @@ function grantUploadFundedMilestoneDocument(
 
         return ['ok' => false, 'error' => 'Failed to upload supporting document.'];
     }
+}
+
+/**
+ * @param array<string, mixed> $milestone
+ */
+function grantNotifyApplicantMilestoneUpdated(
+    PDO $crad,
+    int $applicationId,
+    array $milestone,
+    string $updatedByName
+): void {
+    require_once __DIR__ . '/grant-evaluation-helpers.php';
+    if (!function_exists('grantFundedResearchUrl')) {
+        require_once __DIR__ . '/grant-funded-research-helpers.php';
+    }
+
+    $stmt = $crad->prepare('SELECT * FROM grant_applications WHERE id = ? LIMIT 1');
+    $stmt->execute([$applicationId]);
+    $application = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$application) {
+        return;
+    }
+
+    $recipientUserId = (int) ($application['applicant_user_id'] ?? 0);
+    if ($recipientUserId <= 0) {
+        return;
+    }
+
+    $refLabel = trim((string) ($application['proposal_reference'] ?? ''));
+    if ($refLabel === '') {
+        $refLabel = 'Proposal #' . $applicationId;
+    }
+
+    $milestoneLabel = (string) ($milestone['milestone_name'] ?? ('Milestone ' . (int) ($milestone['tranche_number'] ?? 0)));
+    $status = (string) ($milestone['status'] ?? 'Pending');
+    $completion = number_format((float) ($milestone['completion_pct'] ?? 0), 0);
+
+    $body = sprintf(
+        '%s — %s updated to %s (%s%%). Updated by %s. View Funded Research for timeline and requirements.',
+        $refLabel,
+        $milestoneLabel,
+        $status,
+        $completion,
+        $updatedByName !== '' ? $updatedByName : 'CRAD Staff'
+    );
+
+    $recipientRole = 'student';
+    if (function_exists('db')) {
+        $mainDb = db();
+        if ($mainDb) {
+            $userStmt = $mainDb->prepare('SELECT role_key FROM users WHERE id = ? LIMIT 1');
+            $userStmt->execute([$recipientUserId]);
+            $recipientRole = (string) ($userStmt->fetchColumn() ?: 'student');
+        }
+    }
+
+    $eventKey = 'grant-proposal:grant_milestone_update:'
+        . $applicationId
+        . ':m' . (int) ($milestone['id'] ?? 0)
+        . ':s' . strtolower(preg_replace('/[^a-z0-9]+/i', '', $status))
+        . ':p' . (int) $completion;
+
+    grantInsertGrantProposalNotification(
+        $crad,
+        $applicationId,
+        $recipientUserId,
+        $recipientRole,
+        'grant_milestone_update',
+        $eventKey,
+        'Milestone Updated',
+        $body,
+        grantFundedResearchUrl($applicationId)
+    );
 }
