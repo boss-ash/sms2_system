@@ -3,7 +3,7 @@ param(
     [string]$FtpPass = $env:SMS2_FTP_PASS,
     [string]$ZipPath = 'C:\xampp\htdocs\sms2_deploy.zip',
     [string]$Staging = 'C:\xampp\htdocs\sms2_deploy_staging',
-    [string]$FtpHost = 'ftpupload.net'
+$ftpHosts = @('ftpupload.net', 'ftp.epizy.com', '185.27.134.11')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -32,7 +32,18 @@ function New-FtpRequest([string]$remotePath, [string]$method) {
     $request.EnableSsl = $true
     $request.UseBinary = $true
     $request.UsePassive = $true
+    $request.KeepAlive = $false
     return $request
+}
+
+function Test-FtpLogin() {
+    $request = New-FtpRequest '/' ([System.Net.WebRequestMethods+Ftp]::ListDirectory)
+    $response = $request.GetResponse()
+    $reader = New-Object System.IO.StreamReader($response.GetResponseStream())
+    $listing = $reader.ReadToEnd()
+    $reader.Close()
+    $response.Close()
+    return $listing
 }
 
 function Upload-FtpFile($localPath, $remotePath) {
@@ -66,6 +77,24 @@ function Upload-FtpTree($localDir, $remoteDirPath) {
         }
     }
 }
+
+$connectedHost = $null
+foreach ($hostCandidate in $ftpHosts) {
+    $script:FtpHost = $hostCandidate
+    Write-Host "Testing FTPS login on ftp://${FtpHost} ..."
+    try {
+        $listing = Test-FtpLogin
+        Write-Host "Connected on ${FtpHost}."
+        $connectedHost = $hostCandidate
+        break
+    } catch {
+        Write-Host "Failed on ${hostCandidate}: $($_.Exception.Message)"
+    }
+}
+if (-not $connectedHost) {
+    Write-Error 'Could not log in via FTPS on any known InfinityFree host. Open Control Panel once in the dashboard, wait 5 minutes, then retry.'
+}
+$FtpHost = $connectedHost
 
 Write-Host "Uploading via FTPS to ftp://${FtpHost}${remoteDir} ..."
 Upload-FtpTree $Staging $remoteDir
