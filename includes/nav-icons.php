@@ -46,6 +46,7 @@ if (!function_exists('smsNavPageIcon')) {
             'dashboard-analytics' => 'fa-chart-pie',
             'core-system-dashboard' => 'fa-chart-pie',
             'approval-workflows' => 'fa-tasks',
+            'reviewer-evaluation' => 'fa-clipboard-check',
             'grant-opportunities' => 'fa-hand-holding-usd',
             'proposals-applications' => 'fa-file-alt',
             'revisions-requested' => 'fa-edit',
