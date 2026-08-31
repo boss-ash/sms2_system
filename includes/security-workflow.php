@@ -600,6 +600,8 @@ function smsPrimaryModuleForRole(string $roleKey): string
         'registrar'    => 'registrar',
         'crad_officer' => 'crad',
         'research_coordinator' => 'crad',
+        'department_chair' => 'crad',
+        'research_office' => 'crad',
         'research_grant' => 'crad_grant',
         'review_committee' => 'crad_grant',
         'finance'      => 'payment',
@@ -611,6 +613,7 @@ function smsPrimaryModuleForRole(string $roleKey): string
         'it_office'    => 'lms',
         'osa'          => 'cocurricular',
         'qa'           => 'accreditation',
+        'vpaa'         => 'accreditation',
         'student'      => 'student_portal',
     ];
     return $map[$roleKey] ?? 'System';

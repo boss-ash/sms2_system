@@ -182,6 +182,9 @@ if (!function_exists('smsRoleHomeUrl')) {
         $homes = [
             'student'              => BASE_URL . '/modules/student-portal/pages/dashboard.php',
             'research_coordinator' => BASE_URL . '/modules/crad/index.php',
+            'department_chair'     => BASE_URL . '/modules/crad/pages/approval-workflows.php',
+            'research_office'      => BASE_URL . '/modules/crad/pages/approval-workflows.php',
+            'vpaa'                 => BASE_URL . '/modules/crad/pages/approval-workflows.php',
             'crad_officer'         => BASE_URL . '/dashboard/index.php',
             'grammarian'           => BASE_URL . '/modules/faculty/pages/for-evaluation.php',
             'panel'                => BASE_URL . '/modules/faculty/pages/assigned-defenses.php',
