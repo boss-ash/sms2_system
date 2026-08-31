@@ -517,17 +517,29 @@ function grantBackfillApprovalWorkflows(PDO $crad): void
     grantEnsureEvaluationTables($crad);
 
     try {
-        $rows = $crad->query("
+        $committeeType = grantEvaluationTypeCommittee();
+        $stmt = $crad->prepare("
             SELECT DISTINCT ga.id
               FROM grant_applications ga
               JOIN grant_proposal_evaluations e
                 ON e.grant_application_id = ga.id
                AND e.recommendation = 'recommend'
+               AND e.evaluation_type = ?
+               AND e.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
+               AND e.id = (
+                    SELECT MAX(e2.id)
+                      FROM grant_proposal_evaluations e2
+                     WHERE e2.grant_application_id = ga.id
+                       AND e2.evaluation_type = ?
+                       AND e2.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
+               )
               LEFT JOIN grant_proposal_approval_workflows w
                 ON w.grant_application_id = ga.id
              WHERE w.id IS NULL
                AND ga.status NOT IN ('Rejected', 'Revision Required', 'Denied', 'Withdrawn', 'Approved & Funded')
-        ")->fetchAll(PDO::FETCH_COLUMN) ?: [];
+        ");
+        $stmt->execute([$committeeType, $committeeType]);
+        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
 
         foreach ($rows as $appId) {
             grantStartApprovalWorkflow($crad, (int) $appId);
