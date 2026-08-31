@@ -22,7 +22,7 @@
  *   server-side in the session (crad_grant_tokens / crad_apply_tokens).
  *   Tokens expire after 10 minutes. Each token is consumed on first use.
  *
- * ACCESS: crad_officer, superadmin, admin only.
+ * ACCESS: crad_officer, research_grant (CRAD grant module), and granted admins.
  */
 
 declare(strict_types=1);
