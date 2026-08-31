@@ -212,7 +212,7 @@ function grantStartApprovalWorkflow(PDO $crad, int $applicationId): array
         return ['ok' => true, 'workflow_id' => (int) ($existing['id'] ?? 0)];
     }
 
-    $app = grantGetApplicationById($crad, $applicationId);
+    $app = grantGetApplicationForEvaluation($crad, $applicationId);
     if ($app === null) {
         return ['ok' => false, 'error' => 'Proposal not found.'];
     }
@@ -613,7 +613,7 @@ function grantReturnProposalFromApproval(
              WHERE id = ?
         ")->execute([$applicationId]);
 
-        $app = grantGetApplicationById($crad, $applicationId);
+        $app = grantGetApplicationForEvaluation($crad, $applicationId);
         if ($app !== null && function_exists('grantNotifyApplicantEvaluationDecision')) {
             grantNotifyApplicantEvaluationDecision(
                 $crad,
