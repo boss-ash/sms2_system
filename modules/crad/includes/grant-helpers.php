@@ -272,6 +272,339 @@ function grantEnsureTables(PDO $crad): void
         "VARCHAR(300) DEFAULT NULL COMMENT 'Original filename of optional ethics clearance document' AFTER ethics_doc");
 
     _grantEnsureApplicationStatusEnum($crad);
+
+    _grantAddColumnIfMissing($crad, 'grant_applications', 'proposal_reference',
+        "VARCHAR(30) DEFAULT NULL COMMENT 'Stable proposal ID e.g. GR-2026-001' AFTER id");
+    _grantAddColumnIfMissing($crad, 'grant_applications', 'current_version',
+        "INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Active proposal document version' AFTER proposal_reference");
+
+    grantEnsureProposalVersionTables($crad);
+    _grantBackfillProposalReferences($crad);
+}
+
+function grantEnsureProposalVersionTables(PDO $crad): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+
+    $crad->exec("
+        CREATE TABLE IF NOT EXISTS grant_proposal_versions (
+            id                      INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+            grant_application_id    INT UNSIGNED  NOT NULL,
+            version_number          INT UNSIGNED  NOT NULL,
+            version_label           VARCHAR(60)   NOT NULL DEFAULT '',
+            proposal_pdf            VARCHAR(255)  DEFAULT NULL,
+            proposal_pdf_original   VARCHAR(300)  DEFAULT NULL,
+            supporting_docs           VARCHAR(255)  DEFAULT NULL,
+            supporting_docs_original  VARCHAR(300)  DEFAULT NULL,
+            ethics_doc                VARCHAR(255)  DEFAULT NULL,
+            ethics_doc_original       VARCHAR(300)  DEFAULT NULL,
+            abstract                  TEXT          DEFAULT NULL,
+            objectives                TEXT          DEFAULT NULL,
+            researcher_notes          TEXT          DEFAULT NULL,
+            submitted_by_user_id    INT UNSIGNED  DEFAULT NULL,
+            submitted_at              DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uniq_gpv_app_ver (grant_application_id, version_number),
+            KEY idx_gpv_application (grant_application_id),
+            KEY idx_gpv_submitted (submitted_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+}
+
+function grantVersionLabel(int $version): string
+{
+    return match ($version) {
+        1       => 'Original',
+        2       => 'Revised',
+        default => 'Revised Again',
+    };
+}
+
+function grantGenerateProposalReference(PDO $crad): string
+{
+    $year = date('Y');
+    $prefix = 'GR-' . $year . '-';
+
+    $stmt = $crad->prepare("
+        SELECT proposal_reference
+          FROM grant_applications
+         WHERE proposal_reference LIKE ?
+         ORDER BY id DESC
+         LIMIT 1
+    ");
+    $stmt->execute([$prefix . '%']);
+    $last = (string) ($stmt->fetchColumn() ?: '');
+
+    $seq = 1;
+    if ($last !== '' && preg_match('/GR-\d{4}-(\d+)$/', $last, $m)) {
+        $seq = (int) $m[1] + 1;
+    }
+
+    return sprintf('GR-%s-%03d', $year, $seq);
+}
+
+function _grantBackfillProposalReferences(PDO $crad): void
+{
+    try {
+        $rows = $crad->query("
+            SELECT id
+              FROM grant_applications
+             WHERE proposal_reference IS NULL OR proposal_reference = ''
+             ORDER BY id ASC
+        ")->fetchAll(PDO::FETCH_COLUMN) ?: [];
+
+        foreach ($rows as $appId) {
+            $ref = grantGenerateProposalReference($crad);
+            $crad->prepare("
+                UPDATE grant_applications
+                   SET proposal_reference = ?, current_version = COALESCE(NULLIF(current_version, 0), 1)
+                 WHERE id = ?
+            ")->execute([$ref, (int) $appId]);
+        }
+    } catch (Throwable $e) {
+        error_log('_grantBackfillProposalReferences: ' . $e->getMessage());
+    }
+}
+
+function grantRevisionsRequestedUrl(): string
+{
+    return BASE_URL . '/modules/crad/pages/revisions-requested.php';
+}
+
+function grantReviseProposalUrl(int $applicationId): string
+{
+    return BASE_URL . '/modules/crad/pages/revise-proposal.php?id=' . $applicationId;
+}
+
+/**
+ * @param array<string, mixed> $application
+ */
+function grantInsertProposalVersion(PDO $crad, array $application, int $versionNumber, ?string $researcherNotes = null): void
+{
+    grantEnsureProposalVersionTables($crad);
+
+    $stmt = $crad->prepare("
+        INSERT INTO grant_proposal_versions
+            (grant_application_id, version_number, version_label,
+             proposal_pdf, proposal_pdf_original,
+             supporting_docs, supporting_docs_original,
+             ethics_doc, ethics_doc_original,
+             abstract, objectives, researcher_notes,
+             submitted_by_user_id, submitted_at)
+        VALUES
+            (?, ?, ?,
+             ?, ?,
+             ?, ?,
+             ?, ?,
+             ?, ?, ?,
+             ?, NOW())
+        ON DUPLICATE KEY UPDATE
+            version_label = VALUES(version_label),
+            proposal_pdf = VALUES(proposal_pdf),
+            proposal_pdf_original = VALUES(proposal_pdf_original),
+            supporting_docs = VALUES(supporting_docs),
+            supporting_docs_original = VALUES(supporting_docs_original),
+            ethics_doc = VALUES(ethics_doc),
+            ethics_doc_original = VALUES(ethics_doc_original),
+            abstract = VALUES(abstract),
+            objectives = VALUES(objectives),
+            researcher_notes = COALESCE(VALUES(researcher_notes), researcher_notes),
+            submitted_by_user_id = VALUES(submitted_by_user_id),
+            submitted_at = VALUES(submitted_at)
+    ");
+    $stmt->execute([
+        (int) $application['id'],
+        $versionNumber,
+        grantVersionLabel($versionNumber),
+        $application['proposal_pdf'] ?? null,
+        $application['proposal_pdf_original'] ?? null,
+        $application['supporting_docs'] ?? null,
+        $application['supporting_docs_original'] ?? null,
+        $application['ethics_doc'] ?? null,
+        $application['ethics_doc_original'] ?? null,
+        $application['abstract'] ?? null,
+        $application['objectives'] ?? null,
+        $researcherNotes,
+        (int) ($application['applicant_user_id'] ?? $_SESSION['user_id'] ?? 0) ?: null,
+    ]);
+}
+
+/**
+ * @return array<int, array<string, mixed>>
+ */
+function grantGetProposalVersions(PDO $crad, int $applicationId): array
+{
+    grantEnsureProposalVersionTables($crad);
+
+    $stmt = $crad->prepare("
+        SELECT *
+          FROM grant_proposal_versions
+         WHERE grant_application_id = ?
+         ORDER BY version_number ASC
+    ");
+    $stmt->execute([$applicationId]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+/**
+ * @return array<int, array<string, mixed>>
+ */
+function grantGetMyRevisionRequiredApplications(PDO $crad): array
+{
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    if ($userId <= 0) {
+        return [];
+    }
+
+    return array_values(array_filter(
+        grantGetApplications($crad),
+        static fn(array $row): bool =>
+            (int) ($row['applicant_user_id'] ?? 0) === $userId
+            && (string) ($row['status'] ?? '') === 'Revision Required'
+    ));
+}
+
+function grantGetApplicationForResearcher(PDO $crad, int $applicationId): ?array
+{
+    $stmt = $crad->prepare("
+        SELECT ga.*, go.funding_title, go.max_funding_cap
+          FROM grant_applications ga
+         INNER JOIN grant_opportunities go ON go.id = ga.grant_opportunity_id
+         WHERE ga.id = ?
+         LIMIT 1
+    ");
+    $stmt->execute([$applicationId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row) {
+        return null;
+    }
+
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    if (!grantUserCanManage()
+        && (int) ($row['applicant_user_id'] ?? 0) !== $userId) {
+        return null;
+    }
+
+    return $row;
+}
+
+/**
+ * @param array<string, mixed> $data
+ * @param array<string, mixed> $files
+ * @return array{ok: bool, id?: int, reference?: string, version?: int, new_status?: string, error?: string}
+ */
+function grantResubmitProposal(PDO $crad, int $applicationId, array $data, array $files): array
+{
+    grantEnsureTables($crad);
+    grantEnsureProposalVersionTables($crad);
+
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    if ($userId <= 0) {
+        return ['ok' => false, 'error' => 'Invalid session.'];
+    }
+
+    $application = grantGetApplicationForResearcher($crad, $applicationId);
+    if (!$application) {
+        return ['ok' => false, 'error' => 'Proposal not found or access denied.'];
+    }
+
+    if ((string) ($application['status'] ?? '') !== 'Revision Required') {
+        return ['ok' => false, 'error' => 'Only proposals marked for revision can be resubmitted.'];
+    }
+
+    if ((int) ($application['applicant_user_id'] ?? 0) !== $userId) {
+        return ['ok' => false, 'error' => 'You can only revise your own proposals.'];
+    }
+
+    $proposalFile = $files['proposal_pdf'] ?? [];
+    if (empty($proposalFile['ok'])) {
+        return ['ok' => false, 'error' => $proposalFile['error'] ?? 'Revised proposal PDF is required.'];
+    }
+
+    $supportingFile = $files['supporting_docs'] ?? [];
+    $ethicsFile     = $files['ethics_doc'] ?? [];
+    $researcherNotes = trim((string) ($data['researcher_notes'] ?? '')) ?: null;
+    $currentVersion  = max(1, (int) ($application['current_version'] ?? 1));
+    $nextVersion     = $currentVersion + 1;
+
+    try {
+        $crad->beginTransaction();
+
+        grantInsertProposalVersion($crad, $application, $currentVersion, null);
+
+        $updated = array_merge($application, [
+            'proposal_pdf'            => $proposalFile['stored_name'] ?? $application['proposal_pdf'],
+            'proposal_pdf_original'   => $proposalFile['original_name'] ?? $application['proposal_pdf_original'],
+            'supporting_docs'         => !empty($supportingFile['ok'])
+                ? ($supportingFile['stored_name'] ?? null)
+                : $application['supporting_docs'],
+            'supporting_docs_original' => !empty($supportingFile['ok'])
+                ? ($supportingFile['original_name'] ?? null)
+                : $application['supporting_docs_original'],
+            'ethics_doc'              => !empty($ethicsFile['ok'])
+                ? ($ethicsFile['stored_name'] ?? null)
+                : $application['ethics_doc'],
+            'ethics_doc_original'     => !empty($ethicsFile['ok'])
+                ? ($ethicsFile['original_name'] ?? null)
+                : $application['ethics_doc_original'],
+            'current_version'         => $nextVersion,
+        ]);
+
+        grantInsertProposalVersion($crad, $updated, $nextVersion, $researcherNotes);
+
+        $crad->prepare("
+            UPDATE grant_applications
+               SET proposal_pdf = ?,
+                   proposal_pdf_original = ?,
+                   supporting_docs = ?,
+                   supporting_docs_original = ?,
+                   ethics_doc = ?,
+                   ethics_doc_original = ?,
+                   current_version = ?,
+                   status = 'Resubmitted',
+                   updated_at = NOW()
+             WHERE id = ?
+        ")->execute([
+            $updated['proposal_pdf'],
+            $updated['proposal_pdf_original'],
+            $updated['supporting_docs'],
+            $updated['supporting_docs_original'],
+            $updated['ethics_doc'],
+            $updated['ethics_doc_original'],
+            $nextVersion,
+            $applicationId,
+        ]);
+
+        $crad->prepare("
+            UPDATE grant_applications
+               SET status = 'Under Review',
+                   submitted_at = NOW(),
+                   updated_at = NOW()
+             WHERE id = ?
+        ")->execute([$applicationId]);
+
+        $crad->commit();
+
+        return [
+            'ok'          => true,
+            'id'          => $applicationId,
+            'reference'   => (string) ($application['proposal_reference'] ?? ''),
+            'version'     => $nextVersion,
+            'new_status'  => 'Under Review',
+        ];
+    } catch (Throwable $e) {
+        if ($crad->inTransaction()) {
+            $crad->rollBack();
+        }
+        error_log('grantResubmitProposal: ' . $e->getMessage());
+        return ['ok' => false, 'error' => 'Failed to resubmit proposal. Please try again.'];
+    }
 }
 
 /**
@@ -388,6 +721,8 @@ function grantGetApplications(PDO $crad, ?int $opportunityId = null): array
 {
     // ── Detect which optional proposal columns are actually present ──────────
     $proposalColumns = [
+        'proposal_reference',
+        'current_version',
         'college_dept',
         'requested_budget',
         'abstract',
