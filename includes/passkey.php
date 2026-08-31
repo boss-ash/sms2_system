@@ -653,27 +653,28 @@ function smsRenderPasskeyCard(int $userId, string $csrfToken, bool $asBox = fals
                 </div>
                 <div class="sms-confirm-body sms-confirm-body--form">
                     <div class="sms-confirm-icon sms-confirm-icon--danger" aria-hidden="true">
-                        <?= smsIcon('trash-alt') ?>
+                        <?= smsIcon('trash') ?>
                     </div>
                     <p class="sms-confirm-msg mb-0" id="smsPasskeyRemoveLead">Verify your identity to remove this passkey.</p>
-                    <div id="smsPasskeyRemoveErr" class="alert alert-danger py-2 small w-100 text-start" hidden></div>
-                    <div id="smsPasskeyRemoveInfo" class="alert alert-info py-2 small w-100 text-start" hidden></div>
+                    <div id="smsPasskeyRemoveErr" class="sms-confirm-notice sms-confirm-notice--danger w-100" hidden></div>
+                    <div id="smsPasskeyRemoveInfo" class="sms-confirm-notice sms-confirm-notice--info w-100" hidden></div>
 
-                    <div id="smsPkVerifyAuthenticator" class="sms-pk-verify w-100 text-start" hidden>
-                        <label class="form-label fw-semibold" for="smsPkTotp">Authenticator code</label>
-                        <input type="text" class="form-control" id="smsPkTotp" inputmode="numeric" maxlength="6"
+                    <div class="sms-confirm-form w-100">
+                    <div id="smsPkVerifyAuthenticator" class="sms-pk-verify w-100" hidden>
+                        <label class="sms-confirm-label" for="smsPkTotp"><?= smsIcon('shield-lock') ?>Authenticator code</label>
+                        <input type="text" class="form-control sms-confirm-input" id="smsPkTotp" inputmode="numeric" maxlength="6"
                                pattern="\d{6}" autocomplete="one-time-code" placeholder="000000">
                     </div>
-                    <div id="smsPkVerifyEmail" class="sms-pk-verify w-100 text-start" hidden>
-                        <label class="form-label fw-semibold" for="smsPkOtp">Email code</label>
-                        <input type="text" class="form-control" id="smsPkOtp" inputmode="numeric" maxlength="6"
+                    <div id="smsPkVerifyEmail" class="sms-pk-verify w-100" hidden>
+                        <label class="sms-confirm-label" for="smsPkOtp"><?= smsIcon('mail') ?>Email code</label>
+                        <input type="text" class="form-control sms-confirm-input" id="smsPkOtp" inputmode="numeric" maxlength="6"
                                pattern="\d{6}" autocomplete="one-time-code" placeholder="000000">
-                        <button type="button" class="btn btn-link btn-sm px-0 mt-1" id="smsPkResendEmail">Resend email code</button>
+                        <button type="button" class="btn btn-link btn-sm px-0 mt-2 sms-confirm-link" id="smsPkResendEmail"><?= smsIcon('refresh', ['class' => 'me-1']) ?>Resend email code</button>
                     </div>
-                    <div id="smsPkVerifyPassword" class="sms-pk-verify w-100 text-start" hidden>
-                        <label class="form-label fw-semibold" for="smsPkPassword">Password</label>
+                    <div id="smsPkVerifyPassword" class="sms-pk-verify w-100" hidden>
+                        <label class="sms-confirm-label" for="smsPkPassword"><?= smsIcon('lock') ?>Password</label>
                         <div class="sms-pw-group password-group">
-                            <input type="password" class="form-control" id="smsPkPassword" autocomplete="current-password"
+                            <input type="password" class="form-control sms-confirm-input" id="smsPkPassword" autocomplete="current-password"
                                    placeholder="Enter your password">
                             <button class="password-toggle sms-pw-toggle" type="button" data-pw-target="smsPkPassword"
                                     aria-label="Show password" title="Show password" aria-pressed="false">
@@ -681,11 +682,12 @@ function smsRenderPasskeyCard(int $userId, string $csrfToken, bool $asBox = fals
                             </button>
                         </div>
                     </div>
+                    </div>
                 </div>
                 <div class="sms-confirm-footer">
                     <button type="button" class="btn btn-outline-secondary sms-confirm-cancel" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn sms-confirm-ok sms-confirm-ok--danger" id="smsPasskeyRemoveConfirm">
-                        <?= smsIcon('trash-alt', ['class' => 'me-1', 'aria-hidden' => 'true']) ?>Yes, remove
+                        <?= smsIcon('trash', ['class' => 'me-1', 'aria-hidden' => 'true']) ?>Yes, remove
                     </button>
                 </div>
             </div>

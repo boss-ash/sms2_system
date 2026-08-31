@@ -474,7 +474,7 @@ renderBreadcrumbs($breadcrumbs);
 
 <?php if (!$isArchiveView): ?>
 <!-- ── Add / Edit User Modal ─────────────────────────────────── -->
-<div class="modal fade" id="umUserModal" tabindex="-1" aria-labelledby="umModalTitle" aria-hidden="true">
+<div class="modal fade um-user-modal" id="umUserModal" tabindex="-1" aria-labelledby="umModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">

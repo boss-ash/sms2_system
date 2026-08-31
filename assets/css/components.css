@@ -311,6 +311,15 @@
     color: inherit;
 }
 
+.sms-confirm-close__glyph {
+    display: block;
+    font-size: 1.45rem;
+    line-height: 1;
+    font-weight: 500;
+    color: inherit;
+    transform: translateY(-0.02em);
+}
+
 .sms-confirm-icon .ti,
 .um-confirm-icon .ti {
     font-size: 1.35rem;
