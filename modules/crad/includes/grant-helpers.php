@@ -270,6 +270,47 @@ function grantEnsureTables(PDO $crad): void
 
     _grantAddColumnIfMissing($crad, 'grant_applications', 'ethics_doc_original',
         "VARCHAR(300) DEFAULT NULL COMMENT 'Original filename of optional ethics clearance document' AFTER ethics_doc");
+
+    _grantEnsureApplicationStatusEnum($crad);
+}
+
+/**
+ * Extend grant_applications.status with reviewer decision outcomes.
+ */
+function _grantEnsureApplicationStatusEnum(PDO $crad): void
+{
+    try {
+        $stmt = $crad->prepare(
+            "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS
+              WHERE TABLE_SCHEMA = DATABASE()
+                AND TABLE_NAME = 'grant_applications'
+                AND COLUMN_NAME = 'status'"
+        );
+        $stmt->execute();
+        $columnType = (string) $stmt->fetchColumn();
+        if ($columnType === '') {
+            return;
+        }
+        if (strpos($columnType, 'Rejected') !== false
+            && strpos($columnType, 'Revision Required') !== false) {
+            return;
+        }
+
+        $crad->exec("
+            ALTER TABLE grant_applications
+            MODIFY COLUMN status ENUM(
+                'Submitted',
+                'Under Review',
+                'Approved',
+                'Denied',
+                'Withdrawn',
+                'Rejected',
+                'Revision Required'
+            ) NOT NULL DEFAULT 'Submitted'
+        ");
+    } catch (Throwable $e) {
+        error_log('_grantEnsureApplicationStatusEnum: ' . $e->getMessage());
+    }
 }
 
 /**
