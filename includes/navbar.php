@@ -233,7 +233,7 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
                     <?= smsIcon('user-circle', ['class' => 'ti-lg']) ?>
                     <span class="d-none d-md-inline"><?= htmlspecialchars(getCurrentUserName()) ?></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow">
+                <ul class="dropdown-menu dropdown-menu-end shadow sms-profile-dropdown">
                     <li><h6 class="dropdown-header"><?= htmlspecialchars(getCurrentUserRole()) ?></h6></li>
                     <?php
                     $navRole = getCurrentUserRoleKey();

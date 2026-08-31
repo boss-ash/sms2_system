@@ -280,6 +280,11 @@
 }
 
 /* ── Profile dropdown — section headers & theme picker ─────── */
+.sms-navbar .dropdown-menu.sms-profile-dropdown {
+    min-width: 260px;
+    padding-bottom: 0.35rem;
+}
+
 .sms-dropdown-section-header {
     display: flex;
     align-items: center;
@@ -309,6 +314,17 @@
     margin: 0.12rem 0.35rem;
     width: calc(100% - 0.7rem);
     transition: background 0.15s ease, color 0.15s ease;
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: nowrap;
+}
+
+/* Remove legacy Font Awesome active check (::after) — Tabler badge handles selection */
+.sms-theme-option::after,
+.sms-theme-option::before,
+.dropdown-item[data-theme-set].active::after {
+    content: none !important;
+    display: none !important;
 }
 
 .sms-theme-option:hover,
@@ -361,6 +377,9 @@
     font-weight: 500;
     line-height: 1.2;
     color: var(--sms-text-muted);
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: nowrap;
 }
 
 .sms-theme-option-check {

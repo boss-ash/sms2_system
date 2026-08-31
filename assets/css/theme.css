@@ -1641,12 +1641,6 @@ hr { border-color: var(--sms-border); opacity: 1; }
 [data-theme="dark"] .theme-toggle .theme-icon-sun { display: inline-block; }
 [data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
 
-.dropdown-item[data-theme-set].active {
-    background: var(--sms-dropdown-hover);
-    color: var(--sms-primary);
-    font-weight: 600;
-}
-
 /* Theme picker — see navbar-components.css (.sms-theme-option) */
 
 /* Welcome page styles — see assets/css/welcome.css (.sms-welcome-* classes) */
