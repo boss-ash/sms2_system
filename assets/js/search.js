@@ -249,11 +249,36 @@
 
         /* ── close on outside click ────────────────────────────── */
         document.addEventListener('click', function (e) {
-            var wrapper = document.querySelector('.navbar-search-wrapper');
+            var wrapper = document.querySelector('.navbar-search');
+            var navbar = document.querySelector('.sms-navbar');
             if (wrapper && !wrapper.contains(e.target)) {
                 closeDropdown();
             }
+            if (navbar && navbar.classList.contains('search-open')) {
+                var toggle = document.getElementById('navbarSearchToggle');
+                if (toggle && !toggle.contains(e.target) && wrapper && !wrapper.contains(e.target)) {
+                    navbar.classList.remove('search-open');
+                    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+                }
+            }
         });
+
+        /* ── mobile search toggle ────────────────────────────────── */
+        var searchToggle = document.getElementById('navbarSearchToggle');
+        var navbarEl = document.querySelector('.sms-navbar');
+        if (searchToggle && navbarEl) {
+            searchToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var open = navbarEl.classList.toggle('search-open');
+                searchToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) {
+                    input.focus();
+                } else {
+                    closeDropdown();
+                }
+            });
+        }
 
         /* ── Ctrl+K / Cmd+K shortcut ───────────────────────────── */
         document.addEventListener('keydown', function (e) {

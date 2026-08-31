@@ -152,6 +152,16 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
                 <?= smsIcon('sun', ['class' => 'theme-icon-sun', 'aria-hidden' => 'true']) ?>
             </button>
 
+            <!-- Mobile search -->
+            <button type="button"
+                    class="btn btn-link text-white d-md-none navbar-search-toggle p-2"
+                    id="navbarSearchToggle"
+                    aria-label="Open search"
+                    aria-expanded="false"
+                    aria-controls="globalSearch">
+                <?= smsIcon('search') ?>
+            </button>
+
             <!-- Messages -->
             <div class="dropdown">
                 <button class="btn btn-link text-white position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Messages: <?= $navMessageCount ?>">
