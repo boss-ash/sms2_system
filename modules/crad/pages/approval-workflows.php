@@ -111,6 +111,8 @@ renderBreadcrumbs($breadcrumbs);
                 $steps = $detail['steps'];
                 $ref = htmlspecialchars((string) ($wf['proposal_reference'] ?? 'Proposal'));
                 $canAct = !empty($detail['can_act']);
+                $wfStatus = (string) ($wf['workflow_status'] ?? '');
+                $currentStepKey = (string) ($wf['current_step_key'] ?? '');
                 $adviserEvalComplete = !empty($detail['adviser_eval_complete']);
                 $needsAdviserScore = $roleKey === 'adviser'
                     && $currentStepKey === 'adviser'
@@ -142,7 +144,15 @@ renderBreadcrumbs($breadcrumbs);
                     <?php endforeach; ?>
                 </div>
 
-                <?php if ($canAct): ?>
+                <?php if ($needsAdviserScore): ?>
+                <div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">
+                    <h3><?= smsIcon('clipboard-check', ['class' => 'me-1']) ?>Adviser Evaluation Required</h3>
+                    <p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here.</p>
+                    <a class="gaw-btn-approve" href="<?= BASE_URL ?>/modules/crad/pages/reviewer-evaluation.php?id=<?= (int) $selectedId ?>" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">
+                        <?= smsIcon('star-half-alt') ?> Go to Reviewer Evaluation
+                    </a>
+                </div>
+                <?php elseif ($canAct): ?>
                 <div class="gaw-action-panel" id="gawActionPanel">
                     <h3>Administrative Sign-off Action Panel</h3>
                     <p>Logged in as: <strong><?= htmlspecialchars($roleLabel) ?></strong>. Signatures are timestamped and logged in the permanent audit trail.</p>
