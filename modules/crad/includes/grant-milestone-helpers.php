@@ -290,9 +290,18 @@ function grantGetFundedMilestoneDetail(PDO $crad, int $applicationId): ?array
     }
     unset($milestone);
 
+    $evidence = [];
+    if (grantUserCanTrackFundedMilestones()) {
+        if (!function_exists('grantGetFundedResearchEvidence')) {
+            require_once __DIR__ . '/grant-funded-research-helpers.php';
+        }
+        $evidence = grantGetFundedResearchEvidence($crad, $applicationId);
+    }
+
     return [
         'application' => $application,
         'milestones'  => $milestones,
+        'evidence'    => $evidence,
         'can_track'   => grantUserCanTrackFundedMilestones(),
     ];
 }
@@ -321,6 +330,9 @@ function grantMilestoneOverviewFingerprint(array $rows): string
             $row['avg_completion_pct'] ?? '',
             $row['milestones_updated_at'] ?? '',
             $row['funded_at'] ?? '',
+            $row['evidence_count'] ?? '',
+            $row['disbursement_updated_at'] ?? '',
+            $row['released_count'] ?? '',
         ]);
     }
 
@@ -346,6 +358,17 @@ function grantMilestoneDetailFingerprint(?array $detail): string
             $milestone['remarks'] ?? '',
             $milestone['supporting_doc'] ?? '',
             $milestone['updated_at'] ?? '',
+        ]);
+    }
+
+    foreach ($detail['evidence'] ?? [] as $evidence) {
+        $parts[] = implode(':', [
+            'ev',
+            $evidence['id'] ?? '',
+            $evidence['milestone_id'] ?? '',
+            $evidence['evidence_title'] ?? '',
+            $evidence['status'] ?? '',
+            $evidence['created_at'] ?? '',
         ]);
     }
 
@@ -501,6 +524,11 @@ function grantUploadFundedMilestoneDocument(
         ]);
 
         $applicationId = (int) ($row['grant_application_id'] ?? 0);
+
+        $updatedRow = $crad->prepare('SELECT * FROM grant_funded_project_milestones WHERE id = ? LIMIT 1');
+        $updatedRow->execute([$milestoneId]);
+        $milestoneRow = $updatedRow->fetch(PDO::FETCH_ASSOC) ?: $row;
+        grantNotifyApplicantMilestoneUpdated($crad, $applicationId, $milestoneRow, $userName);
 
         return [
             'ok'     => true,
