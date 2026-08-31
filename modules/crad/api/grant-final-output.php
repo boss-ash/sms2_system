@@ -168,7 +168,7 @@ switch ($action) {
         $overview = grantGetFinalOutputOverview($crad);
         echo json_encode([
             'success'              => true,
-            'message'              => 'Publication verified and recorded to repository.',
+            'message'              => 'Output verified and recorded. Status: OUTPUT_VERIFIED.',
             'detail'               => $result['detail'],
             'overview'             => $overview,
             'pending_count'        => count(array_filter($overview, static fn(array $r): bool => !empty($r['needs_verification']))),
