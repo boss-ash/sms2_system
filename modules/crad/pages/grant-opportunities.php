@@ -334,7 +334,7 @@ renderBreadcrumbs($breadcrumbs);
 
             <!-- ── Form body ──────────────────────────────────────────────── -->
             <div class="modal-body" style="padding:1.15rem 1.5rem .5rem;">
-                <form id="proposalForm" novalidate autocomplete="off" enctype="multipart/form-data">
+                <form id="proposalForm" novalidate autocomplete="off" enctype="multipart/form-data" data-no-loader>
                     <input type="hidden" id="propGrantId"    name="grant_opportunity_id" value="">
                     <input type="hidden" id="propApplyToken" name="apply_token"           value="">
 
@@ -564,7 +564,7 @@ renderBreadcrumbs($breadcrumbs);
             <div id="publishFormAlert" class="mpl-alert"
                  style="display:none;margin:1rem 1.5rem 0;border-radius:8px;" role="alert"></div>
             <div class="modal-body" style="padding:1.25rem 1.5rem .5rem;">
-                <form id="publishGrantForm" novalidate autocomplete="off">
+                <form id="publishGrantForm" novalidate autocomplete="off" data-no-loader method="post">
                     <input type="hidden" id="publishToken" name="token" value="">
                     <div class="go-form-group mb-3">
                         <label for="fundingTitle" class="go-form-label">Funding Title <span class="go-required">*</span></label>
