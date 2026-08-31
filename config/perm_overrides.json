@@ -1,8 +1,0 @@
-{
-    "admission": {
-        "registrar": false
-    },
-    "sms_admin": {
-        "enrollment": true
-    }
-}
