@@ -540,6 +540,9 @@ function requireModuleAccess(string $moduleKey): void
         ];
         $grantReviewerPages = [
             '/modules/crad/pages/reviewer-evaluation.php',
+            '/modules/faculty/pages/reviewer-evaluation.php',
+            '/modules/accreditation/pages/reviewer-evaluation.php',
+            '/modules/payment/pages/reviewer-evaluation.php',
             '/modules/crad/grant-proposal-file.php',
         ];
         $roleKey = getCurrentUserRoleKey();
@@ -561,6 +564,8 @@ function requireModuleAccess(string $moduleKey): void
         if (in_array($roleKey, $grantApproverRoles, true)) {
             $grantApproverPages = [
                 '/modules/crad/pages/approval-workflows.php',
+                '/modules/faculty/pages/approval-workflows.php',
+                '/modules/accreditation/pages/approval-workflows.php',
                 '/modules/payment/pages/approval-workflows.php',
             ];
             if ($roleKey === 'finance') {
