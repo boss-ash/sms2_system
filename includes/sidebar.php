@@ -290,7 +290,7 @@ if ($roleKey === 'adviser') {
     $facultyAccountNavGroups = $facultyInsert;
 }
 
-$grantApprovalSidebarRoles = ['hr', 'qa', 'research_coordinator'];
+$grantApprovalSidebarRoles = ['hr', 'qa', 'vpaa', 'research_coordinator', 'department_chair', 'research_office'];
 $grantApprovalSidebarItems = [
     [
         'slug' => 'reviewer-evaluation',

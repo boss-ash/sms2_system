@@ -181,6 +181,8 @@ function smsDefaultModulesForRole(string $roleKey): array
         'registrar'    => ['registrar', 'curriculum', 'scheduling'],
         'crad_officer' => ['crad'],
         'research_coordinator' => ['crad'],
+        'department_chair' => ['crad'],
+        'research_office' => ['crad'],
         'research_grant' => ['crad_grant'],
         'review_committee' => ['crad_grant'],
         'finance'      => ['payment'],

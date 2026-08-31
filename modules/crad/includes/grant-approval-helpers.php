@@ -512,8 +512,10 @@ function grantApprovalWorkflowList(PDO $crad): array
 
     $params = [];
     if (!$isMonitor) {
-        $sql .= " WHERE cs.approver_role_key = ? AND w.workflow_status = 'In Progress'";
-        $params[] = $roleKey;
+        $stepRoleKeys = grantApprovalUserStepRoleKeys($roleKey);
+        $placeholders = implode(',', array_fill(0, count($stepRoleKeys), '?'));
+        $sql .= " WHERE cs.approver_role_key IN ({$placeholders}) AND w.workflow_status = 'In Progress'";
+        $params = $stepRoleKeys;
     } else {
         $sql .= " WHERE 1=1";
     }
