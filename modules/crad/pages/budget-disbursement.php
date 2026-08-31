@@ -53,7 +53,7 @@ if ($crad) {
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-funding-disbursement.css?v=2" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-funding-disbursement.css?v=3" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gfd-alert" role="alert"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?></div>

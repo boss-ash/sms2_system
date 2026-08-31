@@ -1389,7 +1389,7 @@ function grantNotifyApplicantApprovedFunded(PDO $crad, array $application, strin
         $eventKey,
         'Approved & Funded',
         $body,
-        grantBudgetDisbursementUrl()
+        grantBudgetDisbursementUrl($applicationId)
     );
 }
 
