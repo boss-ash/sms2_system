@@ -517,14 +517,20 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
             $revisionReason !== '' ? $revisionReason : null,
         ]);
 
-        $crad->prepare("
-            UPDATE grant_applications
-               SET status = ?, updated_at = NOW()
-             WHERE id = ?
-               AND status NOT IN ('Rejected', 'Revision Required', 'Approved', 'Denied', 'Withdrawn')
-        ")->execute([$newStatus, $applicationId]);
+        $currentStatus = (string) ($application['status'] ?? '');
+        $shouldUpdateStatus = true;
+        if ($recommendation === 'recommend') {
+            if (in_array($currentStatus, ['Rejected', 'Revision Required', 'Approved', 'Denied', 'Withdrawn'], true)) {
+                $newStatus = $currentStatus;
+                $shouldUpdateStatus = false;
+            } elseif ($currentStatus === 'Submitted') {
+                $newStatus = 'Under Review';
+            } else {
+                $shouldUpdateStatus = false;
+            }
+        }
 
-        if ($recommendation !== 'recommend') {
+        if ($shouldUpdateStatus) {
             $crad->prepare("
                 UPDATE grant_applications
                    SET status = ?, updated_at = NOW()
