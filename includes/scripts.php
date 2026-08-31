@@ -55,5 +55,6 @@ if ($loadResearchProgressLive):
 })();
 </script>
 <?php endif; ?>
+<script src="<?= BASE_URL ?>/assets/js/password-strength.js?v=2"></script>
 </body>
 </html>

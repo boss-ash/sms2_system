@@ -8,6 +8,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
+require_once ROOT_PATH . '/includes/security-workflow.php';
 
 header('Content-Type: application/json');
 
@@ -228,8 +229,12 @@ try {
     if ($action === 'reset_password') {
         $id = (int) ($data['user_id'] ?? 0);
         $temp = (string) ($data['password'] ?? '');
-        if ($id <= 0 || strlen($temp) < (int) smsSetting('min_password_length', '8')) {
-            throw new InvalidArgumentException('Invalid user or password too short');
+        if ($id <= 0) {
+            throw new InvalidArgumentException('Invalid user');
+        }
+        $strength = smsValidatePasswordStrength($temp);
+        if (!$strength['ok']) {
+            throw new InvalidArgumentException($strength['message']);
         }
         if (!smsSetUserPassword($id, $temp, true)) {
             throw new RuntimeException('Reset failed');
@@ -268,9 +273,9 @@ try {
         $pdo->beginTransaction();
         try {
             if ($password !== '') {
-                $min = (int) smsSetting('min_password_length', '8');
-                if (strlen($password) < $min) {
-                    throw new InvalidArgumentException("Password must be at least {$min} characters");
+                $strength = smsValidatePasswordStrength($password);
+                if (!$strength['ok']) {
+                    throw new InvalidArgumentException($strength['message']);
                 }
                 $pdo->prepare(
                     'UPDATE users SET full_name=?, username=?, email=?, role_key=?, status=?, notes=?, student_id=?,

@@ -19,7 +19,11 @@ if ($isArchiveView) {
 
 require_once __DIR__ . '/../../../includes/breadcrumbs.php';
 require_once __DIR__ . '/../../../includes/layout-start.php';
+require_once ROOT_PATH . '/includes/security-ui.php';
+require_once ROOT_PATH . '/includes/security-workflow.php';
 requireSuperAdmin();
+
+$minPasswordLen = (int) smsSetting('min_password_length', '8');
 
 $users = [];
 $archivedCount = 0;
@@ -474,7 +478,7 @@ renderBreadcrumbs($breadcrumbs);
 
 <?php if (!$isArchiveView): ?>
 <!-- ── Add / Edit User Modal ─────────────────────────────────── -->
-<div class="modal fade um-user-modal" id="umUserModal" tabindex="-1" aria-labelledby="umModalTitle" aria-hidden="true">
+<div class="modal fade sms-form-modal um-user-modal" id="umUserModal" tabindex="-1" aria-labelledby="umModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -504,8 +508,15 @@ renderBreadcrumbs($breadcrumbs);
                             <input type="email" class="form-control" name="email" placeholder="user@bestlink.edu.ph" required>
                         </div>
                         <div class="col-md-6 um-pw-row">
-                            <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control" name="password" placeholder="••••••••" autocomplete="new-password">
+                            <label class="form-label fw-semibold um-pw-label">Password <span class="text-danger um-pw-required">*</span></label>
+                            <?= smsPasswordInput([
+                                'id' => 'um_password',
+                                'name' => 'password',
+                                'placeholder' => '••••••••',
+                                'required' => true,
+                                'minlength' => $minPasswordLen,
+                                'autocomplete' => 'new-password',
+                            ]) ?>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
@@ -529,6 +540,9 @@ renderBreadcrumbs($breadcrumbs);
                                 <option value="research_grant">Research Grant (CRAD Officer)</option>
                                 <option value="student">Student</option>
                             </select>
+                        </div>
+                        <div class="col-12 um-pw-strength-row">
+                            <?= smsPasswordStrengthMarkup('um_password') ?>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Status</label>

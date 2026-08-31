@@ -526,8 +526,13 @@ function smsPasswordStrengthMarkup(string $inputId = 'password'): string
     }
 
     return '<div class="pw-strength mt-2" data-pw-input="' . htmlspecialchars($inputId, ENT_QUOTES, 'UTF-8') . '" data-pw-min="' . (int) $policy['min'] . '">'
-        . '<div class="small fw-semibold mb-1">Password requirements</div>'
-        . '<ul class="pw-rules list-unstyled small mb-0">' . $items . '</ul>'
+        . '<div class="pw-strength-head">'
+        . '<span class="pw-strength-label">Password strength</span>'
+        . '<span class="pw-strength-score" data-pw-score>—</span>'
+        . '</div>'
+        . '<div class="pw-strength-bar" aria-hidden="true"><span class="pw-strength-bar-fill"></span></div>'
+        . '<div class="pw-strength-rules-title">Requirements</div>'
+        . '<ul class="pw-rules list-unstyled mb-0">' . $items . '</ul>'
         . '</div>';
 }
 

@@ -5,6 +5,7 @@
 require_once __DIR__ . '/../config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security-ui.php';
+require_once ROOT_PATH . '/includes/security-workflow.php';
 require_once ROOT_PATH . '/includes/module-controls.php';
 requireAuth();
 
