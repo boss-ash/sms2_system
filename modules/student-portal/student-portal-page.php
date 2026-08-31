@@ -313,42 +313,158 @@ require_once __DIR__ . '/../../includes/layout-start.php';
             </div>
         </div>
     <?php elseif ($studentPortalPage === 'my-profile'): ?>
-        <div class="row g-3">
-            <div class="col-lg-4">
-                <section class="card student-profile-card h-100">
-                    <div class="card-body">
-                        <div class="student-avatar mb-3">
-                            <?= smsIcon('user-graduate') ?>
+        <section class="sp-profile-hero card mb-3">
+            <div class="card-body">
+                <div class="sp-profile-hero__main">
+                    <div class="sp-profile-hero__avatar" aria-hidden="true"><?= htmlspecialchars(spProfileInitials($studentProfile['name'])) ?></div>
+                    <div class="sp-profile-hero__copy">
+                        <span class="sp-profile-kicker">Student Profile</span>
+                        <h2 class="sp-profile-hero__name"><?= htmlspecialchars($studentProfile['name']) ?></h2>
+                        <p class="sp-profile-hero__program"><?= htmlspecialchars($studentProfile['program']) ?></p>
+                        <div class="sp-profile-badges">
+                            <span class="sp-profile-badge sp-profile-badge--success"><?= smsIcon('circle-check', ['class' => 'me-1']) ?><?= htmlspecialchars($studentProfile['status']) ?></span>
+                            <span class="sp-profile-badge"><?= smsIcon('id', ['class' => 'me-1']) ?><?= htmlspecialchars($studentProfile['student_id']) ?></span>
+                            <span class="sp-profile-badge"><?= smsIcon('calendar', ['class' => 'me-1']) ?>S.Y. <?= htmlspecialchars($studentProfile['school_year']) ?></span>
                         </div>
-                        <h5 class="fw-semibold mb-1"><?= htmlspecialchars($studentProfile['name']) ?></h5>
-                        <p class="text-muted mb-3"><?= htmlspecialchars($studentProfile['program']) ?></p>
-                        <span class="badge text-bg-success">Active Student</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <section class="card stat-card primary h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon me-3"><?= smsIcon('school') ?></div>
+                        <div>
+                            <h6 class="text-muted">Year Level</h6>
+                            <h4 class="fw-bold mb-0 fs-6"><?= htmlspecialchars($studentProfile['year_level']) ?></h4>
+                        </div>
                     </div>
                 </section>
             </div>
-            <div class="col-lg-8">
-                <section class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title fw-semibold mb-3">Student Information</h5>
-                        <div class="student-record-grid">
-                            <div><span>Student ID</span><strong><?= htmlspecialchars($studentProfile['student_id']) ?></strong></div>
-                            <div><span>Program</span><strong><?= htmlspecialchars($studentProfile['program']) ?></strong></div>
-                            <div><span>Year Level</span><strong><?= htmlspecialchars($studentProfile['year_level']) ?></strong></div>
-                            <div><span>Semester</span><strong><?= htmlspecialchars($studentProfile['semester']) ?></strong></div>
-                            <div><span>Section</span><strong><?= htmlspecialchars($studentProfile['section']) ?></strong></div>
-                            <div><span>Email</span><strong><?= htmlspecialchars($studentProfile['email']) ?></strong></div>
-                            <div><span>Mobile</span><strong><?= htmlspecialchars($studentProfile['mobile']) ?></strong></div>
-                            <div><span>Address</span><strong><?= htmlspecialchars($studentProfile['address']) ?></strong></div>
-                            <div><span>Guardian</span><strong><?= htmlspecialchars($studentProfile['guardian']) ?></strong></div>
+            <div class="col-md-3">
+                <section class="card stat-card info h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon me-3"><?= smsIcon('users') ?></div>
+                        <div>
+                            <h6 class="text-muted">Section</h6>
+                            <h4 class="fw-bold mb-0 fs-6"><?= htmlspecialchars($studentProfile['section']) ?></h4>
                         </div>
-                        <div class="student-process-bar">
-                            <a class="btn btn-sms-primary" href="?process=profile-update"><?= smsIcon('pen', ['class' => 'me-2']) ?>Request Profile Update</a>
-                            <a class="btn btn-outline-primary" href="?process=profile-correction"><?= smsIcon('file-signature', ['class' => 'me-2']) ?>Submit Correction Ticket</a>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-3">
+                <section class="card stat-card warning h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon me-3"><?= smsIcon('calendar-event') ?></div>
+                        <div>
+                            <h6 class="text-muted">Semester</h6>
+                            <h4 class="fw-bold mb-0 fs-6"><?= htmlspecialchars($studentProfile['semester']) ?></h4>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-3">
+                <section class="card stat-card success h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon me-3"><?= smsIcon('star') ?></div>
+                        <div>
+                            <h6 class="text-muted">Standing</h6>
+                            <h4 class="fw-bold mb-0 fs-6">Good Standing</h4>
                         </div>
                     </div>
                 </section>
             </div>
         </div>
+
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <section class="card sp-profile-section h-100">
+                    <div class="card-header sp-profile-section__head">
+                        <div>
+                            <h5 class="mb-0"><?= smsIcon('school', ['class' => 'me-2 text-primary']) ?>Academic Information</h5>
+                            <p class="mb-0">Official enrollment and program details</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="sp-profile-fields">
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('id') ?>Student ID</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['student_id']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('book') ?>Program</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['program']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('stack-2') ?>Year Level</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['year_level']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('users') ?>Section</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['section']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('calendar-event') ?>Semester</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['semester']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('calendar') ?>School Year</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['school_year']) ?></strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-6">
+                <section class="card sp-profile-section h-100">
+                    <div class="card-header sp-profile-section__head">
+                        <div>
+                            <h5 class="mb-0"><?= smsIcon('address-book', ['class' => 'me-2 text-primary']) ?>Contact Information</h5>
+                            <p class="mb-0">How the school can reach you</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="sp-profile-fields">
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('mail') ?>Email</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['email']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('phone') ?>Mobile</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['mobile']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field sp-profile-field--wide">
+                                <span class="sp-profile-field__label"><?= smsIcon('map-pin') ?>Address</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['address']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('user-heart') ?>Guardian</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['guardian']) ?></strong>
+                            </div>
+                            <div class="sp-profile-field">
+                                <span class="sp-profile-field__label"><?= smsIcon('phone-call') ?>Guardian Contact</span>
+                                <strong class="sp-profile-field__value"><?= htmlspecialchars($studentProfile['guardian_contact']) ?></strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <section class="card sp-profile-actions mt-3">
+            <div class="card-body">
+                <div class="sp-profile-actions__copy">
+                    <h5 class="mb-1"><?= smsIcon('info-circle', ['class' => 'me-2 text-primary']) ?>Need to update your records?</h5>
+                    <p class="mb-0">Profile changes are reviewed by the Registrar. Submit a request if your details need correction.</p>
+                </div>
+                <div class="student-process-bar mb-0">
+                    <a class="btn btn-sms-primary" href="?process=profile-update"><?= smsIcon('edit', ['class' => 'me-2']) ?>Request Profile Update</a>
+                    <a class="btn btn-outline-primary" href="?process=profile-correction"><?= smsIcon('file-text', ['class' => 'me-2']) ?>Submit Correction Ticket</a>
+                </div>
+            </div>
+        </section>
     <?php elseif ($studentPortalPage === 'student-id'): ?>
         <div class="row g-3">
             <div class="col-lg-4">
