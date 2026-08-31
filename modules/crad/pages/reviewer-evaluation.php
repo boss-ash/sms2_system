@@ -76,9 +76,13 @@ if ($crad) {
                 $canSignApproval = !empty($approvalDetail['can_act']);
             } elseif ($selected && $isApproverView) {
                 require_once __DIR__ . '/../includes/grant-approval-helpers.php';
+                $approverRoleLabel = grantApprovalRoleLabel(getCurrentUserRoleKey());
+                $currentApproverEvalType = grantEvaluationTypeForApproverRole();
+                $pipelineEvals = grantGetPipelineEvaluationsForApplication($crad, $selectedId);
                 $evals = grantGetLatestEvaluationsForApplications($crad, [$selectedId]);
                 $committeeEval = $evals[$selectedId] ?? null;
                 $adviserEval = grantGetLatestAdviserEvaluationByApplication($crad, $selectedId);
+                $existingEval = grantGetApproverEvaluationByApplication($crad, $selectedId);
                 $approvalDetail = grantGetApprovalWorkflowDetail($crad, $selectedId);
                 $canSignApproval = !empty($approvalDetail['can_act']);
             } elseif ($selected && $isMonitorView) {
@@ -107,7 +111,7 @@ $pendingCount = $isMonitorView && $crad
 $scoredCount  = $isAdviserView
     ? ($crad ? grantAdviserEvaluationScoredCount($crad) : 0)
     : ($isApproverView
-        ? ($crad ? grantApproverSignoffCount($crad) : 0)
+        ? count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])))
         : ($isMonitorView
             ? ($crad ? grantMonitorEvaluationCounts($crad)['scored'] : 0)
             : count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])))));
@@ -132,7 +136,7 @@ renderBreadcrumbs($breadcrumbs);
         <?php if ($isAdviserView): ?>
         <p>Score proposals using the rubric first. After you submit your evaluation, you can sign off in <strong>Approval Workflows</strong>.</p>
         <?php elseif ($isApproverView): ?>
-        <p>Review committee and adviser scores, then sign off in <strong>Approval Workflows</strong>.</p>
+        <p>Score proposals using the rubric first, then sign off in <strong>Approval Workflows</strong>.</p>
         <?php elseif ($isMonitorView): ?>
         <p>Monitor committee scores and institutional sign-offs across the full approval pipeline.</p>
         <?php else: ?>
@@ -141,7 +145,7 @@ renderBreadcrumbs($breadcrumbs);
     </div>
     <div class="gre-stat-row">
         <span class="gre-stat pending"><strong data-eval-pending-count><?= $pendingCount ?></strong> <?= ($isAdviserView || $isApproverView || $isMonitorView) ? ($isMonitorView ? 'in progress' : 'in review') : 'awaiting score' ?></span>
-        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> <?= $isApproverView ? 'signed off' : ($isMonitorView ? 'completed' : 'scored by you') ?></span>
+        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> <?= $isApproverView ? 'scored by you' : ($isMonitorView ? 'completed' : 'scored by you') ?></span>
         <span class="gre-live-badge"><?= smsIcon('sync-alt') ?> Live</span>
     </div>
 </div>
@@ -196,8 +200,7 @@ renderBreadcrumbs($breadcrumbs);
                     if ($isAdviserView) {
                         $statusLabel = $isScored ? 'Scored' : 'In Review';
                     } elseif ($isApproverView) {
-                        $statusLabel = 'In Review';
-                        $isScored = false;
+                        $statusLabel = $isScored ? 'Scored' : 'Awaiting Score';
                     } elseif ($isMonitorView) {
                         $wfStatus = (string) ($row['workflow_status'] ?? '');
                         $statusLabel = $wfStatus === 'Completed'
