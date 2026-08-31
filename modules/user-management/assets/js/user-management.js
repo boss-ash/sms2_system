@@ -304,7 +304,9 @@
             '          <span class="sms-confirm-kicker">Unsaved changes</span>',
             '          <h6 class="sms-confirm-title um-confirm-title">Leave page?</h6>',
             '        </div>',
-            '        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="umLeaveCancel"></button>',
+            '        <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close" id="umLeaveCancel">'
+            + (window.smsIconHtml ? window.smsIconHtml('x', '', { 'aria-hidden': 'true' }) : '<span aria-hidden="true">&times;</span>')
+            + '</button>',
             '      </div>',
             '      <div class="sms-confirm-body um-confirm-body">',
             '        <div class="sms-confirm-icon um-confirm-icon sms-confirm-icon--warning um-confirm-icon--warning" aria-hidden="true">',

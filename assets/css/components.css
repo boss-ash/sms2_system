@@ -367,9 +367,9 @@
 .sms-confirm-msg,
 .um-confirm-msg {
     margin: 0;
-    max-width: 34ch;
-    font-size: 0.94rem;
-    line-height: 1.55;
+    max-width: 38ch;
+    font-size: 0.92rem;
+    line-height: 1.6;
     color: var(--sms-text-muted);
 }
 
@@ -418,15 +418,15 @@
 
 .sms-confirm-ok--danger,
 .um-confirm-ok--danger {
-    background: linear-gradient(135deg, #dc2626, #ef4444) !important;
-    box-shadow: 0 6px 18px rgba(220, 38, 38, 0.32);
+    background: #dc2626 !important;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.24);
 }
 
 .sms-confirm-ok--danger:hover,
 .um-confirm-ok--danger:hover {
-    background: linear-gradient(135deg, #b91c1c, #dc2626) !important;
+    background: #b91c1c !important;
     transform: translateY(-1px);
-    box-shadow: 0 8px 22px rgba(220, 38, 38, 0.38);
+    box-shadow: 0 6px 18px rgba(220, 38, 38, 0.3);
 }
 
 .sms-confirm-ok--warning,
