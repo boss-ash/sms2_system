@@ -290,7 +290,17 @@ if ($roleKey === 'adviser') {
     $facultyAccountNavGroups = $facultyInsert;
 }
 
-$grantApprovalSidebarRoles = ['hr', 'qa', 'vpaa', 'department_chair', 'research_office'];
+$deanGrantNavGroups = [
+    'Review & Workflow' => [
+        ['slug' => 'reviewer-evaluation', 'href' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php', 'icon' => 'fa-clipboard-check', 'label' => 'Reviewer Evaluation'],
+        ['slug' => 'approval-workflows', 'href' => BASE_URL . '/modules/crad/pages/approval-workflows.php', 'icon' => 'fa-tasks', 'label' => 'Approval Workflows'],
+    ],
+    'System' => [
+        ['slug' => 'security-settings', 'href' => BASE_URL . '/account/module-security.php?module=faculty', 'icon' => 'fa-shield-alt', 'label' => 'Security Settings'],
+    ],
+];
+
+$grantApprovalSidebarRoles = ['qa', 'vpaa', 'department_chair', 'research_office'];
 $grantApprovalSidebarItems = [
     [
         'slug' => 'reviewer-evaluation',
@@ -433,6 +443,8 @@ $researchDirectorNavGroups = [
                     $accountNavGroups = $grammarianNavGroups;
                 } elseif ($roleKey === 'panel') {
                     $accountNavGroups = $panelNavGroups;
+                } elseif ($roleKey === 'hr') {
+                    $accountNavGroups = $deanGrantNavGroups;
                 }
                 $facultyWorkspaceFirstGroup = true;
                 ?>
