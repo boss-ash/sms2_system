@@ -312,6 +312,14 @@ function smsBackfillCradAssignmentNotificationForGroup(PDO $crad, array $group, 
 
 function smsMarkCurrentUserNotificationRead(int $notificationId): void
 {
+    if ($notificationId < -2000000) {
+        if (!function_exists('grantMarkProposalNotificationRead')) {
+            require_once ROOT_PATH . '/modules/crad/includes/grant-evaluation-helpers.php';
+        }
+        grantMarkProposalNotificationRead($notificationId);
+        return;
+    }
+
     if ($notificationId <= 0) {
         return;
     }
@@ -909,7 +917,8 @@ function smsNotificationPayloadForCurrentUser(): array
         smsCurrentUserAssignmentNotifications(8),
         $items,
         smsStudentResearchStatusNotifications(),
-        smsStudentReturnedTitleApprovalNotifications()
+        smsStudentReturnedTitleApprovalNotifications(),
+        smsGrantProposalNotificationsPayload(8)
     ));
 }
 
