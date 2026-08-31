@@ -587,9 +587,7 @@ $MODULES = [
                 'evaluation-history',
             ],
             'Approval Workflow' => [
-                'pending-approvals',
-                'approval-status',
-                'approval-history',
+                'approval-workflows',
             ],
             'Funding Management' => [
                 'approved-funded',
@@ -621,6 +619,7 @@ $MODULES = [
             ['slug' => 'for-evaluation',            'title' => 'For Evaluation'],
             ['slug' => 'evaluation-scoring',        'title' => 'Evaluation & Scoring'],
             ['slug' => 'evaluation-history',        'title' => 'Evaluation History'],
+            ['slug' => 'approval-workflows',         'title' => 'Approval Workflows'],
             ['slug' => 'pending-approvals',         'title' => 'Pending Approvals'],
             ['slug' => 'approval-status',           'title' => 'Approval Status'],
             ['slug' => 'approval-history',          'title' => 'Approval History'],
