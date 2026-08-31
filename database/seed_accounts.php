@@ -82,6 +82,30 @@ echo "Creating / updating accounts…" . PHP_EOL;
 
 $accounts = [
     [
+        'username' => 'deptchair',
+        'email' => 'deptchair@bestlink.edu.ph',
+        'password' => '@deptchair123',
+        'full_name' => 'Department Chair',
+        'role_key' => 'research_coordinator',
+        'student_id' => null,
+    ],
+    [
+        'username' => 'researchoffice',
+        'email' => 'researchoffice@bestlink.edu.ph',
+        'password' => '@researchoffice123',
+        'full_name' => 'Research Office',
+        'role_key' => 'crad_officer',
+        'student_id' => null,
+    ],
+    [
+        'username' => 'vpaa',
+        'email' => 'vpaa@bestlink.edu.ph',
+        'password' => '@vpaa123',
+        'full_name' => 'VPAA',
+        'role_key' => 'qa',
+        'student_id' => null,
+    ],
+    [
         'username' => 'superadmin',
         'email' => 'superadmin@bestlink.edu.ph',
         'password' => '@superadmin123',

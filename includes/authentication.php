@@ -399,9 +399,6 @@ function smsResearchCoordinatorCradModule(): array
             'Coordination' => [
                 'manage-assignments',
             ],
-            'Review & Workflow' => [
-                'approval-workflows',
-            ],
             'System' => [
                 'security-settings',
             ],
@@ -417,7 +414,6 @@ function smsResearchCoordinatorCradModule(): array
             ['slug' => 'check-panel-availability', 'title' => 'Check Panel Availability'],
             ['slug' => 'assign-panel-members', 'title' => 'Assign Panel Members'],
             ['slug' => 'manage-assignments', 'title' => 'View/Manage Assignments'],
-            ['slug' => 'approval-workflows', 'title' => 'Approval Workflows'],
             ['slug' => 'security-settings', 'title' => 'Security Settings'],
         ],
     ];
@@ -548,6 +544,17 @@ function requireModuleAccess(string $moduleKey): void
         }
         if (in_array($roleKey, ['review_committee', 'adviser'], true)) {
             foreach ($grantReviewerPages as $allowedPath) {
+                if (str_ends_with($scriptPath, $allowedPath)) {
+                    return;
+                }
+            }
+        }
+        $grantApproverRoles = ['research_coordinator', 'hr', 'crad_officer', 'qa'];
+        if (in_array($roleKey, $grantApproverRoles, true)) {
+            $grantApproverPages = array_merge($grantReviewerPages, [
+                '/modules/crad/pages/approval-workflows.php',
+            ]);
+            foreach ($grantApproverPages as $allowedPath) {
                 if (str_ends_with($scriptPath, $allowedPath)) {
                     return;
                 }
