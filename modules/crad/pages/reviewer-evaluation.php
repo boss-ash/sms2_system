@@ -111,7 +111,7 @@ renderBreadcrumbs($breadcrumbs);
             </thead>
             <tbody id="greQueueBody">
             <?php if (empty($queue)): ?>
-                <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
+                <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
                     No proposals are waiting for committee evaluation.
                 </td></tr>
             <?php else: ?>
@@ -120,6 +120,12 @@ renderBreadcrumbs($breadcrumbs);
                     $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
                 ?>
                 <tr data-app-id="<?= (int) $row['id'] ?>">
+                    <td style="font-weight:800;color:var(--sms-primary);white-space:nowrap;">
+                        <?= htmlspecialchars((string) ($row['proposal_reference'] ?? ('#' . (int) $row['id']))) ?>
+                        <div style="font-size:.7rem;font-weight:500;color:var(--sms-text-muted);">
+                            v<?= max(1, (int) ($row['current_version'] ?? 1)) ?>
+                        </div>
+                    </td>
                     <td style="font-weight:600;max-width:180px;"><?= htmlspecialchars((string) $row['funding_title']) ?></td>
                     <td><?= htmlspecialchars((string) $row['applicant_name']) ?></td>
                     <td style="max-width:220px;font-size:.86rem;"><?= htmlspecialchars((string) ($row['research_title'] ?? '—')) ?></td>
@@ -159,6 +165,11 @@ renderBreadcrumbs($breadcrumbs);
         </a>
         <h2><?= htmlspecialchars((string) ($selected['research_title'] ?? 'Research Proposal')) ?></h2>
         <dl class="gre-meta">
+            <?php if (!empty($selected['proposal_reference'])): ?>
+            <div><dt>Reference</dt><dd><?= htmlspecialchars((string) $selected['proposal_reference']) ?>
+                <small>Version <?= max(1, (int) ($selected['current_version'] ?? 1)) ?> — <?= htmlspecialchars(grantVersionLabel((int) ($selected['current_version'] ?? 1))) ?></small>
+            </dd></div>
+            <?php endif; ?>
             <div><dt>Grant Program</dt><dd><?= htmlspecialchars((string) $selected['funding_title']) ?></dd></div>
             <div><dt>Lead Proponent</dt><dd><?= htmlspecialchars((string) $selected['applicant_name']) ?></dd></div>
             <div><dt>College / Dept</dt><dd><?= htmlspecialchars((string) ($selected['college_dept'] ?? '—')) ?></dd></div>

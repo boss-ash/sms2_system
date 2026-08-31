@@ -66,6 +66,8 @@ $nextVersion = max(1, (int) ($application['current_version'] ?? 1)) + 1;
 ?>
 <link href="<?= BASE_URL ?>/assets/css/module-process-list.css?v=2" rel="stylesheet">
 
+<link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=2" rel="stylesheet">
+
 <?php if ($dbError !== '' || !$application): ?>
 <div class="mpl-alert" role="alert" style="background:rgba(239,68,68,.08);color:#b91c1c;margin-bottom:1rem;">
     <?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= htmlspecialchars($dbError ?: 'Proposal not found.') ?>
