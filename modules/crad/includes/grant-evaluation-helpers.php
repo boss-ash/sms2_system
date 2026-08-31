@@ -142,6 +142,8 @@ function grantEnsureEvaluationTables(PDO $crad): void
         "TEXT DEFAULT NULL COMMENT 'Reason for required revisions' AFTER recommendation");
     _grantAddColumnIfMissing($crad, 'grant_proposal_evaluations', 'proposal_version',
         "INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Proposal version evaluated' AFTER grant_application_id");
+    _grantAddColumnIfMissing($crad, 'grant_proposal_evaluations', 'evaluation_type',
+        "VARCHAR(20) NOT NULL DEFAULT 'committee' COMMENT 'committee | adviser' AFTER evaluator_name");
 
     _grantEnsureEvaluationVersionIndex($crad);
 
@@ -168,7 +170,76 @@ function grantEnsureEvaluationTables(PDO $crad): void
     ");
 }
 
-function _grantEnsureEvaluationVersionIndex(PDO $crad): void
+function grantEvaluationTypeCommittee(): string
+{
+    return 'committee';
+}
+
+function grantEvaluationTypeAdviser(): string
+{
+    return 'adviser';
+}
+
+/**
+ * @return array<string, float>|null
+ */
+function grantParseRubricScoresFromInput(array $input): ?array
+{
+    $criteria = grantRubricCriteria();
+    $scores   = [];
+    $total    = 0.0;
+
+    foreach ($criteria as $key => $max) {
+        $field = 'score_' . $key;
+        if (!array_key_exists($field, $input) && !array_key_exists($key, $input)) {
+            return null;
+        }
+        $raw = (float) ($input[$field] ?? $input[$key] ?? -1);
+        if ($raw < 0 || $raw > $max) {
+            return null;
+        }
+        $scores[$field] = round($raw, 2);
+        $total += $scores[$field];
+    }
+
+    $total = round($total, 2);
+    if ($total > grantRubricMaxTotal()) {
+        return null;
+    }
+
+    $scores['total_score'] = $total;
+
+    return $scores;
+}
+
+function grantValidateRubricScoresFromInput(array $input): array
+{
+    $criteria = grantRubricCriteria();
+    $scores   = [];
+    $total    = 0.0;
+
+    foreach ($criteria as $key => $max) {
+        $field = 'score_' . $key;
+        if (!array_key_exists($field, $input) && !array_key_exists($key, $input)) {
+            return ['ok' => false, 'error' => 'All rubric criteria scores are required.'];
+        }
+        $raw = (float) ($input[$field] ?? $input[$key] ?? -1);
+        if ($raw < 0 || $raw > $max) {
+            $label = ucwords(str_replace('_', ' ', $key));
+
+            return ['ok' => false, 'error' => "{$label} score must be between 0 and {$max}."];
+        }
+        $scores[$field] = round($raw, 2);
+        $total += $scores[$field];
+    }
+
+    $total = round($total, 2);
+    if ($total > grantRubricMaxTotal()) {
+        return ['ok' => false, 'error' => 'Total score cannot exceed 100.'];
+    }
+
+    return ['ok' => true, 'scores' => $scores, 'total' => $total];
+}
 {
     try {
         $old = $crad->query("SHOW INDEX FROM grant_proposal_evaluations WHERE Key_name = 'uniq_gpe_app_evaluator'")->fetch();
