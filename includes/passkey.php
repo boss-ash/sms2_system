@@ -649,7 +649,7 @@ function smsRenderPasskeyCard(int $userId, string $csrfToken, bool $asBox = fals
                         <span class="sms-confirm-kicker">Passkey</span>
                         <h5 class="sms-confirm-title" id="smsPasskeyRemoveTitle">Remove passkey?</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="sms-confirm-close" data-bs-dismiss="modal" aria-label="Close"><?= smsIcon('x', ['aria-hidden' => 'true']) ?></button>
                 </div>
                 <div class="sms-confirm-body sms-confirm-body--form">
                     <div class="sms-confirm-icon sms-confirm-icon--danger" aria-hidden="true">
