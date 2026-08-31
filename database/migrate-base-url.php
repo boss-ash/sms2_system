@@ -28,32 +28,42 @@ function sms2MigrateStoredBaseUrls(?callable $sink = null): array
 
     $pdo = getCradDatabaseConnection();
     $tables = [
-        'grant_proposal_notifications',
-        'chapter_evaluation_notifications',
-        'research_progress_notifications',
-        'panel_assignment_notifications',
+        'grant_proposal_notifications' => 'url',
+        'chapter_evaluation_notifications' => 'url',
+        'research_progress_notifications' => 'action_url',
+        'panel_assignment_notifications' => 'url',
     ];
 
     $log('Canonical BASE_URL: ' . (BASE_URL !== '' ? BASE_URL : '(root)'));
     $log('Rewriting stored URLs: ' . $from . ' -> ' . $to);
 
     $totalUpdated = 0;
-    foreach ($tables as $table) {
+    foreach ($tables as $table => $urlColumn) {
         $exists = $pdo->query("SHOW TABLES LIKE " . $pdo->quote($table))->fetchColumn();
         if (!$exists) {
             $log('Skipped ' . $table . ' (table not found).');
             continue;
         }
 
+        $columnExists = $pdo->query(
+            "SHOW COLUMNS FROM `" . str_replace('`', '``', $table) . "` LIKE " . $pdo->quote($urlColumn)
+        )->fetchColumn();
+        if (!$columnExists) {
+            $log('Skipped ' . $table . ' (column ' . $urlColumn . ' not found).');
+            continue;
+        }
+
+        $quotedTable = '`' . str_replace('`', '``', $table) . '`';
+        $quotedColumn = '`' . str_replace('`', '``', $urlColumn) . '`';
         $stmt = $pdo->prepare(
-            'UPDATE `' . str_replace('`', '``', $table) . '`
-             SET url = REPLACE(url, ?, ?)
-             WHERE url LIKE ?'
+            'UPDATE ' . $quotedTable . '
+             SET ' . $quotedColumn . ' = REPLACE(' . $quotedColumn . ', ?, ?)
+             WHERE ' . $quotedColumn . ' LIKE ?'
         );
         $stmt->execute([$from, $to, $from . '%']);
         $count = $stmt->rowCount();
         $totalUpdated += $count;
-        $log('Updated ' . $count . ' row(s) in ' . $table . '.');
+        $log('Updated ' . $count . ' row(s) in ' . $table . '.' . $urlColumn . '.');
     }
 
     $log('Done. Total rows updated: ' . $totalUpdated . '.');
