@@ -527,8 +527,7 @@ $researchDirectorNavGroups = [
                     }
                     $showModuleOverview = empty($module['hide_overview']);
                     $onModuleOverview = ($activeModule === $navModuleKey && $activePage === '');
-                    $showModuleOverview = $showModuleOverview && ($activeModule !== 'dashboard' || $onModuleOverview);
-                    $showModuleGroups = $hasGroups && (!$onModuleOverview || $activeModule === 'dashboard');
+                    $showModuleGroups = $hasGroups;
                     ?>
 
                     <li class="nav-item admin-module-item">
@@ -553,7 +552,7 @@ $researchDirectorNavGroups = [
                             <ul class="nav flex-column">
                                 <?php if ($showModuleOverview): ?>
                                 <li class="nav-item">
-                                    <a class="nav-link sidebar-sub overview-link <?= ($isModuleActive && $activePage === '') ? 'active' : '' ?>"
+                                    <a class="nav-link sidebar-sub overview-link <?= $onModuleOverview ? 'active' : '' ?>"
                                        href="<?= htmlspecialchars($overviewUrl) ?>"
                                        data-title="Overview"
                                        title="Overview">
