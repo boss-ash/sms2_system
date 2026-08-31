@@ -499,15 +499,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var inputs = document.querySelectorAll('.gre-score-input');
     var totalEl = document.getElementById('greTotalScore');
     var form = document.getElementById('greEvalForm');
-    var isAdviserEval = form && form.getAttribute('data-adviser-eval') === '1';
-    var isApproverEval = form && form.getAttribute('data-approver-eval') === '1';
-    var skipRecommendation = isAdviserEval || isApproverEval;
     var revisionGroup = document.getElementById('greRevisionReasonGroup');
     var revisionInput = document.getElementById('greRevisionReason');
     var recommendationInputs = document.querySelectorAll('input[name="recommendation"]');
 
     function updateRecommendationUi() {
-        if (!revisionGroup || skipRecommendation) return;
+        if (!revisionGroup) return;
         var selected = document.querySelector('input[name="recommendation"]:checked');
         var needsRevision = selected && selected.value === 'require_revisions';
         revisionGroup.style.display = needsRevision ? '' : 'none';
@@ -520,9 +517,7 @@ document.addEventListener('DOMContentLoaded', function () {
     recommendationInputs.forEach(function (inp) {
         inp.addEventListener('change', updateRecommendationUi);
     });
-    if (!skipRecommendation) {
-        updateRecommendationUi();
-    }
+    updateRecommendationUi();
 
     function updateTotal() {
         if (!totalEl) return;
@@ -573,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             var recommendation = document.querySelector('input[name="recommendation"]:checked');
-            if (!skipRecommendation) {
+            if (recommendation) {
                 if (!recommendation) {
                     alertEl.style.display = '';
                     alertEl.style.background = 'rgba(239,68,68,.08)';
