@@ -65,7 +65,30 @@
         return { state: 'queued', label: 'Queued', date: '--' };
     }
 
-    function renderProjectSelect(workflows) {
+    function updateMonitorStats(data) {
+        var inProg = document.querySelector('[data-gaw-in-progress]');
+        var completed = document.querySelector('[data-gaw-completed]');
+        if (inProg && typeof data.in_progress === 'number') {
+            inProg.textContent = String(data.in_progress);
+        }
+        if (completed && typeof data.completed === 'number') {
+            completed.textContent = String(data.completed);
+        }
+    }
+
+    function workflowOptionLabel(row) {
+        var ref = esc(row.proposal_reference || 'Proposal');
+        var title = esc(row.research_title || 'Untitled');
+        var step = esc(row.current_step_label || '');
+        var status = esc(row.workflow_status || '');
+        if (step && status === 'In Progress') {
+            return ref + ': ' + title + ' — ' + step;
+        }
+        if (status === 'Completed') {
+            return ref + ': ' + title + ' — Completed';
+        }
+        return ref + ': ' + title;
+    }
         if (!projectSelect) return;
         if (!Array.isArray(workflows) || workflows.length === 0) return;
 
