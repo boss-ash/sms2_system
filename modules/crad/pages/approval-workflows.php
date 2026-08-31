@@ -70,7 +70,7 @@ renderBreadcrumbs($breadcrumbs);
             Multi-Level Approval Pipeline
             <span class="gaw-live-badge">Live</span>
         </h1>
-        <p>Track sequential institutional sign-offs: Adviser → Department Chair → Dean → Research Office → Finance → VPAA</p>
+        <p>Track sequential institutional sign-offs: <?= htmlspecialchars(grantApprovalPipelineLabel()) ?></p>
     </header>
 
     <?php if ($workflows === []): ?>

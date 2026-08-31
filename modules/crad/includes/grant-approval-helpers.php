@@ -2,7 +2,7 @@
 /**
  * CRAD Grant Proposal — Sequential approval workflow helpers.
  *
- * Sign-off sequence: Adviser → Dept. Chair → Dean → Research Office → Finance → VPAA
+ * Sign-off sequence: Adviser → Dept. Chair → Dean → Research Office → VPAA → Finance
  */
 declare(strict_types=1);
 
@@ -17,8 +17,8 @@ function grantApprovalStepDefinitions(): array
         ['key' => 'department_chair',  'order' => 2, 'label' => 'Dept. Chair',         'short' => 'Dept. Chair',      'role' => 'department_chair'],
         ['key' => 'dean',              'order' => 3, 'label' => 'College Dean',        'short' => 'Dean',             'role' => 'hr'],
         ['key' => 'research_office',   'order' => 4, 'label' => 'Research Office',     'short' => 'Research Office',  'role' => 'research_office'],
-        ['key' => 'finance',           'order' => 5, 'label' => 'Finance Office',      'short' => 'Finance',          'role' => 'finance'],
-        ['key' => 'vpaa',              'order' => 6, 'label' => 'VPAA Sign-off',       'short' => 'VPAA',             'role' => 'vpaa'],
+        ['key' => 'vpaa',              'order' => 5, 'label' => 'VPAA Sign-off',       'short' => 'VPAA',             'role' => 'vpaa'],
+        ['key' => 'finance',           'order' => 6, 'label' => 'Finance Office',      'short' => 'Finance',          'role' => 'finance'],
     ];
 }
 
@@ -40,6 +40,25 @@ function grantApprovalApproverRoleKeys(): array
         static fn(array $step): string => (string) $step['role'],
         grantApprovalStepDefinitions()
     )));
+}
+
+function grantApprovalPipelineLabel(): string
+{
+    $display = [
+        'adviser'           => 'Adviser',
+        'department_chair'  => 'Department Chair',
+        'dean'              => 'Dean',
+        'research_office'   => 'Research Office',
+        'vpaa'              => 'VPAA',
+        'finance'           => 'Finance',
+    ];
+    $parts = [];
+    foreach (grantApprovalStepDefinitions() as $step) {
+        $key = (string) ($step['key'] ?? '');
+        $parts[] = $display[$key] ?? (string) ($step['short'] ?? $step['label'] ?? $key);
+    }
+
+    return implode(' → ', $parts);
 }
 
 /** @return list<string> */
