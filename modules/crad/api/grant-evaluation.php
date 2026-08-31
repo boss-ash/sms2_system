@@ -66,6 +66,8 @@ switch ($action) {
                 $message = 'Proposal disapproved. The researcher has been notified.';
             } elseif (($result['recommendation'] ?? '') === 'require_revisions') {
                 $message = 'Revision request sent. The researcher has been notified.';
+            } elseif (($result['recommendation'] ?? '') === 'recommend') {
+                $message = 'Proposal recommended for approval workflow.';
             }
             echo json_encode([
                 'success'        => true,

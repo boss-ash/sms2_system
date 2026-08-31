@@ -297,7 +297,7 @@ renderBreadcrumbs($breadcrumbs);
                     </label>
                     <?php endforeach; ?>
                 </div>
-                <p class="gre-recommendation-hint">Disapprove ends the proposal. Require Revisions notifies the researcher with your feedback.</p>
+                <p class="gre-recommendation-hint">Disapprove ends the proposal. Require Revisions sends it back to the researcher. Recommend forwards it to the approval workflow.</p>
             </div>
 
             <div class="gre-form-group" id="greRevisionReasonGroup" style="display:none;">

@@ -297,6 +297,88 @@ switch ($action) {
         }
         break;
 
+    case 'get_revisions':
+        if (!grantUserCanApply()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            exit;
+        }
+        $revisions = grantGetMyRevisionRequiredApplications($crad);
+        echo json_encode(['success' => true, 'revisions' => $revisions, 'count' => count($revisions)]);
+        break;
+
+    case 'resubmit_proposal':
+        if (!grantUserCanApply()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            exit;
+        }
+        if ($method !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed.']);
+            exit;
+        }
+
+        $applicationId = (int) ($_POST['grant_application_id'] ?? 0);
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid proposal selected.']);
+            exit;
+        }
+
+        $proposalUpload = smsSecureUpload(
+            $_FILES['proposal_pdf'] ?? ['error' => UPLOAD_ERR_NO_FILE],
+            [
+                'subdir'    => 'grant_proposals',
+                'required'  => true,
+                'max_bytes' => 10 * 1024 * 1024,
+                'allowed'   => [
+                    'pdf'  => ['application/pdf'],
+                    'doc'  => ['application/msword', 'application/octet-stream'],
+                    'docx' => [
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'application/zip',
+                        'application/octet-stream',
+                    ],
+                ],
+            ]
+        );
+        $supportingUpload = smsSecureUpload(
+            $_FILES['supporting_docs'] ?? ['error' => UPLOAD_ERR_NO_FILE],
+            ['subdir' => 'grant_proposals', 'required' => false, 'max_bytes' => 10 * 1024 * 1024]
+        );
+        $ethicsUpload = smsSecureUpload(
+            $_FILES['ethics_doc'] ?? ['error' => UPLOAD_ERR_NO_FILE],
+            ['subdir' => 'grant_proposals', 'required' => false, 'max_bytes' => 10 * 1024 * 1024]
+        );
+
+        $result = grantResubmitProposal(
+            $crad,
+            $applicationId,
+            ['researcher_notes' => $_POST['researcher_notes'] ?? ''],
+            [
+                'proposal_pdf'    => $proposalUpload,
+                'supporting_docs' => $supportingUpload,
+                'ethics_doc'      => $ethicsUpload,
+            ]
+        );
+
+        if ($result['ok']) {
+            echo json_encode([
+                'success'      => true,
+                'message'      => 'Proposal resubmitted successfully. It is now under committee review.',
+                'id'           => $result['id'],
+                'reference'    => $result['reference'] ?? '',
+                'version'      => $result['version'] ?? null,
+                'new_status'   => $result['new_status'] ?? 'Under Review',
+                'status_label' => 'UNDER REVIEW',
+            ]);
+        } else {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => $result['error'] ?? 'Failed to resubmit proposal.']);
+        }
+        break;
+
     default:
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Invalid action.']);
