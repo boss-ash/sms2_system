@@ -6,7 +6,7 @@
  */
 
 // One-time web migration token (random string). Used at /setup/deploy-db.php?token=...
-define('SMS2_DEPLOY_TOKEN', 'palitan-mo-ng-mahaba-at-random-na-string');
+define('SMS2_DEPLOY_TOKEN', 'bcp-sms2-deploy-2026');
 
 // Leave blank to auto-detect URL path. Use '' when files are in htdocs root.
 // define('BASE_URL', '');
