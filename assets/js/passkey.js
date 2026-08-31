@@ -370,16 +370,29 @@
         return postJson(api, { action: 'delete_send_email', csrf: csrf });
     }
 
+    function noticeIcon(name) {
+        return window.smsIconHtml ? window.smsIconHtml(name) : '';
+    }
+
+    function isErrorNotice(text) {
+        var value = String(text || '').toLowerCase();
+        return value.indexOf('could not') !== -1
+            || value.indexOf('failed') !== -1
+            || value.indexOf('invalid') !== -1
+            || value.indexOf('incorrect') !== -1;
+    }
+
     function setRemoveErr(text) {
         var el = document.getElementById('smsPasskeyRemoveErr');
         if (!el) return;
         if (!text) {
             el.hidden = true;
-            el.textContent = '';
+            el.innerHTML = '';
             return;
         }
         el.hidden = false;
-        el.textContent = text;
+        el.className = 'sms-confirm-notice sms-confirm-notice--danger w-100';
+        el.innerHTML = noticeIcon('alert-circle') + '<span>' + String(text) + '</span>';
     }
 
     function setRemoveInfo(text, otpDev) {
@@ -391,8 +404,30 @@
             return;
         }
         el.hidden = false;
-        el.innerHTML = (text ? String(text) : '')
-            + (otpDev ? ' <strong>Local OTP:</strong> <code>' + String(otpDev) + '</code>' : '');
+        var tone = isErrorNotice(text) ? 'danger' : 'info';
+        el.className = 'sms-confirm-notice sms-confirm-notice--' + tone + ' w-100';
+        var body = text ? String(text) : '';
+        if (otpDev) {
+            body += (body ? ' ' : '') + '<strong>Local OTP:</strong> <code>' + String(otpDev) + '</code>';
+        }
+        el.innerHTML = noticeIcon(tone === 'danger' ? 'alert-circle' : 'info-circle')
+            + '<span>' + body + '</span>';
+    }
+
+    function applyRemoveNotice(message, otpDev) {
+        var text = String(message || '');
+        var dev = String(otpDev || '');
+        setRemoveErr('');
+        setRemoveInfo('');
+        if (!text && !dev) return;
+        if (isErrorNotice(text)) {
+            setRemoveErr(text);
+            if (dev) {
+                setRemoveInfo('Local OTP: <code>' + dev + '</code>', '');
+            }
+            return;
+        }
+        setRemoveInfo(text, dev);
     }
 
     function showVerifyPanel(method) {
@@ -483,12 +518,11 @@
                             pendingMethod = prep.method || 'password';
                             var lead = document.getElementById('smsPasskeyRemoveLead');
                             if (lead) {
-                                lead.textContent = 'Are you sure you want to remove “' + name + '”? '
-                                    + (prep.message || 'Verify your identity to continue. Only this passkey will be removed.');
+                                lead.textContent = 'Are you sure you want to remove “' + name + '”? Only this passkey will be removed.';
                             }
                             var title = document.getElementById('smsPasskeyRemoveTitle');
                             if (title) title.textContent = 'Remove this passkey?';
-                            setRemoveInfo(prep.message || '', prep.otp_dev || '');
+                            applyRemoveNotice(prep.message || '', prep.otp_dev || '');
                             showVerifyPanel(pendingMethod);
                             ['smsPkTotp', 'smsPkOtp', 'smsPkPassword'].forEach(function (fid) {
                                 var f = document.getElementById(fid);
