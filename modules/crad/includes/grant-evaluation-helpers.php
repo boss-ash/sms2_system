@@ -119,6 +119,10 @@ function grantEnsureEvaluationTables(PDO $crad): void
         "VARCHAR(40) DEFAULT NULL COMMENT 'Reviewer decision: disapprove | require_revisions' AFTER required_corrections");
     _grantAddColumnIfMissing($crad, 'grant_proposal_evaluations', 'revision_reason',
         "TEXT DEFAULT NULL COMMENT 'Reason for required revisions' AFTER recommendation");
+    _grantAddColumnIfMissing($crad, 'grant_proposal_evaluations', 'proposal_version',
+        "INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Proposal version evaluated' AFTER grant_application_id");
+
+    _grantEnsureEvaluationVersionIndex($crad);
 
     $crad->exec("
         CREATE TABLE IF NOT EXISTS grant_proposal_notifications (
@@ -141,6 +145,22 @@ function grantEnsureEvaluationTables(PDO $crad): void
             KEY idx_gpn_created (created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
+}
+
+function _grantEnsureEvaluationVersionIndex(PDO $crad): void
+{
+    try {
+        $old = $crad->query("SHOW INDEX FROM grant_proposal_evaluations WHERE Key_name = 'uniq_gpe_app_evaluator'")->fetch();
+        if ($old) {
+            $crad->exec('ALTER TABLE grant_proposal_evaluations DROP INDEX uniq_gpe_app_evaluator');
+        }
+        $new = $crad->query("SHOW INDEX FROM grant_proposal_evaluations WHERE Key_name = 'uniq_gpe_app_eval_ver'")->fetch();
+        if (!$new) {
+            $crad->exec('ALTER TABLE grant_proposal_evaluations ADD UNIQUE KEY uniq_gpe_app_eval_ver (grant_application_id, evaluator_user_id, proposal_version)');
+        }
+    } catch (Throwable $e) {
+        error_log('_grantEnsureEvaluationVersionIndex: ' . $e->getMessage());
+    }
 }
 
 /**
@@ -177,6 +197,8 @@ function grantEvaluationQueue(PDO $crad, ?int $evaluatorUserId = null): array
             ga.status,
             ga.submitted_at,
             ga.updated_at,
+            ga.proposal_reference,
+            ga.current_version,
             go.funding_title,
             go.max_funding_cap,
             go.eligibility,
@@ -189,6 +211,7 @@ function grantEvaluationQueue(PDO $crad, ?int $evaluatorUserId = null): array
         LEFT JOIN grant_proposal_evaluations ev
                ON ev.grant_application_id = ga.id
               AND ev.evaluator_user_id = ?
+              AND ev.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
         WHERE ga.status IN ('Submitted', 'Under Review')
         ORDER BY ga.submitted_at ASC, ga.id ASC
     ");
@@ -219,7 +242,7 @@ function grantGetApplicationForEvaluation(PDO $crad, int $applicationId): ?array
     return $row ?: null;
 }
 
-function grantGetEvaluationByApplication(PDO $crad, int $applicationId, ?int $evaluatorUserId = null): ?array
+function grantGetEvaluationByApplication(PDO $crad, int $applicationId, ?int $evaluatorUserId = null, ?int $proposalVersion = null): ?array
 {
     grantEnsureEvaluationTables($crad);
 
@@ -228,14 +251,20 @@ function grantGetEvaluationByApplication(PDO $crad, int $applicationId, ?int $ev
         return null;
     }
 
+    if ($proposalVersion === null) {
+        $app = grantGetApplicationForEvaluation($crad, $applicationId);
+        $proposalVersion = max(1, (int) ($app['current_version'] ?? 1));
+    }
+
     $stmt = $crad->prepare("
         SELECT *
         FROM grant_proposal_evaluations
         WHERE grant_application_id = ?
           AND evaluator_user_id = ?
+          AND proposal_version = ?
         LIMIT 1
     ");
-    $stmt->execute([$applicationId, $evaluatorUserId]);
+    $stmt->execute([$applicationId, $evaluatorUserId, $proposalVersion]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     return $row ?: null;
