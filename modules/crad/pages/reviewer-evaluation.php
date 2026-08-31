@@ -123,7 +123,7 @@ require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
 <link href="<?= BASE_URL ?>/assets/css/module-process-list.css?v=2" rel="stylesheet">
-<link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=5" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=6" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="mpl-alert" role="alert" style="background:rgba(239,68,68,.08);color:#b91c1c;margin-bottom:1rem;">
@@ -453,86 +453,17 @@ renderBreadcrumbs($breadcrumbs);
             — Total: <strong><?= number_format((float) $existingEval['total_score'], 1) ?> / 100</strong>
         </div>
         <?php grantRenderRubricReadonlyCard($existingEval, 'Your Review Committee Evaluation', $rubric, 'users'); ?>
-        <h2><?= smsIcon('star-half-alt', ['class' => 'me-2 text-primary']) ?>Score Proposal Using Rubric</h2>
-        <p class="text-muted mb-3">Enter scores for each criterion. Total is computed automatically (max 100).</p>
 
-        <div id="greEvalAlert" class="mpl-alert" style="display:none;" role="alert"></div>
-
-        <form id="greEvalForm" data-no-loader novalidate>
-            <input type="hidden" name="grant_application_id" value="<?= (int) $selected['id'] ?>">
-
-            <table class="gre-rubric-table">
-                <thead>
-                    <tr>
-                        <th>Criteria</th>
-                        <th style="width:90px;">Maximum</th>
-                        <th style="width:140px;">Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($rubric as $key => $max):
-                    $label = ucwords(str_replace('_', ' ', $key));
-                    $inputId = 'score_' . $key;
-                ?>
-                    <tr>
-                        <td><?= htmlspecialchars($label) ?></td>
-                        <td class="text-center"><?= $max ?></td>
-                        <td>
-                            <input type="number" class="go-form-input gre-score-input"
-                                   id="<?= htmlspecialchars($inputId) ?>"
-                                   name="<?= htmlspecialchars($inputId) ?>"
-                                   min="0" max="<?= $max ?>" step="0.5" required
-                                   data-max="<?= $max ?>"
-                                   aria-label="<?= htmlspecialchars($label) ?> score">
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                    <tr class="gre-total-row">
-                        <td colspan="2"><strong>Total Score</strong></td>
-                        <td><strong id="greTotalScore">0</strong> / 100</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="gre-form-group">
-                <label for="greComments" class="go-form-label">Comments</label>
-                <textarea id="greComments" name="comments" class="go-form-input" rows="3"
-                          placeholder="General comments on the proposal…"></textarea>
-            </div>
-            <div class="gre-form-group">
-                <label for="greRecommendations" class="go-form-label">Recommendations</label>
-                <textarea id="greRecommendations" name="recommendations" class="go-form-input" rows="3"
-                          placeholder="Committee recommendations…"></textarea>
-            </div>
-            <div class="gre-form-group">
-                <label for="greCorrections" class="go-form-label">Required Corrections</label>
-                <textarea id="greCorrections" name="required_corrections" class="go-form-input" rows="3"
-                          placeholder="List required corrections, if any…"></textarea>
-            </div>
-
-            <div class="gre-form-group">
-                <span class="go-form-label">Recommendation <span class="text-danger">*</span></span>
-                <div class="gre-recommendation-options" role="radiogroup" aria-label="Recommendation decision">
-                    <?php foreach (grantRecommendationOptions() as $value => $label): ?>
-                    <label class="gre-recommendation-option">
-                        <input type="radio" name="recommendation" value="<?= htmlspecialchars($value) ?>" required>
-                        <span><?= htmlspecialchars($label) ?></span>
-                    </label>
-                    <?php endforeach; ?>
-                </div>
-                <p class="gre-recommendation-hint">Disapprove ends the proposal. Require Revisions sends it back to the researcher. Recommend forwards it to the approval workflow.</p>
-            </div>
-
-            <div class="gre-form-group" id="greRevisionReasonGroup" style="display:none;">
-                <label for="greRevisionReason" class="go-form-label">Revision Reason <span class="text-danger">*</span></label>
-                <textarea id="greRevisionReason" name="revision_reason" class="go-form-input" rows="3"
-                          placeholder="Explain what must be revised before resubmission…"></textarea>
-            </div>
-
-            <button type="submit" class="mpl-btn mpl-btn-primary" id="greSubmitBtn">
-                <?= smsIcon('check', ['class' => 'me-1']) ?>Submit Evaluation
-            </button>
-        </form>
+        <?php else: ?>
+        <?php grantRenderRubricEvaluationForm([
+            'application_id' => (int) $selected['id'],
+            'rubric' => $rubric,
+            'title' => 'Review Committee Evaluation',
+            'submit_label' => 'Submit Evaluation',
+            'show_recommendation' => true,
+            'comments_placeholder' => 'General comments on the proposal…',
+            'recommendations_placeholder' => 'Committee recommendations…',
+        ]); ?>
         <?php endif; ?>
     </section>
 </div>
