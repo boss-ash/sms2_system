@@ -1082,9 +1082,9 @@ function grantSubmitApprovalSignoff(
 
             $app = grantGetApplicationForEvaluation($crad, $applicationId);
             if ($app !== null) {
-                grantNotifyApplicantApprovedFunded($crad, $app, $userName);
                 require_once __DIR__ . '/grant-funding-helpers.php';
                 grantInitializeFundingDisbursementPlan($crad, $applicationId);
+                grantNotifyApplicantApprovedFunded($crad, $app, $userName);
             }
 
             $crad->commit();

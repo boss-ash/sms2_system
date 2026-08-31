@@ -1348,6 +1348,8 @@ function grantNotifyApplicantApprovalReturn(
 /** Notify researcher when Finance completes the final approval (Level 6). */
 function grantNotifyApplicantApprovedFunded(PDO $crad, array $application, string $approverName): void
 {
+    require_once __DIR__ . '/grant-funding-helpers.php';
+
     $applicationId = (int) ($application['id'] ?? 0);
     $recipientUserId = (int) ($application['applicant_user_id'] ?? 0);
     if ($applicationId <= 0 || $recipientUserId <= 0) {
