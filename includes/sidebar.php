@@ -526,7 +526,9 @@ $researchDirectorNavGroups = [
                         $pageTitles[$p['slug']] = $p['title'];
                     }
                     $showModuleOverview = empty($module['hide_overview']);
-                    $showModuleGroups = $hasGroups && !($isModuleActive && $activePage === '');
+                    $onModuleOverview = ($activeModule === $navModuleKey && $activePage === '');
+                    $showModuleOverview = $showModuleOverview && ($activeModule !== 'dashboard' || $onModuleOverview);
+                    $showModuleGroups = $hasGroups && (!$onModuleOverview || $activeModule === 'dashboard');
                     ?>
 
                     <li class="nav-item admin-module-item">
