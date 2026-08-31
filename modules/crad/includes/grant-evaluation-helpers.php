@@ -285,6 +285,188 @@ function grantEvaluationTypeAdviser(): string
     return 'adviser';
 }
 
+/** @return list<string> */
+function grantPipelineEvaluationTypes(): array
+{
+    return [
+        'committee',
+        'adviser',
+        'department_chair',
+        'dean',
+        'research_office',
+        'vpaa',
+        'finance',
+    ];
+}
+
+/** @return list<string> */
+function grantApproverStepEvaluationTypes(): array
+{
+    return ['department_chair', 'dean', 'research_office', 'vpaa', 'finance'];
+}
+
+function grantEvaluationStepLabel(string $evaluationType): string
+{
+    return match ($evaluationType) {
+        'committee'        => 'Review Committee',
+        'adviser'          => 'Academic Adviser',
+        'department_chair' => 'Department Chair',
+        'dean'             => 'College Dean',
+        'research_office'  => 'Research Office',
+        'vpaa'             => 'VPAA',
+        'finance'          => 'Finance Office',
+        default            => ucwords(str_replace('_', ' ', $evaluationType)),
+    };
+}
+
+function grantEvaluationTypeForApproverRole(string $roleKey = ''): ?string
+{
+    if ($roleKey === '' && function_exists('getCurrentUserRoleKey')) {
+        $roleKey = getCurrentUserRoleKey();
+    }
+
+    require_once __DIR__ . '/grant-approval-helpers.php';
+    $stepKey = grantApprovalStepKeyForRole($roleKey);
+    if ($stepKey === null || $stepKey === '' || $stepKey === 'adviser') {
+        return null;
+    }
+
+    return $stepKey;
+}
+
+function grantGetEvaluationByTypeAndApplication(
+    PDO $crad,
+    int $applicationId,
+    string $evaluationType,
+    ?int $proposalVersion = null
+): ?array {
+    grantEnsureEvaluationTables($crad);
+
+    if ($proposalVersion === null) {
+        $app = grantGetApplicationForEvaluation($crad, $applicationId);
+        $proposalVersion = max(1, (int) ($app['current_version'] ?? 1));
+    }
+
+    $stmt = $crad->prepare("
+        SELECT *
+          FROM grant_proposal_evaluations
+         WHERE grant_application_id = ?
+           AND evaluation_type = ?
+           AND proposal_version = ?
+         ORDER BY id DESC
+         LIMIT 1
+    ");
+    $stmt->execute([$applicationId, $evaluationType, $proposalVersion]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: null;
+}
+
+/**
+ * @return array<string, array<string, mixed>>
+ */
+function grantGetPipelineEvaluationsForApplication(PDO $crad, int $applicationId): array
+{
+    $app = grantGetApplicationForEvaluation($crad, $applicationId);
+    if ($app === null) {
+        return [];
+    }
+
+    $version = max(1, (int) ($app['current_version'] ?? 1));
+    $result  = [];
+
+    $committeeEvals = grantGetLatestEvaluationsForApplications($crad, [$applicationId]);
+    if (!empty($committeeEvals[$applicationId])) {
+        $result['committee'] = $committeeEvals[$applicationId];
+    }
+
+    foreach (grantPipelineEvaluationTypes() as $type) {
+        if ($type === 'committee') {
+            continue;
+        }
+        $row = grantGetEvaluationByTypeAndApplication($crad, $applicationId, $type, $version);
+        if ($row) {
+            $result[$type] = $row;
+        }
+    }
+
+    return $result;
+}
+
+function grantGetApproverEvaluationByApplication(
+    PDO $crad,
+    int $applicationId,
+    ?int $evaluatorUserId = null,
+    ?int $proposalVersion = null,
+    ?string $roleKey = null
+): ?array {
+    $evaluationType = grantEvaluationTypeForApproverRole($roleKey ?? '');
+    if ($evaluationType === null) {
+        return null;
+    }
+
+    grantEnsureEvaluationTables($crad);
+
+    $evaluatorUserId = $evaluatorUserId ?? (int) ($_SESSION['user_id'] ?? 0);
+    if ($evaluatorUserId <= 0) {
+        return null;
+    }
+
+    if ($proposalVersion === null) {
+        $app = grantGetApplicationForEvaluation($crad, $applicationId);
+        $proposalVersion = max(1, (int) ($app['current_version'] ?? 1));
+    }
+
+    $stmt = $crad->prepare("
+        SELECT *
+          FROM grant_proposal_evaluations
+         WHERE grant_application_id = ?
+           AND evaluator_user_id = ?
+           AND evaluation_type = ?
+           AND proposal_version = ?
+         LIMIT 1
+    ");
+    $stmt->execute([
+        $applicationId,
+        $evaluatorUserId,
+        $evaluationType,
+        $proposalVersion,
+    ]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: null;
+}
+
+function grantHasApproverStepEvaluation(
+    PDO $crad,
+    int $applicationId,
+    ?int $evaluatorUserId = null,
+    ?string $roleKey = null
+): bool {
+    return grantGetApproverEvaluationByApplication($crad, $applicationId, $evaluatorUserId, null, $roleKey) !== null;
+}
+
+function grantApproverEvaluationScoredCount(PDO $crad): int
+{
+    grantEnsureEvaluationTables($crad);
+
+    $evaluationType = grantEvaluationTypeForApproverRole();
+    $userId         = (int) ($_SESSION['user_id'] ?? 0);
+    if ($evaluationType === null || $userId <= 0) {
+        return 0;
+    }
+
+    $stmt = $crad->prepare("
+        SELECT COUNT(*)
+          FROM grant_proposal_evaluations
+         WHERE evaluator_user_id = ?
+           AND evaluation_type = ?
+    ");
+    $stmt->execute([$userId, $evaluationType]);
+
+    return (int) $stmt->fetchColumn();
+}
+
 /**
  * @return array{ok: true, scores: array<string, float>, total: float}|array{ok: false, error: string}
  */
@@ -441,6 +623,11 @@ function grantApproverEvaluationQueue(PDO $crad): array
         return [];
     }
 
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    if ($userId <= 0) {
+        return [];
+    }
+
     $committeeType = grantEvaluationTypeCommittee();
     $adviserType   = grantEvaluationTypeAdviser();
 
@@ -514,13 +701,18 @@ function grantApproverEvaluationQueue(PDO $crad): array
                        AND e3.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
                        AND e3.evaluation_type = ?
                )
+        LEFT JOIN grant_proposal_evaluations my_eval
+               ON my_eval.grant_application_id = ga.id
+              AND my_eval.evaluator_user_id = ?
+              AND my_eval.evaluation_type = ?
+              AND my_eval.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
         WHERE w.workflow_status = 'In Progress'
           AND w.current_step_key = ?
           AND my_step.status IN ('Pending', 'Queued')
           {$financeVpaaClause}
         ORDER BY w.updated_at ASC, ga.id ASC
     ");
-    $stmt->execute([$stepKey, $committeeType, $adviserType, $stepKey]);
+    $stmt->execute([$stepKey, $committeeType, $adviserType, $userId, $stepKey, $stepKey]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
