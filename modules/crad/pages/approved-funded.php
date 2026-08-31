@@ -98,12 +98,13 @@ renderBreadcrumbs($breadcrumbs);
                         <th>Budget</th>
                         <th>Funded On</th>
                         <th>Status</th>
+                        <?php if ($canManage): ?><th></th><?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
                 <?php if ($records === []): ?>
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
+                        <td colspan="<?= $canManage ? 8 : 7 ?>" style="text-align:center;padding:2rem;color:var(--sms-text-muted);">
                             No proposals are approved and funded yet.
                         </td>
                     </tr>
@@ -123,6 +124,14 @@ renderBreadcrumbs($breadcrumbs);
                             <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) ($row['updated_at'] ?? 'now')))) ?>
                         </td>
                         <td><span class="mpl-status completed">APPROVED &amp; FUNDED</span></td>
+                        <?php if ($canManage): ?>
+                        <td>
+                            <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
+                               href="<?= htmlspecialchars(grantBudgetDisbursementUrl() . '?id=' . (int) $row['id']) ?>">
+                                <?= smsIcon('money-bill-wave') ?> Release Funds
+                            </a>
+                        </td>
+                        <?php endif; ?>
                     </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
