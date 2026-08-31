@@ -93,7 +93,7 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
                 <?= smsIcon('menu-2') ?>
             </button>
             <a class="navbar-brand d-flex align-items-center gap-2" href="<?= BASE_URL ?>/dashboard/index.php">
-                <img src="<?= e(smsBrandLogoUrl()) ?>" alt="BCP" style="height:32px;width:auto;object-fit:contain;">
+                <img src="<?= e(smsBrandLogoUrl()) ?>" alt="BCP" style="height:28px;width:auto;object-fit:contain;">
                 <span class="d-none d-sm-inline"><?= htmlspecialchars(APP_SHORT_NAME) ?></span>
             </a>
         </div>
