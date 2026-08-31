@@ -9,6 +9,7 @@ require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-helpers.php';
 require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
+require_once __DIR__ . '/../includes/grant-approval-helpers.php';
 
 requireAuth();
 grantRequireViewAccess();
@@ -21,6 +22,7 @@ $applicationId = (int) ($_GET['id'] ?? 0);
 $crad          = cradDb();
 $application   = null;
 $evaluation    = null;
+$approvalReturn = null;
 $versions      = [];
 $dbError       = '';
 
@@ -28,12 +30,14 @@ if ($crad && $applicationId > 0) {
     try {
         grantEnsureTables($crad);
         grantEnsureEvaluationTables($crad);
+        grantEnsureApprovalTables($crad);
         $application = grantGetApplicationForResearcher($crad, $applicationId);
         if ($application && (string) ($application['status'] ?? '') !== 'Revision Required') {
             $application = null;
             $dbError = 'This proposal is not awaiting revision.';
         } elseif ($application) {
             $evaluation = grantGetLatestEvaluationsForApplications($crad, [$applicationId])[$applicationId] ?? null;
+            $approvalReturn = grantGetLatestApprovalReturnsForApplications($crad, [$applicationId])[$applicationId] ?? null;
             $versions   = grantGetProposalVersions($crad, $applicationId);
         }
     } catch (Throwable $e) {
@@ -93,6 +97,20 @@ renderBreadcrumbs($breadcrumbs);
             <div><dt>Current Version</dt><dd>Version <?= (int) ($application['current_version'] ?? 1) ?> — <?= htmlspecialchars(grantVersionLabel((int) ($application['current_version'] ?? 1))) ?></dd></div>
             <div><dt>Next Version</dt><dd>Version <?= $nextVersion ?> — <?= htmlspecialchars(grantVersionLabel($nextVersion)) ?></dd></div>
         </dl>
+
+        <?php if ($approvalReturn): ?>
+        <div style="margin:0 1rem 1rem;padding:1rem;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:10px;">
+            <div style="font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#b91c1c;margin-bottom:.5rem;">Approval Return</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.5rem .75rem;font-size:.85rem;margin-bottom:.75rem;">
+                <div><strong>Returned By:</strong> <?= htmlspecialchars((string) ($approvalReturn['approver_name'] ?? grantApprovalRoleLabel((string) ($approvalReturn['approver_role_key'] ?? '')))) ?></div>
+                <div><strong>Approval Level:</strong> <?= (int) ($approvalReturn['step_order'] ?? 0) ?> — <?= htmlspecialchars((string) ($approvalReturn['step_label'] ?? '')) ?></div>
+                <div><strong>Date/Time:</strong> <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) ($approvalReturn['acted_at'] ?? 'now')))) ?></div>
+            </div>
+            <?php if (!empty($approvalReturn['remarks'])): ?>
+            <div><strong>Reason</strong><p class="mb-0" style="white-space:pre-wrap;"><?= htmlspecialchars((string) $approvalReturn['remarks']) ?></p></div>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
 
         <?php if ($evaluation): ?>
         <div style="margin:0 1rem 1rem;padding:1rem;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:10px;">
