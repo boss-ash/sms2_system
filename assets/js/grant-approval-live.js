@@ -240,24 +240,15 @@
         }).join('');
 
         var scoresHtml = buildPipelineScoresHtml(detail);
-
+        var auditHtml = wfStatus === 'Returned' ? buildReturnAuditHtml(detail) : '';
         var actionHtml = '';
-        if (needsRubricScore) {
-            actionHtml = '<div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">' +
-                '<h3><i class="ti ti-clipboard-check me-1"></i>Rubric Evaluation Required</h3>' +
-                '<p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here.</p>' +
-                '<a class="gaw-btn-approve" href="' + reviewerEvalUrl + '" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">' +
-                '<i class="ti ti-star-half-filled"></i> Go to Reviewer Evaluation</a></div>';
-        } else if (canAct) {
-            actionHtml = '<div class="gaw-action-panel" id="gawActionPanel">' +
-                '<h3>Administrative Sign-off Action Panel</h3>' +
-                '<p>Logged in as: <strong>' + roleLabel + '</strong>. Signatures are timestamped and logged in the permanent audit trail.</p>' +
-                '<div class="gaw-action-buttons">' +
-                '<button type="button" class="gaw-btn-approve" id="gawSignApproveBtn">' +
-                '<i class="ti ti-signature"></i> Sign &amp; Approve Current Level</button>' +
-                '<button type="button" class="gaw-btn-return" id="gawReturnBtn">' +
-                '<i class="ti ti-x"></i> Return to Proponent for Revision</button>' +
-                '</div></div>';
+
+        if (wfStatus === 'Returned') {
+            if (detail.is_monitor && !auditHtml) {
+                actionHtml = '<div class="gaw-monitor-panel"><div class="gaw-monitor-note"><i class="ti ti-arrow-back-up me-1"></i> This proposal was returned to the proponent for revision.</div></div>';
+            }
+        } else if (detail.can_act || detail.can_return || detail.needs_rubric_score || detail.needs_adviser_score) {
+            actionHtml = buildDecisionPanelHtml(detail, roleLabel, reviewerEvalUrl);
         } else if (detail.is_monitor) {
             var hint = esc(detail.monitor_stage_hint || '');
             if (hint) {
@@ -276,7 +267,7 @@
         }
 
         detailPanel.innerHTML = '<h2 class="gaw-pipeline-title">Sign-off Sequence for ' + ref + '</h2>' +
-            '<div class="gaw-stepper" id="gawStepper">' + stepperHtml + '</div>' + scoresHtml + actionHtml;
+            '<div class="gaw-stepper" id="gawStepper">' + stepperHtml + '</div>' + scoresHtml + auditHtml + actionHtml;
 
         bindActionButtons();
     }
@@ -474,6 +465,10 @@
                 if (!data || !data.success) {
                     alert((data && data.message) || 'Return failed.');
                     return;
+                }
+                alert(data.message || 'Proposal returned. The researcher was notified to open Revisions Requested.');
+                if (lastWorkflowCount !== null) {
+                    lastWorkflowCount = Math.max(0, lastWorkflowCount - 1);
                 }
                 renderDetail(data.detail);
                 fetchWorkflows(false);
