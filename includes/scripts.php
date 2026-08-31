@@ -58,10 +58,9 @@ if ($loadResearchProgressLive):
 
 <?php
 $loadGrantOutputsSidebarLive = false;
-if (function_exists('getCurrentUserRoleKey') && function_exists('grantUserCanVerifyPublicationsIp')) {
-    require_once ROOT_PATH . '/modules/crad/includes/grant-final-output-helpers.php';
+if (function_exists('getCurrentUserRoleKey')) {
     $grantOutputsRole = getCurrentUserRoleKey();
-    if (in_array($grantOutputsRole, ['crad_officer', 'research_grant', 'superadmin'], true) && grantUserCanVerifyPublicationsIp()) {
+    if (in_array($grantOutputsRole, ['crad_officer', 'research_grant', 'superadmin'], true)) {
         $loadGrantOutputsSidebarLive = true;
     }
 }
