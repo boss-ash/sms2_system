@@ -62,7 +62,7 @@ require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
 <link href="<?= BASE_URL ?>/assets/css/module-process-list.css?v=2" rel="stylesheet">
-<link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=2" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=4" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="mpl-alert" role="alert" style="background:rgba(239,68,68,.08);color:#b91c1c;margin-bottom:1rem;">
@@ -163,50 +163,67 @@ renderBreadcrumbs($breadcrumbs);
         <a class="mpl-btn mpl-btn-ghost mpl-btn-sm mb-3" href="<?= BASE_URL ?>/modules/crad/pages/reviewer-evaluation.php">
             <?= smsIcon('arrow-left') ?> Back to Queue
         </a>
-        <h2><?= htmlspecialchars((string) ($selected['research_title'] ?? 'Research Proposal')) ?></h2>
-        <dl class="gre-meta">
-            <?php if (!empty($selected['proposal_reference'])): ?>
-            <div><dt>Reference</dt><dd><?= htmlspecialchars((string) $selected['proposal_reference']) ?>
-                <small>Version <?= max(1, (int) ($selected['current_version'] ?? 1)) ?> — <?= htmlspecialchars(grantVersionLabel((int) ($selected['current_version'] ?? 1))) ?></small>
-            </dd></div>
-            <?php endif; ?>
-            <div><dt>Grant Program</dt><dd><?= htmlspecialchars((string) $selected['funding_title']) ?></dd></div>
-            <div><dt>Lead Proponent</dt><dd><?= htmlspecialchars((string) $selected['applicant_name']) ?></dd></div>
-            <div><dt>College / Dept</dt><dd><?= htmlspecialchars((string) ($selected['college_dept'] ?? '—')) ?></dd></div>
-            <div><dt>Requested Budget</dt><dd>₱<?= number_format((float) ($selected['requested_budget'] ?? 0), 0) ?>
-                <small>of ₱<?= number_format((float) ($selected['max_funding_cap'] ?? 0), 0) ?> cap</small></dd></div>
-            <div><dt>Eligibility</dt><dd><?= htmlspecialchars((string) ($selected['eligibility'] ?? '')) ?></dd></div>
-            <div><dt>Submitted</dt><dd><?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $selected['submitted_at']))) ?></dd></div>
-        </dl>
-        <?php if (!empty($selected['abstract'])): ?>
-        <div class="gre-block">
-            <h3>Executive Abstract</h3>
-            <p><?= nl2br(htmlspecialchars((string) $selected['abstract'])) ?></p>
-        </div>
-        <?php endif; ?>
-        <?php if (!empty($selected['objectives'])): ?>
-        <div class="gre-block">
-            <h3>Objectives</h3>
-            <p><?= nl2br(htmlspecialchars((string) $selected['objectives'])) ?></p>
-        </div>
-        <?php endif; ?>
-        <div class="gre-docs">
-            <?php if (!empty($selected['proposal_pdf'])): ?>
-            <a class="mpl-btn mpl-btn-soft mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'proposal')) ?>" target="_blank" rel="noopener">
-                <?= smsIcon('file-pdf') ?> Proposal Document
-            </a>
-            <?php endif; ?>
-            <?php if (!empty($selected['supporting_docs'])): ?>
-            <a class="mpl-btn mpl-btn-ghost mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'supporting')) ?>" target="_blank" rel="noopener">
-                <?= smsIcon('paperclip') ?> Supporting Docs
-            </a>
-            <?php endif; ?>
-            <?php if (!empty($selected['ethics_doc'])): ?>
-            <a class="mpl-btn mpl-btn-ghost mpl-btn-sm" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'ethics')) ?>" target="_blank" rel="noopener">
-                <?= smsIcon('shield-alt') ?> Ethics Clearance
-            </a>
-            <?php endif; ?>
-        </div>
+
+        <details class="gre-proposal-toggle">
+            <summary class="gre-proposal-summary">
+                <span class="gre-proposal-summary-inner">
+                    <span class="gre-proposal-summary-label">Grant Program</span>
+                    <span class="gre-proposal-summary-value"><?= htmlspecialchars((string) $selected['funding_title']) ?></span>
+                </span>
+                <?= smsIcon('chevron-down', ['class' => 'gre-proposal-chevron', 'aria-hidden' => 'true']) ?>
+            </summary>
+
+            <div class="gre-proposal-details">
+                <h2 class="gre-proposal-heading"><?= htmlspecialchars((string) ($selected['research_title'] ?? 'Research Proposal')) ?></h2>
+
+                <dl class="gre-meta">
+                    <?php if (!empty($selected['proposal_reference'])): ?>
+                    <div><dt>Reference</dt><dd><?= htmlspecialchars((string) $selected['proposal_reference']) ?>
+                        <small>Version <?= max(1, (int) ($selected['current_version'] ?? 1)) ?> — <?= htmlspecialchars(grantVersionLabel((int) ($selected['current_version'] ?? 1))) ?></small>
+                    </dd></div>
+                    <?php endif; ?>
+                    <div><dt>Grant Program</dt><dd><?= htmlspecialchars((string) $selected['funding_title']) ?></dd></div>
+                    <div><dt>Lead Proponent</dt><dd><?= htmlspecialchars((string) $selected['applicant_name']) ?></dd></div>
+                    <div><dt>College / Dept</dt><dd><?= htmlspecialchars((string) ($selected['college_dept'] ?? '—')) ?></dd></div>
+                    <div><dt>Requested Budget</dt><dd>₱<?= number_format((float) ($selected['requested_budget'] ?? 0), 0) ?>
+                        <small>of ₱<?= number_format((float) ($selected['max_funding_cap'] ?? 0), 0) ?> cap</small></dd></div>
+                    <div><dt>Eligibility</dt><dd><?= htmlspecialchars((string) ($selected['eligibility'] ?? '')) ?></dd></div>
+                    <div><dt>Submitted</dt><dd><?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $selected['submitted_at']))) ?></dd></div>
+                </dl>
+
+                <?php if (!empty($selected['abstract'])): ?>
+                <div class="gre-block">
+                    <h3>Executive Abstract</h3>
+                    <p><?= nl2br(htmlspecialchars((string) $selected['abstract'])) ?></p>
+                </div>
+                <?php endif; ?>
+
+                <?php if (!empty($selected['objectives'])): ?>
+                <div class="gre-block">
+                    <h3>Objectives</h3>
+                    <p><?= nl2br(htmlspecialchars((string) $selected['objectives'])) ?></p>
+                </div>
+                <?php endif; ?>
+
+                <div class="gre-docs gre-docs-stack">
+                    <?php if (!empty($selected['proposal_pdf'])): ?>
+                    <a class="mpl-btn mpl-btn-soft mpl-btn-sm gre-doc-btn" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'proposal')) ?>" target="_blank" rel="noopener">
+                        <?= smsIcon('file-pdf') ?> Proposal Document
+                    </a>
+                    <?php endif; ?>
+                    <?php if (!empty($selected['supporting_docs'])): ?>
+                    <a class="mpl-btn mpl-btn-ghost mpl-btn-sm gre-doc-btn" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'supporting')) ?>" target="_blank" rel="noopener">
+                        <?= smsIcon('paperclip') ?> Supporting Docs
+                    </a>
+                    <?php endif; ?>
+                    <?php if (!empty($selected['ethics_doc'])): ?>
+                    <a class="mpl-btn mpl-btn-ghost mpl-btn-sm gre-doc-btn" href="<?= htmlspecialchars(grantProposalFileUrl((int) $selected['id'], 'ethics')) ?>" target="_blank" rel="noopener">
+                        <?= smsIcon('shield-alt') ?> Ethics Clearance
+                    </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </details>
     </aside>
 
     <section class="gre-score-panel">
