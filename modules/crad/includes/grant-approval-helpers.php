@@ -1189,7 +1189,7 @@ function grantReturnProposalFromApproval(
                 $crad,
                 $app,
                 $currentStep,
-                $userName,
+                $returnedByLabel,
                 $remarks
             );
         }
@@ -1343,7 +1343,13 @@ function grantApprovalStepDisplayState(array $step, string $currentStepKey, stri
     }
 
     if ($status === 'Returned') {
-        return ['state' => 'returned', 'label' => 'Returned', 'sub' => '', 'date' => ''];
+        $date = '';
+        if ($actedAt !== '') {
+            $ts = strtotime($actedAt);
+            $date = $ts !== false ? date('M j, Y g:i A', $ts) : $actedAt;
+        }
+
+        return ['state' => 'returned', 'label' => 'Returned', 'sub' => '', 'date' => $date];
     }
 
     if ($workflowStatus !== 'In Progress') {
