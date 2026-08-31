@@ -226,7 +226,7 @@
             '<tbody id="gpmMilestoneBody">' +
             (milestones.length ? buildMilestoneRows(milestones, canTrackRows)
                 : '<tr><td colspan="' + colSpan + '" style="text-align:center;padding:1.5rem;color:#64748b;">No milestones initialized yet.</td></tr>') +
-            '</tbody></table></div>';
+            '</tbody></table></div>' + evidenceSection;
 
         bindEditButtons();
     }
@@ -277,15 +277,20 @@
                 }
                 lastOverviewCount = overview.length;
 
-                var overviewChanged = isPoll && lastOverviewFp !== '' && data.overview_fingerprint !== lastOverviewFp;
-                var detailChanged = isPoll && lastDetailFp !== '' && data.detail_fingerprint !== lastDetailFp;
+                var overviewFp = data.overview_fingerprint || '';
+                var detailFp = data.detail_fingerprint || '';
+                var overviewChanged = isPoll && lastOverviewFp !== '' && overviewFp !== lastOverviewFp;
+                var detailChanged = isPoll && lastDetailFp !== '' && detailFp !== lastDetailFp;
+                var shouldRender = !isPoll || overviewChanged || detailChanged;
 
-                lastOverviewFp = data.overview_fingerprint || '';
-                lastDetailFp = data.detail_fingerprint || '';
+                if (shouldRender) {
+                    updateStats(overview);
+                    renderProjectSelect(overview);
+                    if (data.detail) renderDetail(data.detail);
+                }
 
-                updateStats(overview);
-                renderProjectSelect(overview);
-                if (data.detail) renderDetail(data.detail);
+                lastOverviewFp = overviewFp;
+                lastDetailFp = detailFp;
 
                 if (overviewChanged || detailChanged) flashUpdate();
             })
@@ -360,6 +365,9 @@
                         return;
                     }
                     applyMilestoneResponse(data);
+                    if (typeof window.SMSRefreshNotifications === 'function') {
+                        window.SMSRefreshNotifications();
+                    }
                 })
                 .catch(function (err) {
                     if (!err || !err.message) {
