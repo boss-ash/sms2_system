@@ -1,5 +1,5 @@
 /**
- * SMS 2 – Page loader (BCP crest + classic academic style)
+ * SMS 2 – Page loader (minimal — logo + label only)
  */
 
 html:not(.sms-app-ready) body.sms-app {
@@ -55,65 +55,20 @@ html:not(.sms-app-ready) body.sms-app {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.65rem;
-    padding: 1.5rem 1.75rem 1.35rem;
-    border-radius: 16px;
-    background: var(--sms-surface-elevated, #fff);
-    border: 1px solid var(--sms-border, #e2e8f0);
-    border-top: 3px solid var(--sms-primary, #1e40af);
-    box-shadow:
-        0 10px 32px rgba(15, 33, 88, 0.12),
-        0 2px 8px rgba(15, 33, 88, 0.06);
-    min-width: 200px;
-    max-width: min(92vw, 280px);
-}
-
-[data-theme="dark"] .sms-loader-content {
-    background: var(--sms-surface-elevated, #111827);
-    border-color: rgba(255, 255, 255, 0.1);
-    border-top-color: #3b82f6;
-    box-shadow:
-        0 10px 32px rgba(0, 0, 0, 0.35),
-        0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Crest + rotating ring */
-.sms-loader-brand {
-    position: relative;
-    width: 92px;
-    height: 92px;
-    display: grid;
-    place-items: center;
-    margin-bottom: 0.15rem;
-}
-
-.sms-loader-ring {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 2px solid color-mix(in srgb, var(--sms-primary, #1e40af) 14%, transparent);
-    border-top-color: var(--sms-primary, #1e40af);
-    border-right-color: color-mix(in srgb, var(--sms-primary, #1e40af) 45%, transparent);
-    animation: smsSpin 1.1s linear infinite;
+    gap: 0.55rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    min-width: 0;
+    max-width: none;
 }
 
 .sms-loader-crest {
-    position: relative;
-    z-index: 1;
     width: 64px;
     height: 64px;
     object-fit: contain;
     filter: drop-shadow(0 2px 6px rgba(15, 33, 88, 0.12));
-    animation: smsCrestPulse 2.2s ease-in-out infinite;
-}
-
-@keyframes smsSpin {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes smsCrestPulse {
-    0%, 100% { opacity: 0.94; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.04); }
 }
 
 .sms-loader-school {
@@ -139,31 +94,6 @@ html:not(.sms-app-ready) body.sms-app {
     min-height: 1em;
 }
 
-.sms-loader-dots {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    margin-top: 0.1rem;
-}
-
-.sms-loader-dots span {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--sms-primary, #1e40af);
-    opacity: 0.35;
-    animation: smsDotPulse 0.9s ease-in-out infinite;
-}
-
-.sms-loader-dots span:nth-child(2) { animation-delay: 0.15s; }
-.sms-loader-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes smsDotPulse {
-    0%, 80%, 100% { opacity: 0.35; transform: scale(0.85); }
-    40% { opacity: 1; transform: scale(1); }
-}
-
 body.sms-app .sms-wrapper {
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -174,9 +104,6 @@ body.sms-app.sms-loaded .sms-wrapper {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .sms-loader-ring,
-    .sms-loader-crest,
-    .sms-loader-dots span,
     body.sms-app .sms-wrapper,
     .sms-page-loader {
         animation: none !important;
@@ -185,15 +112,6 @@ body.sms-app.sms-loaded .sms-wrapper {
 
     body.sms-app .sms-wrapper {
         opacity: 1;
-    }
-
-    .sms-loader-crest {
-        opacity: 1;
-        transform: none;
-    }
-
-    .sms-loader-dots span {
-        opacity: 0.7;
     }
 }
 
