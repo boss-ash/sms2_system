@@ -99,18 +99,32 @@ foreach ($paymentTransactions as $txn) {
 }
 
 $studentProfile = [
-    'name' => 'Juan Dela Cruz',
+    'name' => getCurrentUserName() ?: 'Student',
     'student_id' => $studentId,
     'program' => 'Bachelor of Science in Information Technology',
     'year_level' => '4th Year',
     'section' => 'BSIT 4A',
     'semester' => '1st Semester',
+    'school_year' => '2026-2027',
     'status' => 'Enrolled',
-    'email' => 's230000001@bcp.edu.ph',
+    'email' => (string) ($_SESSION['user_email'] ?? 'student@bcp.edu.ph'),
     'mobile' => '0917 000 0001',
     'address' => 'Novaliches, Quezon City',
     'guardian' => 'Maria Dela Cruz',
+    'guardian_contact' => '0918 000 0002',
 ];
+
+if (!function_exists('spProfileInitials')) {
+    function spProfileInitials(string $name): string
+    {
+        $parts = preg_split('/\s+/', trim($name)) ?: [];
+        $letters = '';
+        foreach (array_slice($parts, 0, 2) as $part) {
+            $letters .= strtoupper(substr($part, 0, 1));
+        }
+        return $letters !== '' ? $letters : 'ST';
+    }
+}
 
 $studentPages = [
     'dashboard' => [

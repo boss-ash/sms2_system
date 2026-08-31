@@ -98,9 +98,23 @@ renderBreadcrumbs($breadcrumbs);
                             <div class="form-text">Only chapters approved by your adviser are available for Grammarian submission.</div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Document</label>
-                            <input type="file" class="form-control" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                            <div class="form-text">Allowed: PDF, DOC, DOCX, JPG, PNG. Max 10 MB.</div>
+                            <label class="form-label" for="chapter-document">Document</label>
+                            <div class="sms-file-picker" data-sms-file-picker>
+                                <input
+                                    type="file"
+                                    id="chapter-document"
+                                    class="sms-file-picker__input"
+                                    name="document"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                    required>
+                                <label class="sms-file-picker__zone" for="chapter-document">
+                                    <span class="sms-file-picker__icon" aria-hidden="true"><?= smsIcon('upload') ?></span>
+                                    <span class="sms-file-picker__title">Choose a file or drag it here</span>
+                                    <span class="sms-file-picker__hint">PDF, DOC, DOCX, JPG, PNG · Max 10 MB</span>
+                                    <span class="sms-file-picker__name" data-file-name>No file selected</span>
+                                    <span class="sms-file-picker__btn">Browse files</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Submission Notes</label>
@@ -140,6 +154,214 @@ renderBreadcrumbs($breadcrumbs);
         </div>
     <?php endif; ?>
 </div>
+
+<style>
+.sms-file-picker {
+    position: relative;
+}
+
+.sms-file-picker__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.sms-file-picker__zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 168px;
+    padding: 1.25rem 1rem;
+    border: 2px dashed var(--sms-primary-light, #3b82f6);
+    border-radius: 14px;
+    background: var(--sms-primary-xlight, rgba(219, 234, 254, 0.55));
+    color: var(--sms-text, #334155);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sms-file-picker__zone:hover,
+.sms-file-picker__zone:focus-within {
+    border-color: var(--sms-primary, #1e40af);
+    background: rgba(219, 234, 254, 0.85);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+.sms-file-picker.is-dragover .sms-file-picker__zone {
+    border-color: var(--sms-primary, #1e40af);
+    background: rgba(219, 234, 254, 0.95);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
+}
+
+.sms-file-picker.is-selected .sms-file-picker__zone {
+    border-style: solid;
+    border-color: var(--sms-success, #16a34a);
+    background: rgba(22, 163, 74, 0.08);
+}
+
+.sms-file-picker__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(30, 64, 175, 0.12);
+    color: var(--sms-primary, #1e40af);
+}
+
+.sms-file-picker__icon .ti {
+    font-size: 1.45rem;
+}
+
+.sms-file-picker__title {
+    color: var(--sms-heading, #0f172a);
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.sms-file-picker__hint {
+    color: var(--sms-text-muted, #64748b);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.sms-file-picker__name {
+    display: block;
+    max-width: 100%;
+    margin-top: 0.15rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--sms-heading, #0f172a);
+    font-size: 0.8rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sms-file-picker.is-selected .sms-file-picker__name {
+    background: rgba(22, 163, 74, 0.14);
+    color: var(--sms-success, #16a34a);
+}
+
+.sms-file-picker__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    margin-top: 0.2rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: #fff;
+    font-size: 0.86rem;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(30, 64, 175, 0.22);
+}
+
+.sms-file-picker__zone:hover .sms-file-picker__btn,
+.sms-file-picker__zone:focus-within .sms-file-picker__btn {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+[data-theme="dark"] .sms-file-picker__zone {
+    border-color: rgba(96, 165, 250, 0.55);
+    background: rgba(30, 58, 138, 0.22);
+}
+
+[data-theme="dark"] .sms-file-picker__zone:hover,
+[data-theme="dark"] .sms-file-picker__zone:focus-within,
+[data-theme="dark"] .sms-file-picker.is-dragover .sms-file-picker__zone {
+    border-color: #60a5fa;
+    background: rgba(30, 58, 138, 0.34);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .sms-file-picker.is-selected .sms-file-picker__zone {
+    border-color: #34d399;
+    background: rgba(16, 185, 129, 0.12);
+}
+
+[data-theme="dark"] .sms-file-picker__icon {
+    background: rgba(59, 130, 246, 0.18);
+    color: #93c5fd;
+}
+
+[data-theme="dark"] .sms-file-picker__title {
+    color: var(--sms-text-strong, #f1f5f9);
+}
+
+[data-theme="dark"] .sms-file-picker__name {
+    background: rgba(15, 23, 42, 0.55);
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .sms-file-picker.is-selected .sms-file-picker__name {
+    background: rgba(16, 185, 129, 0.18);
+    color: #6ee7b7;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('[data-sms-file-picker]').forEach(function (picker) {
+    var input = picker.querySelector('.sms-file-picker__input');
+    var nameEl = picker.querySelector('[data-file-name]');
+    if (!input || !nameEl) return;
+
+    function updateName() {
+      var file = input.files && input.files[0];
+      if (!file) {
+        picker.classList.remove('is-selected');
+        nameEl.textContent = 'No file selected';
+        return;
+      }
+      picker.classList.add('is-selected');
+      nameEl.textContent = file.name;
+    }
+
+    input.addEventListener('change', updateName);
+
+    ['dragenter', 'dragover'].forEach(function (eventName) {
+      picker.addEventListener(eventName, function (event) {
+        event.preventDefault();
+        picker.classList.add('is-dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(function (eventName) {
+      picker.addEventListener(eventName, function (event) {
+        event.preventDefault();
+        picker.classList.remove('is-dragover');
+      });
+    });
+
+    picker.addEventListener('drop', function (event) {
+      var files = event.dataTransfer && event.dataTransfer.files;
+      if (!files || !files.length) return;
+      if (typeof DataTransfer !== 'undefined') {
+        var transfer = new DataTransfer();
+        transfer.items.add(files[0]);
+        input.files = transfer.files;
+      }
+      updateName();
+    });
+  });
+});
+</script>
 
 <script src="<?= BASE_URL ?>/assets/js/chapter-evaluation-live.js"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
