@@ -188,9 +188,20 @@
 }
 
 .gpm-btn-primary {
-    background: var(--gpm-blue) !important;
-    border-color: var(--gpm-blue) !important;
+    background: #1d4ed8 !important;
+    background: var(--gpm-blue, #1d4ed8) !important;
+    border-color: #1d4ed8 !important;
+    border-color: var(--gpm-blue, #1d4ed8) !important;
     color: #fff !important;
+}
+
+.gpm-dialog-actions .gpm-btn-primary {
+    min-width: 9.5rem;
+    justify-content: center;
+}
+
+.gpm-dialog-actions .gpm-btn-primary:hover {
+    background: #1e40af !important;
 }
 
 .gpm-btn-ghost {
@@ -206,17 +217,25 @@
 }
 
 .gpm-dialog {
+    --gpm-blue: #1d4ed8;
+    --gpm-border: #e2e8f0;
+    --gpm-muted: #64748b;
     position: fixed;
     inset: 0;
     background: rgba(15, 23, 42, .45);
     display: none;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     z-index: 1200;
     padding: 1rem;
+    overflow-y: auto;
 }
 
 .gpm-dialog.show { display: flex; }
+
+.gpm-dialog.show .gpm-dialog-box {
+    margin: auto;
+}
 
 .gpm-dialog-box {
     width: min(100%, 480px);
