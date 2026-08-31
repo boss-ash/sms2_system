@@ -68,12 +68,15 @@ switch ($action) {
         if ($result['ok']) {
             if (grantIsAdviserEvaluationViewer()) {
                 $message = 'Adviser evaluation submitted. You may now sign off in Approval Workflows.';
-            } elseif (($result['recommendation'] ?? '') === 'disapprove') {
-                $message = 'Proposal disapproved. The researcher has been notified.';
-            } elseif (($result['recommendation'] ?? '') === 'require_revisions') {
-                $message = 'Revision request sent. The researcher has been notified.';
-            } elseif (($result['recommendation'] ?? '') === 'recommend') {
-                $message = 'Proposal recommended for approval workflow.';
+            } else {
+                $message = 'Evaluation submitted successfully.';
+                if (($result['recommendation'] ?? '') === 'disapprove') {
+                    $message = 'Proposal disapproved. The researcher has been notified.';
+                } elseif (($result['recommendation'] ?? '') === 'require_revisions') {
+                    $message = 'Revision request sent. The researcher has been notified.';
+                } elseif (($result['recommendation'] ?? '') === 'recommend') {
+                    $message = 'Proposal recommended for approval workflow.';
+                }
             }
             echo json_encode([
                 'success'        => true,
