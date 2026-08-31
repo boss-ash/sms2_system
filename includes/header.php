@@ -95,7 +95,7 @@ if ($isCradPage && strpos(' ' . $bodyClass . ' ', ' crad-app ') === false) {
     <link href="<?= BASE_URL ?>/assets/css/module-process-list.css?v=3" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/navbar-components.css?v=7" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/dashboard-academic.css?v=3" rel="stylesheet">
-    <link href="<?= BASE_URL ?>/assets/css/loader.css?v=4" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/loader.css?v=5" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/sms-security-ui.css?v=20" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/password-strength.css?v=2" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/research-monitoring.css?v=1" rel="stylesheet">
@@ -109,12 +109,26 @@ if ($isCradPage && strpos(' ' . $bodyClass . ' ', ' crad-app ') === false) {
 </head>
 <body class="<?= htmlspecialchars($bodyClass) ?>"<?= (strpos(' ' . $bodyClass . ' ', ' login-page ') !== false || strpos(' ' . $bodyClass . ' ', ' welcome-page ') !== false) ? ' style="background:#071c48"' : '' ?>>
 <?php if (strpos(' ' . $bodyClass . ' ', ' login-page ') === false && strpos(' ' . $bodyClass . ' ', ' welcome-page ') === false): ?>
+<?php
+$loaderCrestUrl = is_readable(ROOT_PATH . '/images/bcp-crest.png')
+    ? BASE_URL . '/images/bcp-crest.png'
+    : smsBrandLogoUrl();
+?>
 <div id="smsPageLoader" class="sms-page-loader is-active" role="status" aria-live="polite" aria-busy="true" aria-label="Loading">
     <div class="sms-loader-backdrop" aria-hidden="true"></div>
     <div class="sms-loader-content">
-        <div class="sms-loader-spinner" aria-hidden="true"></div>
-        <div class="sms-loader-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="sms-loader-brand">
+            <div class="sms-loader-ring" aria-hidden="true"></div>
+            <img src="<?= e($loaderCrestUrl) ?>?v=crest-loader"
+                 alt="<?= e(INSTITUTION) ?>"
+                 class="sms-loader-crest"
+                 width="64"
+                 height="64"
+                 onerror="this.onerror=null;this.src='<?= e(smsBrandLogoUrl()) ?>';">
+        </div>
+        <p class="sms-loader-school"><?= e(APP_SHORT_NAME) ?></p>
         <span class="sms-loader-label">Loading…</span>
+        <div class="sms-loader-dots" aria-hidden="true"><span></span><span></span><span></span></div>
     </div>
 </div>
 <script src="<?= BASE_URL ?>/assets/js/loader.js?v=3"></script>
