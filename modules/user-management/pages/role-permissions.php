@@ -308,7 +308,7 @@ renderBreadcrumbs($breadcrumbs);
         container.insertAdjacentHTML('beforeend',
             '<div id="' + id + '" class="toast align-items-center text-bg-' + type + ' border-0 mb-2" role="alert" aria-atomic="true">'
             + '<div class="d-flex"><div class="toast-body d-flex align-items-center gap-2">'
-            + '<i class="fas ' + (icons[type]||icons.info) + '"></i> ' + msg
+            + (window.smsIconHtml ? window.smsIconHtml((icons[type] || icons.info).replace(/^fa-/, '')) : '') + ' ' + msg
             + '</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>'
             + '</div></div>');
         var el = document.getElementById(id);

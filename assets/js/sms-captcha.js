@@ -37,7 +37,7 @@
             if (check) check.hidden = false;
             if (label) label.textContent = 'Success';
             if (brand) {
-                brand.innerHTML = '<i class="fas fa-check-circle" aria-hidden="true"></i>Verified';
+                brand.innerHTML = (window.smsIconHtml ? window.smsIconHtml('check-circle', '', {'aria-hidden': 'true'}) : '') + 'Verified';
             }
             if (okField) okField.value = '1';
             widget.dispatchEvent(new Event('sms-captcha-ok', { bubbles: true }));

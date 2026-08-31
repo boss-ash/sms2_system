@@ -9,7 +9,7 @@ require_once ROOT_PATH . '/includes/authentication.php';
 requireAuth();
 
 $role = getCurrentUserRoleKey();
-if (in_array($role, ['admin', 'superadmin'], true)) {
+if (smsIsGrantedAdminRole($role)) {
     header('Location: ' . BASE_URL . '/account/profile.php?tab=security');
 } elseif ($role === 'student') {
     header('Location: ' . BASE_URL . '/account/module-security.php?module=student_portal&tab=logs');

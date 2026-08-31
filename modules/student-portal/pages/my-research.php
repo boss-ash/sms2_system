@@ -251,9 +251,7 @@ $overallProgress = (float) $plan['overall_progress'];
                                     <div style="font-weight:700;color:var(--sms-heading);font-size:0.95rem;">
                                         <?= htmlspecialchars($milestone['milestone_name']) ?>
                                     </div>
-                                    <i class="fas <?= $statusInfo['icon'] ?>" 
-                                       style="color:<?= $statusInfo['color'] ?>;font-size:1.1rem;" 
-                                       title="<?= htmlspecialchars($status) ?>"></i>
+                                    <?= smsIcon($statusInfo['icon'], ['style' => 'color:' . $statusInfo['color'] . ';font-size:1.1rem;', 'title' => $status]) ?>
                                 </div>
                                 <div class="progress mb-2" style="height:8px;border-radius:4px;">
                                     <div class="progress-bar" style="width:<?= $progress ?>%;background:<?= $statusInfo['color'] ?>;" 

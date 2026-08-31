@@ -13,7 +13,7 @@ require_once ROOT_PATH . '/includes/authenticator-ui.php';
 require_once ROOT_PATH . '/includes/passkey.php';
 require_once ROOT_PATH . '/includes/security-ui.php';
 requireAuth();
-requireSuperAdmin();
+requireAdminAccountSettings();
 
 smsEnsureSecurityTables();
 smsEnsureAuthenticatorTable();
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($dup->fetch()) {
                 $_SESSION['flash_admin_error'] = 'That email is already used by another account.';
             } else {
-                $pdo->prepare('UPDATE users SET full_name = ?, email = ? WHERE id = ? AND role_key = \'admin\'')
+                $pdo->prepare('UPDATE users SET full_name = ?, email = ? WHERE id = ?')
                     ->execute([$fullName, $email, $userId]);
                 $_SESSION['user_name'] = $fullName;
                 $_SESSION['user_email'] = $email;
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = (string) ($_POST['password'] ?? '');
         $confirm = (string) ($_POST['password_confirm'] ?? '');
 
-        $stmt = $pdo->prepare('SELECT password_hash FROM users WHERE id = ? AND role_key = \'admin\' LIMIT 1');
+        $stmt = $pdo->prepare('SELECT password_hash FROM users WHERE id = ? LIMIT 1');
         $stmt->execute([$userId]);
         $row = $stmt->fetch();
 
@@ -197,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         smsClearCodeGate($userId, $pwPurpose);
         $pdo->prepare(
             'UPDATE users SET password_hash = ?, must_change_password = 0, password_changed_at = NOW(),
-             failed_login_attempts = 0, locked_until = NULL WHERE id = ? AND role_key = \'admin\''
+             failed_login_attempts = 0, locked_until = NULL WHERE id = ?'
         )->execute([$pending['hash'], $userId]);
         unset($_SESSION['pending_admin_pw_change']);
         $_SESSION['must_change_password'] = 0;
@@ -231,7 +231,7 @@ $pdo = db();
 if ($pdo) {
     $stmt = $pdo->prepare(
         'SELECT full_name, username, email, last_login_at, password_changed_at, failed_login_attempts
-         FROM users WHERE id = ? AND role_key = \'admin\' LIMIT 1'
+         FROM users WHERE id = ? LIMIT 1'
     );
     $stmt->execute([$userId]);
     $row = $stmt->fetch();

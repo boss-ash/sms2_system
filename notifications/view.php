@@ -485,7 +485,7 @@ require_once ROOT_PATH . '/includes/layout-start.php';
             <div class="notification-view-head">
                 <div class="notification-view-title">
                     <div class="notification-view-icon">
-                        <i class="fas <?= htmlspecialchars((string) ($notificationViewData['icon'] ?? 'fa-bell')) ?>"></i>
+                        <?= smsIcon((string) ($notificationViewData['icon'] ?? 'bell')) ?>
                     </div>
                     <div>
                         <h1><?= htmlspecialchars((string) ($notificationViewData['title'] ?? 'Notification')) ?></h1>
@@ -515,7 +515,7 @@ require_once ROOT_PATH . '/includes/layout-start.php';
                         <?php foreach ($notificationViewData['actions'] as $action): ?>
                             <a class="notification-view-action <?= htmlspecialchars((string) ($action['class'] ?? 'primary')) ?>"
                                href="<?= htmlspecialchars((string) ($action['url'] ?? '#')) ?>">
-                                <i class="fas <?= htmlspecialchars((string) ($action['icon'] ?? 'fa-arrow-right')) ?>"></i>
+                                <?= smsIcon((string) ($action['icon'] ?? 'arrow-right')) ?>
                                 <?= htmlspecialchars((string) ($action['label'] ?? 'Open')) ?>
                             </a>
                         <?php endforeach; ?>

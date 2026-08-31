@@ -421,7 +421,7 @@ $statusMeta = [
                                             <div class="rm-feedback-item" style="background:<?= $fbc['bg'] ?>;border-left:3px solid <?= $fbc['color'] ?>;">
                                                 <div class="rm-feedback-item-meta">
                                                     <span class="rm-feedback-item-type" style="background:<?= $fbc['color'] ?>;color:#fff;">
-                                                        <i class="fas fa-<?= $fbc['icon'] ?>"></i><?= htmlspecialchars($fb['feedback_type']) ?>
+                                                        <?= smsIcon($fbc['icon']) ?><?= htmlspecialchars($fb['feedback_type']) ?>
                                                     </span>
                                                     <span class="rm-feedback-item-time">
                                                         <?= date('M d, Y g:i A', strtotime($fb['created_at'])) ?>

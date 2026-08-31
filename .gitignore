@@ -25,3 +25,6 @@ desktop.ini
 .idea/
 .vscode/
 *.log
+.git-sync.lock
+.git-sync.log
+.git-sync.pending

@@ -50,8 +50,17 @@
 .glass-chip .ti,
 .academic-notices-icon .ti,
 .dash-period .ti,
-.stat-icon .ti {
+.stat-icon .ti,
+.mpl-stat-icon .ti,
+.rcm-stat-icon .ti,
+.faculty-stat-icon .ti {
     font-size: 1.05rem;
+}
+
+.mpl-stat-icon .ti,
+.rcm-stat-icon .ti,
+.faculty-stat-icon .ti {
+    color: inherit;
 }
 
 .perf-icon .ti {
@@ -76,6 +85,17 @@
 .dropdown-item-text .ti {
     font-size: 0.95em;
     vertical-align: -0.15em;
+    pointer-events: none;
+}
+
+.sms-sec-tabs .nav-link .ti {
+    pointer-events: none;
+}
+
+.sms-sec-tabs .nav-link {
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
 }
 
 .sms-notification-icon .ti {

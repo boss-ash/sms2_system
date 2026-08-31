@@ -37,7 +37,7 @@
                 '<td><span class="badge text-bg-' + escapeHtml(r.status_class) + '">' + escapeHtml(r.status) + '</span></td>' +
                 '<td>' + escapeHtml(r.evaluator || '-') + '</td>' +
                 '<td>' + escapeHtml(r.updated_at) + '</td>' +
-                '<td><a class="btn btn-sm btn-outline-primary" target="_blank" href="' + escapeHtml((root.getAttribute('data-document-base') || '') + encodeURIComponent(r.id)) + '"><i class="fas fa-eye me-1"></i>View</a></td>' +
+                '<td><a class="btn btn-sm btn-outline-primary" target="_blank" href="' + escapeHtml((root.getAttribute('data-document-base') || '') + encodeURIComponent(r.id)) + '">' + (window.smsIconHtml ? window.smsIconHtml('eye', 'me-1') : '') + 'View</a></td>' +
                 '</tr>';
         }).join('');
     }
@@ -55,7 +55,7 @@
                 '<td>' + escapeHtml(r.submitted_by) + '</td>' +
                 '<td>' + escapeHtml(r.submitted_at) + '</td>' +
                 '<td><span class="badge text-bg-' + escapeHtml(r.status_class) + '">' + escapeHtml(r.status) + '</span></td>' +
-                '<td><a class="btn btn-sm btn-sms-primary" href="' + escapeHtml(r.scoring_url) + '"><i class="fas fa-pen me-1"></i>Review</a></td>' +
+                '<td><a class="btn btn-sm btn-sms-primary" href="' + escapeHtml(r.scoring_url) + '">' + (window.smsIconHtml ? window.smsIconHtml('pen', 'me-1') : '') + 'Review</a></td>' +
                 '</tr>';
         }).join('');
     }

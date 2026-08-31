@@ -492,7 +492,7 @@ if ($rcPageSlug === 'send-notifications') {
                     <td>${esc(row.updated || '')}</td>
                     <td>
                         <button type="button" class="rcsn-action" data-rcsn-send="${esc(row.group_number || '')}" ${row.can_send ? '' : 'disabled'}>
-                            <i class="fas ${row.is_sent ? 'fa-check' : 'fa-paper-plane'}"></i>${row.is_sent ? 'Sent' : 'Send Notification'}
+                            ${window.smsIconHtml ? window.smsIconHtml(row.is_sent ? 'check' : 'paper-plane') : ''}${row.is_sent ? 'Sent' : 'Send Notification'}
                         </button>
                     </td>
                 </tr>

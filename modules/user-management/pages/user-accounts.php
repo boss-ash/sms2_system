@@ -223,7 +223,7 @@ $archiveUrl  = $accountsUrl . '?view=archive';
 $currentUserId = (int) getCurrentUserId();
 ?>
 
-<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=research-grant-role-1" rel="stylesheet">
+<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=um-icons-1" rel="stylesheet">
 <meta name="csrf-token" content="<?= e($csrf) ?>">
 
 <?php
@@ -351,10 +351,10 @@ renderBreadcrumbs($breadcrumbs);
                         <tr>
                             <td colspan="7" class="text-center py-5 text-muted">
                                 <?php if ($isArchiveView): ?>
-                                    <?= smsIcon('archive', ['class' => 'fa-2x mb-2 d-block opacity-50']) ?>
+                                    <?= smsIcon('archive', ['class' => 'um-empty-icon mb-2 d-block opacity-50']) ?>
                                     Archive is empty. Archived users from User Accounts will appear here.
                                 <?php else: ?>
-                                    <?= smsIcon('users', ['class' => 'fa-2x mb-2 d-block opacity-50']) ?>
+                                    <?= smsIcon('users', ['class' => 'um-empty-icon mb-2 d-block opacity-50']) ?>
                                     No active users yet.
                                 <?php endif; ?>
                             </td>
@@ -466,7 +466,7 @@ renderBreadcrumbs($breadcrumbs);
             </table>
             <tr id="umNoResults" style="display:none;">
                 <td colspan="7" class="text-center py-5 text-muted sms-table-empty">
-                    <?= smsIcon('search-minus', ['class' => 'fa-2x mb-2 d-block opacity-50']) ?>No users match your filters.
+                    <?= smsIcon('search-minus', ['class' => 'um-empty-icon mb-2 d-block opacity-50']) ?>No users match your filters.
                 </td>
             </tr>
         </div>

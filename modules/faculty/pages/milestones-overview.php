@@ -192,7 +192,7 @@ $statusMeta = [
                                 <!-- Status pill -->
                                 <div class="mb-3">
                                     <span class="rm-status-pill" style="background:<?= $sc['bg'] ?>;color:<?= $sc['color'] ?>;" data-milestone-status>
-                                        <i class="fas fa-<?= $sc['icon'] ?>"></i>
+                                        <?= smsIcon($sc['icon']) ?>
                                         <?= htmlspecialchars($status) ?>
                                     </span>
                                 </div>

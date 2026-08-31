@@ -761,7 +761,12 @@ function renderFacultyAccountPage(string $title, string $activePage, string $mod
     ?>
     <style>
         .faculty-account-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
-        .faculty-stat { border:1px solid var(--sms-border); border-radius:8px; background:var(--sms-card-bg); padding:1rem; }
+        .faculty-stat { display:flex; align-items:center; gap:.85rem; border:1px solid var(--sms-border); border-radius:12px; background:var(--sms-card-bg); padding:.95rem 1rem; }
+        .faculty-stat-icon { width:42px; height:42px; flex:0 0 auto; display:grid; place-items:center; border-radius:12px; font-size:1rem; }
+        .faculty-stat-icon.blue { color:#2563eb; background:rgba(37,99,235,0.12); }
+        .faculty-stat-icon.green { color:#059669; background:rgba(16,185,129,0.12); }
+        .faculty-stat-icon.amber { color:#d97706; background:rgba(245,158,11,0.14); }
+        .faculty-stat-icon.purple { color:#7c3aed; background:rgba(139,92,246,0.12); }
         .faculty-stat span { display:block; color:var(--sms-text-muted); font-size:.72rem; font-weight:800; text-transform:uppercase; }
         .faculty-stat strong { display:block; color:var(--sms-text); font-size:1.45rem; line-height:1.2; }
         .faculty-research-list { display:grid; gap:.85rem; }
@@ -803,10 +808,10 @@ function renderFacultyAccountPage(string $title, string $activePage, string $mod
     <?php endif; ?>
 
     <div class="faculty-account-grid">
-        <section class="faculty-stat"><span>Total Records</span><strong><?= count($assignments) ?></strong></section>
-        <section class="faculty-stat"><span>Assigned</span><strong><?= count($assigned) ?></strong></section>
-        <section class="faculty-stat"><span>Pending</span><strong><?= $pending ?></strong></section>
-        <section class="faculty-stat"><span>Availability</span><strong class="<?= $availabilityCardClass ?>"><?= htmlspecialchars($primaryAvailability) ?></strong></section>
+        <section class="faculty-stat"><div class="faculty-stat-icon blue"><?= smsIcon('folder-open') ?></div><div><span>Total Records</span><strong><?= count($assignments) ?></strong></div></section>
+        <section class="faculty-stat"><div class="faculty-stat-icon green"><?= smsIcon('user-check') ?></div><div><span>Assigned</span><strong><?= count($assigned) ?></strong></div></section>
+        <section class="faculty-stat"><div class="faculty-stat-icon amber"><?= smsIcon('clock') ?></div><div><span>Pending</span><strong><?= $pending ?></strong></div></section>
+        <section class="faculty-stat"><div class="faculty-stat-icon purple"><?= smsIcon('toggle-on') ?></div><div><span>Availability</span><strong class="<?= $availabilityCardClass ?>"><?= htmlspecialchars($primaryAvailability) ?></strong></div></section>
     </div>
 
     <?php if ($mode === 'profile'): ?>

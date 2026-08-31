@@ -452,7 +452,7 @@
                             pendingCell.innerHTML =
                                 '<a class="badge bg-warning text-dark text-decoration-none" ' +
                                 'style="font-size:0.75rem;padding:0.3rem 0.6rem;" href="' + href + '">' +
-                                '<i class="fas fa-clock me-1"></i>' + pend + '</a>';
+                                (window.smsIconHtml ? window.smsIconHtml('clock', 'me-1') : '') + pend + '</a>';
                         } else {
                             pendingCell.innerHTML = '<span class="text-muted" style="font-size:0.85rem;">-</span>';
                         }
@@ -520,7 +520,7 @@
                 const esc = self.escapeHtml;
                 const milestoneRow = u.milestone_name
                     ? '<div style="font-size:0.75rem;color:var(--sms-text-muted);font-weight:600;margin-bottom:0.3rem;">' +
-                      '<i class="fas fa-bookmark me-1"></i>' + esc(u.milestone_name) + '</div>'
+                      (window.smsIconHtml ? window.smsIconHtml('bookmark', 'me-1') : '') + esc(u.milestone_name) + '</div>'
                     : '';
                 return '<div style="padding-bottom:0.85rem;border-bottom:1px solid var(--sms-border-soft);">' +
                     '<div class="d-flex align-items-start justify-content-between gap-2 mb-1">' +
@@ -529,7 +529,7 @@
                     '<div style="font-size:1.1rem;font-weight:800;color:' + sc.color + ';flex-shrink:0;">' + pct + '%</div>' +
                     '</div>' + milestoneRow +
                     '<div class="d-flex align-items-center justify-content-between gap-2">' +
-                    '<div style="font-size:0.7rem;color:var(--sms-text-muted);"><i class="fas fa-clock me-1"></i>' +
+                    '<div style="font-size:0.7rem;color:var(--sms-text-muted);">' + (window.smsIconHtml ? window.smsIconHtml('clock', 'me-1') : '') +
                     esc(self.formatRpDate(u.submitted_at)) + '</div>' +
                     '<span class="rm-status-pill" style="background:' + sc.bg + ';color:' + sc.color +
                     ';font-size:0.65rem;padding:0.18rem 0.55rem;">' + esc(st) + '</span>' +
@@ -537,7 +537,7 @@
                     '<div class="mt-2"><a href="' + self.resolveBaseUrl() + 'modules/faculty/pages/submitted-updates.php?group=' +
                     gnum + '&update_id=' + encodeURIComponent(u.id) +
                     '" style="font-size:0.78rem;font-weight:700;color:var(--sms-primary);text-decoration:none;">' +
-                    '<i class="fas fa-eye me-1"></i>Review →</a></div>' +
+                    (window.smsIconHtml ? window.smsIconHtml('eye', 'me-1') : '') + 'Review →</a></div>' +
                     '</div>';
             });
             if (!items.length) { return; }
@@ -756,7 +756,7 @@
             // â”€â”€ Legacy fallback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             const legacy = document.querySelector('[data-last-refresh]');
             if (legacy) {
-                legacy.innerHTML = `<i class="fas fa-sync-alt me-1"></i>Last updated: ${timeStr}`;
+                legacy.innerHTML = (window.smsIconHtml ? window.smsIconHtml('sync-alt', 'me-1') : '') + 'Last updated: ' + timeStr;
                 legacy.classList.add('text-success');
                 setTimeout(() => legacy.classList.remove('text-success'), 1200);
             }
@@ -804,7 +804,7 @@
                 if (errorContainer) {
                     errorContainer.innerHTML = `
                         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ${window.smsIconHtml ? window.smsIconHtml('exclamation-triangle', 'me-2') : ''}
                             Live updates temporarily unavailable. <a href="#" onclick="location.reload()">Refresh page</a> to retry.
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>

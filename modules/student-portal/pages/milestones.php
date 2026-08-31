@@ -168,7 +168,7 @@ $overallProgress = (float) $plan['overall_progress'];
                                 <div style="flex:1;">
                                     <div class="d-flex align-items-center mb-2">
                                         <div style="width:32px;height:32px;border-radius:8px;background:<?= $config['bg'] ?>;display:flex;align-items:center;justify-content:center;margin-right:12px;">
-                                            <i class="fas <?= $config['icon'] ?>" style="color:<?= $config['color'] ?>;font-size:1rem;"></i>
+                                            <?= smsIcon($config['icon'], ['style' => 'color:' . $config['color'] . ';font-size:1rem;']) ?>
                                         </div>
                                         <div>
                                             <h6 class="mb-0" style="font-weight:800;color:var(--sms-heading);">

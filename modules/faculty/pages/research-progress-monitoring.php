@@ -267,7 +267,7 @@ $progressColor = $overallProgress >= 80 ? '#10b981' : ($overallProgress >= 40 ? 
                                         </td>
                                         <td>
                                             <span class="rm-status-pill" style="background:<?= $sc['bg'] ?>;color:<?= $sc['color'] ?>;" data-milestone-status>
-                                                <i class="fas fa-<?= $sc['icon'] ?>"></i>
+                                                <?= smsIcon($sc['icon']) ?>
                                                 <?= htmlspecialchars($m['status']) ?>
                                             </span>
                                         </td>

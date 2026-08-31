@@ -205,7 +205,7 @@ $defenseDate = !empty($group['defense_datetime'])
                             <!-- Remarks -->
                             <div class="mb-2">
                                 <div class="rm-section-block-label" style="color:var(--sms-heading);font-weight:700;">
-                                    <i class="fas fa-<?= $resultIcon ?> me-1"></i>Remarks
+                                    <?= smsIcon($resultIcon, ['class' => 'me-1']) ?>Remarks
                                 </div>
                                 <div class="rm-remarks-box">
                                     <?php if (!empty($panel['remarks'])): ?>

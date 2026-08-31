@@ -28,7 +28,7 @@ smsEnsureSecurityTables();
 smsEnsureAuthenticatorTable();
 
 // Super Admin: security lives only under User Management → Module Security
-if (in_array(getCurrentUserRoleKey(), ['admin', 'superadmin'], true)) {
+if (smsIsGrantedAdminRole(getCurrentUserRoleKey())) {
     $mod = (string) ($_GET['focus'] ?? $_GET['sec_mod'] ?? $_GET['mod'] ?? $_GET['module'] ?? $_GET['m'] ?? '');
     if ($mod === 'student-portal') {
         $mod = 'student_portal';

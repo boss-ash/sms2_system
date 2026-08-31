@@ -2420,7 +2420,7 @@ renderBreadcrumbs($breadcrumbs);
                     <div class="director-verify-grid">
                         <?php foreach ($checks as $label => $isOk): ?>
                             <span class="director-check <?= $isOk ? 'is-ok' : 'is-missing' ?>">
-                                <i class="fas <?= $isOk ? 'fa-check' : 'fa-times' ?>" aria-hidden="true"></i>
+                                <?= smsIcon($isOk ? 'check' : 'times', ['aria-hidden' => 'true']) ?>
                                 <?= htmlspecialchars($label) ?>
                             </span>
                         <?php endforeach; ?>
@@ -2638,7 +2638,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return labels.map(function (item) {
             const ok = checks && checks[item[0]] === true;
             return '<span class="director-check ' + (ok ? 'is-ok' : 'is-missing') + '">' +
-                '<i class="fas ' + (ok ? 'fa-check' : 'fa-times') + '" aria-hidden="true"></i>' +
+                (window.smsIconHtml ? window.smsIconHtml(ok ? 'check' : 'times', '', {'aria-hidden': 'true'}) : '') +
                 esc(item[1]) +
             '</span>';
         }).join('');

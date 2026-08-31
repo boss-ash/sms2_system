@@ -302,6 +302,19 @@ function requireSuperAdmin(): void
     }
 }
 
+/**
+ * Admin personal account settings (profile + login security).
+ * Available to Super Admin and operational Admin (sms_admin) — not tied to user-management module.
+ */
+function requireAdminAccountSettings(): void
+{
+    requireAuth();
+    if (!smsIsGrantedAdminRole(getCurrentUserRoleKey())) {
+        header('Location: ' . BASE_URL . '/dashboard/index.php');
+        exit;
+    }
+}
+
 function getVisibleModules(array $modules): array
 {
     $allowedModules = getAllowedModuleKeys();

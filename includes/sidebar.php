@@ -430,34 +430,15 @@ $researchDirectorNavGroups = [
 
             <?php else: ?>
                 <?php $dashboardActive = ($activeModule === 'dashboard'); ?>
-                <li class="nav-item admin-module-item">
-                    <button type="button"
-                            class="nav-link sidebar-parent admin-module-toggle <?= $dashboardActive ? 'active' : '' ?>"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#navGrp_dashboard"
-                            aria-expanded="<?= $dashboardActive ? 'true' : 'false' ?>"
-                            aria-controls="navGrp_dashboard"
-                            data-overview-url="<?= BASE_URL ?>/dashboard/index.php"
-                            data-title="Dashboard"
-                            title="Dashboard">
+                <li class="nav-item">
+                    <a class="nav-link <?= $dashboardActive ? 'active' : '' ?>"
+                       href="<?= BASE_URL ?>/dashboard/index.php"
+                       data-overview-url="<?= BASE_URL ?>/dashboard/index.php"
+                       data-title="Dashboard"
+                       title="Dashboard">
                         <?= smsIcon('layout-grid', ['aria-hidden' => 'true']) ?>
                         <span>Dashboard</span>
-                                                <?= smsIcon('chevron-down', ['class' => 'sidebar-chevron ms-auto', 'aria-hidden' => 'true']) ?>
-                    </button>
-                    <div class="collapse admin-module-body sidebar-submenu <?= $dashboardActive ? 'show' : '' ?>"
-                         id="navGrp_dashboard">
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a class="nav-link sidebar-sub overview-link <?= $dashboardActive ? 'active' : '' ?>"
-                                   href="<?= BASE_URL ?>/dashboard/index.php"
-                                   data-title="Overview"
-                                   title="Overview">
-                                    <?= smsIcon('layout-grid', ['aria-hidden' => 'true']) ?>
-                                    <span>Overview</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    </a>
                 </li>
 
                 <?php foreach ($visibleModules as $navModuleKey => $module): ?>

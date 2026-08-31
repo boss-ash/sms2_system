@@ -647,7 +647,7 @@ $officialAssignmentStats = cradOfficialAssignmentStats($officialAssignmentRecord
                         <td>Not required</td>
                         <td>
                             <a class="official-assignment-record__action <?= $isRecorded ? 'is-recorded' : '' ?>" href="<?= htmlspecialchars($recordUrl) ?>">
-                                <i class="fas <?= $isRecorded ? 'fa-check-circle' : 'fa-calendar-check' ?>"></i>
+                                <?= smsIcon($isRecorded ? 'check-circle' : 'calendar-check') ?>
                                 Record
                             </a>
                         </td>
@@ -741,7 +741,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<td>' + esc(row.adviser || 'For assignment') + '</td>' +
                 '<td>Not required</td>' +
                 '<td><a class="official-assignment-record__action ' + (isRecorded ? 'is-recorded' : '') + '" href="' + esc(recordUrl(row)) + '">' +
-                    '<i class="fas ' + (isRecorded ? 'fa-check-circle' : 'fa-calendar-check') + '"></i> Record' +
+                    (window.smsIconHtml ? window.smsIconHtml(isRecorded ? 'check-circle' : 'calendar-check') : '') + ' Record' +
                 '</a></td>' +
             '</tr>';
         }).join('');

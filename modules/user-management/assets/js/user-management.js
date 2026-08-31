@@ -129,7 +129,9 @@
         var icons = { danger:'fa-trash-alt', warning:'fa-exclamation-triangle', info:'fa-sign-out-alt', primary:'fa-save' };
         if (iconWrap) {
             iconWrap.className = 'sms-confirm-icon um-confirm-icon sms-confirm-icon--' + type + ' um-confirm-icon--' + type;
-            iconWrap.innerHTML = '<i class="fas ' + (icons[type] || 'fa-question-circle') + '"></i>';
+            iconWrap.innerHTML = window.smsIconHtml
+                ? window.smsIconHtml((icons[type] || 'question-circle').replace(/^fa-/, ''))
+                : '';
         }
         if (okBtn) {
             okBtn.className = 'btn sms-confirm-ok um-confirm-ok sms-confirm-ok--' + type + ' um-confirm-ok--' + type;
@@ -392,7 +394,7 @@
 
         var html = '<div id="' + id + '" class="toast align-items-center text-bg-' + type + ' border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">'
             + '<div class="d-flex"><div class="toast-body d-flex align-items-center gap-2">'
-            + '<i class="fas ' + icon + '"></i> ' + message
+            + (window.smsIconHtml ? window.smsIconHtml(icon.replace(/^fa-/, '')) : '') + ' ' + message
             + '</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>'
             + '</div></div>';
 

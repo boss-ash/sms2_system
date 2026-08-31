@@ -374,10 +374,33 @@
     box-shadow: var(--sms-shadow-xs);
     transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
 }
-.um-archive-btn i {
+.um-archive-btn i,
+.um-archive-btn .ti {
     font-size: 0.9rem;
     opacity: 0.95;
 }
+
+/* Table action icons (Edit / Archive / Restore / Delete) */
+.submodule-table .btn .ti {
+    display: inline-block;
+    font-size: 0.82rem;
+    line-height: 1;
+    vertical-align: -0.08em;
+}
+
+.submodule-table .btn-sm {
+    min-width: 2rem;
+    min-height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.um-empty-icon.ti {
+    font-size: 2rem;
+    opacity: 0.5;
+}
+
 .um-archive-btn:hover {
     color: color-mix(in srgb, var(--sms-warning) 85%, var(--sms-heading));
     border-color: color-mix(in srgb, var(--sms-warning) 55%, var(--sms-border));

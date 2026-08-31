@@ -145,7 +145,7 @@ foreach ($feedbackList as $feedback) {
                                 <!-- Timeline Icon -->
                                 <div class="col-auto">
                                     <div style="width:48px;height:48px;border-radius:12px;background:<?= $config['bg'] ?>;display:flex;align-items:center;justify-content:center;">
-                                        <i class="fas <?= $config['icon'] ?>" style="color:<?= $config['color'] ?>;font-size:1.2rem;"></i>
+                                        <?= smsIcon($config['icon'], ['style' => 'color:' . $config['color'] . ';font-size:1.2rem;']) ?>
                                     </div>
                                 </div>
                                 

@@ -466,7 +466,7 @@ require_once ROOT_PATH . '/includes/layout-start.php';
                     data-agenda="<?= htmlspecialchars($submittedAgenda) ?>"
                     data-justification="<?= htmlspecialchars($submittedJustification) ?>"
                 >
-                    <span class="crad-btn-send-icon"><i class="fas <?= $alreadySentToAdviser ? 'fa-check' : 'fa-paper-plane' ?>"></i></span>
+                    <span class="crad-btn-send-icon"><?= smsIcon($alreadySentToAdviser ? 'check' : 'paper-plane') ?></span>
                     <span class="crad-btn-send-text"><?= $alreadySentToAdviser ? 'Document Packet Sent' : ($isResubmitMode ? 'Resubmit to Adviser' : 'Send to Adviser') ?></span>
                 </button>
             </div>

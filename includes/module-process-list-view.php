@@ -133,7 +133,7 @@ $statusClass = static function (string $class, string $status): string {
                 ?>
                 <article class="mpl-stat">
                     <div class="mpl-stat-icon <?= htmlspecialchars($toneClass) ?>">
-                        <i class="fas <?= htmlspecialchars($stat['icon'] ?? 'fa-circle') ?>"></i>
+                        <?= smsIcon((string) ($stat['icon'] ?? 'circle')) ?>
                     </div>
                     <div>
                         <span><?= htmlspecialchars($stat['label'] ?? '') ?></span>

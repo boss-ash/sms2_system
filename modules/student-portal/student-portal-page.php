@@ -220,33 +220,45 @@ require_once __DIR__ . '/../../includes/layout-start.php';
         <div class="row g-3 mb-3 dashboard-stats">
             <div class="col-md-3">
                 <section class="card stat-card primary">
-                    <div class="card-body">
-                        <h6 class="text-muted">Enrollment Status</h6>
-                        <h4 class="fw-bold mb-0">Enrolled</h4>
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon me-3"><?= smsIcon('user-check') ?></div>
+                        <div>
+                            <h6 class="text-muted">Enrollment Status</h6>
+                            <h4 class="fw-bold mb-0">Enrolled</h4>
+                        </div>
                     </div>
                 </section>
             </div>
             <div class="col-md-3">
                 <section class="card stat-card success">
-                    <div class="card-body">
-                        <h6 class="text-muted">Current GWA</h6>
-                        <h4 class="fw-bold mb-0">1.75</h4>
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon me-3"><?= smsIcon('star') ?></div>
+                        <div>
+                            <h6 class="text-muted">Current GWA</h6>
+                            <h4 class="fw-bold mb-0">1.75</h4>
+                        </div>
                     </div>
                 </section>
             </div>
             <div class="col-md-3">
                 <section class="card stat-card warning">
-                    <div class="card-body">
-                        <h6 class="text-muted">Balance</h6>
-                        <h4 class="fw-bold mb-0">PHP 8,450.00</h4>
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon me-3"><?= smsIcon('wallet') ?></div>
+                        <div>
+                            <h6 class="text-muted">Balance</h6>
+                            <h4 class="fw-bold mb-0">PHP 8,450.00</h4>
+                        </div>
                     </div>
                 </section>
             </div>
             <div class="col-md-3">
                 <section class="card stat-card info">
-                    <div class="card-body">
-                        <h6 class="text-muted">Current Status</h6>
-                        <h4 class="fw-bold mb-0 fs-6"><?= htmlspecialchars($researchCurrentStatus) ?></h4>
+                    <div class="card-body d-flex align-items-center">
+                        <div class="stat-icon me-3"><?= smsIcon('flask') ?></div>
+                        <div>
+                            <h6 class="text-muted">Current Status</h6>
+                            <h4 class="fw-bold mb-0 fs-6"><?= htmlspecialchars($researchCurrentStatus) ?></h4>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -359,13 +371,13 @@ require_once __DIR__ . '/../../includes/layout-start.php';
     <?php elseif ($studentPortalPage === 'account-balance'): ?>
         <div class="row g-3 mb-3 dashboard-stats">
             <div class="col-md-4">
-                <section class="card stat-card warning"><div class="card-body"><h6 class="text-muted">Total Assessment</h6><h4 class="fw-bold mb-0">PHP 24,950.00</h4></div></section>
+                <section class="card stat-card warning"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('file-invoice-dollar') ?></div><div><h6 class="text-muted">Total Assessment</h6><h4 class="fw-bold mb-0">PHP 24,950.00</h4></div></div></section>
             </div>
             <div class="col-md-4">
-                <section class="card stat-card success"><div class="card-body"><h6 class="text-muted">Total Paid</h6><h4 class="fw-bold mb-0">PHP 16,500.00</h4></div></section>
+                <section class="card stat-card success"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('check-circle') ?></div><div><h6 class="text-muted">Total Paid</h6><h4 class="fw-bold mb-0">PHP 16,500.00</h4></div></div></section>
             </div>
             <div class="col-md-4">
-                <section class="card stat-card primary"><div class="card-body"><h6 class="text-muted">Balance</h6><h4 class="fw-bold mb-0">PHP 8,450.00</h4></div></section>
+                <section class="card stat-card primary"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('wallet') ?></div><div><h6 class="text-muted">Balance</h6><h4 class="fw-bold mb-0">PHP 8,450.00</h4></div></div></section>
             </div>
         </div>
         <section class="card">
@@ -492,16 +504,16 @@ require_once __DIR__ . '/../../includes/layout-start.php';
     <?php elseif ($studentPortalPage === 'grades-portal'): ?>
         <div class="row g-3 mb-3 dashboard-stats">
             <div class="col-md-3">
-                <section class="card stat-card primary"><div class="card-body"><h6 class="text-muted">Current GWA</h6><h4 class="fw-bold mb-0">1.75</h4></div></section>
+                <section class="card stat-card primary"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('star') ?></div><div><h6 class="text-muted">Current GWA</h6><h4 class="fw-bold mb-0">1.75</h4></div></div></section>
             </div>
             <div class="col-md-3">
-                <section class="card stat-card success"><div class="card-body"><h6 class="text-muted">Passed Subjects</h6><h4 class="fw-bold mb-0">18</h4></div></section>
+                <section class="card stat-card success"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('check-circle') ?></div><div><h6 class="text-muted">Passed Subjects</h6><h4 class="fw-bold mb-0">18</h4></div></div></section>
             </div>
             <div class="col-md-3">
-                <section class="card stat-card warning"><div class="card-body"><h6 class="text-muted">Current Subjects</h6><h4 class="fw-bold mb-0">6</h4></div></section>
+                <section class="card stat-card warning"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('book-open') ?></div><div><h6 class="text-muted">Current Subjects</h6><h4 class="fw-bold mb-0">6</h4></div></div></section>
             </div>
             <div class="col-md-3">
-                <section class="card stat-card info"><div class="card-body"><h6 class="text-muted">Total Units Earned</h6><h4 class="fw-bold mb-0">54</h4></div></section>
+                <section class="card stat-card info"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('graduation-cap') ?></div><div><h6 class="text-muted">Total Units Earned</h6><h4 class="fw-bold mb-0">54</h4></div></div></section>
             </div>
         </div>
         <section class="card mb-3">

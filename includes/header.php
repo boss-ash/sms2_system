@@ -64,7 +64,7 @@ if ($isCradPage && strpos(' ' . $bodyClass . ' ', ' crad-app ') === false) {
     <!-- Local vendor assets (offline-safe; no CDN DNS required) -->
     <link href="<?= BASE_URL ?>/assets/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/vendor/tabler-icons/tabler-icons.min.css" rel="stylesheet">
-    <link href="<?= BASE_URL ?>/assets/css/icons.css?v=3" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/icons.css?v=4" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/vendor/fonts/inter.css" rel="stylesheet">
     <script src="<?= BASE_URL ?>/assets/vendor/chartjs/chart.umd.min.js"></script>
     <script>

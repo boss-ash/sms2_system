@@ -98,7 +98,7 @@ renderBreadcrumbs($breadcrumbs);
                                 &middot; Panel: <?= (int) $group['awr_count'] ?>/<?= (int) $group['assigned_panel_count'] ?> revisions
                             </div>
                             <div class="alert <?= !empty($group['revision_submitted']) ? 'alert-info' : 'alert-warning' ?> py-2 small">
-                                <i class="fas <?= !empty($group['revision_submitted']) ? 'fa-file-check' : 'fa-hourglass-half' ?> me-1"></i>
+                                <?= smsIcon(!empty($group['revision_submitted']) ? 'file-check' : 'hourglass-half', ['class' => 'me-1']) ?>
                                 <?php if (!empty($group['revision_submitted'])): ?>
                                     Revision submitted: <?= htmlspecialchars((string) ($group['revision_update_title'] ?: 'Progress update')) ?>
                                     <?php if (!empty($group['revision_submitted_at'])): ?> on <?= htmlspecialchars(date('M j, Y g:i A', strtotime((string) $group['revision_submitted_at']))) ?><?php endif; ?>.

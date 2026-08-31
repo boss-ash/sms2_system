@@ -530,7 +530,7 @@ function smsRenderCurrentAssignmentNotificationPanel(): void
     <section class="sms-assignment-notification" aria-label="Assignment notification details">
         <div class="sms-assignment-notification__head">
             <div class="sms-assignment-notification__title">
-                <i class="fas <?= $escape($notification['icon'] ?: 'fa-user-check') ?>"></i>
+                <?= smsIcon($notification['icon'] ?: 'user-check') ?>
                 <span>Status Dashboard: <?= $escape($notification['title'] ?: 'Assignment Notification') ?></span>
             </div>
             <time class="sms-assignment-notification__time"><?= $escape(date('M j, Y h:i A', $created)) ?></time>

@@ -665,7 +665,7 @@ renderBreadcrumbs($breadcrumbs);
         <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
             <div>
                 <h1>
-                    <i class="fas <?= e($moduleOptions[$moduleKey]['icon'] ?? 'fa-shield-alt') ?> text-sms-primary me-2"></i>
+                    <?= smsIcon($moduleOptions[$moduleKey]['icon'] ?? 'shield-alt', ['class' => 'text-sms-primary me-2']) ?>
                     <?= e($moduleLabel) ?> Security Settings
                 </h1>
                 <p class="mb-0">

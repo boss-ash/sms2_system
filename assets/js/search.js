@@ -135,7 +135,7 @@
 
                 var iconDiv = document.createElement('div');
                 iconDiv.className = 'search-result-icon';
-                iconDiv.innerHTML = '<i class="fas ' + esc(s.icon) + '"></i>';
+                iconDiv.innerHTML = window.smsIconHtml ? window.smsIconHtml(s.icon) : '<i class="ti ti-layout-grid"></i>';
 
                 var textDiv = document.createElement('div');
                 textDiv.className = 'search-result-text';

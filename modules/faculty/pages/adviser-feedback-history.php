@@ -202,7 +202,7 @@ $typeMeta = [
                             <div class="rm-timeline-item">
                                 <!-- Dot -->
                                 <div class="rm-timeline-dot" style="background:<?= $tc['color'] ?>;">
-                                    <i class="fas fa-<?= $tc['icon'] ?>"></i>
+                                    <?= smsIcon($tc['icon']) ?>
                                 </div>
                                 <!-- Card -->
                                 <div class="rm-timeline-content">
@@ -212,7 +212,7 @@ $typeMeta = [
                                                 <!-- Type badge + milestone -->
                                                 <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                                                     <span class="rm-feedback-item-type" style="background:<?= $tc['color'] ?>;color:#fff;">
-                                                        <i class="fas fa-<?= $tc['icon'] ?>"></i><?= htmlspecialchars($fb['feedback_type']) ?>
+                                                        <?= smsIcon($tc['icon']) ?><?= htmlspecialchars($fb['feedback_type']) ?>
                                                     </span>
                                                     <?php if ($fb['milestone_name']): ?>
                                                         <span class="badge bg-secondary" style="font-size:0.7rem;font-weight:700;">

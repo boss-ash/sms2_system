@@ -83,10 +83,10 @@ function renderPanelProfilePage(string $mode): void
             </section>
         <?php else: ?>
             <div class="row g-3 mb-4 dashboard-stats">
-                <div class="col-6 col-xl-3"><section class="card stat-card primary"><div class="card-body"><span>Total Records</span><h3>1</h3></div></section></div>
-                <div class="col-6 col-xl-3"><section class="card stat-card success"><div class="card-body"><span>Assigned</span><h3><?= $status === 'Available' ? '1' : '0' ?></h3></div></section></div>
-                <div class="col-6 col-xl-3"><section class="card stat-card warning"><div class="card-body"><span>Pending</span><h3><?= $status === 'Pending' ? '1' : '0' ?></h3></div></section></div>
-                <div class="col-6 col-xl-3"><section class="card stat-card info"><div class="card-body"><span>Availability</span><h3><?= e($status) ?></h3></div></section></div>
+                <div class="col-6 col-xl-3"><section class="card stat-card primary"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('folder-open') ?></div><div><span class="text-muted small d-block">Total Records</span><h3 class="mb-0">1</h3></div></div></section></div>
+                <div class="col-6 col-xl-3"><section class="card stat-card success"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('user-check') ?></div><div><span class="text-muted small d-block">Assigned</span><h3 class="mb-0"><?= $status === 'Available' ? '1' : '0' ?></h3></div></div></section></div>
+                <div class="col-6 col-xl-3"><section class="card stat-card warning"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('clock') ?></div><div><span class="text-muted small d-block">Pending</span><h3 class="mb-0"><?= $status === 'Pending' ? '1' : '0' ?></h3></div></div></section></div>
+                <div class="col-6 col-xl-3"><section class="card stat-card info"><div class="card-body d-flex align-items-center"><div class="stat-icon me-3"><?= smsIcon('toggle-on') ?></div><div><span class="text-muted small d-block">Availability</span><h3 class="mb-0"><?= e($status) ?></h3></div></div></section></div>
             </div>
             <section class="glass-panel p-4">
                 <h5 class="mb-3"><?= smsIcon('user-check', ['class' => 'me-2 text-primary']) ?>Availability Control</h5>

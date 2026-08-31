@@ -5,7 +5,7 @@
 ?>
 <!-- Bootstrap JS (local) -->
 <script src="<?= BASE_URL ?>/assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
-<script src="<?= BASE_URL ?>/assets/js/sms-icons.js?v=1"></script>
+<script src="<?= BASE_URL ?>/assets/js/sms-icons.js?v=2"></script>
 <!-- SMS 2 App -->
 <?php if (empty($omitThemeJs)): ?>
 <script src="<?= BASE_URL ?>/assets/js/theme.js"></script>
@@ -17,7 +17,7 @@
 <script src="<?= BASE_URL ?>/assets/js/sms-confirm.js?v=1"></script>
 <script src="<?= BASE_URL ?>/assets/js/sms-security-ui.js?v=6"></script>
 <!-- Global Search -->
-<script src="<?= BASE_URL ?>/assets/js/search.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/search.js?v=2"></script>
 <?php endif; ?>
 
 <?php 

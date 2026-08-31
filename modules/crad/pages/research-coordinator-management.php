@@ -798,7 +798,7 @@ $csrf     = csrfToken();
 
 <?php if (!empty($payload['message'])): ?>
 <div class="rcm-alert rcm-alert-<?= $payload['ok'] ? 'success' : 'danger' ?>" role="alert">
-    <i class="fas <?= $payload['ok'] ? 'fa-check-circle' : 'fa-exclamation-circle' ?>"></i>
+    <?= smsIcon($payload['ok'] ? 'check-circle' : 'exclamation-circle') ?>
     <span><?= htmlspecialchars($payload['message']) ?></span>
 </div>
 <?php endif; ?>
@@ -1270,7 +1270,7 @@ $csrf     = csrfToken();
                             </td>
                             <td>
                                 <span class="rcm-pill rcm-pill-<?= $a['status'] === 'Active' ? 'active' : 'inactive' ?>">
-                                    <i class="fas <?= $a['status'] === 'Active' ? 'fa-check-circle' : 'fa-minus-circle' ?>"></i>
+                                    <?= smsIcon($a['status'] === 'Active' ? 'check-circle' : 'minus-circle') ?>
                                     <?= htmlspecialchars($a['status']) ?>
                                 </span>
                             </td>
@@ -1281,7 +1281,7 @@ $csrf     = csrfToken();
                                     <div class="rcm-menu" role="menu">
                                         <button type="button" class="rcm-menu-item" data-menu="view" data-type="assignment" data-id="<?= (int) $a['id'] ?>"><?= smsIcon('eye') ?> View Details</button>
                                         <button type="button" class="rcm-menu-item" data-menu="reassign" data-group="<?= htmlspecialchars($a['group_number'], ENT_QUOTES) ?>" data-coordinator="<?= htmlspecialchars($a['coordinator_name'], ENT_QUOTES) ?>"><?= smsIcon('user-cog') ?> Reassign Coordinator</button>
-                                        <button type="button" class="rcm-menu-item<?= $a['status'] === 'Active' ? ' danger' : '' ?>" data-menu="toggle" data-id="<?= (int) $a['id'] ?>" data-status="<?= $a['status'] === 'Active' ? 'Inactive' : 'Active' ?>"><i class="fas <?= $a['status'] === 'Active' ? 'fa-pause' : 'fa-play' ?>"></i> <?= $a['status'] === 'Active' ? 'Deactivate Assignment' : 'Reactivate Assignment' ?></button>
+                                        <button type="button" class="rcm-menu-item<?= $a['status'] === 'Active' ? ' danger' : '' ?>" data-menu="toggle" data-id="<?= (int) $a['id'] ?>" data-status="<?= $a['status'] === 'Active' ? 'Inactive' : 'Active' ?>"><?= smsIcon($a['status'] === 'Active' ? 'pause' : 'play') ?> <?= $a['status'] === 'Active' ? 'Deactivate Assignment' : 'Reactivate Assignment' ?></button>
                                     </div>
                                 </span>
                             </td>
@@ -1351,7 +1351,7 @@ $csrf     = csrfToken();
                             </td>
                             <td>
                                 <span class="rcm-pill rcm-pill-<?= !empty($r['active']) ? 'active' : 'inactive' ?>">
-                                    <i class="fas <?= !empty($r['active']) ? 'fa-check-circle' : 'fa-minus-circle' ?>"></i>
+                                    <?= smsIcon(!empty($r['active']) ? 'check-circle' : 'minus-circle') ?>
                                     <?= !empty($r['active']) ? 'Active' : 'Inactive' ?>
                                 </span>
                             </td>
@@ -1674,14 +1674,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     (a.research_title ? '<span class="rcm-meta rcm-meta-truncate" title="' + esc(a.research_title) + '">' + esc(a.research_title) + '</span>' : '') + '</td>' +
                 '<td><div class="rcm-title">' + esc(a.coordinator_name) + '</div>' +
                     (a.coordinator_email ? '<span class="rcm-meta">' + esc(a.coordinator_email) + '</span>' : '') + '</td>' +
-                '<td><span class="rcm-pill rcm-pill-' + (isActive ? 'active' : 'inactive') + '"><i class="fas ' + (isActive ? 'fa-check-circle' : 'fa-minus-circle') + '"></i> ' + esc(a.status) + '</span></td>' +
+                '<td><span class="rcm-pill rcm-pill-' + (isActive ? 'active' : 'inactive') + '">' + (window.smsIconHtml ? window.smsIconHtml(isActive ? 'check-circle' : 'minus-circle') : '') + ' ' + esc(a.status) + '</span></td>' +
                 '<td class="rcm-meta">' + fmtDateTime(a.assigned_at) + '</td>' +
                 '<td><span class="rcm-menu-wrap">' +
                     '<button type="button" class="rcm-btn rcm-menu-btn" data-rcm-menu aria-label="Actions"><?= smsIcon('ellipsis-v') ?></button>' +
                     '<div class="rcm-menu" role="menu">' +
                         '<button type="button" class="rcm-menu-item" data-menu="view" data-type="assignment" data-id="' + esc(a.id) + '"><?= smsIcon('eye') ?> View Details</button>' +
                         '<button type="button" class="rcm-menu-item" data-menu="reassign" data-group="' + esc(a.group_number) + '" data-coordinator="' + esc(a.coordinator_name) + '"><?= smsIcon('user-cog') ?> Reassign Coordinator</button>' +
-                        '<button type="button" class="rcm-menu-item' + (isActive ? ' danger' : '') + '" data-menu="toggle" data-id="' + esc(a.id) + '" data-status="' + (isActive ? 'Inactive' : 'Active') + '"><i class="fas ' + (isActive ? 'fa-pause' : 'fa-play') + '"></i> ' + (isActive ? 'Deactivate Assignment' : 'Reactivate Assignment') + '</button>' +
+                        '<button type="button" class="rcm-menu-item' + (isActive ? ' danger' : '') + '" data-menu="toggle" data-id="' + esc(a.id) + '" data-status="' + (isActive ? 'Inactive' : 'Active') + '">' + (window.smsIconHtml ? window.smsIconHtml(isActive ? 'pause' : 'play') : '') + ' ' + (isActive ? 'Deactivate Assignment' : 'Reactivate Assignment') + '</button>' +
                     '</div>' +
                 '</span></td>' +
                 '</tr>';
@@ -1712,7 +1712,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return '<tr data-rcm-row data-status="' + (isActive ? 'active' : 'inactive') + '" data-search="' + esc(searchText) + '">' +
                 '<td><div class="rcm-title">' + esc(r.name) + '</div>' +
                     (r.email ? '<span class="rcm-meta">' + esc(r.email) + '</span>' : '') + '</td>' +
-                '<td><span class="rcm-pill rcm-pill-' + (isActive ? 'active' : 'inactive') + '"><i class="fas ' + (isActive ? 'fa-check-circle' : 'fa-minus-circle') + '"></i> ' + (isActive ? 'Active' : 'Inactive') + '</span></td>' +
+                '<td><span class="rcm-pill rcm-pill-' + (isActive ? 'active' : 'inactive') + '">' + (window.smsIconHtml ? window.smsIconHtml(isActive ? 'check-circle' : 'minus-circle') : '') + ' ' + (isActive ? 'Active' : 'Inactive') + '</span></td>' +
                 '<td><strong>' + (r.active_count || 0) + '</strong><span class="rcm-meta">' + ((r.active_count || 0) + (r.inactive_count || 0)) + ' assignment(s)</span>' +
                     (r.groups && r.groups.length ? '<span class="rcm-meta">' + esc(r.groups.join(', ')) + '</span>' : '') + '</td>' +
                 '<td class="rcm-meta">' + fmtDateOnly(r.last_assigned) + '</td>' +
@@ -1770,7 +1770,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (old) old.remove();
         const div = document.createElement('div');
         div.className = 'rcm-alert rcm-alert-' + (isSuccess ? 'success' : 'danger') + ' rcm-flash';
-        div.innerHTML = '<i class="fas ' + (isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle') + '"></i><span>' + message.replace(/[&<>]/g, '') + '</span>';
+        div.innerHTML = (window.smsIconHtml ? window.smsIconHtml(isSuccess ? 'check-circle' : 'exclamation-circle') : '') + '<span>' + message.replace(/[&<>]/g, '') + '</span>';
         wrap.insertBefore(div, wrap.firstChild);
         setTimeout(function () {
             if (div.parentNode) div.parentNode.removeChild(div);
@@ -1966,7 +1966,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function statusPill(status) {
         const active = String(status || '').toLowerCase() === 'active';
-        return '<span class="rcm-pill rcm-pill-' + (active ? 'active' : 'inactive') + '"><i class="fas ' + (active ? 'fa-check-circle' : 'fa-minus-circle') + '"></i> ' + esc(status || '') + '</span>';
+        return '<span class="rcm-pill rcm-pill-' + (active ? 'active' : 'inactive') + '">' + (window.smsIconHtml ? window.smsIconHtml(active ? 'check-circle' : 'minus-circle') : '') + ' ' + esc(status || '') + '</span>';
     }
     function buildGroupModalHtml(d) {
         const g = d.detail;
