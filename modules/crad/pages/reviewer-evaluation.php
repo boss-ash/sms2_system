@@ -17,6 +17,7 @@ $activeModule          = grantEvaluationActiveModuleKey();
 $activePage            = 'reviewer-evaluation';
 $pageBannerIcon        = 'fa-clipboard-check';
 $pageBannerDescription = 'Score research grant proposals submitted for committee review.';
+$hideModulePageBanner  = true;
 
 $breadcrumbs = [
     ['label' => 'Research Grant', 'url' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php'],
