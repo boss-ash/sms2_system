@@ -133,10 +133,13 @@ function grantApprovalRoleLabel(string $roleKey): string
 {
     return match ($roleKey) {
         'adviser'              => 'Academic Adviser',
-        'research_coordinator' => 'Department Chair',
+        'department_chair'     => 'Department Chair',
+        'research_coordinator' => 'Research Coordinator',
         'hr'                   => 'College Dean',
-        'crad_officer'         => 'Research Office',
-        'qa'                   => 'VPAA',
+        'research_office'      => 'Research Office',
+        'crad_officer'         => 'CRAD Officer',
+        'vpaa'                 => 'VPAA',
+        'qa'                   => 'QA Office',
         'superadmin'           => 'Administrator',
         default                => ucwords(str_replace('_', ' ', $roleKey)),
     };
@@ -150,7 +153,7 @@ function grantUserCanActOnApprovalStep(string $stepRoleKey): bool
         return true;
     }
 
-    return $roleKey === $stepRoleKey;
+    return in_array($stepRoleKey, grantApprovalUserStepRoleKeys($roleKey), true);
 }
 
 function grantEnsureApprovalTables(PDO $crad): void
