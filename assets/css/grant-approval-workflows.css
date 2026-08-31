@@ -520,3 +520,114 @@
         justify-content: center;
     }
 }
+
+.gaw-dashboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+}
+
+.gaw-dashboard-empty {
+    margin: 0;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    color: #64748b;
+    font-size: .88rem;
+    background: #f8fafc;
+    border: 1px dashed #e2e8f0;
+    border-radius: 10px;
+}
+
+.gaw-dashboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .85rem 1rem;
+    border: 1px solid var(--gaw-line);
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.gaw-dashboard-item:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, .08);
+    transform: translateY(-1px);
+}
+
+.gaw-dashboard-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    min-width: 0;
+}
+
+.gaw-dashboard-item-main strong {
+    font-size: .86rem;
+    color: var(--gaw-navy);
+}
+
+.gaw-dashboard-item-main span {
+    font-size: .82rem;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gaw-dashboard-item-status {
+    flex-shrink: 0;
+    padding: .28rem .65rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.gaw-dashboard-item-status.pending {
+    background: rgba(249, 115, 22, .1);
+    color: #c2410c;
+}
+
+.gaw-dashboard-item-status.completed {
+    background: rgba(34, 197, 94, .1);
+    color: #15803d;
+}
+
+.gaw-dashboard-dock-updated {
+    animation: gaw-dashboard-flash .9s ease;
+}
+
+@keyframes gaw-dashboard-flash {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    40% { box-shadow: 0 0 0 3px rgba(59, 130, 246, .18); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+.gaw-monitor-scores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem;
+    margin: 0 0 .85rem;
+}
+
+.gaw-monitor-score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .4rem .7rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+}
+
+.gaw-monitor-score-pill strong {
+    color: #0f172a;
+}
