@@ -93,7 +93,7 @@ function grantEnsureFinalOutputTables(PDO $crad): void
             final_pdf_path          VARCHAR(255) NULL DEFAULT NULL,
             final_pdf_original      VARCHAR(255) NULL DEFAULT NULL,
             supporting_files_json   TEXT NULL,
-            status                  ENUM('FINAL_OUTPUT_SUBMITTED','RETURNED_FOR_CORRECTION','VERIFIED') NOT NULL DEFAULT 'FINAL_OUTPUT_SUBMITTED',
+            status                  ENUM('FINAL_OUTPUT_SUBMITTED','RETURNED_FOR_CORRECTION','OUTPUT_VERIFIED') NOT NULL DEFAULT 'FINAL_OUTPUT_SUBMITTED',
             return_reason           TEXT NULL,
             verification_notes      TEXT NULL,
             submitted_by_user_id    INT UNSIGNED NULL DEFAULT NULL,
@@ -221,8 +221,8 @@ function grantFinalOutputWorkflowLabel(array $row): string
     $appStatus = (string) ($row['application_status'] ?? '');
     $subStatus = (string) ($row['submission_status'] ?? '');
 
-    if ($appStatus === grantStatusPublicationVerified() || $subStatus === 'VERIFIED') {
-        return 'VERIFIED — IN REPOSITORY';
+    if ($appStatus === grantStatusOutputVerified() || $subStatus === 'OUTPUT_VERIFIED') {
+        return 'OUTPUT VERIFIED';
     }
     if ($subStatus === 'RETURNED_FOR_CORRECTION') {
         return 'RETURNED FOR CORRECTION';
@@ -242,7 +242,7 @@ function grantFinalOutputWorkflowClass(array $row): string
     $label = grantFinalOutputWorkflowLabel($row);
 
     return match ($label) {
-        'VERIFIED — IN REPOSITORY' => 'verified',
+        'OUTPUT VERIFIED'          => 'verified',
         'FINAL OUTPUT SUBMITTED'   => 'submitted',
         'RETURNED FOR CORRECTION'  => 'returned',
         default                    => 'ready',
@@ -550,7 +550,7 @@ function grantVerifyFinalOutput(PDO $crad, int $applicationId, array $post, int 
         $subId = (int) ($submission['id'] ?? 0);
         $verifySub = $crad->prepare("
             UPDATE grant_final_output_submissions
-               SET status = 'VERIFIED',
+               SET status = 'OUTPUT_VERIFIED',
                    verification_notes = ?,
                    reviewed_by_user_id = ?,
                    reviewed_by_name = ?,
