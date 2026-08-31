@@ -120,13 +120,15 @@ renderBreadcrumbs($breadcrumbs);
         <p>Score proposals using the rubric first. After you submit your evaluation, you can sign off in <strong>Approval Workflows</strong>.</p>
         <?php elseif ($isApproverView): ?>
         <p>Review committee and adviser scores, then sign off in <strong>Approval Workflows</strong>.</p>
+        <?php elseif ($isMonitorView): ?>
+        <p>Monitor committee scores and institutional sign-offs across the full approval pipeline.</p>
         <?php else: ?>
         <p>Proposals with <strong>Pending Evaluation</strong> in Proposals &amp; Applications appear here for rubric scoring.</p>
         <?php endif; ?>
     </div>
     <div class="gre-stat-row">
-        <span class="gre-stat pending"><strong data-eval-pending-count><?= $pendingCount ?></strong> <?= ($isAdviserView || $isApproverView) ? 'in review' : 'awaiting score' ?></span>
-        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> <?= $isApproverView ? 'signed off' : 'scored by you' ?></span>
+        <span class="gre-stat pending"><strong data-eval-pending-count><?= $pendingCount ?></strong> <?= ($isAdviserView || $isApproverView || $isMonitorView) ? ($isMonitorView ? 'in progress' : 'in review') : 'awaiting score' ?></span>
+        <span class="gre-stat scored"><strong data-eval-scored-count><?= $scoredCount ?></strong> <?= $isApproverView ? 'signed off' : ($isMonitorView ? 'completed' : 'scored by you') ?></span>
         <span class="gre-live-badge"><?= smsIcon('sync-alt') ?> Live</span>
     </div>
 </div>
@@ -142,6 +144,8 @@ renderBreadcrumbs($breadcrumbs);
             <p>Select a proposal to score before administrative sign-off.</p>
             <?php elseif ($isApproverView): ?>
             <p>Select a proposal to review before your approval sign-off.</p>
+            <?php elseif ($isMonitorView): ?>
+            <p>Select a proposal to review scores and current approval stage.</p>
             <?php else: ?>
             <p>Select a proposal to score using the review committee rubric (total 100 points).</p>
             <?php endif; ?>
@@ -169,7 +173,9 @@ renderBreadcrumbs($breadcrumbs);
                         ? 'No grant proposals are awaiting Academic Adviser review.'
                         : ($isApproverView
                             ? 'No grant proposals are awaiting your approval review.'
-                            : 'No proposals are waiting for committee evaluation.') ?>
+                            : ($isMonitorView
+                                ? 'No grant proposals are in the approval workflow yet.'
+                                : 'No proposals are waiting for committee evaluation.')) ?>
                 </td></tr>
             <?php else: ?>
                 <?php foreach ($queue as $row):
@@ -179,6 +185,12 @@ renderBreadcrumbs($breadcrumbs);
                     } elseif ($isApproverView) {
                         $statusLabel = 'In Review';
                         $isScored = false;
+                    } elseif ($isMonitorView) {
+                        $wfStatus = (string) ($row['workflow_status'] ?? '');
+                        $statusLabel = $wfStatus === 'Completed'
+                            ? 'Completed'
+                            : ((string) ($row['current_step_label'] ?? 'In Progress'));
+                        $isScored = $wfStatus === 'Completed';
                     } else {
                         $statusLabel = ($row['status'] ?? '') === 'Submitted' ? 'Pending Evaluation' : 'Under Review';
                     }
@@ -201,8 +213,10 @@ renderBreadcrumbs($breadcrumbs);
                         <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $row['submitted_at']))) ?>
                     </td>
                     <td>
-                        <?php if ($isScored): ?>
+                        <?php if ($isScored && !$isMonitorView): ?>
                             <span class="mpl-status completed">Scored (<?= number_format((float) $row['my_total_score'], 1) ?>/100)</span>
+                        <?php elseif ($isMonitorView && $isScored): ?>
+                            <span class="mpl-status completed"><?= htmlspecialchars($statusLabel) ?></span>
                         <?php else: ?>
                             <span class="mpl-status pending"><?= htmlspecialchars($statusLabel) ?></span>
                         <?php endif; ?>
