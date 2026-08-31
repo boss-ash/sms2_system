@@ -294,10 +294,10 @@ renderBreadcrumbs($breadcrumbs);
     $active = count(array_filter($users, fn($u) => $u['status'] === 'active'));
     $locked = count(array_filter($users, fn($u) => $u['status'] === 'locked'));
     $statCards = [
-        ['label' => 'Active List', 'value' => $total,         'icon' => 'fa-users',      'type' => 'primary'],
-        ['label' => 'Active',      'value' => $active,        'icon' => 'fa-user-check', 'type' => 'success'],
-        ['label' => 'Locked Out',  'value' => $locked,        'icon' => 'fa-user-lock',  'type' => 'info'],
-        ['label' => 'In Archive',  'value' => $archivedCount, 'icon' => 'fa-archive',    'type' => 'warning'],
+        ['label' => 'Active List', 'value' => $total,         'icon' => 'users',      'type' => 'primary'],
+        ['label' => 'Active',      'value' => $active,        'icon' => 'user-check', 'type' => 'success'],
+        ['label' => 'Locked Out',  'value' => $locked,        'icon' => 'lock',       'type' => 'info'],
+        ['label' => 'In Archive',  'value' => $archivedCount, 'icon' => 'archive',    'type' => 'warning'],
     ];
     foreach ($statCards as $sc): ?>
         <div class="col-6 col-xl-3">

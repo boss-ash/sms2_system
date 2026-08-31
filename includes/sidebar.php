@@ -524,6 +524,8 @@ $researchDirectorNavGroups = [
                         $pageTitles[$p['slug']] = $p['title'];
                     }
                     $showModuleOverview = empty($module['hide_overview']);
+                    $showModuleGroups = $hasGroups && !($isModuleActive && $activePage === '');
+                    $overviewLabel = ($navModuleKey === 'user-management') ? 'Dashboard' : 'Overview';
                     ?>
 
                     <li class="nav-item admin-module-item">
@@ -550,14 +552,14 @@ $researchDirectorNavGroups = [
                                 <li class="nav-item">
                                     <a class="nav-link sidebar-sub overview-link <?= ($isModuleActive && $activePage === '') ? 'active' : '' ?>"
                                        href="<?= htmlspecialchars($overviewUrl) ?>"
-                                       data-title="Overview"
-                                       title="Overview">
+                                       data-title="<?= htmlspecialchars($overviewLabel) ?>"
+                                       title="<?= htmlspecialchars($overviewLabel) ?>">
                                         <?= smsIcon('layout-grid', ['aria-hidden' => 'true']) ?>
-                                        <span>Overview</span>
+                                        <span><?= htmlspecialchars($overviewLabel) ?></span>
                                     </a>
                                 </li>
                                 <?php endif; ?>
-                                <?php if ($hasGroups): ?>
+                                <?php if ($showModuleGroups): ?>
                                     <?php foreach ($module['groups'] as $groupLabel => $groupSlugs): ?>
                                         <?php
                                         $groupCollapseId = $moduleCollapseId . '_grp_' . preg_replace('/[^a-z0-9_]/', '_', strtolower((string) $groupLabel));

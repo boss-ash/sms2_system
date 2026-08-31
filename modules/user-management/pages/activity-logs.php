@@ -76,7 +76,7 @@ $exports = count(array_filter($logs, static fn($l) => $l['action'] === 'export')
 <link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css" rel="stylesheet">
 
 <?php
-$pageBannerIcon        = 'fa-history';
+$pageBannerIcon        = 'history';
 $pageBannerDescription = 'Full Super Admin audit trail across all modules. Module Security shows each module\'s own logs separately.';
 renderBreadcrumbs($breadcrumbs);
 ?>
@@ -93,10 +93,10 @@ renderBreadcrumbs($breadcrumbs);
 
 <div class="row g-3 mb-4 dashboard-stats">
     <?php foreach ([
-        ['label' => 'Total Events', 'value' => $total,   'icon' => 'fa-list-alt',    'type' => 'primary'],
-        ['label' => 'Login Events', 'value' => $logins,  'icon' => 'fa-sign-in-alt', 'type' => 'info'],
-        ['label' => 'Data Changes', 'value' => $changes, 'icon' => 'fa-database',    'type' => 'warning'],
-        ['label' => 'Exports',      'value' => $exports, 'icon' => 'fa-file-export', 'type' => 'success'],
+        ['label' => 'Total Events', 'value' => $total,   'icon' => 'list',        'type' => 'primary'],
+        ['label' => 'Login Events', 'value' => $logins,  'icon' => 'login',     'type' => 'info'],
+        ['label' => 'Data Changes', 'value' => $changes, 'icon' => 'database',  'type' => 'warning'],
+        ['label' => 'Exports',      'value' => $exports, 'icon' => 'file-export', 'type' => 'success'],
     ] as $sc): ?>
         <div class="col-6 col-xl-3">
             <section class="card stat-card <?= $sc['type'] ?>">

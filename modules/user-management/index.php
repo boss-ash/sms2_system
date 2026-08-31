@@ -140,41 +140,41 @@ if ($pdo) {
 }
 
 $stats = [
-    ['key' => 'total',    'label' => 'Total Users', 'value' => (string) $statsRaw['total'],    'icon' => 'fa-users',      'type' => 'primary'],
-    ['key' => 'active',   'label' => 'Active',      'value' => (string) $statsRaw['active'],   'icon' => 'fa-user-check', 'type' => 'success'],
-    ['key' => 'inactive', 'label' => 'Inactive',    'value' => (string) $statsRaw['inactive'], 'icon' => 'fa-user-slash', 'type' => 'warning'],
-    ['key' => 'locked',   'label' => 'Locked Out',  'value' => (string) $statsRaw['locked'],   'icon' => 'fa-user-lock',  'type' => 'info'],
+    ['key' => 'total',    'label' => 'Total Users', 'value' => (string) $statsRaw['total'],    'icon' => 'users',      'type' => 'primary'],
+    ['key' => 'active',   'label' => 'Active',      'value' => (string) $statsRaw['active'],   'icon' => 'user-check', 'type' => 'success'],
+    ['key' => 'inactive', 'label' => 'Inactive',    'value' => (string) $statsRaw['inactive'], 'icon' => 'user-off',   'type' => 'warning'],
+    ['key' => 'locked',   'label' => 'Locked Out',  'value' => (string) $statsRaw['locked'],   'icon' => 'lock',       'type' => 'info'],
 ];
 
 $subpages = [
     [
         'slug'  => 'user-accounts',
         'title' => 'User Accounts',
-        'icon'  => 'fa-user-cog',
+        'icon'  => 'user-cog',
         'desc'  => 'Create and manage accounts. Use the User Archive button on that page for archived users.',
     ],
     [
         'slug'  => 'role-permissions',
         'title' => 'Role & Permissions',
-        'icon'  => 'fa-shield-alt',
+        'icon'  => 'shield',
         'desc'  => 'View the role–module permission matrix and configure access per role.',
     ],
     [
         'slug'  => 'module-security',
         'title' => 'Module Security',
-        'icon'  => 'fa-lock',
+        'icon'  => 'lock',
         'desc'  => 'Open a module (e.g. CRAD), then use Activity Logs or Password Management (requests + reset).',
     ],
     [
         'slug'  => 'activity-logs',
         'title' => 'Activity Logs',
-        'icon'  => 'fa-history',
+        'icon'  => 'history',
         'desc'  => 'Audit trail of all user logins, actions, and system events.',
     ],
     [
         'slug'  => 'system-settings',
         'title' => 'System Settings',
-        'icon'  => 'fa-sliders-h',
+        'icon'  => 'adjustments-horizontal',
         'desc'  => 'Configure application name, school year, session rules, and global toggles.',
     ],
 ];
@@ -183,7 +183,7 @@ $subpages = [
 <link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css" rel="stylesheet">
 
 <?php
-$pageBannerIcon        = 'fa-users-cog';
+$pageBannerIcon        = 'user-cog';
 $pageBannerDescription = 'Manage system users, roles, access permissions, activity logs, and global settings.';
 renderBreadcrumbs($breadcrumbs);
 ?>
