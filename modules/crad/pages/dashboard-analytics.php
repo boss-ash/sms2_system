@@ -589,30 +589,6 @@ $donutColorsSlice = array_slice($donutColors, 0, count($donutLabels));
         }
     })();
 
-    /* ── Live-refresh stats every 30 s ──────────────────────────────── */
-    (function () {
-        var apiBase = '<?= BASE_URL ?>/modules/crad/api/grant-management.php';
-        function refreshStats() {
-            fetch(apiBase + '?action=get_dashboard_stats', {
-                credentials: 'same-origin', cache: 'no-store',
-                headers: { 'Accept': 'application/json' }
-            })
-            .then(function (r) { return r.ok ? r.json() : null; })
-            .then(function (data) {
-                if (!data || !data.success) return;
-                var s = data.stats;
-                document.querySelectorAll('[data-stat]').forEach(function (el) {
-                    var key = el.getAttribute('data-stat');
-                    if (key && s[key] !== undefined) {
-                        var strong = el.querySelector('strong');
-                        if (strong) strong.textContent = String(s[key]);
-                    }
-                });
-            })
-            .catch(function () {});
-        }
-        window.setInterval(refreshStats, 30000);
-    })();
 })();
 </script>
 
