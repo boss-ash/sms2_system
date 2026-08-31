@@ -37,6 +37,32 @@
             .replace(/"/g, '&quot;');
     }
 
+    function pipelinePillIcon(type) {
+        var icons = {
+            committee: 'ti-users',
+            adviser: 'ti-user',
+            department_chair: 'ti-user-check',
+            dean: 'ti-shield',
+            research_office: 'ti-flask',
+            vpaa: 'ti-award',
+            finance: 'ti-credit-card'
+        };
+        return icons[type] || 'ti-clipboard-check';
+    }
+
+    function buildPipelineScoresHtml(detail) {
+        var pills = (detail && detail.pipeline_score_pills) ? detail.pipeline_score_pills : [];
+        if (!pills.length) return '';
+
+        var html = '<div class="gaw-monitor-scores">';
+        pills.forEach(function (pill) {
+            html += '<span class="gaw-monitor-score-pill"><i class="ti ' + pipelinePillIcon(pill.type) + ' me-1"></i>'
+                + esc(pill.label) + ': <strong>' + esc(Number(pill.total_score).toFixed(1)) + '/100</strong></span>';
+        });
+        html += '</div>';
+        return html;
+    }
+
     function stepDisplayState(step, currentStepKey, workflowStatus) {
         var status = step.status || 'Queued';
         var stepKey = step.step_key || '';
@@ -150,6 +176,8 @@
                 dateHtml + '</div>';
         }).join('');
 
+        var scoresHtml = buildPipelineScoresHtml(detail);
+
         var actionHtml = '';
         if (needsRubricScore) {
             actionHtml = '<div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">' +
@@ -168,32 +196,16 @@
                 '<i class="ti ti-x"></i> Return to Proponent for Revision</button>' +
                 '</div></div>';
         } else if (detail.is_monitor) {
-            var scoresHtml = '';
-            var committee = detail.committee_eval || null;
-            var adviser = detail.adviser_eval || null;
-            if (committee || adviser) {
-                scoresHtml = '<div class="gaw-monitor-scores">';
-                if (committee && committee.total_score != null) {
-                    scoresHtml += '<span class="gaw-monitor-score-pill"><i class="ti ti-users me-1"></i>Committee: <strong>'
-                        + esc(Number(committee.total_score).toFixed(1)) + '/100</strong></span>';
-                }
-                if (adviser && adviser.total_score != null) {
-                    scoresHtml += '<span class="gaw-monitor-score-pill"><i class="ti ti-user me-1"></i>Adviser: <strong>'
-                        + esc(Number(adviser.total_score).toFixed(1)) + '/100</strong></span>';
-                }
-                scoresHtml += '</div>';
-            }
-
             var hint = esc(detail.monitor_stage_hint || '');
             if (hint) {
-                actionHtml = '<div class="gaw-monitor-panel">' + scoresHtml +
+                actionHtml = '<div class="gaw-monitor-panel">' +
                     '<div class="gaw-monitor-note"><i class="ti ti-eye me-1"></i> ' + hint + '</div></div>';
             } else if (wfStatus === 'Completed') {
-                actionHtml = '<div class="gaw-monitor-panel">' + scoresHtml +
+                actionHtml = '<div class="gaw-monitor-panel">' +
                     '<div class="gaw-monitor-note"><i class="ti ti-check me-1"></i> Monitoring mode — all sign-offs completed for this proposal.</div></div>';
             } else if (detail.current_step) {
                 var approverLabel = esc(detail.current_approver_label || detail.current_step.approver_role_key || '');
-                actionHtml = '<div class="gaw-monitor-panel">' + scoresHtml +
+                actionHtml = '<div class="gaw-monitor-panel">' +
                     '<div class="gaw-monitor-note"><i class="ti ti-eye me-1"></i> Monitoring mode — current stage: ' +
                     '<strong>' + esc(detail.current_step.step_label) + '</strong>' +
                     (approverLabel ? ' (' + approverLabel + ')' : '') + '</div></div>';
@@ -201,7 +213,7 @@
         }
 
         detailPanel.innerHTML = '<h2 class="gaw-pipeline-title">Sign-off Sequence for ' + ref + '</h2>' +
-            '<div class="gaw-stepper" id="gawStepper">' + stepperHtml + '</div>' + actionHtml;
+            '<div class="gaw-stepper" id="gawStepper">' + stepperHtml + '</div>' + scoresHtml + actionHtml;
 
         bindActionButtons();
     }
