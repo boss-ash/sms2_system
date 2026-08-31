@@ -1646,13 +1646,8 @@ hr { border-color: var(--sms-border); opacity: 1; }
     color: var(--sms-primary);
     font-weight: 600;
 }
-.dropdown-item[data-theme-set].active::after {
-    content: '\f00c';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    float: right;
-    opacity: 0.85;
-}
+
+/* Theme picker — see navbar-components.css (.sms-theme-option) */
 
 /* Welcome page styles — see assets/css/welcome.css (.sms-welcome-* classes) */
 

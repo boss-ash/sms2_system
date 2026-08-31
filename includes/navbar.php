@@ -261,15 +261,32 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
                     </li>
                     <?php endif; ?>
                     <li><hr class="dropdown-divider"></li>
-                    <li><h6 class="dropdown-header">Appearance</h6></li>
+                    <li><h6 class="dropdown-header sms-dropdown-section-header">
+                        <?= smsIcon('palette', ['class' => 'sms-dropdown-section-icon', 'aria-hidden' => 'true']) ?>
+                        Appearance
+                    </h6></li>
                     <li>
-                        <button type="button" class="dropdown-item" data-theme-set="light">
-                            <?= smsIcon('sun', ['class' => 'me-2']) ?>Light mode
+                        <button type="button" class="dropdown-item sms-theme-option" data-theme-set="light">
+                            <span class="sms-theme-option-icon sms-theme-option-icon--light" aria-hidden="true">
+                                <?= smsIcon('sun') ?>
+                            </span>
+                            <span class="sms-theme-option-copy">
+                                <span class="sms-theme-option-label">Light mode</span>
+                                <span class="sms-theme-option-hint">Bright workspace</span>
+                            </span>
+                            <span class="sms-theme-option-check" aria-hidden="true"><?= smsIcon('check') ?></span>
                         </button>
                     </li>
                     <li>
-                        <button type="button" class="dropdown-item" data-theme-set="dark">
-                            <?= smsIcon('moon', ['class' => 'me-2']) ?>Dark mode
+                        <button type="button" class="dropdown-item sms-theme-option" data-theme-set="dark">
+                            <span class="sms-theme-option-icon sms-theme-option-icon--dark" aria-hidden="true">
+                                <?= smsIcon('moon-stars') ?>
+                            </span>
+                            <span class="sms-theme-option-copy">
+                                <span class="sms-theme-option-label">Dark mode</span>
+                                <span class="sms-theme-option-hint">Easy on the eyes</span>
+                            </span>
+                            <span class="sms-theme-option-check" aria-hidden="true"><?= smsIcon('check') ?></span>
                         </button>
                     </li>
                     <li><hr class="dropdown-divider"></li>
