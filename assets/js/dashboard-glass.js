@@ -147,9 +147,23 @@
             cashOut = [12, 11, 10, 10, 9, 8, 7, 7];
             netParts = [94, 6];
         } else if (role === 'crad_officer' || role === 'research_coordinator' || role === 'research_grant' || role === 'adviser' || role === 'panel' || role === 'research_director') {
+            var cradNetRaw = board.getAttribute('data-crad-donut');
+            if (role === 'crad_officer' && cradNetRaw) {
+                try {
+                    var cradNet = JSON.parse(cradNetRaw);
+                    var netOngoing = Math.max(0, parseInt(cradNet.ongoing, 10) || 0);
+                    var netCompleted = Math.max(0, parseInt(cradNet.completed, 10) || 0);
+                    var netTotal = netOngoing + netCompleted;
+                    var completePct = netTotal > 0 ? Math.round((netCompleted / netTotal) * 100) : 0;
+                    netParts = [Math.max(completePct, 1), Math.max(100 - completePct, 1)];
+                } catch (e) {
+                    netParts = [69, 31];
+                }
+            } else {
+                netParts = [69, 31];
+            }
             cashIn = [1, 2, 2, 3, 4, 5, 6, 7];
             cashOut = [1, 1, 2, 2, 3, 3, 4, 4];
-            netParts = [69, 31];
         }
 
         cashIn = scaleSeries(cashIn, periodFactor);
