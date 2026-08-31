@@ -1340,3 +1340,21 @@ body.sidebar-open {
     .navbar-right > .dropdown:first-of-type { display: none !important; }
     .navbar-right { gap: 0.05rem !important; }
 }
+
+/* Outputs & Records — live pending badges in CRAD sidebar */
+.sidebar-outputs-badge {
+    margin-left: auto;
+    min-width: 1.15rem;
+    padding: 0.1rem 0.38rem;
+    border-radius: 999px;
+    background: #f59e0b;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+}
+.sidebar-sub.active .sidebar-outputs-badge {
+    background: #fff;
+    color: #d97706;
+}

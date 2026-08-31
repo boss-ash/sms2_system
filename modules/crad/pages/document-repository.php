@@ -53,7 +53,7 @@ $pendingArchiveCount = count(array_filter($overview, static fn(array $r): bool =
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-document-repository.css?v=1" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-document-repository.css?v=2" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gdr-alert" role="alert"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?></div>
@@ -67,10 +67,10 @@ renderBreadcrumbs($breadcrumbs);
     <header class="gdr-page-header">
         <div class="gdr-page-header-main">
             <h1>
-                Archive to Publications &amp; IP — Document Repository
+                Document Repository
                 <span class="gdr-live-badge"><?= smsIcon('sync-alt') ?> Live</span>
             </h1>
-            <p>Permanently archive grant research records — proposal, revisions, reviewer scores, approval history, approved budget, project progress, final output, publication, and IP documentation.</p>
+            <p>Archive permanent grant research records — proposal, revisions, reviewer scores, approval history, approved budget, project progress, final output, publication, and IP documentation.</p>
         </div>
         <?php if ($overview !== []): ?>
         <div class="gdr-stat-row">

@@ -70,6 +70,22 @@ $fileBase = (string) ($detail['file_base_url'] ?? '');
         </div>
     </div>
 
+    <?php if ($canVerifyAction): ?>
+    <div class="gpip-panel gpip-verify-panel">
+        <h3 class="gpip-section-title"><?= smsIcon('clipboard-check', ['class' => 'me-1']) ?>CRAD Verification Checklist</h3>
+        <p class="gpip-muted" style="margin:0 0 .75rem;">Review before clicking <strong>Verify</strong> or <strong>Return for Correction</strong>:</p>
+        <ul class="gpip-verify-list">
+            <li>Final research title &amp; PDF (publication proof)</li>
+            <li>Authors</li>
+            <li>Journal / Conference</li>
+            <li>DOI &amp; Publication URL</li>
+            <li>Copyright information</li>
+            <li>Patent records</li>
+            <li>Other IP documentation</li>
+        </ul>
+    </div>
+    <?php endif; ?>
+
     <?php if ($submission !== null && (string) ($submission['status'] ?? '') === 'RETURNED_FOR_CORRECTION'): ?>
     <div class="gpip-panel gpip-return-alert" data-gpip-return-alert>
         <h3 class="gpip-section-title"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?>Returned for Correction</h3>

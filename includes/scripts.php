@@ -55,6 +55,20 @@ if ($loadResearchProgressLive):
 })();
 </script>
 <?php endif; ?>
+
+<?php
+$loadGrantOutputsSidebarLive = false;
+if (function_exists('getCurrentUserRoleKey') && function_exists('grantUserCanVerifyPublicationsIp')) {
+    require_once ROOT_PATH . '/modules/crad/includes/grant-final-output-helpers.php';
+    $grantOutputsRole = getCurrentUserRoleKey();
+    if (in_array($grantOutputsRole, ['crad_officer', 'research_grant', 'superadmin'], true) && grantUserCanVerifyPublicationsIp()) {
+        $loadGrantOutputsSidebarLive = true;
+    }
+}
+if ($loadGrantOutputsSidebarLive):
+?>
+<script src="<?= BASE_URL ?>/assets/js/grant-outputs-sidebar-live.js?v=1"></script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/assets/js/password-strength.js?v=2"></script>
 </body>
 </html>
