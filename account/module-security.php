@@ -688,7 +688,5 @@ ksort($logActions);
     </div>
 </div>
 
-<link href="<?= BASE_URL ?>/assets/css/password-strength.css" rel="stylesheet">
-<script src="<?= BASE_URL ?>/assets/js/password-strength.js"></script>
 <script src="<?= BASE_URL ?>/modules/user-management/assets/js/module-security.js?v=20260723e"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

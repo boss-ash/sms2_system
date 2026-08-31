@@ -60,7 +60,6 @@ $bodyClass = 'login-page';
 require_once ROOT_PATH . '/includes/header.php';
 ?>
 <link href="<?= BASE_URL ?>/assets/css/auth-pages.css" rel="stylesheet">
-<link href="<?= BASE_URL ?>/assets/css/password-strength.css" rel="stylesheet">
 <style>
 body.login-page {
     background: #071c48 !important;
@@ -152,5 +151,4 @@ body.login-page {
 <footer class="auth-footer">
     <p class="mb-0">&copy; 2026 Bestlink College of the Philippines. All rights reserved.</p>
 </footer>
-<script src="<?= BASE_URL ?>/assets/js/password-strength.js"></script>
 <?php require_once ROOT_PATH . '/includes/scripts.php'; ?>

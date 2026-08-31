@@ -253,8 +253,6 @@ require_once ROOT_PATH . '/includes/breadcrumbs.php';
 require_once ROOT_PATH . '/includes/layout-start.php';
 ?>
 
-<link href="<?= BASE_URL ?>/assets/css/password-strength.css" rel="stylesheet">
-
 <?php renderBreadcrumbs($breadcrumbs); ?>
 
 <?php if ($success): ?>
@@ -466,6 +464,5 @@ require_once ROOT_PATH . '/includes/layout-start.php';
     </section>
 <?php endif; ?>
 
-<link href="<?= BASE_URL ?>/assets/css/password-strength.css" rel="stylesheet">
-<script src="<?= BASE_URL ?>/assets/js/password-strength.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/sms-security-ui.js?v=6"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
