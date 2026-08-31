@@ -72,22 +72,15 @@ function rdScheduleGenerateOptimizedSlots(
 
         $date = date('Y-m-d', $dayTs);
         foreach ($startHours as $hour) {
-            $endHour = $hour + (int) ceil($durationMinutes / 60);
-            if ($endHour > 17 || ($endHour === 17 && $durationMinutes % 60 > 0)) {
-                continue;
-            }
-
             $startTime = sprintf('%02d:00', $hour);
-            $endTime   = sprintf('%02d:%02d', $endHour, $durationMinutes % 60 === 0 ? 0 : ($durationMinutes % 60));
-            if ($durationMinutes === 120) {
-                $endTime = sprintf('%02d:00', $hour + 2);
-            }
-
-            $startAt = $date . ' ' . $startTime . ':00';
-            $endAt   = $date . ' ' . $endTime . ':00';
-            if (strtotime($endAt) <= strtotime($startAt)) {
+            $slotStartTs = strtotime($date . ' ' . $startTime . ':00');
+            $slotEndTs   = $slotStartTs + ($durationMinutes * 60);
+            if ($slotEndTs === false || date('H', $slotEndTs) > 17 || (date('H', $slotEndTs) == 17 && date('i', $slotEndTs) > 0)) {
                 continue;
             }
+            $endTime = date('H:i', $slotEndTs);
+            $startAt = date('Y-m-d H:i:s', $slotStartTs);
+            $endAt   = date('Y-m-d H:i:s', $slotEndTs);
 
             foreach ($venues as $venue) {
                 $evaluated++;
