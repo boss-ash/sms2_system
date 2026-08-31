@@ -634,6 +634,7 @@ $MODULES = [
             ],
             'Funding Management' => [
                 'approved-funded',
+                'budget-disbursement',
                 'fund-release',
                 'disbursement-records',
                 'funding-status',
@@ -667,6 +668,7 @@ $MODULES = [
             ['slug' => 'approval-status',           'title' => 'Approval Status'],
             ['slug' => 'approval-history',          'title' => 'Approval History'],
             ['slug' => 'approved-funded',           'title' => 'Approved & Funded'],
+            ['slug' => 'budget-disbursement',       'title' => 'Budget & Disbursement'],
             ['slug' => 'fund-release',              'title' => 'Fund Release'],
             ['slug' => 'disbursement-records',      'title' => 'Disbursement Records'],
             ['slug' => 'funding-status',            'title' => 'Funding Status'],
