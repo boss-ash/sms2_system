@@ -1,0 +1,267 @@
+/* SMS 2 – Grant Project Milestones */
+
+.gpm {
+    --gpm-green: #166534;
+    --gpm-blue: #1d4ed8;
+    --gpm-amber: #d97706;
+    --gpm-border: #e2e8f0;
+    --gpm-muted: #64748b;
+    padding-bottom: 2rem;
+}
+
+.gpm-alert {
+    background: rgba(239, 68, 68, .08);
+    color: #b91c1c;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border-radius: 8px;
+    font-size: .88rem;
+}
+
+.gpm-page-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.gpm-page-header h1 {
+    margin: 0 0 .35rem;
+    font-size: 1.28rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+
+.gpm-page-header p {
+    margin: 0;
+    color: var(--gpm-muted);
+    font-size: .88rem;
+    max-width: 760px;
+}
+
+.gpm-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #1d4ed8;
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    padding: .2rem .5rem;
+    border-radius: 999px;
+}
+
+.gpm-stat-row {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+
+.gpm-stat {
+    background: #f8fafc;
+    border: 1px solid var(--gpm-border);
+    border-radius: 999px;
+    padding: .35rem .75rem;
+    font-size: .78rem;
+    color: var(--gpm-muted);
+}
+
+.gpm-stat strong { color: #0f172a; font-size: .95rem; }
+.gpm-stat.active strong { color: var(--gpm-blue); }
+
+.gpm-project-bar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.gpm-project-bar label {
+    font-size: .84rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.gpm-project-select {
+    min-width: min(100%, 520px);
+    flex: 1;
+    border: 1px solid var(--gpm-border);
+    border-radius: 8px;
+    padding: .55rem .75rem;
+    font-size: .86rem;
+    background: #fff;
+}
+
+.gpm-panel {
+    background: #fff;
+    border: 1px solid var(--gpm-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    transition: box-shadow .25s ease;
+}
+
+.gpm-panel-updated {
+    box-shadow: 0 0 0 2px rgba(29, 78, 216, .2);
+}
+
+.gpm-panel-title {
+    margin: 0 0 .75rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.gpm-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: .84rem;
+    color: #475569;
+    margin-bottom: 1rem;
+}
+
+.gpm-table-wrap { overflow-x: auto; }
+
+.gpm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .86rem;
+}
+
+.gpm-table th,
+.gpm-table td {
+    padding: .7rem .75rem;
+    border-bottom: 1px solid var(--gpm-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.gpm-table th {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--gpm-muted);
+    background: #f8fafc;
+}
+
+.gpm-status {
+    display: inline-flex;
+    align-items: center;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+.gpm-status.completed { background: #dcfce7; color: #166534; }
+.gpm-status.in-progress { background: #dbeafe; color: #1d4ed8; }
+.gpm-status.pending { background: #fef3c7; color: #b45309; }
+
+.gpm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: .8rem;
+    padding: .45rem .8rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.gpm-btn-edit {
+    background: #eff6ff !important;
+    border-color: #bfdbfe !important;
+    color: #1d4ed8 !important;
+}
+
+.gpm-btn-primary {
+    background: var(--gpm-blue) !important;
+    border-color: var(--gpm-blue) !important;
+    color: #fff !important;
+}
+
+.gpm-btn-ghost {
+    background: #fff !important;
+    border-color: var(--gpm-border) !important;
+    color: #334155 !important;
+}
+
+.gpm-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--gpm-muted);
+}
+
+.gpm-dialog {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, .45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    padding: 1rem;
+}
+
+.gpm-dialog.show { display: flex; }
+
+.gpm-dialog-box {
+    width: min(100%, 480px);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.1rem 1.15rem;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, .18);
+}
+
+.gpm-dialog-box h3 {
+    margin: 0 0 .25rem;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.gpm-dialog-lead {
+    margin: 0 0 .85rem;
+    color: var(--gpm-muted);
+    font-size: .86rem;
+    font-weight: 700;
+}
+
+.gpm-form label {
+    display: block;
+    margin: .55rem 0 .25rem;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.gpm-form input,
+.gpm-form select,
+.gpm-form textarea {
+    width: 100%;
+    border: 1px solid var(--gpm-border);
+    border-radius: 8px;
+    padding: .5rem .65rem;
+    font-size: .86rem;
+}
+
+.gpm-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: 1rem;
+}
