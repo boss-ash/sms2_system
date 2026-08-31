@@ -650,6 +650,11 @@ function grantProposalNotificationsForCurrentUser(int $limit = 8): array
 
     grantEnsureEvaluationTables($crad);
 
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    if ($userId > 0) {
+        grantBackfillApplicantDecisionNotifications($crad, $userId);
+    }
+
     try {
         $table = $crad->query("SHOW TABLES LIKE 'grant_proposal_notifications'")->fetchColumn();
         if (!$table) {
