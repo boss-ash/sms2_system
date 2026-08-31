@@ -442,10 +442,22 @@ function grantStatusFinalOutputSubmitted(): string
     return 'Final Output Submitted';
 }
 
-/** CRAD verified and recorded publication & IP in repository. */
+/** CRAD verified final output — recorded to Publications & IP Repository. */
+function grantStatusOutputVerified(): string
+{
+    return 'OUTPUT_VERIFIED';
+}
+
+/** @deprecated Alias for grantStatusOutputVerified() */
 function grantStatusPublicationVerified(): string
 {
-    return 'Publication Verified';
+    return grantStatusOutputVerified();
+}
+
+/** Permanent records archived to Document Repository. */
+function grantStatusArchived(): string
+{
+    return 'Archived';
 }
 
 function grantApplicationStatusLabel(string $status): string
@@ -453,7 +465,8 @@ function grantApplicationStatusLabel(string $status): string
     return match ($status) {
         grantStatusApprovedFunded()      => 'APPROVED & FUNDED',
         grantStatusFinalOutputSubmitted() => 'FINAL OUTPUT SUBMITTED',
-        grantStatusPublicationVerified()  => 'PUBLICATION VERIFIED',
+        grantStatusOutputVerified()       => 'OUTPUT VERIFIED',
+        grantStatusArchived()           => 'ARCHIVED',
         'Submitted'                       => 'Pending Evaluation',
         'Revision Required'               => 'REVISION REQUIRED',
         'Rejected'                        => 'REJECTED',
@@ -780,13 +793,13 @@ function _grantEnsureApplicationStatusEnum(PDO $crad): void
         if ($columnType === '') {
             return;
         }
-        if (strpos($columnType, 'Rejected') !== false
-            && strpos($columnType, 'Revision Required') !== false
-            && strpos($columnType, 'Resubmitted') !== false
-            && strpos($columnType, 'Approved & Funded') !== false
-            && strpos($columnType, 'Final Output Submitted') !== false
-            && strpos($columnType, 'Publication Verified') !== false) {
+        if (strpos($columnType, 'OUTPUT_VERIFIED') !== false
+            && strpos($columnType, 'Archived') !== false) {
             return;
+        }
+
+        if (strpos($columnType, 'Publication Verified') !== false) {
+            $crad->exec("UPDATE grant_applications SET status = 'OUTPUT_VERIFIED' WHERE status = 'Publication Verified'");
         }
 
         $crad->exec("
@@ -797,7 +810,8 @@ function _grantEnsureApplicationStatusEnum(PDO $crad): void
                 'Approved',
                 'Approved & Funded',
                 'Final Output Submitted',
-                'Publication Verified',
+                'OUTPUT_VERIFIED',
+                'Archived',
                 'Denied',
                 'Withdrawn',
                 'Rejected',

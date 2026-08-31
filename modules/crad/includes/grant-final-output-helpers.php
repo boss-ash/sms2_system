@@ -25,7 +25,8 @@ function grantFinalOutputEligibleApplicationStatuses(): array
     return [
         grantStatusApprovedFunded(),
         grantStatusFinalOutputSubmitted(),
-        grantStatusPublicationVerified(),
+        grantStatusOutputVerified(),
+        grantStatusArchived(),
     ];
 }
 
@@ -70,6 +71,8 @@ function grantEnsureFinalOutputTables(PDO $crad): void
         return;
     }
     $done = true;
+
+    $crad->exec("UPDATE grant_final_output_submissions SET status = 'OUTPUT_VERIFIED' WHERE status = 'VERIFIED'");
 
     $crad->exec("
         CREATE TABLE IF NOT EXISTS grant_final_output_submissions (
