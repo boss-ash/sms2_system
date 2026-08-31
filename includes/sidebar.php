@@ -43,7 +43,7 @@ if ($securitySettingsModule !== '' && isset($visibleModules[$securitySettingsMod
 // ── For students: check if Research Forum is paid ───────────────────────────
 $researchForumPaid = false;
 $studentReturnedTitleApprovalId = 0;
-if ($isStudentPortal) {
+if ($sidebarMode === 'student') {
     // If student-portal-page.php already computed this, use it.
     // Otherwise check independently from the payment data source.
     if (isset($researchForumPaid) && $researchForumPaid === true) {
@@ -117,7 +117,7 @@ $studentResearchDevelopmentItems = [
 
 // ── Check if student has an approved research group ──────────────────────────
 $studentHasResearchGroup = false;
-if ($isStudentPortal && isset($sidebarCrad) && $sidebarCrad instanceof PDO) {
+if ($sidebarMode === 'student' && isset($sidebarCrad) && $sidebarCrad instanceof PDO) {
     try {
         $checkGroupStmt = $sidebarCrad->prepare("
             SELECT COUNT(*) FROM research_groups 
