@@ -390,9 +390,6 @@ function smsResearchCoordinatorCradModule(): array
                 'adviser-availability',
                 'assign-research-adviser',
             ],
-            'Research Collaboration' => [
-                'research-collaboration-portal',
-            ],
             'B. Panel Assignment' => [
                 'retrieve-defense-ready-research',
                 'select-panel-members',

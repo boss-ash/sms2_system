@@ -497,7 +497,6 @@ $MODULES = [
                 'research-coordinator-management',
                 'research-defense-scheduling',
                 'capstone-group-student-registry',
-                'research-collaboration-portal',
             ],
             'Core System' => [
                 'dashboard-analytics',
@@ -536,7 +535,6 @@ $MODULES = [
             ['slug' => 'final-manuscript-approval', 'title' => 'Final Manuscript Approval'],
             ['slug' => 'publication-create', 'title' => 'Create Publication Record'],
             ['slug' => 'research-repository', 'title' => 'Research Repository'],
-            ['slug' => 'research-collaboration-portal', 'title' => 'Research Collaboration Portal'],
             ['slug' => 'research-analytics-reporting', 'title' => 'Research Analytics & Reporting'],
         ],
     ],
