@@ -207,6 +207,99 @@
     gap: 0.5rem;
 }
 
+/* ── Form modals — normal width + modern fields (system-wide) ─── */
+.modal:not(.sms-confirm-modal):not(.um-confirm-modal):not(.rdpa-confirm-modal) .modal-dialog:not(.modal-xl):not(.modal-fullscreen):not(.sms-confirm-dialog):not(.um-confirm-dialog) {
+    width: min(480px, calc(100vw - 2rem));
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.modal:not(.sms-confirm-modal):not(.um-confirm-modal) .modal-dialog.modal-lg:not(.sms-confirm-dialog):not(.um-confirm-dialog) {
+    width: min(640px, calc(100vw - 2rem));
+    max-width: 640px;
+}
+
+.sms-form-modal .modal-content,
+.modal.sms-form-modal .modal-content {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--sms-border);
+    box-shadow: var(--sms-shadow-lg);
+}
+
+.sms-form-modal .modal-header,
+.sms-form-modal .modal-footer,
+.modal.sms-form-modal .modal-header,
+.modal.sms-form-modal .modal-footer {
+    padding: 0.85rem 1.15rem;
+}
+
+.sms-form-modal .modal-body,
+.modal.sms-form-modal .modal-body {
+    padding: 0.35rem 1.15rem 1rem;
+}
+
+.sms-form-modal .modal-title,
+.modal.sms-form-modal .modal-title {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.modal .modal-body .form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: var(--sms-heading);
+}
+
+.modal .modal-body .form-control,
+.modal .modal-body .form-select {
+    min-height: 38px;
+    font-size: 0.84rem;
+    border-radius: 10px;
+}
+
+.modal .modal-body textarea.form-control {
+    min-height: 72px;
+}
+
+.modal .modal-body .form-text {
+    font-size: 0.75rem;
+}
+
+/* Standalone form cards (login / setup) */
+.sms-form-card {
+    width: min(480px, calc(100vw - 2rem));
+    margin: 0 auto;
+    padding: 1.75rem;
+    border: 1px solid var(--sms-border);
+    border-radius: 16px;
+    background: var(--sms-surface-elevated);
+    box-shadow: var(--sms-shadow-lg);
+}
+
+.sms-form-card h1,
+.sms-form-card h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.35rem;
+}
+
+.sms-form-card .form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.sms-form-card .form-control,
+.sms-form-card .form-select {
+    min-height: 40px;
+    border-radius: 10px;
+    font-size: 0.875rem;
+}
+
 /* ── Confirm modals (.sms-confirm-modal, .um-confirm-modal) ─────────────── */
 .sms-confirm-modal ~ .modal-backdrop,
 .um-confirm-modal ~ .modal-backdrop {
