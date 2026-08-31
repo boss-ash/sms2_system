@@ -288,11 +288,14 @@
     padding: 0;
     border: 1px solid var(--sms-border);
     border-radius: 10px;
-    background-color: var(--sms-surface-muted);
+    background: var(--sms-surface-muted);
+    background-image: none;
     color: var(--sms-text-muted);
     opacity: 1;
     cursor: pointer;
     line-height: 1;
+    box-shadow: none;
+    filter: none;
     transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 

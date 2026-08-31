@@ -423,7 +423,7 @@
         if (isErrorNotice(text)) {
             setRemoveErr(text);
             if (dev) {
-                setRemoveInfo('Local OTP: <code>' + dev + '</code>', '');
+                setRemoveInfo('', dev);
             }
             return;
         }
@@ -602,8 +602,7 @@
                     resendBtn.disabled = true;
                     try {
                         var out = await resendRemoveEmail(api, csrf);
-                        setRemoveInfo(out.message || 'Code sent.', out.otp_dev || '');
-                        setRemoveErr('');
+                        applyRemoveNotice(out.message || 'Code sent.', out.otp_dev || '');
                     } catch (err) {
                         setRemoveErr((err && err.message) ? err.message : 'Could not resend code.');
                     }
