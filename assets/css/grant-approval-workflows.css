@@ -321,6 +321,54 @@
     color: #c2410c;
 }
 
+.gaw-return-audit-panel {
+    margin-top: 1.25rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: #fef2f2;
+}
+
+.gaw-return-audit-panel h3 {
+    margin: 0 0 .35rem;
+    font-size: .95rem;
+    font-weight: 800;
+    color: #b91c1c;
+}
+
+.gaw-return-audit-lead {
+    margin: 0 0 .85rem;
+    font-size: .84rem;
+    color: #7f1d1d;
+}
+
+.gaw-return-audit-grid {
+    display: grid;
+    gap: .55rem;
+}
+
+.gaw-return-audit-row {
+    display: grid;
+    grid-template-columns: minmax(110px, 140px) 1fr;
+    gap: .75rem;
+    font-size: .84rem;
+    align-items: start;
+}
+
+.gaw-return-audit-row span {
+    color: #991b1b;
+    font-weight: 600;
+}
+
+.gaw-return-audit-row strong {
+    color: #450a0a;
+    font-weight: 700;
+}
+
+.gaw-return-audit-reason strong {
+    white-space: pre-wrap;
+}
+
 .gaw-action-buttons {
     display: flex;
     flex-wrap: wrap;
