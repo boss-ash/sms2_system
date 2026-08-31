@@ -954,12 +954,11 @@ function grantReturnProposalFromApproval(
         ")->execute([$applicationId]);
 
         $app = grantGetApplicationForEvaluation($crad, $applicationId);
-        if ($app !== null && function_exists('grantNotifyApplicantEvaluationDecision')) {
-            grantNotifyApplicantEvaluationDecision(
+        if ($app !== null) {
+            grantNotifyApplicantApprovalReturn(
                 $crad,
                 $app,
-                'require_revisions',
-                0.0,
+                $currentStep,
                 $userName,
                 $remarks
             );
@@ -976,6 +975,80 @@ function grantReturnProposalFromApproval(
 
         return ['ok' => false, 'error' => 'Failed to return proposal for revision.'];
     }
+}
+
+/**
+ * Remove a returned/completed workflow so resubmit can restart the committee → approval loop.
+ */
+function grantClearApprovalWorkflowForResubmit(PDO $crad, int $applicationId): void
+{
+    grantEnsureApprovalTables($crad);
+
+    $workflow = grantGetApprovalWorkflowByApplicationId($crad, $applicationId);
+    if ($workflow === null) {
+        return;
+    }
+
+    $workflowId = (int) ($workflow['id'] ?? 0);
+    if ($workflowId <= 0) {
+        return;
+    }
+
+    $crad->prepare('DELETE FROM grant_proposal_approval_steps WHERE workflow_id = ?')->execute([$workflowId]);
+    $crad->prepare('DELETE FROM grant_proposal_approval_workflows WHERE id = ?')->execute([$workflowId]);
+}
+
+/**
+ * @param  array<int, int> $applicationIds
+ * @return array<int, array<string, mixed>>
+ */
+function grantGetLatestApprovalReturnsForApplications(PDO $crad, array $applicationIds): array
+{
+    grantEnsureApprovalTables($crad);
+
+    $applicationIds = array_values(array_filter(array_map('intval', $applicationIds), static fn(int $id): bool => $id > 0));
+    if ($applicationIds === []) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($applicationIds), '?'));
+    $stmt = $crad->prepare("
+        SELECT s.*
+          FROM grant_proposal_approval_steps s
+         INNER JOIN (
+                SELECT grant_application_id, MAX(id) AS max_id
+                  FROM grant_proposal_approval_steps
+                 WHERE grant_application_id IN ({$placeholders})
+                   AND status = 'Returned'
+                 GROUP BY grant_application_id
+         ) latest ON latest.max_id = s.id
+    ");
+    $stmt->execute($applicationIds);
+
+    $map = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
+        $map[(int) ($row['grant_application_id'] ?? 0)] = $row;
+    }
+
+    return $map;
+}
+
+/**
+ * @return array<int, array<string, mixed>>
+ */
+function grantGetApprovedFundedApplications(PDO $crad): array
+{
+    grantEnsureTables($crad);
+
+    $stmt = $crad->query("
+        SELECT ga.*, go.funding_title, go.max_funding_cap
+          FROM grant_applications ga
+         INNER JOIN grant_opportunities go ON go.id = ga.grant_opportunity_id
+         WHERE ga.status = " . $crad->quote(grantStatusApprovedFunded()) . "
+         ORDER BY ga.updated_at DESC, ga.id DESC
+    ");
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
 /**
