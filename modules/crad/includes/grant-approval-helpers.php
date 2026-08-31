@@ -613,12 +613,41 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
 
     $adviserEvalComplete = false;
     $needsAdviserScore = false;
+    $committeeEval = null;
+    $adviserEval = null;
+    $monitorStageHint = '';
+    $isMonitor = grantUserCanMonitorApprovalWorkflow();
+
     if ($currentStepKey === 'adviser') {
         $userId = (int) ($_SESSION['user_id'] ?? 0);
         $adviserEvalComplete = grantHasAdviserEvaluation($crad, $applicationId, $userId);
         $needsAdviserScore = $roleKey === 'adviser'
             && !$adviserEvalComplete
             && (string) ($workflow['workflow_status'] ?? '') === 'In Progress';
+    }
+
+    if ($isMonitor) {
+        $evals = grantGetLatestEvaluationsForApplications($crad, [$applicationId]);
+        $committeeEval = $evals[$applicationId] ?? null;
+        $adviserEval = grantGetLatestAdviserEvaluationByApplication($crad, $applicationId);
+
+        $wfStatus = (string) ($workflow['workflow_status'] ?? '');
+        if ($wfStatus === 'Completed') {
+            $monitorStageHint = 'All institutional sign-offs completed for this proposal.';
+        } elseif ($currentStepKey === 'adviser') {
+            if ($adviserEval) {
+                $score = number_format((float) ($adviserEval['total_score'] ?? 0), 1);
+                $monitorStageHint = "Adviser scored {$score}/100 — awaiting administrative sign-off.";
+            } else {
+                $monitorStageHint = 'Awaiting Academic Adviser rubric score and sign-off.';
+            }
+        } elseif ($currentStep !== null) {
+            $monitorStageHint = 'Awaiting '
+                . (string) ($currentStep['step_label'] ?? 'approval')
+                . ' sign-off ('
+                . grantApprovalRoleLabel((string) ($currentStep['approver_role_key'] ?? ''))
+                . ').';
+        }
     }
 
     return [
@@ -630,7 +659,10 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
         'needs_adviser_score'    => $needsAdviserScore,
         'role_label'             => grantApprovalRoleLabel($roleKey),
         'current_approver_label' => grantApprovalRoleLabel((string) ($currentStep['approver_role_key'] ?? '')),
-        'is_monitor'             => grantUserCanMonitorApprovalWorkflow(),
+        'is_monitor'             => $isMonitor,
+        'committee_eval'         => $committeeEval,
+        'adviser_eval'           => $adviserEval,
+        'monitor_stage_hint'     => $monitorStageHint,
     ];
 }
 
@@ -724,6 +756,14 @@ function grantApprovalDetailFingerprint(?array $detail): string
             $step['status'] ?? '',
             $step['acted_at'] ?? '',
         ]);
+    }
+
+    $parts[] = (string) ($detail['monitor_stage_hint'] ?? '');
+    if (!empty($detail['committee_eval']['total_score'])) {
+        $parts[] = 'c:' . $detail['committee_eval']['total_score'];
+    }
+    if (!empty($detail['adviser_eval']['total_score'])) {
+        $parts[] = 'a:' . $detail['adviser_eval']['total_score'];
     }
 
     return md5(implode('|', $parts));
@@ -930,6 +970,49 @@ function grantReturnProposalFromApproval(
 
         return ['ok' => false, 'error' => 'Failed to return proposal for revision.'];
     }
+}
+
+/**
+ * Dashboard / monitor summary counts for CRAD Officer.
+ *
+ * @return array{submitted: int, in_progress: int, completed: int, committee_scored: int}
+ */
+function grantApprovalDashboardStats(PDO $crad): array
+{
+    grantEnsureApprovalTables($crad);
+    grantBackfillApprovalWorkflows($crad);
+    grantEnsureEvaluationTables($crad);
+
+    $submitted = (int) $crad->query("
+        SELECT COUNT(*)
+          FROM grant_applications
+         WHERE status IN ('Submitted', 'Under Review', 'Approved')
+    ")->fetchColumn();
+
+    $inProgress = (int) $crad->query("
+        SELECT COUNT(*) FROM grant_proposal_approval_workflows WHERE workflow_status = 'In Progress'
+    ")->fetchColumn();
+
+    $completed = (int) $crad->query("
+        SELECT COUNT(*) FROM grant_proposal_approval_workflows WHERE workflow_status = 'Completed'
+    ")->fetchColumn();
+
+    $committeeType = grantEvaluationTypeCommittee();
+    $stmt = $crad->prepare("
+        SELECT COUNT(DISTINCT grant_application_id)
+          FROM grant_proposal_evaluations
+         WHERE evaluation_type = ?
+           AND recommendation = 'recommend'
+    ");
+    $stmt->execute([$committeeType]);
+    $committeeScored = (int) $stmt->fetchColumn();
+
+    return [
+        'submitted'         => $submitted,
+        'in_progress'     => $inProgress,
+        'completed'       => $completed,
+        'committee_scored'=> $committeeScored,
+    ];
 }
 
 /**
