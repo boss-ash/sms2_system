@@ -1,0 +1,324 @@
+/* CRAD Grant — Sequential Approval Workflow stepper */
+.gaw {
+    --gaw-green: #16a34a;
+    --gaw-orange: #ea580c;
+    --gaw-grey: #94a3b8;
+    --gaw-line: #e2e8f0;
+}
+
+.gaw-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+@media (max-width: 992px) {
+    .gaw-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.gaw-queue {
+    background: #fff;
+    border: 1px solid var(--gaw-line);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.gaw-queue-head {
+    padding: .85rem 1rem;
+    border-bottom: 1px solid var(--gaw-line);
+    background: #f8fafc;
+}
+
+.gaw-queue-head h2 {
+    margin: 0;
+    font-size: .95rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.gaw-queue-list {
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.gaw-queue-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: 0;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fff;
+    padding: .85rem 1rem;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.gaw-queue-item:hover,
+.gaw-queue-item.active {
+    background: #eff6ff;
+}
+
+.gaw-queue-ref {
+    font-size: .78rem;
+    font-weight: 800;
+    color: #1d4ed8;
+    letter-spacing: .02em;
+}
+
+.gaw-queue-title {
+    margin: .2rem 0 0;
+    font-size: .88rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+}
+
+.gaw-queue-meta {
+    margin-top: .35rem;
+    font-size: .75rem;
+    color: #64748b;
+}
+
+.gaw-detail {
+    background: #fff;
+    border: 1px solid var(--gaw-line);
+    border-radius: 12px;
+    padding: 1.25rem 1.35rem 1.35rem;
+}
+
+.gaw-detail-empty {
+    text-align: center;
+    color: #64748b;
+    padding: 3rem 1rem;
+}
+
+.gaw-detail-title {
+    margin: 0 0 1.25rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.gaw-stepper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .35rem;
+    overflow-x: auto;
+    padding: .25rem .15rem 1rem;
+}
+
+.gaw-step {
+    flex: 1 1 0;
+    min-width: 108px;
+    text-align: center;
+    position: relative;
+}
+
+.gaw-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: calc(50% + 20px);
+    width: calc(100% - 40px);
+    height: 2px;
+    background: var(--gaw-line);
+    z-index: 0;
+}
+
+.gaw-step.approved:not(:last-child)::after {
+    background: #86efac;
+}
+
+.gaw-step.active:not(:last-child)::after {
+    background: linear-gradient(90deg, #86efac 0%, var(--gaw-line) 100%);
+}
+
+.gaw-step-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin: 0 auto .55rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .82rem;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+    background: #fff;
+}
+
+.gaw-step.approved .gaw-step-icon {
+    background: var(--gaw-green);
+    color: #fff;
+    border: 2px solid var(--gaw-green);
+}
+
+.gaw-step.active .gaw-step-icon {
+    border: 2px solid var(--gaw-orange);
+    color: var(--gaw-orange);
+    background: #fff7ed;
+}
+
+.gaw-step.queued .gaw-step-icon,
+.gaw-step.returned .gaw-step-icon {
+    border: 2px solid #cbd5e1;
+    color: #64748b;
+    background: #f8fafc;
+}
+
+.gaw-step.returned .gaw-step-icon {
+    border-color: #f87171;
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+.gaw-step-name {
+    font-size: .72rem;
+    font-weight: 800;
+    color: #334155;
+    line-height: 1.25;
+    min-height: 2.2em;
+}
+
+.gaw-step-status {
+    margin-top: .2rem;
+    font-size: .7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+.gaw-step.approved .gaw-step-status { color: var(--gaw-green); }
+.gaw-step.active .gaw-step-status { color: var(--gaw-orange); }
+.gaw-step.queued .gaw-step-status { color: var(--gaw-grey); }
+.gaw-step.returned .gaw-step-status { color: #dc2626; }
+
+.gaw-step-sub,
+.gaw-step-date {
+    font-size: .68rem;
+    color: #94a3b8;
+    margin-top: .15rem;
+}
+
+.gaw-action-panel {
+    margin-top: 1.25rem;
+    padding: 1rem 1.1rem;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.gaw-action-panel h3 {
+    margin: 0 0 .45rem;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    color: #475569;
+}
+
+.gaw-action-panel p {
+    margin: 0 0 .9rem;
+    font-size: .84rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.gaw-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem;
+}
+
+.gaw-btn-approve {
+    background: #166534;
+    border-color: #166534;
+    color: #fff;
+}
+
+.gaw-btn-approve:hover {
+    background: #14532d;
+    color: #fff;
+}
+
+.gaw-btn-return {
+    background: #fff;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+.gaw-btn-return:hover {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.gaw-monitor-note {
+    margin-top: .75rem;
+    font-size: .8rem;
+    color: #64748b;
+}
+
+.gaw-signature-dialog {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, .45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10050;
+    padding: 1rem;
+}
+
+.gaw-signature-dialog.show {
+    display: flex;
+}
+
+.gaw-signature-box {
+    width: min(500px, 100%);
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem 1.1rem 1.1rem;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, .2);
+}
+
+.gaw-signature-canvas-wrap {
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #fff;
+    margin: .75rem 0;
+}
+
+.gaw-signature-canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: 140px;
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.gaw-return-dialog textarea {
+    width: 100%;
+    min-height: 90px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: .65rem .75rem;
+    font-size: .88rem;
+    resize: vertical;
+}
+
+.gaw-status-pill {
+    display: inline-block;
+    padding: .18rem .5rem;
+    border-radius: 999px;
+    font-size: .68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.gaw-status-pill.in-progress { background: #ffedd5; color: #c2410c; }
+.gaw-status-pill.completed { background: #dcfce7; color: #166534; }
+.gaw-status-pill.returned { background: #fee2e2; color: #b91c1c; }
