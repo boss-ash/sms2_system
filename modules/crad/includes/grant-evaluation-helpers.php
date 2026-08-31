@@ -678,7 +678,10 @@ function grantApproverEvaluationQueue(PDO $crad): array
             committee_eval.submitted_at AS committee_evaluated_at,
             adviser_eval.id AS adviser_evaluation_id,
             adviser_eval.total_score AS adviser_total_score,
-            adviser_eval.submitted_at AS adviser_evaluated_at
+            adviser_eval.submitted_at AS adviser_evaluated_at,
+            my_eval.id AS my_evaluation_id,
+            my_eval.total_score AS my_total_score,
+            my_eval.submitted_at AS my_evaluated_at
         FROM grant_proposal_approval_workflows w
         INNER JOIN grant_applications ga ON ga.id = w.grant_application_id
         INNER JOIN grant_opportunities go ON go.id = ga.grant_opportunity_id
@@ -1478,6 +1481,110 @@ function grantSubmitAdviserProposalEvaluation(PDO $crad, int $applicationId, arr
     }
 }
 
+function grantSubmitApproverProposalEvaluation(PDO $crad, int $applicationId, array $input): array
+{
+    grantEnsureEvaluationTables($crad);
+
+    $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+    $evaluationType = grantEvaluationTypeForApproverRole($roleKey);
+    if ($evaluationType === null) {
+        return ['ok' => false, 'error' => 'Your role is not authorized to score at this approval level.'];
+    }
+
+    $evaluatorUserId = (int) ($_SESSION['user_id'] ?? 0);
+    $evaluatorName   = trim((string) ($_SESSION['full_name'] ?? $_SESSION['user_name'] ?? $_SESSION['username'] ?? ''));
+
+    if ($evaluatorUserId <= 0) {
+        return ['ok' => false, 'error' => 'Invalid evaluator session.'];
+    }
+
+    if (!grantApplicationOpenForEvaluationViewer($crad, $applicationId)) {
+        return [
+            'ok'    => false,
+            'error' => grantEvaluationStepLabel($evaluationType) . ' evaluation is not open for this proposal.',
+        ];
+    }
+
+    $application = grantGetApplicationForEvaluation($crad, $applicationId);
+    if (!$application) {
+        return ['ok' => false, 'error' => 'Proposal not found.'];
+    }
+
+    $proposalVersion = max(1, (int) ($application['current_version'] ?? 1));
+
+    if (grantGetApproverEvaluationByApplication($crad, $applicationId, $evaluatorUserId, $proposalVersion, $roleKey)) {
+        return [
+            'ok'    => false,
+            'error' => 'You have already submitted your '
+                . grantEvaluationStepLabel($evaluationType)
+                . ' evaluation for this proposal version.',
+        ];
+    }
+
+    $parsed = grantValidateRubricScoresFromInput($input);
+    if (empty($parsed['ok'])) {
+        return ['ok' => false, 'error' => $parsed['error'] ?? 'Invalid rubric scores.'];
+    }
+
+    $scores = $parsed['scores'];
+    $total  = (float) $parsed['total'];
+    $comments            = trim((string) ($input['comments'] ?? ''));
+    $recommendations     = trim((string) ($input['recommendations'] ?? ''));
+    $requiredCorrections = trim((string) ($input['required_corrections'] ?? ''));
+
+    try {
+        $crad->beginTransaction();
+
+        $stmt = $crad->prepare("
+            INSERT INTO grant_proposal_evaluations
+                (grant_application_id, proposal_version, evaluator_user_id, evaluator_name, evaluation_type,
+                 score_rationale, score_methodology, score_budget,
+                 score_team_capability, score_compliance, total_score,
+                 comments, recommendations, required_corrections,
+                 recommendation, revision_reason,
+                 submitted_at, updated_at)
+            VALUES
+                (?, ?, ?, ?, ?,
+                 ?, ?, ?,
+                 ?, ?, ?,
+                 ?, ?, ?,
+                 NULL, NULL,
+                 NOW(), NOW())
+        ");
+        $stmt->execute([
+            $applicationId,
+            $proposalVersion,
+            $evaluatorUserId,
+            $evaluatorName,
+            $evaluationType,
+            $scores['score_rationale'],
+            $scores['score_methodology'],
+            $scores['score_budget'],
+            $scores['score_team_capability'],
+            $scores['score_compliance'],
+            $total,
+            $comments !== '' ? $comments : null,
+            $recommendations !== '' ? $recommendations : null,
+            $requiredCorrections !== '' ? $requiredCorrections : null,
+        ]);
+
+        $crad->commit();
+
+        return [
+            'ok'          => true,
+            'id'          => (int) $crad->lastInsertId(),
+            'total_score' => $total,
+        ];
+    } catch (Throwable $e) {
+        if ($crad->inTransaction()) {
+            $crad->rollBack();
+        }
+        error_log('grantSubmitApproverProposalEvaluation: ' . $e->getMessage());
+
+        return ['ok' => false, 'error' => 'Failed to save evaluation. Please try again.'];
+    }
+}
+
 /**
  * @param array<string, mixed> $input
  * @return array{ok: bool, id?: int, total_score?: float, recommendation?: string, new_status?: string, error?: string}
@@ -1488,6 +1595,10 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
 
     if (grantIsAdviserEvaluationViewer()) {
         return grantSubmitAdviserProposalEvaluation($crad, $applicationId, $input);
+    }
+
+    if (grantIsGrantApproverEvaluationViewer()) {
+        return grantSubmitApproverProposalEvaluation($crad, $applicationId, $input);
     }
 
     $evaluatorUserId = (int) ($_SESSION['user_id'] ?? 0);
