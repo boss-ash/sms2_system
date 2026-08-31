@@ -233,7 +233,7 @@ function grantEnsureApprovalTables(PDO $crad): void
 }
 
 /**
- * Ensure Finance Office step exists in all workflows (between Research Office and VPAA).
+ * Ensure VPAA (order 5) and Finance (order 6) steps exist in the correct sequence.
  */
 function grantMigrateEnsureFinanceApprovalStep(PDO $crad): void
 {
@@ -249,22 +249,23 @@ function grantMigrateEnsureFinanceApprovalStep(PDO $crad): void
               FROM grant_proposal_approval_workflows
         ")->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-        $hasFinance = $crad->prepare(
-            "SELECT id FROM grant_proposal_approval_steps WHERE workflow_id = ? AND step_key = 'finance' LIMIT 1"
+        $hasStep = $crad->prepare(
+            "SELECT id FROM grant_proposal_approval_steps WHERE workflow_id = ? AND step_key = ? LIMIT 1"
         );
-        $stepStatus = $crad->prepare(
-            "SELECT step_key, status FROM grant_proposal_approval_steps WHERE workflow_id = ? AND step_key IN ('research_office', 'vpaa', 'finance')"
+        $stepStatuses = $crad->prepare(
+            "SELECT step_key, status FROM grant_proposal_approval_steps
+              WHERE workflow_id = ? AND step_key IN ('research_office', 'vpaa', 'finance')"
         );
-        $insertFinance = $crad->prepare("
+        $insertStep = $crad->prepare("
             INSERT INTO grant_proposal_approval_steps
                 (workflow_id, grant_application_id, step_key, step_order, step_label,
                  approver_role_key, status, created_at, updated_at)
-            VALUES (?, ?, 'finance', 5, 'Finance Office', 'finance', ?, NOW(), NOW())
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         ");
-        $bumpVpaaOrder = $crad->prepare("
+        $normalizeOrder = $crad->prepare("
             UPDATE grant_proposal_approval_steps
-               SET step_order = 6, updated_at = NOW()
-             WHERE workflow_id = ? AND step_key = 'vpaa'
+               SET step_order = ?, step_label = ?, updated_at = NOW()
+             WHERE workflow_id = ? AND step_key = ?
         ");
 
         foreach ($workflows as $workflow) {
@@ -274,52 +275,141 @@ function grantMigrateEnsureFinanceApprovalStep(PDO $crad): void
                 continue;
             }
 
-            $hasFinance->execute([$workflowId]);
-            if ($hasFinance->fetch()) {
-                $bumpVpaaOrder->execute([$workflowId]);
-                continue;
-            }
-
-            $stepStatus->execute([$workflowId]);
+            $stepStatuses->execute([$workflowId]);
             $statusByKey = [];
-            foreach ($stepStatus->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
+            foreach ($stepStatuses->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
                 $statusByKey[(string) ($row['step_key'] ?? '')] = (string) ($row['status'] ?? '');
             }
 
-            $roStatus    = $statusByKey['research_office'] ?? 'Queued';
-            $vpaaStatus  = $statusByKey['vpaa'] ?? 'Queued';
-            $wfStatus    = (string) ($workflow['workflow_status'] ?? '');
-            $currentStep = (string) ($workflow['current_step_key'] ?? '');
-
-            if ($vpaaStatus === 'Approved' || $wfStatus === 'Completed') {
-                $financeStatus = 'Approved';
-            } elseif ($roStatus === 'Approved' && in_array($vpaaStatus, ['Queued', 'Pending'], true)
-                && in_array($currentStep, ['vpaa', 'finance'], true) && $wfStatus === 'In Progress') {
-                $financeStatus = 'Pending';
-            } elseif ($roStatus === 'Approved') {
-                $financeStatus = 'Queued';
+            $hasStep->execute([$workflowId, 'vpaa']);
+            if (!$hasStep->fetch()) {
+                $insertStep->execute([$workflowId, $appId, 'vpaa', 5, 'VPAA Sign-off', 'vpaa', 'Queued']);
             } else {
-                $financeStatus = 'Queued';
+                $normalizeOrder->execute([5, 'VPAA Sign-off', $workflowId, 'vpaa']);
             }
 
-            $insertFinance->execute([$workflowId, $appId, $financeStatus]);
-            $bumpVpaaOrder->execute([$workflowId]);
+            $hasStep->execute([$workflowId, 'finance']);
+            if (!$hasStep->fetch()) {
+                $roStatus   = $statusByKey['research_office'] ?? 'Queued';
+                $vpaaStatus = $statusByKey['vpaa'] ?? 'Queued';
+                $wfStatus   = (string) ($workflow['workflow_status'] ?? '');
 
-            if ($financeStatus === 'Pending' && $currentStep === 'vpaa' && $wfStatus === 'In Progress') {
-                $crad->prepare("
-                    UPDATE grant_proposal_approval_workflows
-                       SET current_step_key = 'finance', updated_at = NOW()
-                     WHERE id = ?
-                ")->execute([$workflowId]);
-                $crad->prepare("
-                    UPDATE grant_proposal_approval_steps
-                       SET status = 'Queued', updated_at = NOW()
-                     WHERE workflow_id = ? AND step_key = 'vpaa' AND status = 'Pending'
-                ")->execute([$workflowId]);
+                if ($wfStatus === 'Completed') {
+                    $financeStatus = 'Approved';
+                } elseif ($vpaaStatus === 'Approved') {
+                    $financeStatus = in_array((string) ($workflow['current_step_key'] ?? ''), ['finance'], true)
+                        ? 'Pending' : 'Queued';
+                } elseif ($roStatus === 'Approved') {
+                    $financeStatus = 'Queued';
+                } else {
+                    $financeStatus = 'Queued';
+                }
+
+                $insertStep->execute([$workflowId, $appId, 'finance', 6, 'Finance Office', 'finance', $financeStatus]);
+            } else {
+                $normalizeOrder->execute([6, 'Finance Office', $workflowId, 'finance']);
             }
+
+            grantFixApprovalWorkflowStepPointer($crad, $workflowId, $workflow);
         }
     } catch (Throwable $e) {
         error_log('grantMigrateEnsureFinanceApprovalStep: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Correct in-progress workflows where Finance was queued before VPAA.
+ */
+function grantFixApprovalWorkflowStepPointer(PDO $crad, int $workflowId, array $workflow): void
+{
+    $wfStatus = (string) ($workflow['workflow_status'] ?? '');
+    $appId    = (int) ($workflow['grant_application_id'] ?? 0);
+
+    $stmt = $crad->prepare("
+        SELECT step_key, status
+          FROM grant_proposal_approval_steps
+         WHERE workflow_id = ?
+           AND step_key IN ('research_office', 'vpaa', 'finance')
+    ");
+    $stmt->execute([$workflowId]);
+    $statusByKey = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
+        $statusByKey[(string) ($row['step_key'] ?? '')] = (string) ($row['status'] ?? '');
+    }
+
+    $roStatus      = $statusByKey['research_office'] ?? 'Queued';
+    $vpaaStatus    = $statusByKey['vpaa'] ?? 'Queued';
+    $financeStatus = $statusByKey['finance'] ?? 'Queued';
+    $currentStep   = (string) ($workflow['current_step_key'] ?? '');
+
+    if ($wfStatus === 'Completed' && $vpaaStatus === 'Approved' && $financeStatus !== 'Approved') {
+        $crad->prepare("
+            UPDATE grant_proposal_approval_workflows
+               SET workflow_status = 'In Progress',
+                   current_step_key = 'finance',
+                   completed_at = NULL,
+                   updated_at = NOW()
+             WHERE id = ?
+        ")->execute([$workflowId]);
+        $crad->prepare("
+            UPDATE grant_proposal_approval_steps
+               SET status = 'Pending', updated_at = NOW()
+             WHERE workflow_id = ? AND step_key = 'finance' AND status != 'Approved'
+        ")->execute([$workflowId]);
+        if ($appId > 0) {
+            $crad->prepare("
+                UPDATE grant_applications
+                   SET status = 'Under Review', updated_at = NOW()
+                 WHERE id = ? AND status = 'Approved'
+            ")->execute([$appId]);
+        }
+
+        return;
+    }
+
+    if ($wfStatus !== 'In Progress') {
+        return;
+    }
+
+    if ($currentStep === 'finance' && $vpaaStatus !== 'Approved') {
+        $crad->prepare("
+            UPDATE grant_proposal_approval_workflows
+               SET current_step_key = 'vpaa', updated_at = NOW()
+             WHERE id = ?
+        ")->execute([$workflowId]);
+        if ($roStatus === 'Approved' && in_array($vpaaStatus, ['Queued', 'Pending'], true)) {
+            $crad->prepare("
+                UPDATE grant_proposal_approval_steps
+                   SET status = 'Pending', updated_at = NOW()
+                 WHERE workflow_id = ? AND step_key = 'vpaa'
+            ")->execute([$workflowId]);
+        }
+        if ($financeStatus === 'Pending') {
+            $crad->prepare("
+                UPDATE grant_proposal_approval_steps
+                   SET status = 'Queued', updated_at = NOW()
+                 WHERE workflow_id = ? AND step_key = 'finance'
+            ")->execute([$workflowId]);
+        }
+
+        return;
+    }
+
+    if ($vpaaStatus === 'Approved'
+        && in_array($financeStatus, ['Queued', 'Pending'], true)
+        && $currentStep === 'vpaa') {
+        $crad->prepare("
+            UPDATE grant_proposal_approval_workflows
+               SET current_step_key = 'finance', updated_at = NOW()
+             WHERE id = ?
+        ")->execute([$workflowId]);
+        if ($financeStatus === 'Queued') {
+            $crad->prepare("
+                UPDATE grant_proposal_approval_steps
+                   SET status = 'Pending', updated_at = NOW()
+                 WHERE workflow_id = ? AND step_key = 'finance'
+            ")->execute([$workflowId]);
+        }
     }
 }
 

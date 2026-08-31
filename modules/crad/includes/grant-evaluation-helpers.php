@@ -68,12 +68,24 @@ function grantApprovalStepKeyForRole(string $roleKey): ?string
     return null;
 }
 
-/** Dept. Chair, Dean, Research Office, Finance, VPAA — view scores before sign-off. */
+/** Dept. Chair, Dean, Research Office, VPAA, Finance — view scores before sign-off. */
 function grantIsGrantApproverEvaluationViewer(): bool
 {
     $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
 
     return grantApprovalStepKeyForRole($roleKey) !== null;
+}
+
+/** CRAD Officer / superadmin — monitor all proposals in the approval pipeline. */
+function grantIsGrantWorkflowMonitor(): bool
+{
+    if (grantIsAdviserEvaluationViewer() || grantIsGrantApproverEvaluationViewer()) {
+        return false;
+    }
+
+    require_once __DIR__ . '/grant-approval-helpers.php';
+
+    return grantUserCanMonitorApprovalWorkflow();
 }
 
 function grantUserCanEvaluate(): bool
@@ -483,6 +495,101 @@ function grantApproverEvaluationQueue(PDO $crad): array
     $stmt->execute([$stepKey, $committeeType, $adviserType, $stepKey]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+/**
+ * All proposals in the approval workflow (CRAD Officer monitor view).
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function grantMonitorEvaluationQueue(PDO $crad): array
+{
+    require_once __DIR__ . '/grant-approval-helpers.php';
+    grantEnsureApprovalTables($crad);
+    grantBackfillApprovalWorkflows($crad);
+    grantEnsureEvaluationTables($crad);
+
+    $committeeType = grantEvaluationTypeCommittee();
+    $adviserType   = grantEvaluationTypeAdviser();
+
+    $stmt = $crad->query("
+        SELECT
+            ga.id,
+            ga.grant_opportunity_id,
+            ga.applicant_name,
+            ga.applicant_user_id,
+            ga.college_dept,
+            ga.requested_budget,
+            ga.research_title,
+            ga.abstract,
+            ga.objectives,
+            ga.proposal_pdf,
+            ga.proposal_pdf_original,
+            ga.supporting_docs,
+            ga.supporting_docs_original,
+            ga.ethics_doc,
+            ga.ethics_doc_original,
+            ga.status,
+            ga.submitted_at,
+            ga.updated_at,
+            ga.proposal_reference,
+            ga.current_version,
+            go.funding_title,
+            go.max_funding_cap,
+            go.eligibility,
+            go.application_deadline,
+            w.id AS workflow_id,
+            w.current_step_key,
+            w.workflow_status,
+            w.updated_at AS workflow_updated_at,
+            cs.step_label AS current_step_label,
+            committee_eval.id AS committee_evaluation_id,
+            committee_eval.total_score AS committee_total_score,
+            committee_eval.submitted_at AS committee_evaluated_at,
+            adviser_eval.id AS adviser_evaluation_id,
+            adviser_eval.total_score AS adviser_total_score,
+            adviser_eval.submitted_at AS adviser_evaluated_at
+        FROM grant_proposal_approval_workflows w
+        INNER JOIN grant_applications ga ON ga.id = w.grant_application_id
+        INNER JOIN grant_opportunities go ON go.id = ga.grant_opportunity_id
+        LEFT JOIN grant_proposal_approval_steps cs
+               ON cs.workflow_id = w.id AND cs.step_key = w.current_step_key
+        LEFT JOIN grant_proposal_evaluations committee_eval
+               ON committee_eval.id = (
+                    SELECT MAX(e2.id)
+                      FROM grant_proposal_evaluations e2
+                     WHERE e2.grant_application_id = ga.id
+                       AND e2.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
+                       AND e2.evaluation_type = '{$committeeType}'
+               )
+        LEFT JOIN grant_proposal_evaluations adviser_eval
+               ON adviser_eval.id = (
+                    SELECT MAX(e3.id)
+                      FROM grant_proposal_evaluations e3
+                     WHERE e3.grant_application_id = ga.id
+                       AND e3.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
+                       AND e3.evaluation_type = '{$adviserType}'
+               )
+        ORDER BY w.updated_at DESC, ga.id DESC
+    ");
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+/** @return array{pending: int, scored: int} */
+function grantMonitorEvaluationCounts(PDO $crad): array
+{
+    require_once __DIR__ . '/grant-approval-helpers.php';
+    grantEnsureApprovalTables($crad);
+
+    $pending = (int) $crad->query("
+        SELECT COUNT(*) FROM grant_proposal_approval_workflows WHERE workflow_status = 'In Progress'
+    ")->fetchColumn();
+    $scored = (int) $crad->query("
+        SELECT COUNT(*) FROM grant_proposal_approval_workflows WHERE workflow_status = 'Completed'
+    ")->fetchColumn();
+
+    return ['pending' => $pending, 'scored' => $scored];
 }
 
 function grantApproverSignoffCount(PDO $crad): int
