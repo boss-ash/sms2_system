@@ -70,6 +70,7 @@ if ($crad) {
             }
             if ($selected && $isAdviserView) {
                 require_once __DIR__ . '/../includes/grant-approval-helpers.php';
+                $pipelineEvals = grantGetPipelineEvaluationsForApplication($crad, $selectedId);
                 $evals = grantGetLatestEvaluationsForApplications($crad, [$selectedId]);
                 $committeeEval = $evals[$selectedId] ?? null;
                 $existingEval = grantGetAdviserEvaluationByApplication($crad, $selectedId);
