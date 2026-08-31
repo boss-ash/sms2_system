@@ -325,6 +325,25 @@ document.addEventListener('DOMContentLoaded', function () {
     var inputs = document.querySelectorAll('.gre-score-input');
     var totalEl = document.getElementById('greTotalScore');
     var form = document.getElementById('greEvalForm');
+    var revisionGroup = document.getElementById('greRevisionReasonGroup');
+    var revisionInput = document.getElementById('greRevisionReason');
+    var recommendationInputs = document.querySelectorAll('input[name="recommendation"]');
+
+    function updateRecommendationUi() {
+        if (!revisionGroup) return;
+        var selected = document.querySelector('input[name="recommendation"]:checked');
+        var needsRevision = selected && selected.value === 'require_revisions';
+        revisionGroup.style.display = needsRevision ? '' : 'none';
+        if (revisionInput) {
+            revisionInput.required = !!needsRevision;
+            if (!needsRevision) revisionInput.value = '';
+        }
+    }
+
+    recommendationInputs.forEach(function (inp) {
+        inp.addEventListener('change', updateRecommendationUi);
+    });
+    updateRecommendationUi();
 
     function updateTotal() {
         if (!totalEl) return;
@@ -372,6 +391,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 alertEl.style.color = '#b91c1c';
                 alertEl.textContent = 'Total score cannot exceed 100.';
                 return;
+            }
+
+            var recommendation = document.querySelector('input[name="recommendation"]:checked');
+            if (!recommendation) {
+                alertEl.style.display = '';
+                alertEl.style.background = 'rgba(239,68,68,.08)';
+                alertEl.style.color = '#b91c1c';
+                alertEl.textContent = 'Please select a recommendation (Disapprove or Require Revisions).';
+                return;
+            }
+            if (recommendation.value === 'require_revisions') {
+                var reason = revisionInput ? revisionInput.value.trim() : '';
+                if (!reason) {
+                    alertEl.style.display = '';
+                    alertEl.style.background = 'rgba(239,68,68,.08)';
+                    alertEl.style.color = '#b91c1c';
+                    alertEl.textContent = 'Revision reason is required when selecting Require Revisions.';
+                    if (revisionInput) revisionInput.focus();
+                    return;
+                }
             }
 
             var btn = document.getElementById('greSubmitBtn');

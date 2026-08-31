@@ -61,11 +61,19 @@ switch ($action) {
 
         $result = grantSubmitProposalEvaluation($crad, $applicationId, $_POST);
         if ($result['ok']) {
+            $message = 'Evaluation submitted successfully.';
+            if (($result['recommendation'] ?? '') === 'disapprove') {
+                $message = 'Proposal disapproved. The researcher has been notified.';
+            } elseif (($result['recommendation'] ?? '') === 'require_revisions') {
+                $message = 'Revision request sent. The researcher has been notified.';
+            }
             echo json_encode([
-                'success'     => true,
-                'message'     => 'Evaluation submitted successfully.',
-                'id'          => $result['id'],
-                'total_score' => $result['total_score'],
+                'success'        => true,
+                'message'        => $message,
+                'id'             => $result['id'],
+                'total_score'    => $result['total_score'],
+                'recommendation' => $result['recommendation'] ?? null,
+                'new_status'     => $result['new_status'] ?? null,
             ]);
         } else {
             http_response_code(400);
