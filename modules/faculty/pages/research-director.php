@@ -793,6 +793,31 @@ if ($crad) {
         exit;
     }
 
+    if ($view === 'venues' && $_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['venue_action'] ?? '') === 'update_capacity') {
+        header('Content-Type: application/json; charset=utf-8');
+        if (!csrfVerify()) {
+            echo json_encode(['ok' => false, 'message' => 'Security token expired.']);
+            exit;
+        }
+        $venueId  = (int) ($_POST['venue_id'] ?? 0);
+        $capacity = (int) ($_POST['capacity'] ?? 0);
+        if ($venueId < 1 || $capacity < 1) {
+            echo json_encode(['ok' => false, 'message' => 'Capacity must be at least 1.']);
+            exit;
+        }
+        try {
+            $upd = $crad->prepare(
+                "UPDATE research_venues SET capacity = :capacity, updated_at = NOW() WHERE id = :id"
+            );
+            $upd->execute([':capacity' => $capacity, ':id' => $venueId]);
+            echo json_encode(['ok' => true, 'capacity' => $capacity]);
+        } catch (Throwable $e) {
+            error_log('Research director update venue capacity failed: ' . $e->getMessage());
+            echo json_encode(['ok' => false, 'message' => 'Database error.']);
+        }
+        exit;
+    }
+
     if ($view === 'venues' && $_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['venue_action'] ?? '') === 'add') {
         if (!csrfVerify()) {
             $venueMessage = ['type' => 'danger', 'text' => 'Security token expired. Refresh the page and try again.'];
@@ -2118,6 +2143,29 @@ renderBreadcrumbs($breadcrumbs);
     [data-theme="dark"] .venue-status-select--available   { background-color: rgba(52,211,153,.18);  color: #6ee7b7;  border-color: rgba(52,211,153,.35); }
     [data-theme="dark"] .venue-status-select--reserved    { background-color: rgba(139,92,246,.20);  color: #c4b5fd;  border-color: rgba(139,92,246,.38); }
     [data-theme="dark"] .venue-status-select--unavailable { background-color: rgba(248,113,113,.18); color: #fca5a5;  border-color: rgba(248,113,113,.35); }
+    .venue-capacity-input {
+        width: 5.5rem;
+        padding: .35rem .55rem;
+        border: 1px solid var(--sms-border, #dbe4f0);
+        border-radius: 8px;
+        font-size: .88rem;
+        font-weight: 700;
+        color: var(--sms-text, #0f172a);
+        background: var(--sms-surface, #fff);
+        text-align: center;
+    }
+    .venue-capacity-input:focus {
+        border-color: var(--sms-primary-light);
+        box-shadow: 0 0 0 3px var(--sms-input-focus);
+        outline: none;
+    }
+    .venue-capacity-input:disabled { opacity: .55; cursor: wait; }
+    .venue-capacity-input.is-saving { opacity: .65; }
+    [data-theme="dark"] .venue-capacity-input {
+        background: var(--sms-surface-muted, #1e293b);
+        color: var(--sms-text, #e2e8f0);
+        border-color: rgba(148,163,184,.28);
+    }
     /* ── Responsive ───────────────────────────────────────────────────── */
     @media (max-width: 1100px) {
         .director-stats            { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -2372,7 +2420,17 @@ renderBreadcrumbs($breadcrumbs);
                         ?>
                         <tr data-director-row data-status="<?= htmlspecialchars($vStatusKey) ?>" data-venue-id="<?= $vid ?>">
                             <td><strong><?= htmlspecialchars((string) ($row['venue_name'] ?? 'Venue')) ?></strong></td>
-                            <td><?= (int) ($row['capacity'] ?? 0) ?></td>
+                            <td>
+                                <input type="number"
+                                       class="venue-capacity-input"
+                                       data-venue-capacity-input
+                                       data-venue-id="<?= $vid ?>"
+                                       value="<?= (int) ($row['capacity'] ?? 0) ?>"
+                                       min="1"
+                                       step="1"
+                                       inputmode="numeric"
+                                       aria-label="Capacity for <?= htmlspecialchars((string) ($row['venue_name'] ?? 'venue')) ?>">
+                            </td>
                             <td><?= htmlspecialchars((string) ($row['venue_type'] ?? '')) ?></td>
                             <td>
                                 <select class="venue-status-select venue-status-select--<?= htmlspecialchars($vStatusKey) ?>"
@@ -2672,7 +2730,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }).join('');
                 return '<tr data-director-row data-status="' + esc(s) + '" data-venue-id="' + vid + '">' +
                     '<td><strong>' + esc(row.venue_name || 'Venue') + '</strong></td>' +
-                    '<td>' + (parseInt(row.capacity, 10) || 0) + '</td>' +
+                    '<td><input type="number" class="venue-capacity-input" data-venue-capacity-input ' +
+                        'data-venue-id="' + vid + '" value="' + (parseInt(row.capacity, 10) || 0) + '" ' +
+                        'min="1" step="1" inputmode="numeric" ' +
+                        'aria-label="Capacity for ' + esc(row.venue_name || 'venue') + '"></td>' +
                     '<td>' + esc(row.venue_type || '') + '</td>' +
                     '<td><select class="venue-status-select venue-status-select--' + esc(s) + '" ' +
                         'data-venue-status-select data-venue-id="' + vid + '" ' +
@@ -2684,6 +2745,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }).join('');
             rows = Array.from(document.querySelectorAll('[data-director-row]'));
             bindStatusSelects();
+            bindCapacityInputs();
             applyFilters();
             return;
         }
@@ -2793,6 +2855,69 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 sel.disabled = false;
                 sel.classList.remove('is-saving');
+            });
+        });
+    };
+
+    const bindCapacityInputs = function () {
+        document.querySelectorAll('[data-venue-capacity-input]').forEach(function (inp) {
+            if (inp.dataset.bound === '1') return;
+            inp.dataset.bound = '1';
+            inp.dataset.lastSaved = String(parseInt(inp.value, 10) || 0);
+
+            const saveCapacity = async function () {
+                const venueId = parseInt(inp.dataset.venueId, 10);
+                const capacity = parseInt(inp.value, 10);
+                const lastSaved = parseInt(inp.dataset.lastSaved, 10) || 0;
+                if (!capacity || capacity < 1) {
+                    inp.value = String(lastSaved || 1);
+                    return;
+                }
+                if (capacity === lastSaved) return;
+
+                const row = inp.closest('[data-director-row]');
+                const updCell = row ? row.querySelector('.venue-updated-cell') : null;
+                inp.disabled = true;
+                inp.classList.add('is-saving');
+                try {
+                    const body = new URLSearchParams();
+                    body.set('venue_action', 'update_capacity');
+                    body.set('venue_id', venueId);
+                    body.set('capacity', capacity);
+                    body.set('csrf_token', csrfToken);
+                    const res = await fetch(pageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'same-origin',
+                        body: body.toString()
+                    });
+                    const data = await res.json();
+                    if (!data.ok) throw new Error(data.message || 'Save failed');
+                    inp.dataset.lastSaved = String(capacity);
+                    if (updCell) {
+                        const now = new Date();
+                        updCell.textContent = now.toLocaleString('en-US', {
+                            month: 'short', day: 'numeric', year: 'numeric',
+                            hour: 'numeric', minute: '2-digit', hour12: true
+                        });
+                    }
+                } catch (err) {
+                    inp.value = String(lastSaved || capacity);
+                    alert('Could not save capacity. Please try again.');
+                }
+                inp.disabled = false;
+                inp.classList.remove('is-saving');
+            };
+
+            inp.addEventListener('blur', saveCapacity);
+            inp.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    inp.blur();
+                }
             });
         });
     };
@@ -3101,7 +3226,10 @@ document.addEventListener('DOMContentLoaded', function () {
     <?php endif; ?>
 
     applyFilters();
-    if (isVenueView) bindStatusSelects();
+    if (isVenueView) {
+        bindStatusSelects();
+        bindCapacityInputs();
+    }
     if (isFinalizeView) bindFinalizeButtons();
     if (isProposedView) bindReviewButtons();
     refreshRows();
