@@ -2059,10 +2059,17 @@ function grantProposalNotificationsForCurrentUser(int $limit = 8): array
 
         return array_map(static function (array $row): array {
             $type = (string) ($row['type'] ?? '');
-            $icon = $type === 'grant_rejected' ? 'fa-times-circle' : 'fa-edit';
+            $icon = match ($type) {
+                'grant_rejected'        => 'fa-times-circle',
+                'grant_approved_funded' => 'fa-check-circle',
+                'grant_fund_release'    => 'fa-money-bill-wave',
+                'grant_approval_return' => 'fa-undo',
+                default                 => 'fa-edit',
+            };
             return [
                 'id' => -2000000 - (int) ($row['id'] ?? 0),
                 'batch_key' => (string) ($row['event_key'] ?? ''),
+                'type' => $type,
                 'icon' => $icon,
                 'status' => ((int) ($row['is_read'] ?? 0) === 1) ? 'read' : 'unread',
                 'title' => (string) ($row['title'] ?? 'Grant Proposal Update'),

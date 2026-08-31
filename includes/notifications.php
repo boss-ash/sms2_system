@@ -935,13 +935,26 @@ function smsGrantProposalNotificationsPayload(int $limit = 12): array
         $created = strtotime((string) ($row['created_at'] ?? '')) ?: time();
         $status = (string) ($row['status'] ?? 'read');
         $body = (string) ($row['body'] ?? '');
-        $type = (string) ($row['batch_key'] ?? '');
-        $isRevision = str_contains($type, 'grant_revision_required');
+        $batchKey = (string) ($row['batch_key'] ?? '');
+        $notifType = (string) ($row['type'] ?? '');
+        $isRevision = $notifType === 'grant_revision_required'
+            || str_contains($batchKey, 'grant_revision_required')
+            || str_contains($batchKey, 'grant_approval_return');
+        $isFundRelease = $notifType === 'grant_fund_release' || str_contains($batchKey, 'grant_fund_release');
+        $isApprovedFunded = $notifType === 'grant_approved_funded' || str_contains($batchKey, 'grant_approved_funded');
+        $icon = (string) ($row['icon'] ?? 'fa-hand-holding-usd');
+        if ($isFundRelease) {
+            $icon = 'fa-money-bill-wave';
+        } elseif ($isApprovedFunded) {
+            $icon = 'fa-check-circle';
+        } elseif ($isRevision) {
+            $icon = 'fa-edit';
+        }
         return [
             'id' => (int) ($row['id'] ?? 0),
-            'batch_key' => (string) ($row['batch_key'] ?? ''),
-            'icon' => $isRevision ? 'fa-edit' : ((string) ($row['icon'] ?? 'fa-hand-holding-usd')),
-            'class' => $isRevision ? 'text-warning' : 'text-primary',
+            'batch_key' => $batchKey,
+            'icon' => $icon,
+            'class' => $isRevision ? 'text-warning' : ($isFundRelease ? 'text-success' : 'text-primary'),
             'label' => (string) ($row['title'] ?? 'Grant Proposal Update'),
             'body' => $body,
             'preview' => smsNotificationPreviewText($body),

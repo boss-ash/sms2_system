@@ -9,9 +9,14 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/grant-helpers.php';
 
-function grantBudgetDisbursementUrl(): string
+function grantBudgetDisbursementUrl(int $applicationId = 0): string
 {
-    return BASE_URL . '/modules/crad/pages/budget-disbursement.php';
+    $url = BASE_URL . '/modules/crad/pages/budget-disbursement.php';
+    if ($applicationId > 0) {
+        $url .= '?id=' . $applicationId;
+    }
+
+    return $url;
 }
 
 /**
@@ -490,8 +495,11 @@ function grantReleaseFundingTranche(
         grantNotifyApplicantFundReleased($crad, $applicationId, $row, $amount, $reference, $userName);
 
         return [
-            'ok'     => true,
-            'detail' => grantGetFundingDisbursementDetail($crad, $applicationId),
+            'ok'                => true,
+            'detail'            => grantGetFundingDisbursementDetail($crad, $applicationId),
+            'reference_number'  => $reference,
+            'amount_released'   => $amount,
+            'tranche_number'    => (int) ($row['tranche_number'] ?? 0),
         ];
     } catch (Throwable $e) {
         error_log('grantReleaseFundingTranche: ' . $e->getMessage());
@@ -564,6 +572,6 @@ function grantNotifyApplicantFundReleased(
         $eventKey,
         'Fund Tranche Released',
         $body,
-        grantBudgetDisbursementUrl()
+        grantBudgetDisbursementUrl($applicationId)
     );
 }

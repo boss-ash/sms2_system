@@ -99,9 +99,16 @@ switch ($action) {
 
         $overview = grantGetFundedDisbursementOverview($crad);
         $applicationId = (int) (($result['detail']['application']['grant_application_id'] ?? 0));
+        $reference = (string) ($result['reference_number'] ?? '');
+        $message = 'Fund release recorded successfully.';
+        if ($reference !== '') {
+            $message .= ' Reference: ' . $reference . '.';
+        }
+
         echo json_encode([
             'success'              => true,
-            'message'              => 'Fund release recorded successfully.',
+            'message'              => $message,
+            'reference_number'     => $reference,
             'detail'               => $result['detail'],
             'overview'             => $overview,
             'overview_fingerprint' => grantFundingOverviewFingerprint($overview),
