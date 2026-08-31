@@ -1829,6 +1829,25 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
     $recommendation = (string) $parsedRecommendation['recommendation'];
     $revisionReason = (string) $parsedRecommendation['revision_reason'];
 
+    $newStatus = grantStatusForRecommendation($recommendation);
+    if ($newStatus === null) {
+        return ['ok' => false, 'error' => 'Invalid recommendation selected.'];
+    }
+
+    $currentStatus = (string) ($application['status'] ?? '');
+    $shouldUpdateStatus = true;
+    if ($recommendation === 'recommend') {
+        if (in_array($currentStatus, ['Rejected', 'Revision Required', 'Approved', 'Denied', 'Withdrawn'], true)) {
+            $newStatus = $currentStatus;
+            $shouldUpdateStatus = false;
+        } elseif ($currentStatus === 'Submitted') {
+            $newStatus = 'Under Review';
+        } else {
+            $newStatus = $currentStatus;
+            $shouldUpdateStatus = false;
+        }
+    }
+
     $criteria = grantRubricCriteria();
     $parsed   = grantValidateRubricScoresFromInput($input);
     if (empty($parsed['ok'])) {
