@@ -460,6 +460,21 @@ function grantStatusArchived(): string
     return 'Archived';
 }
 
+/**
+ * Application statuses where funded-research files remain accessible.
+ *
+ * @return list<string>
+ */
+function grantPostFundingApplicationStatuses(): array
+{
+    return [
+        grantStatusApprovedFunded(),
+        grantStatusFinalOutputSubmitted(),
+        grantStatusOutputVerified(),
+        grantStatusArchived(),
+    ];
+}
+
 function grantApplicationStatusLabel(string $status): string
 {
     return match ($status) {

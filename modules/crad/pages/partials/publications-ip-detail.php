@@ -62,6 +62,11 @@ $fileBase = (string) ($detail['file_base_url'] ?? '');
             <a class="gpip-btn gpip-btn-ghost" href="<?= htmlspecialchars(grantFundedResearchUrl((int) ($app['id'] ?? 0))) ?>">
                 <?= smsIcon('flask') ?> Funded Research
             </a>
+            <?php if (grantUserCanArchiveDocuments() && in_array((string) ($app['status'] ?? ''), [grantStatusOutputVerified(), grantStatusArchived()], true)): ?>
+            <a class="gpip-btn gpip-btn-ghost" href="<?= htmlspecialchars(grantDocumentRepositoryUrl((int) ($app['id'] ?? 0))) ?>">
+                <?= smsIcon('archive') ?> Document Repository
+            </a>
+            <?php endif; ?>
         </div>
     </div>
 

@@ -10,6 +10,7 @@ require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-final-output-helpers.php';
 require_once __DIR__ . '/../includes/grant-funded-research-helpers.php';
+require_once __DIR__ . '/../includes/grant-document-repository-helpers.php';
 
 requireAuth();
 grantRequirePublicationsIpAccess();
@@ -57,7 +58,7 @@ $pendingVerifyCount = count(array_filter($overview, static fn(array $r): bool =>
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-publications-ip.css?v=1" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-publications-ip.css?v=2" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gpip-alert" role="alert"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?></div>
@@ -244,5 +245,5 @@ renderBreadcrumbs($breadcrumbs);
     <?php endif; ?>
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-publications-ip-live.js?v=1"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-publications-ip-live.js?v=2"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

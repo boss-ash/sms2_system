@@ -129,7 +129,7 @@ switch ($action) {
         $overview = grantGetFinalOutputOverview($crad);
         echo json_encode([
             'success'              => true,
-            'message'              => 'Final output submitted successfully. Status: FINAL_OUTPUT_SUBMITTED.',
+            'message'              => 'Final output submitted. Status: FINAL_OUTPUT_SUBMITTED.',
             'detail'               => $result['detail'],
             'overview'             => $overview,
             'pending_count'        => count(array_filter($overview, static fn(array $r): bool => !empty($r['needs_verification']))),

@@ -44,7 +44,7 @@ if (!$row) {
     exit('Milestone not found.');
 }
 
-if ((string) ($row['application_status'] ?? '') !== grantStatusApprovedFunded()) {
+if (!in_array((string) ($row['application_status'] ?? ''), grantPostFundingApplicationStatuses(), true)) {
     http_response_code(403);
     exit('Access denied.');
 }

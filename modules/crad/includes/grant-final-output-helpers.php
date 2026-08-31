@@ -849,7 +849,7 @@ function grantNotifyApplicantFinalOutputVerified(
     $refLabel = $ref !== '' ? $ref : ('Proposal #' . $applicationId);
 
     $body = sprintf(
-        '%s — your final output has been verified and recorded in the Publications & IP Repository (%s). Verified by %s.',
+        '%s — your final output has been verified (OUTPUT_VERIFIED) and recorded in the Publications & IP Repository (%s). Verified by %s. Proceed to Document Repository for permanent archiving.',
         $refLabel,
         $repositoryReference,
         $verifiedByName !== '' ? $verifiedByName : 'CRAD Staff'
