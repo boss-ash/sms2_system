@@ -111,12 +111,12 @@ if ($pdo) {
              VALUES
                 (?, ?, ?, ?, ?, NULL, 'active', ?, NOW(), 0, 0, NULL)"
         );
-        $seedFaculty->execute(['rsantos', 'rsantos@bestlink.edu.ph', $facultyHash, 'Dr. Roberto M. Santos', 'adviser', 'Research Adviser']);
-        $seedFaculty->execute(['researchdirector', 'research.director@bestlink.edu.ph', $facultyHash, 'Research Director', 'research_director', 'Research Director']);
-        $seedFaculty->execute(['grammarian', 'grammarian@bestlink.edu.ph', password_hash('@grammarian123', PASSWORD_DEFAULT), 'Grammarian', 'grammarian', 'Research grammar and manuscript evaluator']);
-        $seedFaculty->execute(['jobert.valentino', 'jobert.valentino@bestlink.edu.ph', password_hash('@panel123', PASSWORD_DEFAULT), 'Dr. Jobert Valentino', 'panel', 'Panel Member']);
-        $seedFaculty->execute(['jonathan.estrada', 'jonathan.estrada@bestlink.edu.ph', password_hash('@panel123', PASSWORD_DEFAULT), 'Dr. Jonathan Estrada', 'panel', 'Panel Member']);
-        $seedFaculty->execute(['michelle.guevarra', 'michelle.guevarra@bestlink.edu.ph', password_hash('@panel123', PASSWORD_DEFAULT), 'Dr. Michelle Guevarra', 'panel', 'Panel Member']);
+        $seedFaculty->execute(['rsantos', 'rsantos@bestlink.edu.ph', password_hash('@Adviser123', PASSWORD_DEFAULT), 'Dr. Roberto M. Santos', 'adviser', 'Research Adviser']);
+        $seedFaculty->execute(['researchdirector', 'researchdirector@bestlink.edu.ph', password_hash('@Director123', PASSWORD_DEFAULT), 'Research Director', 'research_director', 'Research Director']);
+        $seedFaculty->execute(['grammarian', 'grammarian@bestlink.edu.ph', password_hash('@Grammarian123', PASSWORD_DEFAULT), 'Grammarian', 'grammarian', 'Research grammar and manuscript evaluator']);
+        $seedFaculty->execute(['jobertvalentino', 'jobertvalentino@bestlink.edu.ph', password_hash('@Adviser123', PASSWORD_DEFAULT), 'Dr. Jobert Valentino', 'panel', 'Panel Member']);
+        $seedFaculty->execute(['jonathanestrada', 'jonathanestrada@bestlink.edu.ph', password_hash('@Adviser123', PASSWORD_DEFAULT), 'Dr. Jonathan Estrada', 'panel', 'Panel Member']);
+        $seedFaculty->execute(['michelleguevarra', 'michelleguevarra@bestlink.edu.ph', password_hash('@Adviser123', PASSWORD_DEFAULT), 'Dr. Michelle Guevarra', 'panel', 'Panel Member']);
         $insFacultyPerm = $pdo->prepare(
             "INSERT INTO role_permissions (role_key, module_key, granted)
              VALUES (?, 'faculty', 1)
@@ -127,7 +127,7 @@ if ($pdo) {
         }
 
         // Research Grant account (CRAD Officer role)
-        $rgHash = password_hash('@researchgrant123', PASSWORD_DEFAULT);
+        $rgHash = password_hash('@Grant123', PASSWORD_DEFAULT);
         $pdo->prepare(
             "INSERT IGNORE INTO users
                 (username, email, password_hash, full_name, role_key, student_id, status, password_changed_at, must_change_password, failed_login_attempts, locked_until)
@@ -141,7 +141,7 @@ if ($pdo) {
         )->execute();
 
         // Review Committee account (grant proposal evaluator)
-        $rcHash = password_hash('@reviewcommittee123', PASSWORD_DEFAULT);
+        $rcHash = password_hash('@Committee123', PASSWORD_DEFAULT);
         $pdo->prepare(
             "INSERT IGNORE INTO users
                 (username, email, password_hash, full_name, role_key, student_id, status, password_changed_at, must_change_password, failed_login_attempts, locked_until)
