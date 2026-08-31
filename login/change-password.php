@@ -46,6 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Current password is incorrect.';
         } elseif (strlen($password) < $minLen) {
             $error = "New password must be at least {$minLen} characters.";
+        } elseif (($strength = smsValidatePasswordStrength($password)) && !$strength['ok']) {
+            $error = $strength['message'];
         } elseif ($password !== $confirm) {
             $error = 'New passwords do not match.';
         } elseif (smsSetUserPassword((int) $userId, $password, false)) {
@@ -72,20 +74,11 @@ body.login-page {
     justify-content: center;
     padding: 1.5rem;
 }
-.fp-card {
-    width: min(440px, 100%);
-    background: #fff;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 20px 50px rgba(0,0,0,.25);
-}
-.fp-card h1 { font-size: 1.6rem; font-weight: 800; margin: 0 0 .5rem; }
-.fp-card p { color: #64748b; font-size: .9rem; }
 </style>
 
-<div class="fp-card">
+<div class="sms-form-card">
     <h1>Change password</h1>
-    <p><?= $forced ? 'You must set a new password before continuing.' : 'Update your account password.' ?></p>
+    <p class="text-muted mb-3"><?= $forced ? 'You must set a new password before continuing.' : 'Update your account password.' ?></p>
 
     <?php if ($error): ?>
         <div class="alert alert-danger"><?= e($error) ?></div>
@@ -100,6 +93,7 @@ body.login-page {
         <div class="mb-3">
             <label class="form-label fw-semibold" for="password">New password</label>
             <?= smsPasswordInput(['id' => 'password', 'name' => 'password', 'required' => true, 'minlength' => $minLen, 'autocomplete' => 'new-password']) ?>
+            <?= smsPasswordStrengthMarkup('password') ?>
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold" for="password_confirm">Confirm new password</label>

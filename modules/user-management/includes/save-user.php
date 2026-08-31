@@ -306,9 +306,12 @@ try {
         exit;
     }
 
-    $min = (int) smsSetting('min_password_length', '8');
-    if (strlen($password) < $min) {
-        throw new InvalidArgumentException("Password must be at least {$min} characters");
+    if ($password === '') {
+        throw new InvalidArgumentException('Password is required for new users');
+    }
+    $strength = smsValidatePasswordStrength($password);
+    if (!$strength['ok']) {
+        throw new InvalidArgumentException($strength['message']);
     }
 
     $pdo->beginTransaction();
