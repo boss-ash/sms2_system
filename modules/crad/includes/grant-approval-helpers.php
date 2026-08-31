@@ -84,6 +84,10 @@ function grantApprovalUserStepRoleKeys(string $userRoleKey): array
 
 function grantUserCanViewApprovalWorkflow(): bool
 {
+    if (grantUserCanMonitorApprovalWorkflow()) {
+        return true;
+    }
+
     $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
 
     if (in_array($roleKey, array_merge(grantApprovalApproverRoleKeys(), ['superadmin']), true)) {
