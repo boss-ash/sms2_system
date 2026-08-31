@@ -470,3 +470,36 @@
     .um-confirm-content { animation: none; }
     .um-archive-btn { transition: none; }
 }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+    .um-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .um-filter-bar .form-select,
+    .um-filter-bar .form-control {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .page-header.d-flex .btn,
+    .page-header.d-flex .um-archive-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .perm-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .um-avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: 0.85rem;
+    }
+}
