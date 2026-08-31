@@ -941,8 +941,13 @@ function grantSubmitApprovalSignoff(
     if (empty($detail['can_act'])) {
         $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
         $stepKey = (string) ($detail['current_step']['step_key'] ?? '');
-        if ($roleKey === 'adviser' && $stepKey === 'adviser' && empty($detail['adviser_eval_complete'])) {
-            return ['ok' => false, 'error' => 'Complete your Adviser Evaluation score before signing off.'];
+        if (!empty($detail['needs_rubric_score']) || !empty($detail['needs_adviser_score'])) {
+            return [
+                'ok'    => false,
+                'error' => 'Complete your '
+                    . grantEvaluationStepLabel($stepKey !== '' ? $stepKey : ($roleKey === 'adviser' ? 'adviser' : 'committee'))
+                    . ' Evaluation score before signing off.',
+            ];
         }
 
         return ['ok' => false, 'error' => 'You are not authorized to sign off at this stage.'];
