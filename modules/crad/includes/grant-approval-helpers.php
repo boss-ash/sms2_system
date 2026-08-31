@@ -732,6 +732,10 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
     $needsRubricScore = false;
     $committeeEval = null;
     $adviserEval = null;
+    $pipelineEvals = grantGetPipelineEvaluationsForApplication($crad, $applicationId);
+    $pipelineScorePills = grantFormatPipelineScorePills($pipelineEvals);
+    $committeeEval = $pipelineEvals['committee'] ?? null;
+    $adviserEval = $pipelineEvals['adviser'] ?? null;
     $monitorStageHint = '';
     $isMonitor = grantUserCanMonitorApprovalWorkflow();
     $approverStepKey = grantApprovalStepKeyForRole($roleKey);
@@ -756,10 +760,6 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
     }
 
     if ($isMonitor) {
-        $evals = grantGetLatestEvaluationsForApplications($crad, [$applicationId]);
-        $committeeEval = $evals[$applicationId] ?? null;
-        $adviserEval = grantGetLatestAdviserEvaluationByApplication($crad, $applicationId);
-
         $wfStatus = (string) ($workflow['workflow_status'] ?? '');
         if ($wfStatus === 'Completed') {
             $monitorStageHint = 'All institutional sign-offs completed for this proposal.';
@@ -798,6 +798,8 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
         'is_monitor'             => $isMonitor,
         'committee_eval'         => $committeeEval,
         'adviser_eval'           => $adviserEval,
+        'pipeline_evals'         => $pipelineEvals,
+        'pipeline_score_pills'   => $pipelineScorePills,
         'monitor_stage_hint'     => $monitorStageHint,
     ];
 }
