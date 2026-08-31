@@ -380,7 +380,7 @@ function grantNotifyApplicantEvaluationDecision(
         $type,
         $notifTitle,
         $body,
-        grantProposalsApplicationsUrl(),
+        $recommendation === 'require_revisions' ? grantRevisionsRequestedUrl() : grantProposalsApplicationsUrl(),
     ]);
 }
 

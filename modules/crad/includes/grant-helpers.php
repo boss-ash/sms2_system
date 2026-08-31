@@ -365,6 +365,17 @@ function _grantBackfillProposalReferences(PDO $crad): void
                  WHERE id = ?
             ")->execute([$ref, (int) $appId]);
         }
+
+        $apps = $crad->query("
+            SELECT ga.*
+              FROM grant_applications ga
+             LEFT JOIN grant_proposal_versions gpv
+                    ON gpv.grant_application_id = ga.id AND gpv.version_number = 1
+             WHERE gpv.id IS NULL
+        ")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        foreach ($apps as $app) {
+            grantInsertProposalVersion($crad, $app, 1);
+        }
     } catch (Throwable $e) {
         error_log('_grantBackfillProposalReferences: ' . $e->getMessage());
     }

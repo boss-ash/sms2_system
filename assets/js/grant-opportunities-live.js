@@ -40,7 +40,7 @@
     function fingerprintFromApplications(list) {
         if (!Array.isArray(list)) return '';
         return list.map(function (a) {
-            return [a.id, a.status, a.updated_at, a.submitted_at].join(':');
+            return [a.id, a.status, a.current_version, a.updated_at, a.submitted_at, a.proposal_reference].join(':');
         }).join('|');
     }
 
@@ -48,10 +48,17 @@
         return !!document.querySelector('.modal.show');
     }
 
+    function fingerprintFromRevisions(list) {
+        if (!Array.isArray(list)) return '';
+        return list.map(function (r) {
+            return [r.id, r.status, r.current_version, r.updated_at, r.proposal_reference].join(':');
+        }).join('|');
+    }
+
     function poll() {
         if (paused || document.hidden || modalOpen()) return;
 
-        var action = isOppPage ? 'get_opportunities' : 'get_applications';
+        var action = isOppPage ? 'get_opportunities' : (isRevisionsPage ? 'get_revisions' : 'get_applications');
         fetch(apiBase + '?action=' + encodeURIComponent(action), {
             credentials: 'same-origin',
             cache: 'no-store',
@@ -63,7 +70,9 @@
 
                 var fp = isOppPage
                     ? fingerprintFromOpportunities(data.opportunities)
-                    : fingerprintFromApplications(data.applications);
+                    : (isRevisionsPage
+                        ? fingerprintFromRevisions(data.revisions)
+                        : fingerprintFromApplications(data.applications));
 
                 if (lastFingerprint === '') {
                     lastFingerprint = fp;
