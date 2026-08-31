@@ -9,6 +9,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/grant-helpers.php';
 require_once dirname(__DIR__, 3) . '/includes/grant-review-workflow-urls.php';
 require_once __DIR__ . '/grant-evaluation-helpers.php';
+require_once __DIR__ . '/grant-evaluation-rubric-ui.php';
 
 /**
  * Send approvers to their module shell (Faculty / Accreditation / Payment) when opened via CRAD paths.
@@ -912,6 +913,9 @@ function grantApprovalDetailFingerprint(?array $detail): string
     }
 
     $parts[] = (string) ($detail['monitor_stage_hint'] ?? '');
+    foreach ($detail['pipeline_score_pills'] ?? [] as $pill) {
+        $parts[] = ($pill['type'] ?? '') . ':' . ($pill['total_score'] ?? '');
+    }
     if (!empty($detail['committee_eval']['total_score'])) {
         $parts[] = 'c:' . $detail['committee_eval']['total_score'];
     }
