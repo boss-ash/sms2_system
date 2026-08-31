@@ -50,7 +50,70 @@
         return icons[type] || 'ti-clipboard-check';
     }
 
-    function buildPipelineScoresHtml(detail) {
+    function formatActedAt(actedAt) {
+        if (!actedAt) return '';
+        try {
+            return new Date(actedAt.replace(' ', 'T')).toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: 'numeric', minute: '2-digit'
+            });
+        } catch (e) {
+            return actedAt;
+        }
+    }
+
+    function buildReturnAuditHtml(detail) {
+        var record = detail && detail.return_record;
+        if (!record) return '';
+
+        var level = parseInt(record.approval_level, 10) || 0;
+        var levelHtml = level > 0
+            ? '<div class="gaw-return-audit-row"><span>Approval Level</span><strong>' + level + '</strong></div>'
+            : '';
+
+        return '<div class="gaw-return-audit-panel">' +
+            '<h3><i class="ti ti-arrow-back-up me-1"></i>Returned to Proponent for Revision</h3>' +
+            '<p class="gaw-return-audit-lead">Decision at this level: <strong>NO</strong> — proposal sent back to the researcher for revision and resubmission.</p>' +
+            '<div class="gaw-return-audit-grid">' +
+            '<div class="gaw-return-audit-row"><span>Returned By</span><strong>' + esc(record.returned_by) + '</strong></div>' +
+            levelHtml +
+            '<div class="gaw-return-audit-row gaw-return-audit-reason"><span>Reason</span><strong>' + esc(record.reason || '—') + '</strong></div>' +
+            '<div class="gaw-return-audit-row"><span>Date/Time</span><strong>' + esc(record.returned_at_display || formatActedAt(record.returned_at)) + '</strong></div>' +
+            '</div></div>';
+    }
+
+    function buildDecisionPanelHtml(detail, roleLabel, reviewerEvalUrl) {
+        var canAct = !!detail.can_act;
+        var canReturn = !!detail.can_return;
+        var needsRubricScore = !!(detail.needs_rubric_score || detail.needs_adviser_score);
+        var html = '';
+
+        if (needsRubricScore) {
+            html += '<div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">' +
+                '<h3><i class="ti ti-clipboard-check me-1"></i>Rubric Evaluation Required</h3>' +
+                '<p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here. You may still choose <strong>NO</strong> to return it for revision without approving.</p>' +
+                '<a class="gaw-btn-approve" href="' + reviewerEvalUrl + '" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">' +
+                '<i class="ti ti-star-half-filled"></i> Go to Reviewer Evaluation</a></div>';
+        }
+
+        if (canAct || canReturn) {
+            var approveBtn = canAct
+                ? '<button type="button" class="gaw-btn-approve" id="gawSignApproveBtn">' +
+                '<i class="ti ti-signature"></i> YES — Sign &amp; Approve Current Level</button>'
+                : '';
+            var returnBtn = canReturn
+                ? '<button type="button" class="gaw-btn-return" id="gawReturnBtn">' +
+                '<i class="ti ti-x"></i> NO — Return to Proponent for Revision</button>'
+                : '';
+
+            html += '<div class="gaw-action-panel" id="gawActionPanel">' +
+                '<h3>Decision at This Level: Approve?</h3>' +
+                '<p>Logged in as: <strong>' + roleLabel + '</strong>. Choose <strong>YES</strong> to sign and advance, or <strong>NO</strong> to return the proposal to the researcher (loops back to revise and resubmit).</p>' +
+                '<div class="gaw-action-buttons">' + approveBtn + returnBtn + '</div></div>';
+        }
+
+        return html;
+    }
         var pills = (detail && detail.pipeline_score_pills) ? detail.pipeline_score_pills : [];
         if (!pills.length) return '';
 

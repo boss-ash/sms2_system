@@ -5,6 +5,7 @@
     'use strict';
 
     var POLL_MS = 10000;
+    var REVISIONS_POLL_MS = 5000;
     var root = document.querySelector('[data-grant-live="1"]');
     if (!root) return;
 
@@ -51,7 +52,17 @@
     function fingerprintFromRevisions(list) {
         if (!Array.isArray(list)) return '';
         return list.map(function (r) {
-            return [r.id, r.status, r.current_version, r.updated_at, r.proposal_reference].join(':');
+            return [
+                r.id,
+                r.status,
+                r.current_version,
+                r.updated_at,
+                r.returned_at,
+                r.returned_by,
+                r.approval_level,
+                r.return_reason,
+                r.return_source
+            ].join(':');
         }).join('|');
     }
 
