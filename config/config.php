@@ -56,6 +56,16 @@ if (!function_exists('sms2_env_first')) {
 if (!function_exists('sms2_detect_base_url')) {
     function sms2_detect_base_url(): string
     {
+        if (PHP_SAPI === 'cli' && defined('ROOT_PATH')) {
+            $folder = basename(str_replace('\\', '/', (string) ROOT_PATH));
+            if (strcasecmp($folder, 'sms2_system') === 0) {
+                return '/sms2_system';
+            }
+            if ($folder !== '' && $folder !== '.' && $folder !== '..') {
+                return '/' . $folder;
+            }
+        }
+
         $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
         $markers = [
             '/account/',
