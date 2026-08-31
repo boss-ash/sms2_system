@@ -169,6 +169,67 @@ function grantApprovalWorkflowListUrl(): string
     return BASE_URL . '/modules/crad/pages/approval-workflows.php';
 }
 
+/**
+ * Notify Finance officers when VPAA approves and funding sign-off is pending.
+ *
+ * @param array<string, mixed> $application
+ */
+function grantNotifyFinancePendingSignoff(PDO $crad, array $application): void
+{
+    if (!function_exists('db')) {
+        return;
+    }
+
+    $mainDb = db();
+    if (!$mainDb) {
+        return;
+    }
+
+    $applicationId = (int) ($application['id'] ?? 0);
+    if ($applicationId <= 0) {
+        return;
+    }
+
+    $financeUsers = $mainDb->query("
+        SELECT id FROM users WHERE role_key = 'finance' AND status = 'active'
+    ")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+    if ($financeUsers === []) {
+        return;
+    }
+
+    $ref = trim((string) ($application['proposal_reference'] ?? ''));
+    $refLabel = $ref !== '' ? $ref : ('Proposal #' . $applicationId);
+    $title = trim((string) ($application['research_title'] ?? 'Research proposal'));
+    $url = BASE_URL . '/modules/payment/pages/approval-workflows.php?id=' . $applicationId;
+    $body = sprintf(
+        '%s is pending Finance Office final approval after VPAA sign-off. Review it under Payment Management → Approval Workflows.',
+        $refLabel
+    );
+    if ($title !== '') {
+        $body .= ' Title: ' . mb_strimwidth($title, 0, 120, '…');
+    }
+
+    foreach ($financeUsers as $row) {
+        $userId = (int) ($row['id'] ?? 0);
+        if ($userId <= 0) {
+            continue;
+        }
+
+        grantInsertGrantProposalNotification(
+            $crad,
+            $applicationId,
+            $userId,
+            'finance',
+            'grant_finance_pending',
+            'grant-proposal:finance_pending:' . $applicationId . ':u' . $userId,
+            'Pending Finance Approval',
+            $body,
+            $url
+        );
+    }
+}
+
 function grantApprovalRoleLabel(string $roleKey): string
 {
     return match ($roleKey) {

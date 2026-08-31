@@ -189,7 +189,7 @@ if (!function_exists('smsRoleHomeUrl')) {
             'department_chair'     => BASE_URL . '/modules/crad/pages/approval-workflows.php',
             'research_office'      => BASE_URL . '/modules/crad/pages/approval-workflows.php',
             'vpaa'                 => BASE_URL . '/modules/crad/pages/approval-workflows.php',
-            'finance'              => BASE_URL . '/modules/crad/pages/approval-workflows.php',
+            'finance'              => BASE_URL . '/modules/payment/pages/approval-workflows.php',
             'hr'                   => BASE_URL . '/modules/crad/pages/approval-workflows.php',
             'crad_officer'         => BASE_URL . '/dashboard/index.php',
             'grammarian'           => BASE_URL . '/modules/faculty/pages/for-evaluation.php',

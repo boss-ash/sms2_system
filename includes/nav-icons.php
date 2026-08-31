@@ -45,7 +45,7 @@ if (!function_exists('smsNavPageIcon')) {
             'research-analytics-reporting' => 'fa-chart-line',
             'dashboard-analytics' => 'fa-chart-pie',
             'core-system-dashboard' => 'fa-chart-pie',
-            'reviewer-evaluation' => 'fa-clipboard-check',
+            'approval-workflows' => 'fa-tasks',
             'grant-opportunities' => 'fa-hand-holding-usd',
             'proposals-applications' => 'fa-file-alt',
             'revisions-requested' => 'fa-edit',
