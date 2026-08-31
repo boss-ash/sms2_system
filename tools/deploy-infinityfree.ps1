@@ -15,6 +15,7 @@ if (-not $FtpPass) {
 }
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+[Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 
 $ftpUser = 'if0_42794375'
 $remoteDir = '/htdocs'
