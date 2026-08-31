@@ -376,8 +376,47 @@ function _grantBackfillProposalReferences(PDO $crad): void
         foreach ($apps as $app) {
             grantInsertProposalVersion($crad, $app, 1);
         }
+
+        _grantBackfillApplicantUserIds($crad);
     } catch (Throwable $e) {
         error_log('_grantBackfillProposalReferences: ' . $e->getMessage());
+    }
+}
+
+function _grantBackfillApplicantUserIds(PDO $crad): void
+{
+    if (!function_exists('db')) {
+        require_once dirname(__DIR__, 2) . '/config/database.php';
+    }
+
+    $main = db();
+    if (!$main) {
+        return;
+    }
+
+    try {
+        $rows = $crad->query("
+            SELECT id, applicant_name, applicant_user_id
+              FROM grant_applications
+             WHERE applicant_user_id IS NULL OR applicant_user_id = 0
+        ")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+        $update = $crad->prepare('UPDATE grant_applications SET applicant_user_id = ? WHERE id = ?');
+        $lookup = $main->prepare('SELECT id FROM users WHERE full_name = ? OR username = ? LIMIT 1');
+
+        foreach ($rows as $row) {
+            $name = trim((string) ($row['applicant_name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $lookup->execute([$name, $name]);
+            $userId = (int) ($lookup->fetchColumn() ?: 0);
+            if ($userId > 0) {
+                $update->execute([$userId, (int) $row['id']]);
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('_grantBackfillApplicantUserIds: ' . $e->getMessage());
     }
 }
 
