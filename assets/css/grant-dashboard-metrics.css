@@ -1,0 +1,123 @@
+/* SMS 2 – Grant dashboard metrics (CRAD) */
+
+.gdm-panel {
+    margin-bottom: 1.25rem;
+}
+
+.gdm-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.gdm-head h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.gdm-head p {
+    margin: .2rem 0 0;
+    font-size: .84rem;
+    color: #64748b;
+}
+
+.gdm-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #1d4ed8;
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    padding: .18rem .45rem;
+    border-radius: 999px;
+}
+
+.gdm-updated {
+    font-size: .75rem;
+    color: #64748b;
+}
+
+.gdm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: .75rem;
+}
+
+.gdm-card {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: .9rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(8px);
+    min-height: 88px;
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+
+.gdm-card.updated {
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+}
+
+.gdm-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    font-size: .95rem;
+}
+
+.gdm-icon.blue { color: #2563eb; background: rgba(37, 99, 235, 0.12); }
+.gdm-icon.purple { color: #7c3aed; background: rgba(124, 58, 237, 0.12); }
+.gdm-icon.amber { color: #d97706; background: rgba(245, 158, 11, 0.14); }
+.gdm-icon.orange { color: #ea580c; background: rgba(234, 88, 12, 0.12); }
+.gdm-icon.red { color: #dc2626; background: rgba(220, 38, 38, 0.12); }
+.gdm-icon.green { color: #16a34a; background: rgba(22, 163, 74, 0.12); }
+.gdm-icon.teal { color: #0d9488; background: rgba(13, 148, 136, 0.12); }
+.gdm-icon.indigo { color: #4f46e5; background: rgba(79, 70, 229, 0.12); }
+
+.gdm-card span {
+    display: block;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #64748b;
+    line-height: 1.3;
+}
+
+.gdm-card strong {
+    display: block;
+    margin-top: .2rem;
+    font-size: 1.35rem;
+    line-height: 1.15;
+    color: #0f172a;
+    word-break: break-word;
+}
+
+.gdm-link {
+    font-size: .8rem;
+    font-weight: 700;
+    color: #1d4ed8;
+    text-decoration: none;
+}
+
+.gdm-link:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+    .gdm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gdm-card strong { font-size: 1.1rem; }
+}
