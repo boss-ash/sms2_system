@@ -619,7 +619,7 @@ function grantReturnProposalFromApproval(
                 $crad,
                 $app,
                 'require_revisions',
-                null,
+                0.0,
                 $userName,
                 $remarks
             );
