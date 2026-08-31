@@ -89,16 +89,15 @@
         }
         return ref + ': ' + title;
     }
+    function renderProjectSelect(workflows) {
         if (!projectSelect) return;
         if (!Array.isArray(workflows) || workflows.length === 0) return;
 
         var current = selectedId;
         projectSelect.innerHTML = workflows.map(function (row) {
             var appId = parseInt(row.grant_application_id, 10) || 0;
-            var ref = esc(row.proposal_reference || 'Proposal');
-            var title = esc(row.research_title || 'Untitled');
             var selected = appId === current ? ' selected' : '';
-            return '<option value="' + appId + '"' + selected + '>' + ref + ': ' + title + '</option>';
+            return '<option value="' + appId + '"' + selected + '>' + workflowOptionLabel(row) + '</option>';
         }).join('');
 
         if (current <= 0 && workflows.length > 0) {
@@ -166,10 +165,17 @@
                 '<button type="button" class="gaw-btn-return" id="gawReturnBtn">' +
                 '<i class="ti ti-x"></i> Return to Proponent for Revision</button>' +
                 '</div></div>';
-        } else if (detail.is_monitor && wfStatus === 'In Progress' && detail.current_step) {
-            actionHtml = '<div class="gaw-monitor-note">' +
-                '<i class="ti ti-eye me-1"></i> Monitoring mode — current stage: ' +
-                '<strong>' + esc(detail.current_step.step_label) + '</strong></div>';
+        } else if (detail.is_monitor) {
+            if (wfStatus === 'Completed') {
+                actionHtml = '<div class="gaw-monitor-note">' +
+                    '<i class="ti ti-check me-1"></i> Monitoring mode — all sign-offs completed for this proposal.</div>';
+            } else if (detail.current_step) {
+                var approverLabel = esc(detail.current_approver_label || detail.current_step.approver_role_key || '');
+                actionHtml = '<div class="gaw-monitor-note">' +
+                    '<i class="ti ti-eye me-1"></i> Monitoring mode — current stage: ' +
+                    '<strong>' + esc(detail.current_step.step_label) + '</strong>' +
+                    (approverLabel ? ' (' + approverLabel + ')' : '') + '</div>';
+            }
         }
 
         detailPanel.innerHTML = '<h2 class="gaw-pipeline-title">Sign-off Sequence for ' + ref + '</h2>' +
