@@ -41,7 +41,7 @@ if (!$pdo) {
 }
 
 $action = (string) ($data['action'] ?? 'save');
-$validRoles = ['superadmin', 'sms_admin', 'admission', 'registrar', 'finance', 'hr', 'adviser', 'research_director', 'grammarian', 'panel', 'it_office', 'osa', 'qa', 'crad', 'crad_officer', 'research_coordinator', 'research_grant', 'review_committee', 'student'];
+$validRoles = ['superadmin', 'sms_admin', 'admission', 'registrar', 'finance', 'hr', 'adviser', 'research_director', 'grammarian', 'panel', 'it_office', 'osa', 'qa', 'crad', 'crad_officer', 'research_coordinator', 'department_chair', 'research_office', 'vpaa', 'research_grant', 'review_committee', 'student'];
 $validStatus = ['active', 'inactive', 'locked', 'suspended'];
 
 /**
