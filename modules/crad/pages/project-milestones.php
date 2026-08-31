@@ -53,7 +53,7 @@ if ($crad) {
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-project-milestones.css?v=1" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-project-milestones.css?v=2" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gpm-alert" role="alert"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?></div>
@@ -186,30 +186,33 @@ renderBreadcrumbs($breadcrumbs);
 <?php if ($canTrack): ?>
 <div class="gpm-dialog" id="gpmEditDialog" role="dialog" aria-modal="true" aria-labelledby="gpmEditTitle">
     <div class="gpm-dialog-box">
-        <h3 id="gpmEditTitle"><?= smsIcon('edit') ?> Update Milestone</h3>
-        <p class="gpm-dialog-lead" id="gpmEditMilestoneName">Milestone</p>
-        <form id="gpmEditForm" class="gpm-form" enctype="multipart/form-data">
+        <div class="gpm-dialog-header">
+            <h3 id="gpmEditTitle"><?= smsIcon('edit') ?> Update Milestone</h3>
+            <p class="gpm-dialog-lead" id="gpmEditMilestoneName">Milestone</p>
+        </div>
+        <form id="gpmEditForm" class="gpm-form gpm-dialog-form" method="post" data-no-loader enctype="multipart/form-data">
             <input type="hidden" id="gpmEditMilestoneId" name="milestone_id" value="">
+            <div class="gpm-dialog-body">
+                <label for="gpmEditDueDate">Due Date</label>
+                <input type="date" id="gpmEditDueDate" name="due_date">
 
-            <label for="gpmEditDueDate">Due Date</label>
-            <input type="date" id="gpmEditDueDate" name="due_date">
+                <label for="gpmEditCompletion">Completion %</label>
+                <input type="number" id="gpmEditCompletion" name="completion_pct" min="0" max="100" step="1" required>
 
-            <label for="gpmEditCompletion">Completion %</label>
-            <input type="number" id="gpmEditCompletion" name="completion_pct" min="0" max="100" step="1" required>
+                <label for="gpmEditStatus">Status</label>
+                <select id="gpmEditStatus" name="status" required>
+                    <?php foreach (grantMilestoneStatusOptions() as $option): ?>
+                    <option value="<?= htmlspecialchars($option) ?>"><?= htmlspecialchars($option) ?></option>
+                    <?php endforeach; ?>
+                </select>
 
-            <label for="gpmEditStatus">Status</label>
-            <select id="gpmEditStatus" name="status" required>
-                <?php foreach (grantMilestoneStatusOptions() as $option): ?>
-                <option value="<?= htmlspecialchars($option) ?>"><?= htmlspecialchars($option) ?></option>
-                <?php endforeach; ?>
-            </select>
+                <label for="gpmEditRemarks">Remarks</label>
+                <textarea id="gpmEditRemarks" name="remarks" rows="3" placeholder="Progress notes, issues, or follow-up actions…"></textarea>
 
-            <label for="gpmEditRemarks">Remarks</label>
-            <textarea id="gpmEditRemarks" name="remarks" rows="3" placeholder="Progress notes, issues, or follow-up actions…"></textarea>
-
-            <label for="gpmEditDocument">Supporting Document</label>
-            <input type="file" id="gpmEditDocument" name="supporting_doc" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-
+                <label for="gpmEditDocument">Supporting Document</label>
+                <input type="file" id="gpmEditDocument" name="supporting_doc" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                <p class="gpm-field-hint">Accepted: PDF, Word, JPG, PNG. Upload saves with this milestone update.</p>
+            </div>
             <div class="gpm-dialog-actions">
                 <button type="button" class="gpm-btn gpm-btn-ghost" id="gpmEditCancelBtn">Cancel</button>
                 <button type="submit" class="gpm-btn gpm-btn-primary" id="gpmEditSaveBtn">
@@ -221,5 +224,5 @@ renderBreadcrumbs($breadcrumbs);
 </div>
 <?php endif; ?>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-milestones-live.js?v=1"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-milestones-live.js?v=2"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

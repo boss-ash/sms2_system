@@ -220,12 +220,34 @@
 
 .gpm-dialog-box {
     width: min(100%, 480px);
-    max-height: 90vh;
-    overflow-y: auto;
+    max-height: min(90vh, 640px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     background: #fff;
     border-radius: 12px;
-    padding: 1.1rem 1.15rem;
+    padding: 1.1rem 1.15rem 0;
     box-shadow: 0 20px 40px rgba(15, 23, 42, .18);
+}
+
+.gpm-dialog-header {
+    flex-shrink: 0;
+    padding-bottom: .75rem;
+}
+
+.gpm-dialog-form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+}
+
+.gpm-dialog-body {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    padding-right: .15rem;
+    padding-bottom: .5rem;
 }
 
 .gpm-dialog-box h3 {
@@ -235,7 +257,7 @@
 }
 
 .gpm-dialog-lead {
-    margin: 0 0 .85rem;
+    margin: 0;
     color: var(--gpm-muted);
     font-size: .86rem;
     font-weight: 700;
@@ -259,9 +281,28 @@
     font-size: .86rem;
 }
 
+.gpm-field-hint {
+    margin: .35rem 0 0;
+    font-size: .76rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.gpm-btn:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+
 .gpm-dialog-actions {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: .5rem;
-    margin-top: 1rem;
+    margin-top: 0;
+    padding: .9rem 0 1.1rem;
+    border-top: 1px solid var(--gpm-border);
+    background: #fff;
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
 }
