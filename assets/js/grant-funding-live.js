@@ -26,13 +26,17 @@
     var releaseAmount = document.getElementById('gfdReleaseAmount');
     var releaseDate = document.getElementById('gfdReleaseDate');
     var releaseReference = document.getElementById('gfdReleaseReference');
+    var releaseReferencePreview = document.getElementById('gfdReleaseReferencePreview');
     var releaseRemarks = document.getElementById('gfdReleaseRemarks');
+    var releaseConfirmBtn = document.getElementById('gfdReleaseConfirmBtn');
 
     var lastOverviewFp = '';
     var lastDetailFp = '';
     var lastOverviewCount = null;
     var paused = false;
     var submitting = false;
+    var currentProposalRef = root.getAttribute('data-proposal-ref') || '';
+    var currentTrancheNumber = 0;
 
     function esc(s) {
         return String(s || '')
@@ -52,6 +56,32 @@
         var m = String(d.getMonth() + 1).padStart(2, '0');
         var day = String(d.getDate()).padStart(2, '0');
         return d.getFullYear() + '-' + m + '-' + day;
+    }
+
+    function generateReferencePreview(proposalRef, trancheNumber) {
+        var base = String(proposalRef || '').trim();
+        if (!base) {
+            base = 'GA' + (selectedId > 0 ? selectedId : 0);
+        }
+        base = base.replace(/[^A-Za-z0-9\-]/g, '');
+        return 'DISB-' + base + '-T' + (parseInt(trancheNumber, 10) || 1);
+    }
+
+    function updateReferencePreview() {
+        if (!releaseReferencePreview) return;
+        releaseReferencePreview.textContent = generateReferencePreview(currentProposalRef, currentTrancheNumber);
+    }
+
+    function setConfirmButtonBusy(busy) {
+        if (!releaseConfirmBtn) return;
+        releaseConfirmBtn.disabled = !!busy;
+        releaseConfirmBtn.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    function refreshNotificationBell() {
+        if (typeof window.SMSRefreshNotifications === 'function') {
+            window.SMSRefreshNotifications();
+        }
     }
 
     function updateStats(overview) {
@@ -95,7 +125,7 @@
         var trancheLabel = esc(tranche.tranche_label || ('Tranche ' + trancheNum));
         var cardClass = isReleased ? 'released' : 'pending';
 
-        var html = '<div class="gfd-tranche-card ' + cardClass + '" data-tranche-id="' + esc(tranche.id) + '">' +
+        var html = '<div class="gfd-tranche-card ' + cardClass + '" data-tranche-id="' + esc(tranche.id) + '" data-tranche-status="' + esc(status) + '">' +
             '<div class="gfd-tranche-head">' +
             '<div><strong>' + trancheLabel + '</strong>' +
             '<div class="gfd-tranche-amount">' + esc(formatPeso(amount)) + '</div></div>' +
@@ -115,6 +145,7 @@
             html += '<button type="button" class="gfd-btn gfd-btn-release gfdReleaseTrancheBtn" ' +
                 'data-disbursement-id="' + esc(tranche.id) + '" ' +
                 'data-tranche-label="' + trancheLabel + '" ' +
+                'data-tranche-number="' + esc(trancheNum) + '" ' +
                 'data-default-amount="' + esc(amount) + '">' +
                 '<i class="ti ti-cash"></i> Record Release</button>';
         }
@@ -128,6 +159,8 @@
         if (!detail || !detail.application) {
             detailPanel.innerHTML = '<div class="gfd-empty"><i class="ti ti-tasks" style="font-size:2rem;color:#cbd5e1;"></i>' +
                 '<p style="margin:.5rem 0 0;">Select a funded project to view disbursement tranches.</p></div>';
+            currentProposalRef = '';
+            root.setAttribute('data-proposal-ref', '');
             return;
         }
 
@@ -136,6 +169,9 @@
         var ref = esc(app.proposal_reference || 'Proposal');
         var approved = Number(detail.approved_budget) || 0;
         var canReleaseFunds = !!detail.can_release;
+
+        currentProposalRef = String(app.proposal_reference || '');
+        root.setAttribute('data-proposal-ref', currentProposalRef);
 
         var trancheHtml = tranches.map(function (t) {
             return buildTrancheCard(t, canReleaseFunds);
@@ -158,6 +194,7 @@
             '<div class="gfd-tranche-list" id="gfdTrancheList">' + trancheHtml + '</div>';
 
         bindReleaseButtons();
+        bindReleasedTrancheGuards();
     }
 
     function openReleaseDialog(btn) {
@@ -165,6 +202,7 @@
         var id = btn.getAttribute('data-disbursement-id') || '';
         var label = btn.getAttribute('data-tranche-label') || 'Tranche';
         var amount = btn.getAttribute('data-default-amount') || '0';
+        currentTrancheNumber = parseInt(btn.getAttribute('data-tranche-number') || '0', 10) || 0;
 
         if (releaseDisbursementId) releaseDisbursementId.value = id;
         if (releaseTrancheLabel) releaseTrancheLabel.textContent = label;
@@ -172,6 +210,8 @@
         if (releaseDate) releaseDate.value = todayIso();
         if (releaseReference) releaseReference.value = '';
         if (releaseRemarks) releaseRemarks.value = '';
+        updateReferencePreview();
+        setConfirmButtonBusy(false);
 
         submitting = false;
         paused = true;
@@ -183,6 +223,7 @@
         releaseDialog.classList.remove('show');
         paused = false;
         submitting = false;
+        setConfirmButtonBusy(false);
     }
 
     function bindReleaseButtons() {
@@ -191,6 +232,17 @@
         buttons.forEach(function (btn) {
             btn.addEventListener('click', function () {
                 openReleaseDialog(btn);
+            });
+        });
+    }
+
+    function bindReleasedTrancheGuards() {
+        if (!canRelease) return;
+        var cards = document.querySelectorAll('.gfd-tranche-card[data-tranche-status="Released"]');
+        cards.forEach(function (card) {
+            card.addEventListener('click', function (e) {
+                if (e.target.closest('.gfdReleaseTrancheBtn')) return;
+                alert('This tranche is no longer pending release.');
             });
         });
     }
@@ -250,6 +302,10 @@
         });
     }
 
+    if (releaseReference) {
+        releaseReference.addEventListener('input', updateReferencePreview);
+    }
+
     if (releaseForm) {
         releaseForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -259,6 +315,7 @@
             if (disbursementId <= 0) return;
 
             submitting = true;
+            setConfirmButtonBusy(true);
             fetch(apiBase + '?action=release_tranche', {
                 method: 'POST',
                 credentials: 'same-origin',
@@ -273,11 +330,17 @@
             })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
-                    closeReleaseDialog();
                     if (!data || !data.success) {
-                        alert((data && data.message) || 'Release failed.');
+                        var message = (data && data.message) || 'Release failed.';
+                        alert(message);
+                        if (message.indexOf('no longer pending release') !== -1) {
+                            closeReleaseDialog();
+                            fetchOverview(false);
+                        }
                         return;
                     }
+
+                    closeReleaseDialog();
                     lastOverviewFp = data.overview_fingerprint || lastOverviewFp;
                     lastDetailFp = data.detail_fingerprint || lastDetailFp;
                     if (data.overview) {
@@ -288,12 +351,17 @@
                         renderDetail(data.detail);
                     }
                     flashUpdate();
+                    refreshNotificationBell();
+
+                    var successMessage = data.message || 'Fund release recorded successfully.';
+                    alert(successMessage);
                 })
                 .catch(function () {
                     alert('Release request failed.');
                 })
                 .finally(function () {
                     submitting = false;
+                    setConfirmButtonBusy(false);
                 });
         });
     }
@@ -301,6 +369,7 @@
     document.getElementById('gfdReleaseCancelBtn')?.addEventListener('click', closeReleaseDialog);
 
     bindReleaseButtons();
+    bindReleasedTrancheGuards();
     fetchOverview(false);
 
     function poll() {
