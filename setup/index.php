@@ -159,7 +159,7 @@ body.login-page {
 }
 </style>
 
-<div class="setup-card">
+<div class="setup-card sms-form-card">
     <div class="setup-badge"><?= smsIcon('shield-alt') ?> BCP Security Setup</div>
     <h1>Create Super Admin</h1>
     <p class="lead">
@@ -191,13 +191,24 @@ body.login-page {
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold" for="password">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required
-                   minlength="<?= (int) $minLen ?>" autocomplete="new-password">
+            <?= smsPasswordInput([
+                'id' => 'password',
+                'name' => 'password',
+                'required' => true,
+                'minlength' => $minLen,
+                'autocomplete' => 'new-password',
+            ]) ?>
+            <?= smsPasswordStrengthMarkup('password') ?>
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold" for="password_confirm">Confirm password</label>
-            <input type="password" class="form-control" id="password_confirm" name="password_confirm" required
-                   minlength="<?= (int) $minLen ?>" autocomplete="new-password">
+            <?= smsPasswordInput([
+                'id' => 'password_confirm',
+                'name' => 'password_confirm',
+                'required' => true,
+                'minlength' => $minLen,
+                'autocomplete' => 'new-password',
+            ]) ?>
         </div>
         <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
             Create Super Admin &amp; continue

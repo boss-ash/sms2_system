@@ -201,12 +201,38 @@
                 form.querySelector('[name="user_id"]').value    = trigger.dataset.uid    || '';
 
                 var pwRow = form.querySelector('.um-pw-row');
-                if (pwRow) pwRow.querySelector('label').textContent = 'New Password (leave blank to keep current)';
+                var pwLabel = pwRow && pwRow.querySelector('.um-pw-label');
+                var pwInput = form.querySelector('[name="password"]');
+                var pwRequired = pwRow && pwRow.querySelector('.um-pw-required');
+                var pwStrength = form.querySelector('.um-pw-strength-row');
+                if (pwLabel) {
+                    pwLabel.innerHTML = 'New Password <span class="text-muted fw-normal">(leave blank to keep current)</span>';
+                }
+                if (pwInput) {
+                    pwInput.removeAttribute('required');
+                    pwInput.value = '';
+                }
+                if (pwRequired) pwRequired.hidden = true;
+                if (pwStrength) pwStrength.hidden = true;
             } else if (form) {
                 form.reset();
                 form.querySelector('[name="user_id"]').value = '';
                 var pwRow = form.querySelector('.um-pw-row');
-                if (pwRow) pwRow.querySelector('label').textContent = 'Password';
+                var pwLabel = pwRow && pwRow.querySelector('.um-pw-label');
+                var pwInput = form.querySelector('[name="password"]');
+                var pwRequired = pwRow && pwRow.querySelector('.um-pw-required');
+                var pwStrength = form.querySelector('.um-pw-strength-row');
+                if (pwLabel) {
+                    pwLabel.innerHTML = 'Password <span class="text-danger um-pw-required">*</span>';
+                }
+                if (pwInput) pwInput.setAttribute('required', 'required');
+                if (pwRequired) pwRequired.hidden = false;
+                if (pwStrength) pwStrength.hidden = false;
+            }
+
+            var pwField = form && form.querySelector('[name="password"]');
+            if (pwField) {
+                pwField.dispatchEvent(new Event('input', { bubbles: true }));
             }
 
             // Update avatar initial
