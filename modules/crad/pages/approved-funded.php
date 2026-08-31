@@ -10,6 +10,7 @@ require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-helpers.php';
 require_once __DIR__ . '/../includes/grant-approval-helpers.php';
 require_once __DIR__ . '/../includes/grant-funding-helpers.php';
+require_once __DIR__ . '/../includes/grant-funded-research-helpers.php';
 
 requireAuth();
 grantRequireViewAccess();
@@ -98,7 +99,7 @@ renderBreadcrumbs($breadcrumbs);
                         <th>Budget</th>
                         <th>Funded On</th>
                         <th>Status</th>
-                        <?php if ($canManage): ?><th></th><?php endif; ?>
+                        <?php if ($canManage || grantUserCanConductFundedResearch()): ?><th></th><?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,6 +130,13 @@ renderBreadcrumbs($breadcrumbs);
                             <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
                                href="<?= htmlspecialchars(grantBudgetDisbursementUrl() . '?id=' . (int) $row['id']) ?>">
                                 <?= smsIcon('money-bill-wave') ?> Release Funds
+                            </a>
+                        </td>
+                        <?php elseif (grantUserCanConductFundedResearch()): ?>
+                        <td>
+                            <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
+                               href="<?= htmlspecialchars(grantFundedResearchUrl((int) $row['id'])) ?>">
+                                <?= smsIcon('flask') ?> Conduct Research
                             </a>
                         </td>
                         <?php endif; ?>
