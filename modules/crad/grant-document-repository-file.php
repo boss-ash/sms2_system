@@ -7,6 +7,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
+require_once ROOT_PATH . '/includes/uploads.php';
 require_once __DIR__ . '/includes/grant-document-repository-helpers.php';
 
 requireAuth();
@@ -45,8 +46,8 @@ if (!$row || empty($row['file_path'])) {
     exit('File not found.');
 }
 
-$fullPath = ROOT_PATH . '/uploads/' . ltrim((string) $row['file_path'], '/');
-if (!is_file($fullPath)) {
+$fullPath = grantResolveStoredUploadPath((string) $row['file_path'], []);
+if ($fullPath === null) {
     http_response_code(404);
     exit('File missing on server.');
 }

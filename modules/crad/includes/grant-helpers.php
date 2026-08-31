@@ -489,6 +489,44 @@ function grantApplicationStatusLabel(string $status): string
     };
 }
 
+/**
+ * Resolve a stored upload path (absolute or basename) under storage/uploads.
+ *
+ * @param list<string> $preferredSubdirs
+ */
+function grantResolveStoredUploadPath(string $storedPath, array $preferredSubdirs = []): ?string
+{
+    $storedPath = trim($storedPath);
+    if ($storedPath === '') {
+        return null;
+    }
+
+    if (is_file($storedPath)) {
+        $real = realpath($storedPath);
+        $uploadsDir = realpath(smsUploadRoot());
+        if ($real !== false && $uploadsDir !== false && strncmp($real, $uploadsDir, strlen($uploadsDir)) === 0) {
+            return $real;
+        }
+    }
+
+    $basename = basename(str_replace('\\', '/', $storedPath));
+    $candidates = $preferredSubdirs;
+    $candidates[] = 'general';
+    foreach ($candidates as $subdir) {
+        $candidate = smsUploadRoot() . '/' . trim($subdir, '/') . '/' . $basename;
+        if (is_file($candidate)) {
+            return realpath($candidate) ?: $candidate;
+        }
+    }
+
+    $fallback = smsUploadRoot() . '/' . $basename;
+    if (is_file($fallback)) {
+        return realpath($fallback) ?: $fallback;
+    }
+
+    return null;
+}
+
 function grantReviseProposalUrl(int $applicationId): string
 {
     return BASE_URL . '/modules/crad/pages/revise-proposal.php?id=' . $applicationId;
