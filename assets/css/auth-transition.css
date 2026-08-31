@@ -1,0 +1,29 @@
+/**
+ * Soft auth fade + hide leftover wipe layers.
+ * Video stays visible; only the form card fades briefly.
+ */
+.auth-swipe,
+.auth-wipe,
+.auth-transition-overlay {
+    display: none !important;
+}
+
+html.auth-soft-leave .login-stage,
+html.auth-soft-leave .login-footer,
+html.auth-soft-leave .cookie-notice,
+html.auth-soft-leave .forgot-stage,
+html.auth-soft-leave .forgot-footer {
+    opacity: 0;
+    transition: opacity 0.18s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.auth-soft-leave .login-stage,
+    html.auth-soft-leave .login-footer,
+    html.auth-soft-leave .cookie-notice,
+    html.auth-soft-leave .forgot-stage,
+    html.auth-soft-leave .forgot-footer {
+        opacity: 1 !important;
+        transition: none !important;
+    }
+}

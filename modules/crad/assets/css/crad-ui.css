@@ -1,0 +1,1465 @@
+/* CRAD shared UI layer */
+.crad-app {
+    --crad-radius-card: var(--sms-radius);
+    --crad-radius-control: var(--sms-radius-sm);
+    --crad-space-card: 1.15rem;
+    --crad-space-grid: 1rem;
+    --crad-table-head: var(--sms-surface-muted);
+    --crad-icon-blue: #2563eb;
+    --crad-icon-cyan: #0891b2;
+    --crad-icon-green: #059669;
+    --crad-icon-amber: #d97706;
+    --crad-icon-violet: #7c3aed;
+    overflow-x: hidden;
+}
+
+/* CRAD icon language: contained, contextual, and visually quieter than the text. */
+.crad-app .module-page-banner__title h1 > i {
+    width: 2.35rem;
+    height: 2.35rem;
+    display: inline-grid;
+    place-items: center;
+    margin-right: 0.65rem;
+    border: 1px solid color-mix(in srgb, var(--crad-icon-blue) 22%, transparent);
+    border-radius: 12px;
+    color: var(--crad-icon-blue);
+    background: linear-gradient(145deg, rgba(219,234,254,0.96), rgba(224,242,254,0.74));
+    box-shadow: 0 7px 16px rgba(37,99,235,0.12);
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
+.crad-app .module-card .card-icon {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 14px;
+    color: var(--crad-icon-blue);
+    background: linear-gradient(145deg, rgba(219,234,254,0.98), rgba(239,246,255,0.72));
+    box-shadow: 0 6px 14px rgba(30,64,175,0.1);
+}
+
+.crad-app .module-card .card-icon::after {
+    content: '';
+    position: absolute;
+    right: -13px;
+    bottom: -13px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    opacity: 0.12;
+}
+
+.crad-app .module-card .card-icon i {
+    position: relative;
+    z-index: 1;
+    font-size: 1.12rem;
+}
+
+.crad-app .module-card:hover .card-icon {
+    color: #fff;
+    border-color: transparent;
+    background: linear-gradient(145deg, var(--crad-icon-blue), var(--sms-accent));
+    box-shadow: 0 9px 20px rgba(37,99,235,0.22);
+}
+
+.crad-app .module-card .card-icon:has(.fa-file-signature),
+.crad-app .module-card .card-icon:has(.fa-file-alt),
+.crad-app .module-card .card-icon:has(.fa-file-export) {
+    color: var(--crad-icon-cyan);
+    border-color: rgba(8,145,178,0.2);
+    background: linear-gradient(145deg, rgba(207,250,254,0.95), rgba(236,254,255,0.76));
+}
+
+.crad-app .module-card .card-icon:has(.fa-users),
+.crad-app .module-card .card-icon:has(.fa-user-tie),
+.crad-app .module-card .card-icon:has(.fa-user-plus) {
+    color: var(--crad-icon-violet);
+    border-color: rgba(124,58,237,0.2);
+    background: linear-gradient(145deg, rgba(237,233,254,0.95), rgba(245,243,255,0.76));
+}
+
+.crad-app .module-card .card-icon:has(.fa-calendar),
+.crad-app .module-card .card-icon:has(.fa-clock),
+.crad-app .module-card .card-icon:has(.fa-chart) {
+    color: var(--crad-icon-amber);
+    border-color: rgba(217,119,6,0.2);
+    background: linear-gradient(145deg, rgba(254,243,199,0.95), rgba(255,251,235,0.8));
+}
+
+.crad-app .module-card .card-icon:has(.fa-book),
+.crad-app .module-card .card-icon:has(.fa-flask),
+.crad-app .module-card .card-icon:has(.fa-graduation-cap) {
+    color: var(--crad-icon-green);
+    border-color: rgba(5,150,105,0.2);
+    background: linear-gradient(145deg, rgba(209,250,229,0.95), rgba(240,253,244,0.76));
+}
+
+.crad-app .mpl-stat-icon,
+.crad-app .rp-stat-icon,
+.crad-app .rgn-stat-icon,
+.crad-app .rcm-stat-icon,
+.crad-app .cgsr-stat-icon,
+.crad-app .pst-stat-icon,
+.crad-app .go-stat-badge-icon,
+.crad-app .ai-stat > i {
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    filter: saturate(0.92);
+}
+
+.crad-app .mpl-table td > i,
+.crad-app .rp-table td i,
+.crad-app .rgn-table td i,
+.crad-app .rcm-table td i,
+.crad-app .cgsr-table td i,
+.crad-app .rcar-table td i,
+.crad-app .rcas-table td i,
+.crad-app .ai-table td i {
+    width: 1.15rem;
+    color: var(--sms-primary);
+    text-align: center;
+}
+
+.crad-app .rp-btn i,
+.crad-app .rgn-btn i,
+.crad-app .rcm-btn i,
+.crad-app .cgsr-btn i,
+.crad-app .go-card-action i,
+.crad-app .ai-btn i,
+.crad-app .rcas-btn i {
+    font-size: 0.82rem;
+}
+
+.crad-app .sms-main > * {
+    min-width: 0;
+}
+
+.crad-app h1,
+.crad-app h2,
+.crad-app h3,
+.crad-app h4,
+.crad-app p,
+.crad-app th,
+.crad-app td,
+.crad-app label,
+.crad-app .crad-meta,
+.crad-app .mpl-top,
+.crad-app .go-page-header-text {
+    overflow-wrap: anywhere;
+}
+
+.crad-app .mpl,
+.crad-app .rp-wrap,
+.crad-app .rgn-wrap,
+.crad-app .rcm-wrap,
+.crad-app .rcar-wrap,
+.crad-app .pst-wrap,
+.crad-app .go-page,
+.crad-app .prv-wrap,
+.crad-app .cgsr-wrap,
+.crad-app .ai-wrap,
+.crad-app .rcas-wrap,
+.crad-app .rcsn-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.crad-app .mpl-top,
+.crad-app .go-page-header,
+.crad-app .rcar-header,
+.crad-app .ai-header,
+.crad-app .prv-header,
+.crad-app .rp-card-head,
+.crad-app .rgn-card-head,
+.crad-app .rcm-card-head,
+.crad-app .cgsr-card-head,
+.crad-app .rcas-card-head {
+    gap: var(--crad-space-grid);
+}
+
+.crad-app .mpl-panel,
+.crad-app .rp-card,
+.crad-app .rgn-card,
+.crad-app .rcm-card,
+.crad-app .rcar-card,
+.crad-app .pst-card,
+.crad-app .go-card,
+.crad-app .prv-form,
+.crad-app .cgsr-card,
+.crad-app .ai-card,
+.crad-app .rcas-card,
+.crad-app .rcsn-card {
+    border-radius: var(--crad-radius-card);
+}
+
+.crad-app .mpl-stats,
+.crad-app .rp-stats,
+.crad-app .rgn-stats,
+.crad-app .rcm-stats,
+.crad-app .cgsr-stats,
+.crad-app .pst-stats,
+.crad-app .go-stat-row,
+.crad-app .ai-stats {
+    gap: 0.85rem;
+}
+
+.crad-app .mpl-stat,
+.crad-app .rp-stat,
+.crad-app .rgn-stat,
+.crad-app .rcm-stat,
+.crad-app .cgsr-stat,
+.crad-app .pst-stat,
+.crad-app .go-stat-badge,
+.crad-app .ai-stat {
+    min-width: 0;
+    border-radius: var(--crad-radius-card);
+}
+
+.crad-app .mpl-btn,
+.crad-app .mpl-add,
+.crad-app .rp-btn,
+.crad-app .rgn-btn,
+.crad-app .rcm-btn,
+.crad-app .cgsr-btn,
+.crad-app .go-card-action,
+.crad-app .ai-btn,
+.crad-app .rcas-btn {
+    min-height: 40px;
+    border-radius: var(--crad-radius-control);
+    font-weight: 700;
+}
+
+.crad-app .mpl-btn:focus-visible,
+.crad-app .mpl-add:focus-visible,
+.crad-app .rp-btn:focus-visible,
+.crad-app .rgn-btn:focus-visible,
+.crad-app .rcm-btn:focus-visible,
+.crad-app .cgsr-btn:focus-visible,
+.crad-app .go-card-action:focus-visible,
+.crad-app .ai-btn:focus-visible,
+.crad-app .rcas-btn:focus-visible,
+.crad-app button:focus-visible,
+.crad-app a:focus-visible,
+.crad-app select:focus-visible,
+.crad-app input:focus-visible,
+.crad-app textarea:focus-visible {
+    outline: 3px solid var(--sms-input-focus);
+    outline-offset: 2px;
+}
+
+.crad-app .mpl-toolbar,
+.crad-app .rp-card-tools,
+.crad-app .rgn-card-tools,
+.crad-app .rcm-card-tools,
+.crad-app .cgsr-card-tools,
+.crad-app .go-page-header-actions,
+.crad-app .go-filter-bar,
+.crad-app .rcas-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.crad-app .mpl-search,
+.crad-app .rp-search,
+.crad-app .rgn-search,
+.crad-app .rcm-search,
+.crad-app .cgsr-search,
+.crad-app .go-filter-search {
+    min-width: min(100%, 240px);
+    border-radius: var(--crad-radius-control);
+}
+
+.crad-app .mpl-filters select,
+.crad-app .mpl-filters input,
+.crad-app .rp-filter,
+.crad-app .rgn-filter,
+.crad-app .rcm-filter,
+.crad-app .cgsr-filter,
+.crad-app .rcm-select,
+.crad-app .go-filter-pill,
+.crad-app .go-form-input {
+    min-height: 40px;
+    border-radius: var(--crad-radius-control);
+}
+
+.crad-app .mpl-table-wrap,
+.crad-app .rp-table-wrap,
+.crad-app .rgn-table-wrap,
+.crad-app .rcm-table-wrap,
+.crad-app .cgsr-table-wrap,
+.crad-app .rcar-table-wrap,
+.crad-app .rcas-table-wrap,
+.crad-app .ai-table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.crad-app .mpl-table,
+.crad-app .rp-table,
+.crad-app .rgn-table,
+.crad-app .rcm-table,
+.crad-app .cgsr-table,
+.crad-app .rcar-table,
+.crad-app .rcas-table,
+.crad-app .ai-table {
+    min-width: 680px;
+}
+
+.crad-app .mpl-table thead th,
+.crad-app .rp-table thead th,
+.crad-app .rgn-table thead th,
+.crad-app .rcm-table thead th,
+.crad-app .cgsr-table thead th,
+.crad-app .rcar-table thead th,
+.crad-app .rcas-table thead th,
+.crad-app .ai-table thead th {
+    background: var(--crad-table-head);
+    color: var(--sms-text-muted);
+    white-space: nowrap;
+}
+
+.crad-app .mpl-alert,
+.crad-app .rp-alert,
+.crad-app .rgn-alert,
+.crad-app .rcm-alert,
+.crad-app .rcar-error,
+.crad-app .ai-error {
+    border-radius: var(--crad-radius-control);
+    line-height: 1.45;
+}
+
+.crad-app .rp-empty,
+.crad-app .rgn-empty,
+.crad-app .rcm-empty,
+.crad-app .cgsr-empty,
+.crad-app .go-empty-state,
+.crad-app .ai-empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--sms-text-muted);
+}
+
+.crad-app .rp-ta-modal,
+.crad-app .rcm-modal-overlay,
+.crad-app .cgsr-modal-overlay,
+.crad-app .rcas-contact-panel,
+.crad-app .prv-modal-backdrop {
+    z-index: 1100;
+}
+
+.crad-app .rp-ta-dialog,
+.crad-app .rcm-modal,
+.crad-app .cgsr-modal,
+.crad-app .prv-modal {
+    border-radius: var(--crad-radius-card);
+}
+
+.crad-app .crad-page-action-icon,
+.crad-app .mpl-btn i,
+.crad-app .mpl-add i,
+.crad-app .rp-btn i,
+.crad-app .rgn-btn i,
+.crad-app .rcm-btn i,
+.crad-app .cgsr-btn i,
+.crad-app .go-card-action i,
+.crad-app .ai-btn i,
+.crad-app .rcas-btn i {
+    width: 1rem;
+    flex: 0 0 1rem;
+    text-align: center;
+}
+
+/* Dense operational tables stay readable and scroll inside their own frame. */
+.crad-app .mpl-table-wrap,
+.crad-app .rp-table-wrap,
+.crad-app .rgn-table-wrap,
+.crad-app .rcm-table-wrap,
+.crad-app .cgsr-table-wrap,
+.crad-app .rcar-table-wrap,
+.crad-app .rcas-table-wrap,
+.crad-app .ai-table-wrap {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sms-border) transparent;
+}
+
+.crad-app .mpl-table-wrap::-webkit-scrollbar,
+.crad-app .rp-table-wrap::-webkit-scrollbar,
+.crad-app .rgn-table-wrap::-webkit-scrollbar,
+.crad-app .rcm-table-wrap::-webkit-scrollbar,
+.crad-app .cgsr-table-wrap::-webkit-scrollbar,
+.crad-app .rcar-table-wrap::-webkit-scrollbar,
+.crad-app .rcas-table-wrap::-webkit-scrollbar,
+.crad-app .ai-table-wrap::-webkit-scrollbar {
+    height: 8px;
+}
+
+.crad-app .mpl-table-wrap::-webkit-scrollbar-thumb,
+.crad-app .rp-table-wrap::-webkit-scrollbar-thumb,
+.crad-app .rgn-table-wrap::-webkit-scrollbar-thumb,
+.crad-app .rcm-table-wrap::-webkit-scrollbar-thumb,
+.crad-app .cgsr-table-wrap::-webkit-scrollbar-thumb,
+.crad-app .rcar-table-wrap::-webkit-scrollbar-thumb,
+.crad-app .rcas-table-wrap::-webkit-scrollbar-thumb,
+.crad-app .ai-table-wrap::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--sms-border);
+}
+
+@media (max-width: 1199.98px) {
+    .crad-app .mpl-stats,
+    .crad-app .rcm-stats,
+    .crad-app .cgsr-stats,
+    .crad-app .ai-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .crad-app .prv-upload-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .crad-app .sms-main {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .crad-app .mpl-stats,
+    .crad-app .rp-stats,
+    .crad-app .rgn-stats,
+    .crad-app .rcm-stats,
+    .crad-app .cgsr-stats,
+    .crad-app .pst-stats,
+    .crad-app .go-stat-row,
+    .crad-app .ai-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .crad-app .mpl-top,
+    .crad-app .go-page-header,
+    .crad-app .rcar-header,
+    .crad-app .ai-header,
+    .crad-app .prv-header {
+        align-items: stretch;
+    }
+
+    .crad-app .mpl-toolbar,
+    .crad-app .go-page-header-actions,
+    .crad-app .rcas-toolbar {
+        width: 100%;
+    }
+
+    .crad-app .mpl-toolbar > *,
+    .crad-app .go-page-header-actions > *,
+    .crad-app .rcas-toolbar > * {
+        flex: 1 1 auto;
+    }
+
+    .crad-app .rp-card-head,
+    .crad-app .rgn-card-head,
+    .crad-app .rcm-card-head,
+    .crad-app .cgsr-card-head,
+    .crad-app .rcas-card-head {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .crad-app .rp-card-tools,
+    .crad-app .rgn-card-tools,
+    .crad-app .rcm-card-tools,
+    .crad-app .cgsr-card-tools {
+        width: 100%;
+    }
+
+    .crad-app .rp-card-tools > *,
+    .crad-app .rgn-card-tools > *,
+    .crad-app .rcm-card-tools > *,
+    .crad-app .cgsr-card-tools > * {
+        flex: 1 1 180px;
+        max-width: 100%;
+    }
+
+    .crad-app .rp-search,
+    .crad-app .rgn-search,
+    .crad-app .rcm-search,
+    .crad-app .cgsr-search,
+    .crad-app .rp-filter,
+    .crad-app .rgn-filter,
+    .crad-app .rcm-filter,
+    .crad-app .cgsr-filter {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .crad-app .prv-grid-2,
+    .crad-app .prv-rep-grid,
+    .crad-app .prv-sig-row,
+    .crad-app .cgsr-detail-grid,
+    .crad-app .rcm-detail-grid,
+    .crad-app .rp-ta-meta,
+    .crad-app .rp-ta-approval-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .crad-app .prv-upload-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .crad-app .prv-field-half {
+        max-width: none;
+    }
+
+    .crad-app .rcm-truncate,
+    .crad-app .rcm-meta-truncate {
+        max-width: min(55vw, 320px);
+    }
+
+    .crad-app .modal-dialog,
+    .crad-app .rp-ta-dialog,
+    .crad-app .rcm-modal,
+    .crad-app .cgsr-modal,
+    .crad-app .prv-modal {
+        width: calc(100% - 1rem);
+        max-width: none;
+        margin: 0.5rem auto;
+    }
+
+    .crad-app .modal-body,
+    .crad-app .rp-ta-body,
+    .crad-app .rcm-modal-body,
+    .crad-app .cgsr-modal-body {
+        max-height: calc(100dvh - 10rem);
+        overflow-y: auto;
+    }
+
+    .crad-app .mpl-btn,
+    .crad-app .mpl-add,
+    .crad-app .go-page-header-actions .btn {
+        min-height: 42px;
+    }
+
+    .crad-app .mpl-panel,
+    .crad-app .rp-card,
+    .crad-app .rgn-card,
+    .crad-app .rcm-card,
+    .crad-app .rcar-card,
+    .crad-app .pst-card,
+    .crad-app .go-card,
+    .crad-app .prv-form,
+    .crad-app .cgsr-card,
+    .crad-app .ai-card,
+    .crad-app .rcas-card {
+        border-radius: 12px;
+    }
+}
+
+/* Grant Opportunities summary cards match the shared reference layout. */
+.crad-app [data-grant-opp-page] .go-stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: stretch;
+    margin-bottom: 1.35rem;
+}
+
+.crad-app [data-grant-opp-page] .go-stat-badge {
+    position: relative;
+    display: block;
+    min-height: 104px;
+    padding: 1.05rem 1.35rem 0.95rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(15, 33, 88, 0.05);
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.25;
+    white-space: normal;
+    overflow: hidden;
+}
+
+.crad-app [data-grant-opp-page] .go-stat-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--sms-primary);
+}
+
+.crad-app [data-grant-opp-page] .go-stat-badge.open::before { background: var(--sms-success); }
+.crad-app [data-grant-opp-page] .go-stat-badge.closed::before { background: var(--sms-warning); }
+.crad-app [data-grant-opp-page] .go-stat-badge.expired::before { background: var(--sms-info); }
+
+.crad-app [data-grant-opp-page] .go-stat-badge-icon {
+    display: none;
+}
+
+.crad-app [data-grant-opp-page] .go-stat-badge strong {
+    display: block;
+    margin-top: 0.42rem;
+    color: #172033;
+    font-size: 1.65rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+@media (max-width: 767.98px) {
+    .crad-app [data-grant-opp-page] .go-stat-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .crad-app [data-grant-opp-page] .go-stat-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark theme contrast for the shared CRAD surfaces. */
+[data-theme="dark"] .crad-app .mpl-stat,
+[data-theme="dark"] .crad-app .rp-stat,
+[data-theme="dark"] .crad-app .rgn-stat,
+[data-theme="dark"] .crad-app .rcm-stat,
+[data-theme="dark"] .crad-app .cgsr-stat,
+[data-theme="dark"] .crad-app .pst-stat,
+[data-theme="dark"] .crad-app .go-stat-badge,
+[data-theme="dark"] .crad-app .ai-stat {
+    border-color: rgba(148, 163, 184, 0.2);
+    background: var(--sms-surface-solid);
+    box-shadow: var(--sms-shadow-sm);
+}
+
+[data-theme="dark"] .crad-app .mpl-stat span,
+[data-theme="dark"] .crad-app .rp-stat span,
+[data-theme="dark"] .crad-app .rgn-stat span,
+[data-theme="dark"] .crad-app .rcm-stat span,
+[data-theme="dark"] .crad-app .cgsr-stat span,
+[data-theme="dark"] .crad-app .pst-stat span,
+[data-theme="dark"] .crad-app .go-stat-badge,
+[data-theme="dark"] .crad-app .ai-stat span {
+    color: var(--sms-text-muted);
+}
+
+[data-theme="dark"] .crad-app .mpl-stat strong,
+[data-theme="dark"] .crad-app .rp-stat strong,
+[data-theme="dark"] .crad-app .rgn-stat strong,
+[data-theme="dark"] .crad-app .rcm-stat strong,
+[data-theme="dark"] .crad-app .cgsr-stat strong,
+[data-theme="dark"] .crad-app .pst-stat strong,
+[data-theme="dark"] .crad-app .go-stat-badge strong,
+[data-theme="dark"] .crad-app .ai-stat strong {
+    color: var(--sms-heading);
+}
+
+[data-theme="dark"] .crad-app .mpl-panel,
+[data-theme="dark"] .crad-app .rp-card,
+[data-theme="dark"] .crad-app .rgn-card,
+[data-theme="dark"] .crad-app .rcm-card,
+[data-theme="dark"] .crad-app .rcar-card,
+[data-theme="dark"] .crad-app .pst-card,
+[data-theme="dark"] .crad-app .go-card,
+[data-theme="dark"] .crad-app .prv-form,
+[data-theme="dark"] .crad-app .cgsr-card,
+[data-theme="dark"] .crad-app .ai-card,
+[data-theme="dark"] .crad-app .rcas-card {
+    border-color: var(--sms-border);
+    background: var(--sms-surface);
+    box-shadow: var(--sms-shadow-sm);
+}
+
+[data-theme="dark"] .crad-app .mpl-search,
+[data-theme="dark"] .crad-app .rp-search,
+[data-theme="dark"] .crad-app .rgn-search,
+[data-theme="dark"] .crad-app .rcm-search,
+[data-theme="dark"] .crad-app .cgsr-search,
+[data-theme="dark"] .crad-app .go-filter-search,
+[data-theme="dark"] .crad-app .mpl-filters select,
+[data-theme="dark"] .crad-app .mpl-filters input,
+[data-theme="dark"] .crad-app .rp-filter,
+[data-theme="dark"] .crad-app .rgn-filter,
+[data-theme="dark"] .crad-app .rcm-filter,
+[data-theme="dark"] .crad-app .cgsr-filter,
+[data-theme="dark"] .crad-app .rcm-select,
+[data-theme="dark"] .crad-app .go-form-input {
+    border-color: var(--sms-input-border);
+    background: var(--sms-input-bg);
+    color: var(--sms-text-strong);
+}
+
+[data-theme="dark"] .crad-app .mpl-table thead th,
+[data-theme="dark"] .crad-app .rp-table thead th,
+[data-theme="dark"] .crad-app .rgn-table thead th,
+[data-theme="dark"] .crad-app .rcm-table thead th,
+[data-theme="dark"] .crad-app .cgsr-table thead th,
+[data-theme="dark"] .crad-app .rcar-table thead th,
+[data-theme="dark"] .crad-app .rcas-table thead th,
+[data-theme="dark"] .crad-app .ai-table thead th {
+    background: var(--sms-table-head-bg);
+    color: var(--sms-text-muted);
+}
+
+[data-theme="dark"] .crad-app .modal-content,
+[data-theme="dark"] .crad-app .modal-header,
+[data-theme="dark"] .crad-app .modal-body,
+[data-theme="dark"] .crad-app .rp-ta-dialog,
+[data-theme="dark"] .crad-app .cgsr-modal,
+[data-theme="dark"] .crad-app .rcm-modal,
+[data-theme="dark"] .crad-app .prv-modal {
+    background: var(--sms-surface-elevated) !important;
+    color: var(--sms-text);
+}
+
+/* Confirmation variants inside CRAD use the same compact decision surface. */
+.crad-app .rcas-confirm-modal,
+.crad-app .prv-modal,
+.crad-app #rctaApproveConfirmModal > div,
+.crad-app #cradTaApproveConfirmModal .rp-ta-dialog {
+    border: 1px solid var(--sms-border) !important;
+    border-radius: 16px !important;
+    background: var(--sms-surface-elevated) !important;
+    box-shadow: var(--sms-shadow-lg) !important;
+    overflow: hidden;
+}
+
+.crad-app .rcas-confirm-modal-header,
+.crad-app .prv-modal-head,
+.crad-app #rctaApproveConfirmModal > div > div:first-child,
+.crad-app #cradTaApproveConfirmModal .rp-ta-dialog > div:first-child {
+    min-height: 74px;
+    display: flex;
+    align-items: center;
+    padding: 0.85rem 1.2rem !important;
+    border-bottom: 1px solid var(--sms-border) !important;
+    background: var(--sms-surface-elevated) !important;
+    color: var(--sms-heading) !important;
+}
+
+.crad-app .rcas-confirm-modal-header .modal-title,
+.crad-app .prv-modal-title,
+.crad-app #rctaApproveConfirmModal h3,
+.crad-app #cradTaApproveConfirmModal h3 {
+    color: var(--sms-heading) !important;
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+}
+
+.crad-app .rcas-confirm-modal-icon-wrap,
+.crad-app .prv-modal-icon,
+.crad-app #rctaApproveConfirmModal h3 > i,
+.crad-app #cradTaApproveConfirmModal h3 > i {
+    display: none !important;
+}
+
+.crad-app .rcas-confirm-modal-body,
+.crad-app .prv-modal-body,
+.crad-app #rctaApproveConfirmModal > div > div:nth-child(2),
+.crad-app #cradTaApproveConfirmModal .rp-ta-dialog > div:nth-child(2) {
+    min-height: 74px;
+    padding: 1rem 1.2rem !important;
+    background: var(--sms-surface-elevated) !important;
+    color: var(--sms-text) !important;
+}
+
+.crad-app .rcas-confirm-modal-footer,
+.crad-app .prv-modal-actions,
+.crad-app #rctaApproveConfirmModal > div > div:last-child,
+.crad-app #cradTaApproveConfirmModal .rp-ta-dialog > div:last-child {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    padding: 1rem 1.2rem 1.25rem !important;
+    border-top: 1px solid var(--sms-border) !important;
+    background: var(--sms-surface-muted) !important;
+}
+
+.crad-app .rcas-confirm-modal-footer .btn,
+.crad-app .prv-modal-btn,
+.crad-app #rctaApproveConfirmModal button,
+.crad-app #cradTaApproveConfirmModal .rp-btn {
+    min-height: 48px;
+    border-radius: 11px !important;
+    padding: 0.65rem 1rem;
+    font-weight: 750;
+    box-shadow: none !important;
+}
+
+.crad-app .prv-modal-confirm.return {
+    background: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+@media (max-width: 575.98px) {
+    .crad-app .rcas-confirm-modal-footer,
+    .crad-app .prv-modal-actions,
+    .crad-app #rctaApproveConfirmModal > div > div:last-child,
+    .crad-app #cradTaApproveConfirmModal .rp-ta-dialog > div:last-child {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .crad-app .rcas-confirm-modal-footer .btn,
+    .crad-app .prv-modal-btn,
+    .crad-app #rctaApproveConfirmModal button,
+    .crad-app #cradTaApproveConfirmModal .rp-btn {
+        width: 100%;
+    }
+}
+
+/* Minimal floating forms: one calm surface, one clear title, restrained actions. */
+.crad-app .modal-backdrop.show,
+.crad-app .rp-ta-modal,
+.crad-app .cgsr-modal-overlay,
+.crad-app .rcm-modal-overlay,
+.crad-app .prv-modal-backdrop {
+    background: rgba(15, 23, 42, 0.58) !important;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.crad-app .modal-content,
+.crad-app .rp-ta-dialog,
+.crad-app .cgsr-modal,
+.crad-app .rcm-modal,
+.crad-app .prv-modal {
+    border: 1px solid var(--sms-border) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.2) !important;
+    overflow: hidden;
+}
+
+.crad-app .mpl-stat,
+.crad-app .rp-stat,
+.crad-app .rgn-stat,
+.crad-app .rcm-stat,
+.crad-app .cgsr-stat,
+.crad-app .pst-stat,
+.crad-app .go-stat-badge,
+.crad-app .ai-stat {
+    min-height: 104px;
+    padding: 1.05rem 1.35rem 0.95rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(15, 33, 88, 0.05);
+}
+
+.crad-app .mpl-stat > div,
+.crad-app .rp-stat > div,
+.crad-app .rgn-stat > div,
+.crad-app .rcm-stat > div,
+.crad-app .cgsr-stat > div,
+.crad-app .pst-stat > div,
+.crad-app .go-stat-badge > div,
+.crad-app .ai-stat > div {
+    min-width: 0;
+}
+
+.crad-app .mpl-stat span,
+.crad-app .rp-stat span,
+.crad-app .rgn-stat span,
+.crad-app .rcm-stat span,
+.crad-app .cgsr-stat span,
+.crad-app .pst-stat span,
+.crad-app .go-stat-badge span,
+.crad-app .ai-stat span {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.crad-app .mpl-stat strong,
+.crad-app .rp-stat strong,
+.crad-app .rgn-stat strong,
+.crad-app .rcm-stat strong,
+.crad-app .cgsr-stat strong,
+.crad-app .pst-stat strong,
+.crad-app .go-stat-badge strong,
+.crad-app .ai-stat strong {
+    margin-top: 0.42rem;
+    color: #172033;
+    font-size: 1.65rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.crad-app .modal-header,
+.crad-app .rp-ta-dialog > header,
+.crad-app .cgsr-modal-head,
+.crad-app .rcm-modal-head,
+.crad-app .prv-modal-head {
+    min-height: 58px;
+    padding: 0.85rem 1.15rem !important;
+    border-bottom: 1px solid var(--sms-border) !important;
+    background: var(--sms-surface-solid) !important;
+    color: var(--sms-heading) !important;
+}
+
+.crad-app .modal-title,
+.crad-app .rp-ta-dialog h3,
+.crad-app .cgsr-modal-head h3,
+.crad-app .rcm-modal-head h3,
+.crad-app .prv-modal-title {
+    color: var(--sms-heading) !important;
+    font-size: 0.98rem !important;
+    font-weight: 800 !important;
+}
+
+.crad-app .modal-title > i,
+.crad-app .rp-ta-dialog h3 > i,
+.crad-app .cgsr-modal-head h3 > i,
+.crad-app .prv-modal-icon,
+.crad-app .rcas-confirm-modal-icon-wrap {
+    display: none !important;
+}
+
+.crad-app .modal-header > [class*="btn-close"],
+.crad-app .cgsr-modal-close,
+.crad-app .rcm-modal-close,
+.crad-app .rp-ta-close {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    border: 1px solid var(--sms-border) !important;
+    border-radius: 9px !important;
+    background-color: var(--sms-surface-muted) !important;
+    color: var(--sms-text-muted) !important;
+    opacity: 1;
+}
+
+.crad-app .modal-header > [class*="btn-close"]:hover,
+.crad-app .cgsr-modal-close:hover,
+.crad-app .rcm-modal-close:hover,
+.crad-app .rp-ta-close:hover {
+    border-color: var(--sms-primary-light) !important;
+    background-color: var(--sms-primary-xlight) !important;
+    color: var(--sms-primary) !important;
+}
+
+.crad-app .modal-body,
+.crad-app .rp-ta-body,
+.crad-app .cgsr-modal-body,
+.crad-app .rcm-modal-body,
+.crad-app .prv-modal-body {
+    padding: 1.15rem !important;
+    background: var(--sms-surface-solid) !important;
+}
+
+.crad-app .modal-footer,
+.crad-app .rp-ta-dialog > footer,
+.crad-app .prv-modal-actions {
+    padding: 0.85rem 1.15rem 1rem !important;
+    border-top: 1px solid var(--sms-border) !important;
+    background: var(--sms-surface-muted) !important;
+}
+
+.crad-app .modal-footer .btn,
+.crad-app .rp-ta-dialog .rp-btn,
+.crad-app .prv-modal-btn {
+    min-height: 40px;
+    border-radius: 9px !important;
+    box-shadow: none !important;
+}
+
+.crad-app .modal-footer .btn-sms-primary,
+.crad-app .modal-footer .btn-primary,
+.crad-app .rp-ta-dialog .rp-btn-success,
+.crad-app .prv-modal-confirm {
+    box-shadow: 0 5px 12px rgba(30, 64, 175, 0.16) !important;
+}
+
+@media (max-width: 575.98px) {
+    .crad-app .modal-dialog,
+    .crad-app .rp-ta-dialog,
+    .crad-app .cgsr-modal,
+    .crad-app .rcm-modal,
+    .crad-app .prv-modal {
+        width: calc(100% - 1rem) !important;
+        max-width: none !important;
+        margin: 0.5rem auto !important;
+    }
+
+    .crad-app .modal-body,
+    .crad-app .rp-ta-body,
+    .crad-app .cgsr-modal-body,
+    .crad-app .rcm-modal-body,
+    .crad-app .prv-modal-body {
+        max-height: calc(100dvh - 10rem);
+        overflow-y: auto;
+    }
+
+    .crad-app .modal-footer,
+    .crad-app .rp-ta-dialog > footer,
+    .crad-app .prv-modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .crad-app .modal-footer .btn,
+    .crad-app .rp-ta-dialog .rp-btn,
+    .crad-app .prv-modal-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .crad-app .mpl-stats,
+    .crad-app .rp-stats,
+    .crad-app .rgn-stats,
+    .crad-app .rcm-stats,
+    .crad-app .cgsr-stats,
+    .crad-app .pst-stats,
+    .crad-app .go-stat-row,
+    .crad-app .ai-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .crad-app .mpl-stat,
+    .crad-app .rp-stat,
+    .crad-app .rgn-stat,
+    .crad-app .rcm-stat,
+    .crad-app .cgsr-stat,
+    .crad-app .pst-stat,
+    .crad-app .go-stat-badge,
+    .crad-app .ai-stat {
+        min-height: 64px;
+    }
+
+    .crad-app .prv-upload-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .crad-app .mpl-btn,
+    .crad-app .mpl-add,
+    .crad-app .rp-btn,
+    .crad-app .rgn-btn,
+    .crad-app .rcm-btn,
+    .crad-app .cgsr-btn,
+    .crad-app .go-card-action,
+    .crad-app .ai-btn,
+    .crad-app .rcas-btn {
+        width: 100%;
+    }
+
+    .crad-app .card-body,
+    .crad-app .mpl-panel-head,
+    .crad-app .rp-card,
+    .crad-app .rgn-card,
+    .crad-app .rcm-card,
+    .crad-app .cgsr-card {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
+
+    .crad-app .go-filter-pills {
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.25rem;
+    }
+
+    .crad-app .go-filter-pill {
+        flex: 0 0 auto;
+    }
+
+    .crad-app .rcm-truncate,
+    .crad-app .rcm-meta-truncate {
+        max-width: 48vw;
+    }
+}
+
+@media (max-width: 380px) {
+    .crad-app .sms-main {
+        padding-left: 0.6rem;
+        padding-right: 0.6rem;
+    }
+
+    .crad-app .mpl-panel-head,
+    .crad-app .rp-card,
+    .crad-app .rgn-card,
+    .crad-app .rcm-card,
+    .crad-app .cgsr-card {
+        padding-left: 0.7rem;
+        padding-right: 0.7rem;
+    }
+
+    .crad-app .mpl-table,
+    .crad-app .rp-table,
+    .crad-app .rgn-table,
+    .crad-app .rcm-table,
+    .crad-app .cgsr-table,
+    .crad-app .rcar-table,
+    .crad-app .rcas-table,
+    .crad-app .ai-table {
+        min-width: 600px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .crad-app *,
+    .crad-app *::before,
+    .crad-app *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* Minimal mode: reserve icons for page identity, status, and icon-only actions. */
+.crad-app .rp-card-head h2 > i,
+.crad-app .rgn-card-head h2 > i,
+.crad-app .rcm-card-head h2 > i,
+.crad-app .cgsr-card-head h2 > i,
+.crad-app .rcar-record-title > i,
+.crad-app .ai-card-head h2 > i {
+    display: none;
+}
+
+.crad-app .mpl-alert > i,
+.crad-app .rp-alert > i,
+.crad-app .rgn-alert > i,
+.crad-app .rcm-alert > i,
+.crad-app .rcar-error > i,
+.crad-app .ai-error > i,
+.crad-app .go-page-header + .mpl-alert > i {
+    display: none;
+}
+
+.crad-app .rp-status i,
+.crad-app .rgn-status i,
+.crad-app .rcm-pill i,
+.crad-app .rcar-status i,
+.crad-app .ai-badge i,
+.crad-app .pst-badge i,
+.crad-app .cgsr-badge i {
+    display: none;
+}
+
+.crad-app .rp-btn:not([aria-label]) i,
+.crad-app .rgn-btn:not([aria-label]) i,
+.crad-app .rcm-btn:not([aria-label]) i,
+.crad-app .cgsr-btn:not([aria-label]) i,
+.crad-app .go-card-action:not([aria-label]) i,
+.crad-app .ai-btn:not([aria-label]) i,
+.crad-app .rcas-btn:not([aria-label]) i,
+.crad-app .mpl-btn:not([aria-label]) i,
+.crad-app .mpl-add:not([aria-label]) i {
+    display: none;
+}
+
+.crad-app .rp-table td .rp-number i,
+.crad-app .rgn-table td .rgn-number i,
+.crad-app .rcar-table td .rcar-code i {
+    display: none;
+}
+
+.crad-app .rp-stat-icon,
+.crad-app .rgn-stat-icon,
+.crad-app .rcm-stat-icon,
+.crad-app .cgsr-stat-icon,
+.crad-app .pst-stat-icon,
+.crad-app .go-stat-badge-icon,
+.crad-app .ai-stat > i {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    opacity: 0.82;
+}
+
+/* Metric cards carry hierarchy through type and accent, not repeated icon tiles. */
+.crad-app .mpl-stat,
+.crad-app .rp-stat,
+.crad-app .rgn-stat,
+.crad-app .rcm-stat,
+.crad-app .cgsr-stat,
+.crad-app .pst-stat,
+.crad-app .go-stat-badge,
+.crad-app .ai-stat {
+    position: relative;
+    overflow: hidden;
+}
+
+.crad-app .mpl-stat::before,
+.crad-app .rp-stat::before,
+.crad-app .rgn-stat::before,
+.crad-app .rcm-stat::before,
+.crad-app .cgsr-stat::before,
+.crad-app .pst-stat::before,
+.crad-app .go-stat-badge::before,
+.crad-app .ai-stat::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--sms-primary);
+}
+
+.crad-app .mpl-stat-icon,
+.crad-app .rp-stat-icon,
+.crad-app .rgn-stat-icon,
+.crad-app .rcm-stat-icon,
+.crad-app .cgsr-stat-icon,
+.crad-app .pst-stat-icon,
+.crad-app .go-stat-badge-icon,
+.crad-app .ai-stat > i {
+    display: none !important;
+}
+
+.crad-app .mpl-stat > :last-child,
+.crad-app .rp-stat > :last-child,
+.crad-app .rgn-stat > :last-child,
+.crad-app .rcm-stat > :last-child,
+.crad-app .cgsr-stat > :last-child,
+.crad-app .pst-stat > :last-child,
+.crad-app .go-stat-badge > :last-child,
+.crad-app .ai-stat > :last-child {
+    margin-left: 0.3rem;
+}
+
+.crad-app .mpl-stat:nth-child(2)::before,
+.crad-app .rp-stat:nth-child(2)::before,
+.crad-app .rgn-stat:nth-child(2)::before,
+.crad-app .rcm-stat:nth-child(2)::before,
+.crad-app .cgsr-stat:nth-child(2)::before,
+.crad-app .pst-stat:nth-child(2)::before,
+.crad-app .go-stat-badge:nth-child(2)::before,
+.crad-app .ai-stat:nth-child(2)::before {
+    background: var(--sms-success);
+}
+
+.crad-app .mpl-stat:nth-child(3)::before,
+.crad-app .rp-stat:nth-child(3)::before,
+.crad-app .rgn-stat:nth-child(3)::before,
+.crad-app .rcm-stat:nth-child(3)::before,
+.crad-app .cgsr-stat:nth-child(3)::before,
+.crad-app .pst-stat:nth-child(3)::before,
+.crad-app .go-stat-badge:nth-child(3)::before,
+.crad-app .ai-stat:nth-child(3)::before {
+    background: var(--sms-warning);
+}
+
+.crad-app .mpl-stat:nth-child(4)::before,
+.crad-app .rp-stat:nth-child(4)::before,
+.crad-app .rgn-stat:nth-child(4)::before,
+.crad-app .rcm-stat:nth-child(4)::before,
+.crad-app .cgsr-stat:nth-child(4)::before,
+.crad-app .pst-stat:nth-child(4)::before,
+.crad-app .go-stat-badge:nth-child(4)::before,
+.crad-app .ai-stat:nth-child(4)::before {
+    background: var(--sms-info);
+}
+
+.crad-app .module-card .card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.crad-app .module-card .card-icon::after {
+    display: none;
+}
+
+@media (max-width: 575.98px) {
+    .crad-app .module-card .card-icon {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+/* CRAD overview cards: calm two-column workspace navigation with a clear hover target. */
+.crad-app .module-button-grid {
+    --bs-gutter-x: 1rem;
+    --bs-gutter-y: 1rem;
+}
+
+.crad-app .module-button-grid > [class*="col-"] {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.crad-app .module-button-grid > [class*="col-"] > a {
+    color: inherit;
+}
+
+.crad-app .module-button-grid .module-card {
+    position: relative;
+    min-height: 116px;
+    border: 1px solid var(--sms-border-soft);
+    border-radius: 16px;
+    background: var(--sms-surface);
+    box-shadow: var(--sms-shadow-xs);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.crad-app .module-button-grid .module-card::after {
+    content: '\f054';
+    position: absolute;
+    top: 50%;
+    right: 1.35rem;
+    width: 1rem;
+    color: var(--sms-primary-light);
+    font-family: 'Font Awesome 6 Free';
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-align: center;
+    transform: translateY(-50%);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.crad-app .module-button-grid .module-card .card-body {
+    min-height: 116px;
+    padding: 1.15rem 3rem 1.15rem 1.2rem;
+}
+
+.crad-app .module-button-grid .module-card .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+}
+
+.crad-app .module-button-grid .module-card h6 {
+    margin-bottom: 0.3rem !important;
+    font-size: 0.96rem;
+    font-weight: 800 !important;
+    line-height: 1.25;
+}
+
+.crad-app .module-button-grid .module-card small {
+    display: block;
+    max-width: 34rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.crad-app .module-button-grid .module-card:hover {
+    border-color: color-mix(in srgb, var(--sms-primary-light) 42%, var(--sms-border-soft));
+    background: var(--sms-surface-elevated);
+    box-shadow: var(--sms-shadow-hover);
+    transform: translateY(-3px);
+}
+
+.crad-app .module-button-grid .module-card:hover::after {
+    color: var(--sms-primary);
+    transform: translate(3px, -50%);
+}
+
+[data-theme="dark"] .crad-app .module-button-grid .module-card {
+    border-color: var(--sms-border);
+    background: var(--sms-surface);
+}
+
+[data-theme="dark"] .crad-app .module-button-grid .module-card:hover {
+    background: var(--sms-surface-elevated);
+}
+
+@media (max-width: 767.98px) {
+    .crad-app .module-button-grid > [class*="col-"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* One quiet status language across proposal, grant, and assignment screens. */
+.crad-app .mpl-status,
+.crad-app .rp-status,
+.crad-app .pst-badge,
+.crad-app .rcm-pill,
+.crad-app .go-card-status,
+.crad-app .cgsr-badge,
+.crad-app .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+    border-radius: 999px;
+    font-weight: 750;
+}
+
+.crad-app .mpl-status::before,
+.crad-app .rp-status::before,
+.crad-app .pst-badge::before,
+.crad-app .rcm-pill::before,
+.crad-app .go-card-status::before,
+.crad-app .cgsr-badge::before,
+.crad-app .ai-badge::before {
+    content: '';
+    width: 0.38rem;
+    height: 0.38rem;
+    flex: 0 0 0.38rem;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.crad-app .go-card-status .status-dot {
+    display: none;
+}
+
+.crad-app .rp-status i,
+.crad-app .rgn-status i,
+.crad-app .rcm-pill i,
+.crad-app .rcar-status i,
+.crad-app .ai-badge i,
+.crad-app .pst-badge i,
+.crad-app .cgsr-badge i {
+    display: none;
+}
+
+/* Text-first actions; icon-only controls retain their icon. */
+.crad-app .rp-btn:not([aria-label]) i,
+.crad-app .rgn-btn:not([aria-label]) i,
+.crad-app .rcm-btn:not([aria-label]) i,
+.crad-app .cgsr-btn:not([aria-label]) i,
+.crad-app .go-card-action:not([aria-label]) i,
+.crad-app .ai-btn:not([aria-label]) i,
+.crad-app .rcas-btn:not([aria-label]) i,
+.crad-app .mpl-btn:not([aria-label]) i,
+.crad-app .mpl-add:not([aria-label]) i {
+    display: none;
+}
+
+.crad-app .mpl-actions a,
+.crad-app .rcm-menu-btn,
+.crad-app .rcm-pager-btn,
+.crad-app .cgsr-modal-close,
+.crad-app .rp-ta-close {
+    min-width: 36px;
+    min-height: 36px;
+}
+
+@media (max-width: 767.98px) {
+    .crad-app .mpl-search,
+    .crad-app .rp-search,
+    .crad-app .rgn-search,
+    .crad-app .rcm-search,
+    .crad-app .cgsr-search,
+    .crad-app .go-filter-search {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .crad-app .mpl-toolbar > .mpl-btn,
+    .crad-app .mpl-toolbar > .mpl-add,
+    .crad-app .go-page-header-actions > .mpl-btn,
+    .crad-app .rcas-toolbar > .rcas-btn {
+        width: 100%;
+    }
+}

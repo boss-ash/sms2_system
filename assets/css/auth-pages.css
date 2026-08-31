@@ -1,0 +1,166 @@
+/**
+ * SMS 2 – Shared auth page styles (login / forgot / reset)
+ */
+body.login-page {
+    min-height: 100vh;
+    background-color: #071c48;
+    background-image:
+        linear-gradient(90deg, rgba(5, 22, 55, 0.88) 0%, rgba(8, 42, 97, 0.8) 46%, rgba(15, 80, 153, 0.72) 100%),
+        var(--sms-auth-bg-image, none);
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+    /* Kill theme background-color transition flash on refresh */
+    transition: none !important;
+}
+
+.auth-stage {
+    box-sizing: border-box;
+    flex: 1;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.auth-card {
+    width: min(460px, 100%);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 28px 70px rgba(2, 12, 32, 0.32);
+    padding: 2.25rem 1.85rem 1.85rem;
+    /* Solid card — no glass blur seams / white lines on refresh */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    isolation: isolate;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+}
+
+.auth-badge {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 7px 12px;
+    border: 1px solid #d8e5ff;
+    border-radius: 999px;
+    background: #eef5ff;
+    color: #0d4bd6;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.auth-card h1 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.9rem, 4vw, 2.35rem);
+    line-height: 1.05;
+    font-weight: 800;
+}
+
+.auth-card .auth-lead {
+    margin: 0 0 1.35rem;
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.auth-card .form-label {
+    margin-bottom: 8px;
+    color: #111827;
+    font-size: 0.8rem;
+    font-weight: 800 !important;
+}
+
+.auth-card .form-control {
+    min-height: 44px;
+    border: 1px solid #d7e1ef !important;
+    border-radius: 11px !important;
+    background: #fff !important;
+    color: #111827;
+    padding: 12px 14px !important;
+    font-size: 14px;
+    box-shadow: none;
+}
+
+.auth-card .form-control:focus {
+    border-color: #93b4ff !important;
+    box-shadow: 0 0 0 3px rgba(38, 84, 211, 0.12) !important;
+}
+
+.auth-card .btn-sms-primary,
+.auth-card .btn-auth-primary {
+    border: 0 !important;
+    border-radius: 10px !important;
+    background: #294ecb !important;
+    color: #fff !important;
+    padding: 13px 16px !important;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 11px 20px rgba(41, 78, 203, 0.25);
+}
+
+.auth-card .btn-sms-primary:hover,
+.auth-card .btn-auth-primary:hover {
+    background: #2445b7 !important;
+    color: #fff !important;
+}
+
+.auth-links {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.auth-links a {
+    color: #294ecb;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-links a:hover { text-decoration: underline; }
+
+.auth-reset-box {
+    margin-top: 0.85rem;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #fde68a;
+    background: #fffbeb;
+    color: #92400e;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    word-break: break-all;
+}
+
+.auth-reset-box a {
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.auth-footer {
+    margin-top: 0;
+    padding: 0 1.5rem 1.5rem;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 575.98px) {
+    .auth-stage { padding: 1rem; min-height: auto; }
+    .auth-card { padding: 1.6rem 1.25rem 1.35rem; border-radius: 18px; }
+}

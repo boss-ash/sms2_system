@@ -1,0 +1,108 @@
+/**
+ * SMS 2 – Page loader (flat academic style)
+ */
+
+html:not(.sms-app-ready) body.sms-app {
+    overflow: hidden;
+}
+
+.sms-page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: grid;
+    place-items: center;
+    transition: opacity 0.24s ease, visibility 0.24s ease;
+}
+
+.sms-page-loader.is-leaving {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.sms-page-loader.is-done {
+    display: none !important;
+}
+
+.sms-loader-backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--sms-body-bg, #f4f7fb);
+    transition: opacity 0.24s ease;
+}
+
+[data-theme="dark"] .sms-loader-backdrop {
+    background: var(--sms-body-bg, #0b1224);
+}
+
+.sms-loader-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    transition: opacity 0.2s ease;
+}
+
+.sms-loader-spinner {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--sms-border, #e2e8f0);
+    border-top-color: var(--sms-primary, #1e40af);
+    animation: smsSpin 0.7s linear infinite;
+}
+
+@keyframes smsSpin {
+    to { transform: rotate(360deg); }
+}
+
+.sms-loader-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--sms-text-muted, #64748b);
+    min-height: 1em;
+}
+
+html.sms-soft-nav .sms-loader-spinner,
+html.sms-soft-nav .sms-loader-label {
+    opacity: 0;
+    visibility: hidden;
+    animation: none;
+}
+
+html.sms-soft-nav .sms-loader-backdrop {
+    opacity: 0.85;
+}
+
+body.sms-app .sms-wrapper {
+    opacity: 0;
+    transition: opacity 0.28s ease;
+}
+
+body.sms-app.sms-loaded .sms-wrapper {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sms-loader-spinner,
+    body.sms-app .sms-wrapper,
+    .sms-page-loader {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+    }
+    body.sms-app .sms-wrapper {
+        opacity: 1;
+    }
+}
+
+@media print {
+    .sms-page-loader {
+        display: none !important;
+    }
+    body.sms-app .sms-wrapper {
+        opacity: 1 !important;
+    }
+}

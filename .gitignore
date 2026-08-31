@@ -1,0 +1,27 @@
+# Machine-specific config (copy from config/local.example.php)
+config/local.php
+
+# Secrets and generated keys
+storage/keys/*
+!storage/keys/.gitignore
+!storage/keys/.htaccess
+
+# Backups and user uploads
+storage/backups/*
+!storage/backups/.gitignore
+!storage/backups/.htaccess
+storage/uploads/*
+!storage/uploads/.htaccess
+
+# Accidental nested duplicate copy
+sms2_system/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.idea/
+.vscode/
+*.log

@@ -1,0 +1,715 @@
+/**
+ * SMS 2 — Welcome page (standalone, modern)
+ */
+
+body.welcome-page {
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
+    color-scheme: light !important;
+    background: #040f28 !important;
+    overflow-x: hidden;
+    transition: none !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Animated background ─────────────────────────────────────── */
+.sms-welcome-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 90% 70% at 15% 10%, rgba(56, 189, 248, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 60% at 90% 85%, rgba(99, 102, 241, 0.22) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 60%),
+        linear-gradient(155deg, #030b1f 0%, #071c48 38%, #0c3d7a 72%, #1565b8 100%);
+}
+
+.sms-welcome-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.55;
+    animation: sms-welcome-float 18s ease-in-out infinite;
+}
+
+.sms-welcome-orb--1 {
+    width: 420px;
+    height: 420px;
+    top: -8%;
+    left: -6%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.45) 0%, transparent 70%);
+    animation-delay: 0s;
+}
+
+.sms-welcome-orb--2 {
+    width: 360px;
+    height: 360px;
+    bottom: -10%;
+    right: -4%;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.4) 0%, transparent 70%);
+    animation-delay: -6s;
+    animation-duration: 22s;
+}
+
+.sms-welcome-orb--3 {
+    width: 280px;
+    height: 280px;
+    top: 40%;
+    right: 20%;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, transparent 70%);
+    animation-delay: -12s;
+    animation-duration: 16s;
+}
+
+.sms-welcome-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 20%, transparent 75%);
+}
+
+@keyframes sms-welcome-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(24px, -18px) scale(1.06); }
+    66%       { transform: translate(-16px, 14px) scale(0.96); }
+}
+
+/* ── Main ───────────────────────────────────────────────────── */
+.sms-welcome-main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 3vw, 2rem);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* ── Card shell ─────────────────────────────────────────────── */
+.sms-welcome-shell {
+    width: min(1080px, 100%);
+    display: flex !important;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 24px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 8px 32px rgba(2, 10, 30, 0.18),
+        0 32px 80px rgba(2, 10, 30, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.sms-welcome-animate {
+    animation: sms-welcome-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sms-welcome-enter {
+    from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Header */
+.sms-welcome-shell-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.sms-welcome-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    color: #0f172a;
+    text-decoration: none;
+    min-width: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.sms-welcome-brand:hover {
+    color: #1e3a8a;
+    transform: translateX(2px);
+}
+
+.sms-welcome-brand img {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 8px rgba(15, 23, 42, 0.14));
+    transition: transform 0.25s ease;
+}
+
+.sms-welcome-brand:hover img {
+    transform: scale(1.05);
+}
+
+.sms-welcome-brand strong {
+    display: block;
+    font-size: 1.02rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+}
+
+.sms-welcome-brand small {
+    display: block;
+    margin-top: 0.12rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
+    line-height: 1.2;
+}
+
+.sms-welcome-secure {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(238, 242, 255, 0.95) 0%, rgba(224, 231, 255, 0.9) 100%);
+    color: #3730a3;
+    font-size: 0.74rem;
+    font-weight: 800;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(83, 80, 214, 0.1);
+}
+
+.sms-welcome-secure i {
+    font-size: 0.82rem;
+    color: #5350d6;
+}
+
+/* Two-column body */
+.sms-welcome-shell-body {
+    display: grid;
+    grid-template-columns: 1.08fr 0.92fr;
+    min-height: min(540px, calc(100dvh - 11rem));
+}
+
+/* ── Left showcase ───────────────────────────────────────────── */
+.sms-welcome-showcase {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100%;
+    min-width: 0;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.sms-welcome-hero {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.sms-welcome-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 38%;
+    display: block;
+    transform: scale(1.06);
+    animation: sms-welcome-kenburns 22s ease-in-out infinite alternate;
+}
+
+@keyframes sms-welcome-kenburns {
+    from { transform: scale(1.06) translateX(0); }
+    to   { transform: scale(1.12) translateX(-1.5%); }
+}
+
+.sms-welcome-showcase::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        linear-gradient(180deg, rgba(3, 12, 32, 0.08) 0%, rgba(3, 12, 32, 0.35) 38%, rgba(3, 12, 32, 0.92) 100%),
+        linear-gradient(125deg, rgba(30, 64, 175, 0.28) 0%, rgba(37, 99, 235, 0.08) 55%, transparent 100%);
+    pointer-events: none;
+}
+
+.sms-welcome-showcase-copy {
+    position: relative;
+    z-index: 2;
+    padding: 2.25rem 2rem;
+    color: #fff;
+    animation: sms-welcome-fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+@keyframes sms-welcome-fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.sms-welcome-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    width: fit-content;
+    margin-bottom: 1.1rem;
+    padding: 0.42rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.sms-welcome-tag i {
+    font-size: 0.76rem;
+}
+
+.sms-welcome-showcase h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.sms-welcome-showcase p {
+    margin: 0 0 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 36ch;
+}
+
+.sms-welcome-highlights {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.sms-welcome-highlights li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    padding: 0.38rem 0.72rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.sms-welcome-highlights i {
+    font-size: 0.68rem;
+    color: #93c5fd;
+}
+
+/* ── Right panel ────────────────────────────────────────────── */
+.sms-welcome-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.85rem 2rem 1.75rem;
+    background: #fff;
+    min-width: 0;
+    animation: sms-welcome-fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+}
+
+.sms-welcome-panel-head {
+    margin-bottom: 1.25rem;
+}
+
+.sms-welcome-version {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    width: fit-content;
+    margin-bottom: 0.85rem;
+    padding: 0.38rem 0.78rem;
+    border-radius: 999px;
+    border: 1px solid #bfdbfe;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #1d4ed8;
+    font-size: 0.71rem;
+    font-weight: 800;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+}
+
+.sms-welcome-version i {
+    font-size: 0.72rem;
+    color: #2563eb;
+}
+
+.sms-welcome-panel h2 {
+    margin: 0 0 0.35rem;
+    color: #0f172a;
+    font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+}
+
+.sms-welcome-lead {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.55;
+}
+
+/* Module list — bento cards */
+.sms-welcome-modules {
+    list-style: none;
+    margin: 0 0 1.35rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.sms-welcome-modules li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.78rem;
+    padding: 0.78rem 0.9rem;
+    border: 1px solid #e8edf5;
+    border-radius: 14px;
+    background: #fafbfc;
+    cursor: default;
+    overflow: hidden;
+    transition:
+        border-color 0.22s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease,
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sms-welcome-modules li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+    background: transparent;
+    transition: background 0.22s ease;
+}
+
+.sms-welcome-modules li:nth-child(1)::before { background: #5350d6; opacity: 0; }
+.sms-welcome-modules li:nth-child(2)::before { background: #059669; opacity: 0; }
+.sms-welcome-modules li:nth-child(3)::before { background: #ea580c; opacity: 0; }
+.sms-welcome-modules li:nth-child(4)::before { background: #2563eb; opacity: 0; }
+
+.sms-welcome-modules li:hover {
+    border-color: #c7d2fe;
+    background: #fff;
+    box-shadow:
+        0 4px 16px rgba(83, 80, 214, 0.1),
+        0 1px 3px rgba(15, 23, 42, 0.06);
+    transform: translateX(4px);
+}
+
+.sms-welcome-modules li:hover::before {
+    opacity: 1;
+}
+
+.sms-welcome-mod-icon {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sms-welcome-modules li:hover .sms-welcome-mod-icon {
+    transform: scale(1.08);
+}
+
+.sms-welcome-mod-icon--enroll {
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+    color: #5350d6;
+    box-shadow: 0 2px 8px rgba(83, 80, 214, 0.15);
+}
+
+.sms-welcome-mod-icon--acad {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #059669;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.12);
+}
+
+.sms-welcome-mod-icon--faculty {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    color: #ea580c;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.12);
+}
+
+.sms-welcome-mod-icon--services {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #2563eb;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+.sms-welcome-mod-text {
+    display: block;
+    min-width: 0;
+    flex: 1;
+}
+
+.sms-welcome-mod-text strong {
+    display: block;
+    color: #0f172a;
+    font-size: 0.86rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.sms-welcome-mod-text em {
+    display: block;
+    margin-top: 0.1rem;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-style: normal;
+    line-height: 1.35;
+}
+
+.sms-welcome-mod-arrow {
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 0.62rem;
+    color: #cbd5e1;
+    background: #f1f5f9;
+    transition:
+        color 0.22s ease,
+        background 0.22s ease,
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sms-welcome-modules li:hover .sms-welcome-mod-arrow {
+    color: #5350d6;
+    background: #eef2ff;
+    transform: translateX(2px);
+}
+
+/* Actions */
+.sms-welcome-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.sms-welcome-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 48px;
+    padding: 0.72rem 1.1rem;
+    border-radius: 13px;
+    font-size: 0.875rem;
+    font-weight: 800;
+    text-decoration: none;
+    line-height: 1.2;
+    overflow: hidden;
+    transition:
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.22s ease,
+        background 0.22s ease,
+        border-color 0.22s ease;
+}
+
+.sms-welcome-btn-primary {
+    border: none;
+    background: linear-gradient(135deg, #6366f1 0%, #5350d6 50%, #4338ca 100%);
+    color: #fff !important;
+    box-shadow:
+        0 4px 14px rgba(83, 80, 214, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.sms-welcome-btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.18) 50%,
+        transparent 65%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.55s ease;
+}
+
+.sms-welcome-btn-primary:hover {
+    background: linear-gradient(135deg, #5754df 0%, #4542c4 50%, #3730a3 100%);
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 28px rgba(83, 80, 214, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.sms-welcome-btn-primary:hover::after {
+    transform: translateX(120%);
+}
+
+.sms-welcome-btn-secondary {
+    border: 1.5px solid #e2e8f0;
+    background: #fff;
+    color: #1e3a8a !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.sms-welcome-btn-secondary:hover {
+    border-color: #818cf8;
+    background: linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
+    color: #312e81 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(83, 80, 214, 0.12);
+}
+
+/* Footer */
+.sms-welcome-shell-foot {
+    padding: 0.78rem 1.5rem;
+    border-top: 1px solid #e8edf5;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    text-align: center;
+}
+
+.sms-welcome-shell-foot p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+/* Auth transition */
+html.auth-soft-leave .sms-welcome-main {
+    opacity: 0;
+    transition: opacity 0.18s ease;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 860px) {
+    .sms-welcome-shell {
+        border-radius: 20px;
+    }
+
+    .sms-welcome-shell-body {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .sms-welcome-showcase {
+        min-height: 260px;
+    }
+
+    .sms-welcome-showcase-copy {
+        padding: 1.6rem 1.4rem;
+    }
+
+    .sms-welcome-showcase p {
+        max-width: none;
+    }
+
+    .sms-welcome-panel {
+        padding: 1.6rem 1.4rem 1.5rem;
+    }
+
+    .sms-welcome-secure {
+        display: none;
+    }
+
+    .sms-welcome-shell-head {
+        padding: 0.9rem 1.2rem;
+    }
+
+    .sms-welcome-orb--1 { width: 280px; height: 280px; }
+    .sms-welcome-orb--2 { width: 220px; height: 220px; }
+    .sms-welcome-orb--3 { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sms-welcome-animate,
+    .sms-welcome-showcase-copy,
+    .sms-welcome-panel,
+    .sms-welcome-hero-img,
+    .sms-welcome-orb {
+        animation: none !important;
+    }
+
+    .sms-welcome-btn,
+    .sms-welcome-modules li,
+    .sms-welcome-mod-icon,
+    .sms-welcome-mod-arrow,
+    .sms-welcome-brand,
+    html.auth-soft-leave .sms-welcome-main {
+        transition: none;
+    }
+
+    .sms-welcome-modules li:hover,
+    .sms-welcome-btn-primary:hover,
+    .sms-welcome-btn-secondary:hover,
+    .sms-welcome-brand:hover {
+        transform: none;
+    }
+
+    .sms-welcome-btn-primary::after {
+        display: none;
+    }
+
+    html.auth-soft-leave .sms-welcome-main {
+        opacity: 1 !important;
+    }
+}

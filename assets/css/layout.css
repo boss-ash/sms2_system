@@ -1,0 +1,1340 @@
+/**
+ * SMS 2 – Layout Styles
+ * Navbar · Sidebar · Content · Footer
+ */
+
+/* ============================================================
+   Navbar
+   ============================================================ */
+.sms-navbar {
+    background: var(--sms-navbar-bg) !important;
+    height: var(--sms-navbar-height);
+    z-index: 1030;
+    box-shadow: var(--sms-navbar-shadow);
+    border-bottom: 1px solid var(--sms-navbar-border);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* 3-column layout: left | center | right */
+.navbar-inner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    padding: 0 1rem;
+    gap: 0;
+}
+
+.navbar-left {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 160px;
+}
+
+.navbar-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 500px;
+    padding: 0 0.75rem;
+    z-index: 10;
+}
+
+.navbar-search {
+    position: relative;
+    width: 100%;
+}
+
+.navbar-right {
+    margin-left: auto;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 20;
+    gap: 0.55rem;
+}
+
+.sms-navbar .navbar-brand {
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
+    color: #fff !important;
+    text-decoration: none;
+}
+.sms-navbar .navbar-brand i { font-size: 1.1rem; opacity: 0.95; }
+
+.sms-navbar .btn-link {
+    text-decoration: none;
+    color: rgba(255,255,255,0.82) !important;
+    transition: color 0.18s;
+}
+.sms-navbar .btn-link:hover { color: #fff !important; }
+
+/* PH clock — always readable on dark navbar (light + dark theme) */
+.sms-navbar .navbar-ph-clock {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+}
+
+.sms-navbar .nav-link,
+.sms-navbar .dropdown-toggle {
+    color: rgba(255,255,255,0.85) !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.sms-navbar .nav-link:hover,
+.sms-navbar .dropdown-toggle:hover { color: #fff !important; }
+
+/* Notification bell */
+.sms-navbar .notification-badge {
+    font-size: 0.56rem;
+    font-weight: 700;
+    padding: 0.2em 0.42em;
+    min-width: 16px;
+    line-height: 1;
+    border: 2px solid #1e3a8a;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.28);
+}
+
+/* Messages dropdown */
+.navbar-msg-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sms-primary), var(--sms-accent));
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.navbar-msg-body { flex: 1; min-width: 0; }
+.navbar-msg-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--sms-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.navbar-msg-text {
+    font-size: 0.76rem;
+    color: var(--sms-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.navbar-msg-time {
+    font-size: 0.68rem;
+    color: var(--sms-text-faint);
+    margin-top: 0.1rem;
+}
+
+/* Navbar Dropdown */
+.sms-navbar .dropdown-menu {
+    border: 1px solid var(--sms-dropdown-border);
+    border-radius: 12px;
+    background: var(--sms-dropdown-bg);
+    box-shadow: var(--sms-dropdown-shadow);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 0.4rem 0;
+    min-width: 180px;
+}
+.sms-navbar .dropdown-item {
+    font-size: 0.85rem;
+    padding: 0.55rem 1rem;
+    color: var(--sms-text);
+    transition: background 0.15s;
+}
+.sms-navbar .dropdown-item:hover { background: var(--sms-dropdown-hover); color: var(--sms-primary); }
+
+/* ============================================================
+   Sidebar Shell
+   ============================================================ */
+.sms-sidebar {
+    position: fixed;
+    top: var(--sms-navbar-height);
+    left: 0;
+    width: var(--sms-sidebar-width);
+    height: calc(var(--vh,1vh)*100 - var(--sms-navbar-height));
+    background: var(--sms-sidebar-bg);
+    border-right: 1px solid var(--sms-sidebar-border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1020;
+    transition: width 0.28s cubic-bezier(0.4,0,0.2,1),
+                transform 0.3s cubic-bezier(0.4,0,0.2,1),
+                background 0.22s ease, border-color 0.22s ease;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--sms-sidebar-text) 28%, transparent) transparent;
+    box-shadow: 2px 0 18px rgba(10,20,70,0.10);
+    /* Beat Bootstrap .nav-link theme colors so labels stay readable */
+    --bs-nav-link-color: var(--sms-sidebar-text-muted);
+    --bs-nav-link-hover-color: var(--sms-sidebar-text);
+    color: var(--sms-sidebar-text);
+}
+.sms-sidebar::-webkit-scrollbar { width: 3px; }
+.sms-sidebar::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--sms-sidebar-text) 28%, transparent);
+    border-radius: 3px;
+}
+.sms-sidebar::-webkit-scrollbar-track { background: transparent; }
+
+/* Brand header (desktop) */
+.sidebar-header {
+    padding: 0.9rem 1.1rem 0.7rem;
+    border-bottom: 1px solid var(--sms-sidebar-border);
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.sidebar-header i   { font-size: 1.05rem; color: var(--sms-sidebar-icon); }
+.sidebar-header span { font-size: 0.9rem; font-weight: 700; color: var(--sms-sidebar-text); letter-spacing: 0.01em; }
+
+/* ============================================================
+   Sidebar Navigation — clear, clickable module buttons
+   ============================================================ */
+.sidebar-nav {
+    padding: 0.45rem 0.6rem 1.1rem;
+}
+.sidebar-nav ul { list-style: none; margin: 0; padding: 0; }
+
+.sidebar-nav > ul > .nav-item {
+    margin-bottom: 0.18rem;
+}
+
+/* Top-level links */
+.sidebar-nav > ul > .nav-item > .nav-link {
+    color: var(--sms-sidebar-text) !important;
+    padding: 0.76rem 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-left: none;
+    border-radius: 11px;
+    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    text-decoration: none;
+    line-height: 1.35;
+    cursor: pointer;
+    min-height: 46px;
+}
+.sidebar-nav > ul > .nav-item > .nav-link:hover {
+    color: var(--sms-sidebar-text) !important;
+    background: var(--sms-sidebar-hover);
+}
+.sidebar-nav > ul > .nav-item > .nav-link.active {
+    color: var(--sms-sidebar-text) !important;
+    background: var(--sms-sidebar-active);
+    font-weight: 700;
+    box-shadow: inset 3px 0 0 var(--sms-sidebar-active-accent);
+}
+
+/* Icon */
+.sidebar-nav > ul > .nav-item > .nav-link > i:first-child {
+    width: 20px;
+    text-align: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    margin-top: 0;
+    opacity: 1;
+    color: var(--sms-sidebar-icon) !important;
+}
+.sidebar-nav > ul > .nav-item > .nav-link:hover > i:first-child,
+.sidebar-nav > ul > .nav-item > .nav-link.active > i:first-child {
+    opacity: 1;
+    color: var(--sms-sidebar-active-accent) !important;
+}
+
+/* Label */
+.sidebar-nav > ul > .nav-item > .nav-link > span {
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.35;
+    color: inherit !important;
+}
+
+/* CRAD Officer branded sidebar — Student Services style */
+.crad-officer-sidebar {
+    --crad-side-bg: #163a7a;
+    --crad-side-title: #c7d2fe;
+    --crad-side-sub: rgba(226, 232, 240, 0.78);
+    --crad-side-text: #ffffff;
+    --crad-side-hover: rgba(255, 255, 255, 0.08);
+    --crad-side-active: rgba(255, 255, 255, 0.14);
+    background: var(--crad-side-bg) !important;
+    box-shadow: 4px 0 24px rgba(8, 24, 64, 0.28);
+}
+.crad-officer-sidebar .crad-sidebar-nav {
+    padding: 1rem 0.85rem 1.4rem;
+}
+.crad-officer-sidebar .crad-sidebar-nav > ul > .nav-item {
+    margin-bottom: 0.2rem;
+}
+.crad-officer-sidebar .crad-sidebar-brand {
+    margin: 0 0 0.85rem;
+    pointer-events: none;
+}
+.crad-officer-sidebar .crad-sidebar-brand-inner {
+    padding: 0.15rem 0.7rem 0.35rem;
+}
+.crad-officer-sidebar .crad-sidebar-brand-inner strong {
+    display: block;
+    color: var(--crad-side-title);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.25;
+}
+.crad-officer-sidebar .crad-sidebar-brand-inner span {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--crad-side-sub);
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.35;
+}
+.crad-officer-sidebar .crad-sidebar-link {
+    display: flex !important;
+    align-items: center;
+    gap: 0.85rem !important;
+    min-height: 46px;
+    padding: 0.78rem 0.85rem !important;
+    border-radius: 10px !important;
+    color: var(--crad-side-text) !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    background: transparent !important;
+}
+.crad-officer-sidebar .crad-sidebar-link > i:first-child {
+    width: 1.25rem;
+    flex: 0 0 auto;
+    color: #fff;
+    font-size: 0.95rem;
+    opacity: 0.95 !important;
+    text-align: center;
+}
+.crad-officer-sidebar .crad-sidebar-link > span {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: #fff;
+    white-space: normal;
+}
+.crad-officer-sidebar .crad-sidebar-chevron {
+    margin-left: auto;
+    flex: 0 0 auto;
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+.crad-officer-sidebar .crad-sidebar-link:hover,
+.crad-officer-sidebar .crad-sidebar-link.active {
+    background: var(--crad-side-hover) !important;
+    color: #fff !important;
+}
+.crad-officer-sidebar .crad-sidebar-link.active {
+    background: var(--crad-side-active) !important;
+    font-weight: 700 !important;
+}
+.crad-officer-sidebar .crad-sidebar-submenu {
+    margin: 0.15rem 0 0.45rem 0.35rem;
+    padding-left: 0.35rem;
+    border-left: 1px solid rgba(255,255,255,0.14);
+}
+.crad-officer-sidebar .crad-sidebar-submenu .sidebar-sub {
+    color: rgba(255,255,255,0.82) !important;
+}
+.crad-officer-sidebar .crad-sidebar-submenu .sidebar-sub.active,
+.crad-officer-sidebar .crad-sidebar-submenu .sidebar-sub:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,0.1) !important;
+}
+body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-brand,
+body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-chevron,
+body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-submenu {
+    display: none !important;
+}
+body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-link > span {
+    display: none !important;
+}
+body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-link {
+    justify-content: center !important;
+}
+
+/* Chevron */
+.sidebar-chevron {
+    font-size: 0.62rem;
+    margin-top: 0;
+    flex-shrink: 0;
+    opacity: 0.7;
+    color: var(--sms-sidebar-text-muted) !important;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+}
+.sidebar-nav .sidebar-parent[aria-expanded="true"] .sidebar-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+    color: var(--sms-sidebar-icon) !important;
+}
+
+/* ============================================================
+   Submenu — same clean button treatment for every module page
+   ============================================================ */
+.sidebar-submenu {
+    background: transparent;
+    padding: 0.15rem 0 0.5rem;
+    margin-left: 0.35rem;
+    border-left: 2px solid var(--sms-sidebar-border);
+}
+.sidebar-submenu .nav-link {
+    color: var(--sms-sidebar-text-muted) !important;
+    padding: 0.6rem 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border-left: none;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease;
+    line-height: 1.4;
+    min-height: 40px;
+}
+.sidebar-submenu .nav-link i {
+    width: 16px;
+    text-align: center;
+    font-size: 0.75rem !important;
+    flex-shrink: 0;
+    margin-top: 0 !important;
+    opacity: 1;
+    color: var(--sms-sidebar-icon) !important;
+}
+.sidebar-submenu .nav-link span {
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.4;
+    color: inherit !important;
+}
+.sidebar-submenu .nav-link:hover {
+    color: var(--sms-sidebar-text) !important;
+    background: var(--sms-sidebar-hover);
+}
+.sidebar-submenu .nav-link:hover i { opacity: 1; }
+.sidebar-submenu .nav-link.active {
+    color: var(--sms-sidebar-text) !important;
+    background: var(--sms-sidebar-active);
+    font-weight: 700;
+    border-left-color: transparent;
+    box-shadow: inset 3px 0 0 var(--sms-sidebar-active-accent);
+}
+.sidebar-submenu .nav-link.active i {
+    opacity: 1;
+    color: var(--sms-sidebar-active-accent) !important;
+}
+.sidebar-submenu .overview-link {
+    padding-left: 0.85rem;
+    font-weight: 600;
+    font-size: 0.82rem;
+    border-bottom: none;
+    margin-bottom: 0.2rem;
+    color: var(--sms-sidebar-text-muted) !important;
+}
+.sidebar-submenu .overview-link i { font-size: 0.78rem !important; }
+.sidebar-submenu .overview-link:hover { color: var(--sms-sidebar-text) !important; }
+.sidebar-submenu .overview-link.active {
+    color: var(--sms-sidebar-text) !important;
+    background: var(--sms-sidebar-active);
+}
+
+/* Sidebar group headings — blue uppercase section labels */
+.sidebar-group-label {
+    margin-top: 24px;
+    margin-bottom: 4px;
+}
+.sidebar-group-label:first-child {
+    margin-top: 8px;
+}
+/* Spacing between submenu items */
+.sidebar-submenu .nav-item {
+    margin-bottom: 6px;
+}
+.sidebar-group-heading {
+    display: flex !important;
+    align-items: center;
+    padding: 0.3rem 0.85rem 0.15rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    color: var(--sms-primary, #1e40af) !important;
+    cursor: default !important;
+    pointer-events: none !important;
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    line-height: 1.3 !important;
+    opacity: 1;
+    /* Reset any inherited nav-item margin on the heading itself */
+    margin-bottom: 0 !important;
+}
+
+[data-theme="dark"] .sidebar-group-heading {
+    color: #60a5fa !important;
+    opacity: 0.9;
+}
+
+/* Collapsible sidebar — modules + sub-groups fold (all roles) */
+.admin-sidebar-collapsible .sidebar-nav {
+    padding: 0.5rem 0.65rem 1.25rem;
+}
+.admin-sidebar-collapsible .admin-module-item {
+    margin-bottom: 0.35rem;
+}
+.admin-sidebar-collapsible .admin-module-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    min-height: 46px;
+    padding: 0.7rem 0.9rem !important;
+    margin: 0;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    color: var(--sms-sidebar-text) !important;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.35;
+    transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+.admin-sidebar-collapsible .admin-module-toggle:hover {
+    background: var(--sms-sidebar-hover);
+    color: var(--sms-sidebar-text) !important;
+}
+.admin-sidebar-collapsible .admin-module-toggle.active,
+.admin-sidebar-collapsible .admin-module-toggle[aria-expanded="true"] {
+    background: var(--sms-sidebar-active);
+    box-shadow: inset 3px 0 0 var(--sms-sidebar-active-accent);
+}
+.admin-sidebar-collapsible .admin-module-toggle > i:first-child {
+    width: 20px;
+    text-align: center;
+    color: var(--sms-sidebar-icon) !important;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+.admin-sidebar-collapsible .admin-module-toggle.active > i:first-child,
+.admin-sidebar-collapsible .admin-module-toggle[aria-expanded="true"] > i:first-child {
+    color: var(--sms-sidebar-active-accent) !important;
+}
+.admin-sidebar-collapsible .admin-module-toggle .sidebar-chevron {
+    font-size: 0.68rem !important;
+    opacity: 0.7;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.admin-sidebar-collapsible .admin-module-toggle[aria-expanded="true"] .sidebar-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+.admin-sidebar-collapsible .admin-module-body {
+    margin: 0.25rem 0 0.5rem 0;
+    padding: 0.35rem 0 0.15rem 0.65rem;
+    border-left: 2px solid color-mix(in srgb, var(--sms-sidebar-border) 80%, transparent);
+}
+.admin-sidebar-collapsible .admin-module-body > .nav {
+    gap: 0;
+}
+.admin-sidebar-collapsible .admin-module-body > .nav > .nav-item:first-child {
+    margin-bottom: 0.65rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--sms-sidebar-border) 70%, transparent);
+}
+.admin-sidebar-collapsible .admin-module-body .overview-link {
+    display: flex !important;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.75rem !important;
+    min-height: 42px;
+    border-radius: 8px;
+    font-size: 0.84rem !important;
+    font-weight: 600;
+}
+.admin-sidebar-collapsible .admin-subgroup-item {
+    margin-top: 0.45rem;
+}
+.admin-sidebar-collapsible .admin-subgroup-item:first-of-type {
+    margin-top: 0.15rem;
+}
+.admin-sidebar-collapsible .admin-subgroup-toggle {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+    min-height: 38px;
+    padding: 0.5rem 0.7rem 0.5rem 0.75rem !important;
+    margin: 0 0 0.15rem;
+    border: none;
+    background: transparent;
+    font-size: 0.7rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--sms-primary, #1e40af) !important;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.4;
+    transition: background 0.18s ease, color 0.18s ease;
+}
+[data-theme="dark"] .admin-sidebar-collapsible .admin-subgroup-toggle {
+    color: #93c5fd !important;
+}
+.admin-sidebar-collapsible .admin-subgroup-toggle:hover {
+    background: var(--sms-sidebar-hover);
+}
+.admin-sidebar-collapsible .admin-subgroup-toggle[aria-expanded="true"] {
+    background: color-mix(in srgb, var(--sms-sidebar-hover) 85%, transparent);
+    color: var(--sms-sidebar-active-accent) !important;
+    margin-bottom: 0.25rem;
+}
+.admin-sidebar-collapsible .admin-subgroup-toggle.active:not([aria-expanded="true"]) {
+    color: var(--sms-sidebar-active-accent) !important;
+}
+.admin-sidebar-collapsible .admin-subgroup-toggle .sidebar-chevron {
+    font-size: 0.6rem !important;
+    opacity: 0.75;
+    margin-left: 0.35rem;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.admin-sidebar-collapsible .admin-subgroup-toggle[aria-expanded="true"] .sidebar-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+.admin-sidebar-collapsible .admin-subgroup-body:not(.show) {
+    display: none;
+}
+.admin-sidebar-collapsible .admin-subgroup-body.show {
+    display: block;
+    padding: 0.15rem 0 0.45rem 0;
+    margin: 0 0 0.35rem 0.5rem;
+    border-left: 2px solid color-mix(in srgb, var(--sms-sidebar-active-accent) 35%, transparent);
+}
+.admin-sidebar-collapsible .admin-subgroup-body > .nav {
+    gap: 0.15rem;
+}
+.admin-sidebar-collapsible .admin-subgroup-body .nav-item {
+    margin-bottom: 0.12rem;
+}
+.admin-sidebar-collapsible .admin-subgroup-body .sidebar-sub {
+    display: flex !important;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.58rem 0.75rem 0.58rem 0.85rem !important;
+    min-height: 42px;
+    border-radius: 8px;
+    font-size: 0.84rem !important;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--sms-sidebar-text-muted) !important;
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: none;
+}
+.admin-sidebar-collapsible .admin-subgroup-body .sidebar-sub > i:first-child {
+    width: 18px;
+    text-align: center;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+    color: var(--sms-sidebar-icon) !important;
+    opacity: 0.9;
+}
+.admin-sidebar-collapsible .admin-subgroup-body .sidebar-sub > span {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.35;
+}
+.admin-sidebar-collapsible .admin-subgroup-body .sidebar-sub:hover {
+    background: var(--sms-sidebar-hover);
+    color: var(--sms-sidebar-text) !important;
+}
+.admin-sidebar-collapsible .admin-subgroup-body .sidebar-sub:hover > i:first-child {
+    color: var(--sms-sidebar-active-accent) !important;
+    opacity: 1;
+}
+.admin-sidebar-collapsible .admin-subgroup-body .sidebar-sub.active {
+    background: var(--sms-sidebar-active);
+    color: var(--sms-sidebar-text) !important;
+    box-shadow: inset 3px 0 0 var(--sms-sidebar-active-accent);
+    font-weight: 700;
+}
+.admin-sidebar-collapsible .admin-subgroup-body .sidebar-sub.active > i:first-child {
+    color: var(--sms-sidebar-active-accent) !important;
+    opacity: 1;
+}
+.admin-sidebar-collapsible .sidebar-group-label {
+    margin-top: 14px;
+}
+
+/* Research Director sidebar: compact pre-oral defense menu */
+.research-director-sidebar {
+    --sms-sidebar-bg: #edf2fa;
+    --sms-sidebar-hover: #e6ebf5;
+    --sms-sidebar-active: #d1daf0;
+    --sms-sidebar-border: #d7e0ee;
+    --sms-sidebar-text: #111827;
+    --sms-sidebar-text-muted: #111827;
+    --sms-sidebar-icon: #224fc0;
+    --sms-sidebar-active-accent: #244fc0;
+    box-shadow: 4px 0 18px rgba(15, 33, 88, 0.12);
+}
+.research-director-sidebar .sidebar-nav {
+    padding: 1rem 0.55rem 1.25rem;
+}
+.research-director-sidebar .sidebar-group-label {
+    margin-top: 1.35rem;
+    margin-bottom: 0.35rem;
+}
+.research-director-sidebar .sidebar-group-label:first-child {
+    margin-top: 0;
+}
+.research-director-sidebar .sidebar-group-heading {
+    padding: 0.35rem 0.85rem 0.2rem !important;
+    color: #111827 !important;
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.09em !important;
+}
+.research-director-sidebar .sidebar-nav > ul > .nav-item {
+    margin-bottom: 0.18rem;
+}
+.research-director-sidebar .sidebar-nav > ul > .nav-item > .nav-link {
+    min-height: 46px;
+    padding: 0.74rem 0.85rem;
+    border-radius: 9px;
+    color: #111827 !important;
+    font-size: 0.88rem;
+    font-weight: 700;
+    gap: 0.72rem;
+}
+.research-director-sidebar .sidebar-nav > ul > .nav-item > .nav-link:hover {
+    background: #e5ebf6;
+    color: #111827 !important;
+}
+.research-director-sidebar .sidebar-nav > ul > .nav-item > .nav-link.active {
+    background: #d1daf0;
+    color: #111827 !important;
+    box-shadow: inset 3px 0 0 #244fc0;
+}
+.research-director-sidebar .sidebar-nav > ul > .nav-item > .nav-link > i:first-child {
+    width: 20px;
+    color: #244fc0 !important;
+}
+/* ============================================================
+   Wrapper & Content
+   ============================================================ */
+.sms-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: calc(var(--vh,1vh)*100);
+    padding-top: var(--sms-navbar-height);
+    overflow-x: hidden;
+    width: 100%;
+}
+.sms-content {
+    margin-left: var(--sms-sidebar-width);
+    width: calc(100% - var(--sms-sidebar-width));
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1),
+                width      0.3s cubic-bezier(0.4,0,0.2,1);
+    min-height: calc(100vh - var(--sms-navbar-height));
+    overflow-x: hidden;
+    background: transparent;
+}
+.sms-main {
+    flex: 1;
+    padding: 1.6rem 1.75rem;
+    min-width: 0;
+    width: 100%;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.sms-footer {
+    background: var(--sms-surface);
+    border-top: 1px solid var(--sms-glass-border);
+    padding: 0.85rem 1.75rem;
+    color: var(--sms-text-faint);
+    font-size: 0.79rem;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+.sms-footer a { color: var(--sms-primary); text-decoration: none; }
+.sms-footer a:hover { text-decoration: underline; }
+
+/* ============================================================
+   Sidebar Overlay (mobile)
+   ============================================================ */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: var(--sms-navbar-height);
+    left: 0; right: 0; bottom: 0;
+    background: rgba(10,20,60,0.45);
+    z-index: 1015;
+}
+.sidebar-overlay.show { display: block; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 991.98px) {
+    .sms-sidebar { transform: translateX(-100%); box-shadow: none; width: var(--sms-sidebar-width) !important; }
+    .sms-sidebar.show { transform: translateX(0); box-shadow: 6px 0 32px rgba(10,20,60,0.28); }
+    .sms-content { margin-left: 0; width: 100%; }
+    body.sidebar-collapsed .sms-sidebar { width: var(--sms-sidebar-width); }
+    body.sidebar-collapsed .sms-content { margin-left: 0; width: 100%; }
+}
+
+/* ============================================================
+   Collapsed icon rail (desktop)
+   ============================================================ */
+@media (min-width: 992px) {
+    body.sidebar-collapsed .sms-sidebar {
+        width: var(--sms-sidebar-collapsed-width);
+        transform: none;
+        overflow-x: visible;
+    }
+    body.sidebar-collapsed .sms-content {
+        margin-left: var(--sms-sidebar-collapsed-width);
+        width: calc(100% - var(--sms-sidebar-collapsed-width));
+    }
+
+    body.sidebar-collapsed .sidebar-header {
+        justify-content: center;
+        padding: 0.95rem 0.5rem 0.75rem;
+        gap: 0;
+    }
+    body.sidebar-collapsed .sidebar-header span { display: none; }
+    body.sidebar-collapsed .sidebar-header i {
+        margin: 0 !important;
+        font-size: 1.2rem;
+    }
+
+    /* Keep every collapsed sidebar variant icon-only, including nested module links. */
+    body.sidebar-collapsed .sidebar-nav > ul > .sidebar-group-label {
+        display: none !important;
+    }
+    body.sidebar-collapsed .sidebar-nav .sidebar-sub > span,
+    body.sidebar-collapsed .sidebar-nav .sidebar-sub .sidebar-chevron {
+        display: none !important;
+    }
+
+    body.sidebar-collapsed .sidebar-nav {
+        padding: 0.35rem 0.45rem 1rem;
+    }
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item {
+        margin-bottom: 0.2rem;
+    }
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link {
+        justify-content: center;
+        align-items: center;
+        padding: 0.72rem 0.4rem;
+        gap: 0;
+        border-left: none;
+        border-radius: 12px;
+        min-height: 46px;
+        position: relative;
+    }
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link > span,
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link .sidebar-chevron {
+        display: none !important;
+    }
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link > i:first-child {
+        width: auto;
+        margin: 0;
+        font-size: 1.05rem;
+        opacity: 0.9;
+    }
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link:hover,
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link.active {
+        background: var(--sms-sidebar-active);
+        border-left-color: transparent;
+    }
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link.active {
+        box-shadow: inset 0 0 0 1px rgba(96,165,250,0.35);
+    }
+
+    /* Super Admin / Admin rail: keep only the navigation icons visible. */
+    body.sidebar-collapsed .admin-sidebar .sidebar-group-label,
+    body.sidebar-collapsed .admin-sidebar .sidebar-sub > span,
+    body.sidebar-collapsed .admin-sidebar .sidebar-sub .sidebar-chevron {
+        display: none !important;
+    }
+
+    body.sidebar-collapsed .admin-sidebar .sidebar-nav > ul > .nav-item > .sidebar-sub {
+        justify-content: center;
+        align-items: center;
+        gap: 0;
+        padding-left: 0.4rem;
+        padding-right: 0.4rem;
+        min-height: 46px;
+    }
+
+    body.sidebar-collapsed .admin-sidebar .sidebar-sub > i:first-child {
+        width: auto;
+        margin: 0 !important;
+        font-size: 1.05rem;
+    }
+
+    body.sidebar-collapsed .admin-sidebar .sidebar-sub[data-title]::after {
+        content: attr(data-title);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(15, 23, 42, 0.96);
+        color: #f8fafc;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        padding: 0.4rem 0.65rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.15s ease, visibility 0.15s ease;
+        z-index: 1080;
+    }
+
+    body.sidebar-collapsed .admin-sidebar .sidebar-sub[data-title]:hover::after,
+    body.sidebar-collapsed .admin-sidebar .sidebar-sub[data-title]:focus-visible::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Hide expanded submenus while collapsed — icons stay one-click */
+    body.sidebar-collapsed .sidebar-nav .collapse {
+        display: none !important;
+    }
+
+    /* Tooltip label on hover */
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link[data-title]::after {
+        content: attr(data-title);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(15, 23, 42, 0.96);
+        color: #f8fafc;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        padding: 0.4rem 0.65rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.15s ease, visibility 0.15s ease;
+        z-index: 1080;
+    }
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link:hover::after,
+    body.sidebar-collapsed .sidebar-nav > ul > .nav-item > .nav-link:focus-visible::after {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* ============================================================
+   Global Search Bar (Navbar)
+   ============================================================ */
+.navbar-search-wrapper {
+    flex: 1 1 auto;
+}
+
+.navbar-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 0.78rem;
+    pointer-events: none;
+    z-index: 2;
+    transition: color 0.18s ease;
+}
+
+.navbar-search-input {
+    width: 100%;
+    height: 36px;
+    padding: 0 2.2rem 0 2.1rem;
+    background: rgba(255,255,255,0.10) !important;
+    border: 1.5px solid rgba(255,255,255,0.15) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    font-size: 0.82rem;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+    box-shadow: none !important;
+}
+
+.navbar-search-input::placeholder {
+    color: rgba(255,255,255,0.45);
+}
+
+.navbar-search-input:focus {
+    background: rgba(255,255,255,0.18) !important;
+    border-color: rgba(255,255,255,0.55) !important;
+    box-shadow: 0 0 0 3px rgba(96,165,250,0.25) !important;
+    color: #fff !important;
+}
+
+.navbar-search-input.has-results {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-color: transparent !important;
+}
+
+.navbar-search-input:focus + .navbar-search-clear,
+.navbar-search-input:focus ~ .navbar-search-icon {
+    color: rgba(255,255,255,0.75);
+}
+
+.navbar-search-clear {
+    position: absolute;
+    right: 0.55rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.3rem;
+    cursor: pointer;
+    z-index: 2;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.navbar-search-clear:hover { color: #fff; }
+
+/* Dropdown */
+.navbar-search-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    max-width: 90vw;
+    background: var(--sms-dropdown-bg);
+    border: 1px solid var(--sms-dropdown-border);
+    border-radius: 12px;
+    box-shadow: var(--sms-dropdown-shadow);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    z-index: 1060;
+    overflow: hidden;
+    max-height: 440px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sms-text-faint) transparent;
+}
+
+.navbar-search-dropdown.open {
+    display: block;
+    animation: searchDropIn 0.15s ease;
+}
+
+@keyframes searchDropIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Empty state */
+.search-empty {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: var(--sms-text-faint);
+    gap: 0.5rem;
+    font-size: 0.83rem;
+}
+
+.search-empty i { font-size: 1.4rem; opacity: 0.5; }
+.search-empty.visible { display: flex; }
+
+/* Results list */
+.search-results-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.35rem 0;
+}
+
+/* Group label */
+.search-group-label {
+    padding: 0.55rem 1rem 0.25rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--sms-text-faint);
+    border-top: 1px solid var(--sms-border-soft);
+}
+
+.search-group-label:first-child { border-top: none; }
+
+/* Result item */
+.search-result-item {
+    list-style: none;
+}
+
+.search-result-link {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 1rem;
+    text-decoration: none;
+    color: var(--sms-text);
+    transition: background 0.13s ease;
+    cursor: pointer;
+}
+
+.search-result-link:hover,
+.search-result-link.keyboard-active {
+    background: var(--sms-dropdown-hover);
+    color: var(--sms-primary);
+    text-decoration: none;
+}
+
+.search-result-link:hover .search-result-icon,
+.search-result-link.keyboard-active .search-result-icon {
+    background: var(--sms-primary);
+    color: #fff;
+}
+
+.search-result-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: var(--sms-surface-muted);
+    color: var(--sms-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+    transition: background 0.13s ease, color 0.13s ease;
+}
+
+.search-result-text { flex: 1; min-width: 0; }
+
+.search-result-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--sms-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: 1.3;
+}
+
+.search-result-link:hover .search-result-title,
+.search-result-link.keyboard-active .search-result-title {
+    color: var(--sms-primary);
+}
+
+.search-result-meta {
+    font-size: 0.72rem;
+    color: var(--sms-text-faint);
+    display: block;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-badge {
+    font-size: 0.62rem;
+    font-weight: 600;
+    padding: 0.18em 0.5em;
+    border-radius: 4px;
+    flex-shrink: 0;
+    letter-spacing: 0.03em;
+}
+
+.search-result-badge.module {
+    background: var(--sms-placeholder-bg);
+    color: var(--sms-primary);
+}
+
+.search-result-badge.page {
+    background: var(--sms-surface-muted);
+    color: var(--sms-text-muted);
+}
+
+/* highlight matched text */
+.search-highlight {
+    background: var(--sms-highlight);
+    color: var(--sms-heading);
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+/* Keyboard shortcut hint inside input */
+.search-kbd-hint {
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.search-kbd-hint kbd {
+    font-size: 0.6rem;
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.55);
+    font-family: inherit;
+    line-height: 1.4;
+}
+
+/* Hide hint when input has value or is focused */
+.navbar-search-input:focus ~ .search-kbd-hint,
+.navbar-search-input:not(:placeholder-shown) ~ .search-kbd-hint {
+    display: none;
+}
+
+/* Responsive — hide search on very small screens, adjust center positioning */
+@media (max-width: 767px) {
+    .navbar-center { display: none; }
+}
+
+@media (max-width: 991px) {
+    .navbar-left { min-width: auto; }
+    .navbar-center { max-width: 300px; }
+    .navbar-search-dropdown { width: 300px; }
+}
+
+/* ============================================================
+   Navbar — responsive auto-adjust
+   Prevents right-side icons from overlapping the search bar
+   ============================================================ */
+
+/* ── 992px – 1199px: medium desktops / small laptops ── */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .navbar-center {
+        max-width: 340px;
+    }
+    /* tighten right-side gaps so icons don't eat search space */
+    .navbar-right {
+        gap: 0.25rem !important;
+    }
+    .sms-navbar .navbar-brand span {
+        display: none; /* hide "SMS 2" text, keep icon */
+    }
+    .navbar-left {
+        min-width: 60px;
+    }
+}
+
+/* ── 768px – 991px: tablets / landscape phones ── */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* search visible but shorter, shifted left of right icons */
+    .navbar-center {
+        position: relative;
+        left: auto;
+        transform: none;
+        flex: 1 1 auto;
+        max-width: none;
+        padding: 0 0.5rem;
+        order: 2; /* left > search > right */
+    }
+    .navbar-inner {
+        flex-wrap: nowrap;
+    }
+    .navbar-left {
+        order: 1;
+        flex: 0 0 auto;
+        min-width: auto;
+    }
+    .navbar-right {
+        order: 3;
+        flex: 0 0 auto;
+        gap: 0.2rem !important;
+    }
+    /* hide lower-priority items to save space */
+    .sms-navbar .navbar-brand span { display: none; }
+    /* shrink message / notification btn padding */
+    .navbar-right .btn-link { padding: 0.25rem 0.4rem !important; }
+    .theme-toggle { width: 32px; height: 32px; border-radius: 8px; }
+    /* make search dropdown not overflow viewport */
+    .navbar-search-dropdown {
+        width: min(340px, 90vw);
+        left: 0;
+        transform: none;
+    }
+    @keyframes searchDropIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+}
+
+/* ── ≤ 767px: phones — search hidden, right items compact ── */
+@media (max-width: 767.98px) {
+    .navbar-center { display: none !important; }
+    .navbar-right {
+        gap: 0.1rem !important;
+    }
+    .navbar-right .btn-link { padding: 0.25rem 0.35rem !important; }
+    /* hide username label, keep icon */
+    .navbar-right .d-none.d-md-inline { display: none !important; }
+    /* shrink theme toggle */
+    .theme-toggle { width: 30px; height: 30px; border-radius: 8px; }
+    /* tighten notification badge */
+    .notification-badge { min-width: 14px; padding: 0.15em 0.35em; font-size: 0.52rem; }
+}
+
+/* ── ≤ 480px: very small phones — further tighten ── */
+@media (max-width: 480px) {
+    /* hide messages button entirely, keep notifications + user */
+    .navbar-right > .dropdown:first-of-type { display: none !important; }
+    .navbar-right { gap: 0.05rem !important; }
+    .sms-navbar .navbar-brand i { font-size: 1rem; }
+}

@@ -1,0 +1,908 @@
+/**
+ * SMS 2 – Security UI: password show/hide + segmented OTP boxes
+ */
+
+/* Password group with eye toggle (app-wide, not only login) */
+.sms-pw-group:not(.input-group),
+.password-group:not(.input-group) {
+    position: relative;
+    display: block;
+}
+.input-group.password-group,
+.input-group.sms-pw-group {
+    position: relative;
+}
+.sms-pw-group .form-control,
+.password-group .form-control {
+    padding-right: 2.75rem;
+}
+.sms-pw-group .password-toggle,
+.password-group .password-toggle,
+.sms-pw-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.55rem;
+    z-index: 6;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+    font-size: 1.05rem;
+    line-height: 1;
+    pointer-events: auto;
+}
+.sms-pw-group .password-toggle:hover,
+.password-group .password-toggle:hover,
+.sms-pw-toggle:hover {
+    color: var(--sms-primary, #264ac8);
+    background: rgba(38, 74, 200, 0.08);
+}
+.sms-pw-group .password-toggle:focus-visible,
+.password-group .password-toggle:focus-visible {
+    outline: 2px solid rgba(38, 74, 200, 0.35);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Segmented OTP / code entry (Cursor-like) */
+.sms-otp {
+    position: relative;
+    margin-bottom: 0.25rem;
+}
+.sms-otp-boxes {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    margin-top: 0.35rem;
+}
+.sms-otp-box {
+    width: 2.75rem;
+    height: 3.15rem;
+    padding: 0;
+    border: 1.5px solid #c5d0e6;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+    font-size: 1.35rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    text-align: center;
+    line-height: 1;
+    caret-color: var(--sms-primary, #264ac8);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.sms-otp-box:hover {
+    border-color: #9eb0d4;
+}
+.sms-otp-box:focus {
+    outline: none;
+    border-color: var(--sms-primary, #264ac8);
+    box-shadow: 0 0 0 3px rgba(38, 74, 200, 0.18);
+    background: #f8faff;
+}
+.sms-otp-box.is-filled {
+    border-color: #8fa6d9;
+    background: #f5f8ff;
+}
+.sms-otp-box.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12);
+}
+.sms-otp-hint {
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+    color: #64748b;
+}
+.sms-otp-value {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 420px) {
+    .sms-otp-boxes { gap: 0.35rem; }
+    .sms-otp-box {
+        width: 2.35rem;
+        height: 2.75rem;
+        font-size: 1.15rem;
+        border-radius: 8px;
+    }
+}
+
+/* Modern security panels */
+.sms-sec-card {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+.sms-sec-card > .card-body {
+    padding: 1.35rem 1.4rem;
+}
+.sms-sec-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+}
+.sms-sec-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+}
+.sms-sec-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 11px;
+    background: linear-gradient(145deg, #e8efff, #d6e2ff);
+    color: var(--sms-primary, #264ac8);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.sms-sec-card .sms-sec-lead {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+.sms-sec-setup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(38, 74, 200, 0.04);
+    border: 1px dashed rgba(38, 74, 200, 0.22);
+    margin-bottom: 1rem;
+}
+.sms-sec-setup code {
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+}
+.sms-sec-tabs.nav-tabs {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+.sms-sec-tabs .nav-link,
+.sms-sec-tabs .nav-link.btn,
+button.nav-link.sms-sec-tab {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.65rem 1rem;
+    background: transparent;
+    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+.sms-sec-tabs .nav-link:hover {
+    color: var(--sms-primary, #264ac8);
+    background: rgba(38, 74, 200, 0.06);
+}
+.sms-sec-tabs .nav-link:active {
+    transform: translateY(1px);
+}
+.sms-sec-tabs .nav-link.active {
+    color: var(--sms-primary, #264ac8);
+    background: #fff;
+    border-color: rgba(148, 163, 184, 0.28);
+    box-shadow: 0 1px 0 0 #fff, inset 0 -2px 0 var(--sms-primary, #264ac8);
+}
+
+/* Smooth in-page security panels (admin + staff) */
+.sec-panel[hidden],
+.sms-sec-panel[hidden] {
+    display: none !important;
+}
+.sms-sec-panel:not([hidden]),
+.sec-panel:not([hidden]) {
+    display: block;
+}
+.sms-sec-panel.is-entering,
+.sec-panel.is-entering {
+    animation: sms-sec-panel-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes sms-sec-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .sms-sec-panel.is-entering,
+    .sec-panel.is-entering {
+        animation: none;
+    }
+    .sms-sec-tabs .nav-link {
+        transition: none;
+    }
+}
+
+.mod-log-scroll,
+.sec-log-scroll {
+    max-height: 420px;
+    overflow: auto;
+}
+.mod-log-thead th,
+.sec-log-thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--sms-surface, #fff);
+    box-shadow: 0 1px 0 var(--sms-border, rgba(15, 23, 42, 0.08));
+}
+
+.sms-sec-page-header {
+    padding: 1.15rem 1.25rem;
+    border-radius: 14px;
+    margin-bottom: 1.25rem;
+    background: linear-gradient(135deg, #f4f7ff 0%, #eef2f9 55%, #f8fafc 100%);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+.sms-sec-page-header h1 {
+    margin-bottom: 0.35rem;
+    font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+    font-weight: 800;
+}
+.sms-sec-page-header p {
+    color: #64748b;
+    margin-bottom: 0;
+    max-width: 46rem;
+    line-height: 1.45;
+}
+.sms-sec-card .btn-sms-primary {
+    border-radius: 11px;
+}
+.sms-sec-card .form-control,
+.sms-sec-card .form-select {
+    border-radius: 10px;
+    border-color: var(--sms-border, #d7e1ef);
+    background: var(--sms-surface-solid, #fff);
+    color: var(--sms-text, #0f172a);
+}
+.sms-sec-card .form-control:focus,
+.sms-sec-card .form-select:focus {
+    border-color: #93b4ff;
+    box-shadow: 0 0 0 3px rgba(38, 84, 211, 0.12);
+}
+.sms-sec-card .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--sms-text, #0f172a);
+    color: var(--sms-text, #0f172a);
+    margin-bottom: 0;
+}
+.sms-sec-card .table thead th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--sms-text-muted, #64748b);
+    font-weight: 800;
+    background: var(--sms-table-head-bg, #f8fafc) !important;
+    border-bottom-color: var(--sms-border, #e2e8f0);
+}
+.sms-sec-card .table td,
+.sms-sec-card .table th {
+    border-color: var(--sms-border, #e2e8f0);
+    background: transparent;
+}
+.sms-sec-card .table-responsive,
+.sms-sec-card .border.rounded-3 {
+    border-color: var(--sms-border, #e2e8f0) !important;
+    background: transparent;
+}
+.sms-sec-list {
+    border: 1px solid var(--sms-border, #e2e8f0);
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent;
+}
+.sms-sec-pw-box {
+    border: 1px solid var(--sms-border, #e2e8f0);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    background: transparent;
+}
+.sms-sec-pw-box .sms-sec-list {
+    border: none;
+    border-radius: 0;
+}
+.sms-sec-pw-split #smsPasskeyCard {
+    display: block;
+}
+.sms-sec-pw-box .sms-sec-setup {
+    padding: 0.75rem;
+}
+.sms-sec-pw-box .sms-totp-qr-wrap canvas,
+.sms-sec-pw-box .sms-totp-qr-wrap img,
+.sms-sec-pw-box .sms-totp-qr-wrap svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Shared security action buttons (Auth / Passkey / similar) */
+.sms-sec-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 0.8125rem;
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+.sms-sec-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+}
+.sms-sec-btn:not(:disabled):active {
+    transform: translateY(1px);
+}
+.sms-sec-btn-primary {
+    color: #1e3a8a;
+    background: rgba(37, 99, 235, 0.1);
+    border-color: rgba(37, 99, 235, 0.28);
+}
+.sms-sec-btn-primary:hover:not(:disabled),
+.sms-sec-btn-primary:focus:not(:disabled) {
+    color: #1e3a8a;
+    background: rgba(37, 99, 235, 0.16);
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+.sms-sec-btn-danger {
+    color: #9f1239;
+    background: rgba(244, 63, 94, 0.08);
+    border-color: rgba(244, 63, 94, 0.28);
+}
+.sms-sec-btn-danger:hover:not(:disabled),
+.sms-sec-btn-danger:focus:not(:disabled) {
+    color: #9f1239;
+    background: rgba(244, 63, 94, 0.14);
+    border-color: rgba(244, 63, 94, 0.42);
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.12);
+}
+.sms-sec-pk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+.sms-sec-pk-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid var(--sms-border, #e2e8f0);
+    border-radius: 10px;
+    background: rgba(148, 163, 184, 0.06);
+}
+.sms-sec-pk-meta {
+    min-width: 0;
+    line-height: 1.25;
+}
+[data-theme="dark"] .sms-sec-btn-primary {
+    color: #93c5fd;
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(96, 165, 250, 0.32);
+}
+[data-theme="dark"] .sms-sec-btn-danger {
+    color: #fda4af;
+    background: rgba(244, 63, 94, 0.14);
+    border-color: rgba(251, 113, 133, 0.32);
+}
+[data-theme="dark"] .sms-sec-pk-item {
+    border-color: rgba(148, 163, 184, 0.18);
+    background: rgba(15, 23, 42, 0.45);
+}
+
+@media (max-width: 991.98px) {
+    .sms-sec-pw-split > [class*="col-"] + [class*="col-"] .sms-sec-pw-box {
+        margin-top: 0;
+    }
+}
+
+/* Dark theme */
+[data-theme="dark"] .sms-otp-box {
+    background: #111827;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+[data-theme="dark"] .sms-otp-box:focus,
+[data-theme="dark"] .sms-otp-box.is-filled {
+    background: #1e293b;
+    border-color: #60a5fa;
+}
+[data-theme="dark"] .sms-sec-card {
+    background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+    border-color: rgba(148, 163, 184, 0.18);
+}
+[data-theme="dark"] .sms-sec-pw-box {
+    border-color: rgba(148, 163, 184, 0.18);
+}
+[data-theme="dark"] .sms-sec-icon {
+    background: linear-gradient(145deg, #1e3a5f, #1e293b);
+    color: #93c5fd;
+}
+[data-theme="dark"] .sms-sec-card .form-control,
+[data-theme="dark"] .sms-sec-card .form-select {
+    background: #0f172a;
+    border-color: rgba(148, 163, 184, 0.28);
+    color: #e2e8f0;
+}
+[data-theme="dark"] .sms-sec-card .table thead th {
+    background: rgba(15, 23, 42, 0.72) !important;
+    color: #94a3b8;
+    border-bottom-color: rgba(148, 163, 184, 0.18);
+}
+[data-theme="dark"] .sms-sec-card .table td,
+[data-theme="dark"] .sms-sec-card .table th {
+    border-color: rgba(148, 163, 184, 0.14);
+    color: #e2e8f0;
+}
+[data-theme="dark"] .sms-sec-card .table .text-muted {
+    color: #94a3b8 !important;
+}
+[data-theme="dark"] .sms-sec-list,
+[data-theme="dark"] .sms-sec-card .table-responsive,
+[data-theme="dark"] .sms-sec-card .border.rounded-3 {
+    border-color: rgba(148, 163, 184, 0.18) !important;
+    background: rgba(15, 23, 42, 0.35);
+}
+[data-theme="dark"] .sms-sec-setup {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(96, 165, 250, 0.28);
+}
+[data-theme="dark"] .sms-sec-page-header {
+    background: linear-gradient(135deg, #111827 0%, #0f172a 100%);
+    border-color: rgba(148, 163, 184, 0.18);
+}
+[data-theme="dark"] .sms-pw-group .password-toggle,
+[data-theme="dark"] .password-group .password-toggle {
+    color: #94a3b8;
+}
+[data-theme="dark"] .sms-sec-tabs .nav-link {
+    color: #94a3b8;
+}
+[data-theme="dark"] .sms-sec-tabs .nav-link.active {
+    background: #111827;
+    color: #93c5fd;
+    border-color: rgba(148, 163, 184, 0.22);
+    box-shadow: 0 1px 0 0 #111827, inset 0 -2px 0 #60a5fa;
+}
+
+/* Authenticator QR — large, high-contrast, scan-ready */
+.sms-totp-qr-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+.sms-totp-qr {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+    padding: 0.85rem;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+.sms-totp-qr canvas {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 4px;
+}
+.sms-totp-qr-loading {
+    position: absolute;
+    inset: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 4px;
+}
+.sms-totp-qr-caption {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+}
+.sms-sec-setup {
+    align-items: flex-start;
+}
+
+/* Login CAPTCHA — matches login / auth field styling */
+.sms-captcha-wrap {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+}
+.sms-captcha-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #111827;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+.sms-captcha-hp {
+    position: absolute !important;
+    left: -10000px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+.sms-captcha-frame {
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    border: 1px solid #d7e1ef;
+    border-radius: 10px;
+    background: #fff;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+}
+/* Turnstile has its own chrome — no extra outer box */
+.sms-captcha-frame--turnstile {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0 !important;
+    margin: 0;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible;
+    line-height: normal;
+}
+.sms-captcha-frame--turnstile .cf-turnstile {
+    width: 300px !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
+}
+.sms-captcha-frame--turnstile iframe,
+.sms-captcha-frame--turnstile .cf-turnstile > div {
+    max-width: none !important;
+}
+.sms-captcha-frame:not(.sms-captcha-frame--turnstile) .cf-turnstile {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+}
+.sms-cf-widget {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: 42px;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #d7e1ef;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: none;
+    cursor: pointer;
+    text-align: left;
+    color: #0f172a;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.sms-cf-widget:hover {
+    border-color: #93b4ff;
+    background: #fff;
+}
+.sms-cf-widget:focus-visible {
+    outline: none;
+    border-color: #93b4ff;
+    box-shadow: 0 0 0 3px rgba(38, 84, 211, 0.12);
+}
+.sms-cf-box {
+    position: relative;
+    flex-shrink: 0;
+    width: 1.65rem;
+    height: 1.65rem;
+    border: 2px solid #94a3b8;
+    border-radius: 6px;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+.sms-cf-spinner {
+    width: 0.95rem;
+    height: 0.95rem;
+    border: 2px solid #d7e1ef;
+    border-top-color: #294ecb;
+    border-radius: 50%;
+    animation: sms-cf-spin 0.7s linear infinite;
+}
+.sms-cf-check {
+    color: #294ecb;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+.sms-cf-label {
+    flex: 1;
+    min-width: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #0f172a;
+}
+.sms-cf-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+    padding: 5px 10px;
+    border: 1px solid #d8e5ff;
+    border-radius: 999px;
+    background: #eef5ff;
+    color: #0d4bd6;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+}
+.sms-cf-widget.is-loading .sms-cf-box {
+    border-color: #93b4ff;
+}
+.sms-cf-widget.is-verified {
+    border-color: #93b4ff;
+    background: #f8fbff;
+    cursor: default;
+    box-shadow: 0 0 0 3px rgba(38, 84, 211, 0.08);
+}
+.sms-cf-widget.is-verified .sms-cf-box {
+    border-color: #294ecb;
+    background: #eef5ff;
+}
+.sms-cf-widget.is-verified .sms-cf-label {
+    color: #15803d;
+    font-weight: 700;
+}
+.sms-cf-widget.is-verified .sms-cf-check {
+    color: #15803d;
+}
+.sms-cf-widget.is-verified .sms-cf-brand {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+    color: #15803d;
+}
+.sms-cf-widget.is-error {
+    border-color: #fca5a5;
+    animation: sms-cf-shake 0.35s ease;
+}
+.login-card .sms-captcha-wrap,
+.auth-card .sms-captcha-wrap,
+.fp-card .sms-captcha-wrap {
+    margin-bottom: 12px;
+}
+.login-card .sms-captcha-label,
+.auth-card .sms-captcha-label {
+    margin-bottom: 0.35rem;
+    color: #111827;
+    font-size: 0.78rem;
+    font-weight: 800 !important;
+}
+.login-card .cf-turnstile,
+.auth-card .cf-turnstile,
+.sms-captcha-frame:not(.sms-captcha-frame--turnstile) .cf-turnstile {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+@media (max-width: 420px) {
+    .sms-captcha-frame:not(.sms-captcha-frame--turnstile) {
+        padding: 4px 6px;
+        border-radius: 8px;
+    }
+    .sms-cf-widget {
+        min-height: 40px;
+        padding: 0.45rem 0.6rem;
+        gap: 0.5rem;
+    }
+    .sms-cf-brand {
+        display: none;
+    }
+}
+@keyframes sms-cf-spin {
+    to { transform: rotate(360deg); }
+}
+@keyframes sms-cf-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+[data-theme="dark"] .sms-totp-qr {
+    background: #fff;
+}
+[data-theme="dark"] .sms-captcha-label {
+    color: #e2e8f0;
+}
+[data-theme="dark"] .sms-cf-widget,
+[data-theme="dark"] .sms-captcha-frame:not(.sms-captcha-frame--turnstile) {
+    background: #111827;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+[data-theme="dark"] .sms-captcha-frame--turnstile {
+    background: transparent !important;
+    border: 0 !important;
+}
+[data-theme="dark"] .sms-cf-label { color: #e2e8f0; }
+[data-theme="dark"] .sms-cf-box {
+    background: #0f172a;
+    border-color: #94a3b8;
+}
+[data-theme="dark"] .sms-cf-brand {
+    background: rgba(41, 78, 203, 0.2);
+    border-color: rgba(147, 180, 255, 0.35);
+    color: #93c5fd;
+}
+[data-theme="dark"] .sms-cf-widget.is-verified {
+    background: #0f172a;
+    border-color: #4ade80;
+}
+[data-theme="dark"] .sms-cf-widget.is-verified .sms-cf-box {
+    background: #14532d;
+    border-color: #4ade80;
+}
+[data-theme="dark"] .sms-cf-widget.is-verified .sms-cf-label,
+[data-theme="dark"] .sms-cf-widget.is-verified .sms-cf-check {
+    color: #86efac;
+}
+[data-theme="dark"] .sms-cf-widget.is-verified .sms-cf-brand {
+    background: rgba(22, 163, 74, 0.2);
+    border-color: rgba(74, 222, 128, 0.4);
+    color: #86efac;
+}
+
+/* Confirm modals — see assets/css/components.css (.sms-confirm-modal) */
+
+/* Adviser Assignment confirm modal */
+.rcas-confirm-dialog {
+    max-width: 460px;
+    width: 100%;
+}
+.rcas-confirm-modal {
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+.rcas-confirm-modal-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    padding: 1rem 1.25rem;
+    border-bottom: none;
+    color: #fff;
+}
+.rcas-confirm-modal-header .btn-close {
+    filter: invert(1) grayscale(1);
+    opacity: 0.85;
+}
+.rcas-confirm-modal-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.18);
+    font-size: 1rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+.rcas-confirm-modal-header .modal-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.01em;
+}
+.rcas-confirm-modal-body {
+    padding: 1.25rem 1.5rem 0.75rem;
+}
+.rcas-confirm-question {
+    font-size: 0.925rem;
+    color: #374151;
+    margin-bottom: 1rem;
+}
+.rcas-confirm-details-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.rcas-confirm-detail {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+.rcas-confirm-detail:last-child {
+    border-bottom: none;
+}
+.rcas-confirm-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    white-space: nowrap;
+    min-width: 120px;
+    flex-shrink: 0;
+}
+.rcas-confirm-value {
+    font-size: 0.875rem;
+    color: #1e293b;
+    font-weight: 500;
+    word-break: break-word;
+}
+.rcas-confirm-modal-footer {
+    padding: 0.875rem 1.5rem 1.25rem;
+    border-top: 1px solid #f1f5f9;
+    gap: 0.5rem;
+}
+.rcas-confirm-btn {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    border: none;
+    font-weight: 600;
+    padding: 0.45rem 1.1rem;
+    font-size: 0.875rem;
+}
+.rcas-confirm-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    border: none;
+}
+.sms-sec-card .sms-sec-card-title > div {
+    min-width: 0;
+}
+.sms-sec-card .border.rounded-3 {
+    overflow: hidden;
+}

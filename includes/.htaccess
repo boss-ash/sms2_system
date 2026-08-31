@@ -1,0 +1,2 @@
+# Block directory listing for includes (PHP still includable via require)
+Options -Indexes

@@ -1,0 +1,19 @@
+Options -Indexes
+
+RewriteEngine On
+RewriteRule ^up$ up.php [END]
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+<IfModule mod_php.c>
+    php_value post_max_size 16M
+    php_value upload_max_filesize 16M
+</IfModule>
+<IfModule mod_php8.c>
+    php_value post_max_size 16M
+    php_value upload_max_filesize 16M
+</IfModule>

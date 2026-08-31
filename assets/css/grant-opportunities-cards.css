@@ -1,0 +1,513 @@
+/**
+ * SMS 2 — Grant Opportunities Card Grid
+ * Bestlink College of the Philippines · CRAD Module
+ *
+ * Compact card layout matching the reference design.
+ * Supplements module-process-list.css — does NOT replace BCP system styles.
+ * v2 — refined card proportions + Apply Now button styles.
+ */
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+.go-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+.go-page-header-text h1 {
+    margin: 0 0 0.2rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--sms-heading);
+    line-height: 1.2;
+}
+.go-page-header-text p {
+    margin: 0;
+    font-size: 0.87rem;
+    color: var(--sms-text-muted);
+    line-height: 1.4;
+}
+.go-page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   COMPACT STAT BADGES
+   ============================================================ */
+.go-stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+.go-stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.32rem 0.75rem 0.32rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+    line-height: 1;
+}
+.go-stat-badge-icon {
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 0.58rem;
+    flex-shrink: 0;
+}
+.go-stat-badge.total   { background:rgba(30,64,175,.07);  border-color:rgba(30,64,175,.18);  color:#1e40af; }
+.go-stat-badge.open    { background:rgba(5,150,105,.07);  border-color:rgba(5,150,105,.2);   color:#065f46; }
+.go-stat-badge.closed  { background:rgba(100,116,139,.09);border-color:rgba(100,116,139,.22);color:#475569; }
+.go-stat-badge.expired { background:rgba(220,38,38,.07);  border-color:rgba(220,38,38,.18);  color:#991b1b; }
+.go-stat-badge.total  .go-stat-badge-icon { background:rgba(30,64,175,.14);  color:#1e40af; }
+.go-stat-badge.open   .go-stat-badge-icon { background:rgba(16,185,129,.16); color:#059669; }
+.go-stat-badge.closed .go-stat-badge-icon { background:rgba(100,116,139,.16);color:#64748b; }
+.go-stat-badge.expired.go-stat-badge-icon { background:rgba(220,38,38,.12);  color:#dc2626; }
+/* dark */
+[data-theme="dark"] .go-stat-badge.total   { background:rgba(96,165,250,.1);  border-color:rgba(96,165,250,.22);  color:#93c5fd; }
+[data-theme="dark"] .go-stat-badge.open    { background:rgba(52,211,153,.1);  border-color:rgba(52,211,153,.22);  color:#6ee7b7; }
+[data-theme="dark"] .go-stat-badge.closed  { background:rgba(148,163,184,.1); border-color:rgba(148,163,184,.22); color:#cbd5e1; }
+[data-theme="dark"] .go-stat-badge.expired { background:rgba(248,113,113,.1); border-color:rgba(248,113,113,.22); color:#fca5a5; }
+
+/* ============================================================
+   FILTER BAR
+   ============================================================ */
+.go-filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.15rem;
+}
+.go-filter-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--sms-text-muted);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.go-filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+}
+.go-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--sms-border, #e2e8f0);
+    background: var(--sms-surface-solid, #fff);
+    color: var(--sms-text, #334155);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, border-color .15s, color .15s, box-shadow .15s;
+    user-select: none;
+}
+.go-filter-pill:hover {
+    border-color: var(--sms-primary, #1e40af);
+    color: var(--sms-primary, #1e40af);
+    background: rgba(30,64,175,.05);
+}
+.go-filter-pill.active {
+    border-color: var(--sms-primary, #1e40af);
+    background: var(--sms-primary, #1e40af);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(30,64,175,.22);
+}
+.go-filter-pill .pill-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 0.22rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    line-height: 1;
+    background: rgba(255,255,255,.25);
+}
+.go-filter-pill:not(.active) .pill-count {
+    background: rgba(30,64,175,.1);
+    color: var(--sms-primary, #1e40af);
+}
+/* Search box */
+.go-filter-search {
+    flex: 1 1 200px;
+    max-width: 260px;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.38rem 0.8rem;
+    border: 1.5px solid var(--sms-border, #e2e8f0);
+    border-radius: 999px;
+    background: var(--sms-surface-solid, #fff);
+    color: var(--sms-text-muted);
+    transition: border-color .15s;
+    margin-left: auto;
+}
+.go-filter-search:focus-within { border-color: var(--sms-primary, #1e40af); }
+.go-filter-search i { font-size: 0.75rem; flex-shrink: 0; }
+.go-filter-search input {
+    width: 100%; border: 0; outline: 0; background: transparent;
+    color: var(--sms-text, #334155); font-size: 0.82rem; line-height: 1;
+}
+.go-filter-search input::placeholder { color: var(--sms-text-muted); }
+/* dark */
+[data-theme="dark"] .go-filter-pill       { background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.12); color:#cbd5e1; }
+[data-theme="dark"] .go-filter-pill:hover { border-color:#60a5fa; color:#93c5fd; background:rgba(96,165,250,.08); }
+[data-theme="dark"] .go-filter-pill.active{ border-color:#3b82f6; background:#3b82f6; color:#fff; }
+[data-theme="dark"] .go-filter-search     { background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.12); }
+[data-theme="dark"] .go-filter-search input { color:#e2e8f0; }
+
+/* ============================================================
+   RESULTS BAR
+   ============================================================ */
+.go-results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+}
+.go-results-count { font-size: 0.78rem; color: var(--sms-text-muted); font-weight: 600; }
+.go-results-count strong { color: var(--sms-heading); font-weight: 800; }
+
+/* ============================================================
+   CARD GRID  — 3 / 2 / 1 cols
+   ============================================================ */
+.go-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+@media (max-width: 992px) { .go-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .go-card-grid { grid-template-columns: 1fr; } }
+
+/* ── Individual card ─────────────────────────────────────── */
+.go-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    border: 1px solid var(--sms-border, #e2e8f0);
+    background: var(--sms-surface-solid, #fff);
+    box-shadow: 0 2px 12px rgba(15,33,88,.06);
+    overflow: hidden;
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+.go-card:hover {
+    box-shadow: 0 6px 24px rgba(15,33,88,.11);
+    transform: translateY(-2px);
+}
+
+/* ── Top accent stripe ───────────────────────────────────── */
+.go-card-stripe { height: 3px; width: 100%; flex-shrink: 0; }
+.go-card[data-cat="internal"] .go-card-stripe { background:linear-gradient(90deg,#1e40af,#3b82f6); }
+.go-card[data-cat="faculty"]  .go-card-stripe { background:linear-gradient(90deg,#0369a1,#0ea5e9); }
+.go-card[data-cat="student"]  .go-card-stripe { background:linear-gradient(90deg,#059669,#10b981); }
+.go-card[data-cat="external"] .go-card-stripe { background:linear-gradient(90deg,#6d28d9,#8b5cf6); }
+.go-card[data-cat="open"]     .go-card-stripe { background:linear-gradient(90deg,#d97706,#f59e0b); }
+.go-card[data-cat="other"]    .go-card-stripe { background:linear-gradient(90deg,#475569,#64748b); }
+
+/* ── Card header: category pill + applied count ──────────── */
+.go-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 0.35rem;
+}
+.go-card-cat-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.go-card[data-cat="internal"] .go-card-cat-tag { background:rgba(30,64,175,.1);  color:#1e40af; }
+.go-card[data-cat="faculty"]  .go-card-cat-tag { background:rgba(3,105,161,.1);  color:#0369a1; }
+.go-card[data-cat="student"]  .go-card-cat-tag { background:rgba(5,150,105,.1);  color:#065f46; }
+.go-card[data-cat="external"] .go-card-cat-tag { background:rgba(109,40,217,.1); color:#6d28d9; }
+.go-card[data-cat="open"]     .go-card-cat-tag { background:rgba(217,119,6,.1);  color:#92400e; }
+.go-card[data-cat="other"]    .go-card-cat-tag { background:rgba(71,85,105,.1);  color:#475569; }
+
+.go-card-app-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.73rem;
+    font-weight: 800;
+    color: var(--sms-text-muted);
+    white-space: nowrap;
+}
+.go-card-app-count .count-num {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--sms-heading);
+}
+
+/* ── Card body ───────────────────────────────────────────── */
+.go-card-body {
+    flex: 1;
+    padding: 0.3rem 1rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.go-card-title {
+    font-size: 0.97rem;
+    font-weight: 800;
+    color: var(--sms-heading);
+    line-height: 1.35;
+    margin: 0;
+    /* allow up to 3 lines; keeps card height consistent */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+/* Meta grid: 2 items side-by-side where possible */
+.go-card-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem 0.6rem;
+}
+/* Eligibility spans full width */
+.go-card-meta-row-full { grid-column: 1 / -1; }
+.go-card-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    min-width: 0;
+}
+.go-card-meta-label {
+    font-size: 0.63rem;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--sms-text-muted);
+    line-height: 1;
+}
+.go-card-meta-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--sms-text);
+    line-height: 1.3;
+    word-break: break-word;
+}
+.go-card-meta-value.funding {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--sms-heading);
+}
+.go-card-meta-value.deadline-past { color: #dc2626; font-weight: 700; }
+
+/* ── Status pill ─────────────────────────────────────────── */
+.go-card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    width: fit-content;
+}
+.go-card-status.open    { background:rgba(16,185,129,.12); color:#065f46; }
+.go-card-status.closed  { background:rgba(100,116,139,.12);color:#475569; }
+.go-card-status.expired { background:rgba(220,38,38,.1);   color:#991b1b; }
+.go-card-status .status-dot {
+    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.go-card-status.open    .status-dot { background:#059669; }
+.go-card-status.closed  .status-dot { background:#64748b; }
+.go-card-status.expired .status-dot { background:#dc2626; }
+
+/* ── Card footer ─────────────────────────────────────────── */
+.go-card-footer {
+    padding: 0.6rem 1rem 0.8rem;
+    border-top: 1px solid var(--sms-border, #e2e8f0);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.go-card-published {
+    font-size: 0.7rem;
+    color: var(--sms-text-muted);
+    line-height: 1.3;
+    min-width: 0;
+}
+.go-card-published strong {
+    display: block;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--sms-text-faint, #94a3b8);
+}
+
+/* ── Apply Now button (primary action) ───────────────────── */
+.go-btn-apply {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.48rem 1.1rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .15s, box-shadow .15s, transform .1s;
+    box-shadow: 0 2px 10px rgba(30,64,175,.25);
+}
+.go-btn-apply:hover {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    box-shadow: 0 4px 16px rgba(30,64,175,.35);
+    color: #fff;
+    transform: translateY(-1px);
+}
+.go-btn-apply:active { transform: translateY(0); }
+/* Closed / Expired states */
+.go-btn-apply.go-btn-disabled {
+    background: var(--sms-surface-muted, #f1f5f9);
+    border: 1.5px solid var(--sms-border, #e2e8f0);
+    color: var(--sms-text-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.75;
+}
+
+/* dark mode cards */
+[data-theme="dark"] .go-card { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.1); }
+[data-theme="dark"] .go-card:hover { box-shadow:0 6px 24px rgba(0,0,0,.4); }
+[data-theme="dark"] .go-card-status.open    { background:rgba(52,211,153,.12); color:#6ee7b7; }
+[data-theme="dark"] .go-card-status.closed  { background:rgba(148,163,184,.1); color:#94a3b8; }
+[data-theme="dark"] .go-card-status.expired { background:rgba(248,113,113,.1); color:#fca5a5; }
+[data-theme="dark"] .go-card-footer  { border-color:rgba(255,255,255,.1); }
+[data-theme="dark"] .go-btn-apply { background:linear-gradient(135deg,#2563eb,#3b82f6); }
+[data-theme="dark"] .go-btn-apply:hover { background:linear-gradient(135deg,#1e40af,#2563eb); }
+[data-theme="dark"] .go-btn-apply.go-btn-disabled { background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.12); color:#64748b; }
+[data-theme="dark"] .go-card[data-cat="internal"] .go-card-cat-tag { background:rgba(96,165,250,.12);  color:#93c5fd; }
+[data-theme="dark"] .go-card[data-cat="faculty"]  .go-card-cat-tag { background:rgba(56,189,248,.12);  color:#7dd3fc; }
+[data-theme="dark"] .go-card[data-cat="student"]  .go-card-cat-tag { background:rgba(52,211,153,.12);  color:#6ee7b7; }
+[data-theme="dark"] .go-card[data-cat="external"] .go-card-cat-tag { background:rgba(167,139,250,.12); color:#c4b5fd; }
+[data-theme="dark"] .go-card[data-cat="open"]     .go-card-cat-tag { background:rgba(251,191,36,.12);  color:#fde68a; }
+[data-theme="dark"] .go-card[data-cat="other"]    .go-card-cat-tag { background:rgba(148,163,184,.1);  color:#94a3b8; }
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.go-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3.5rem 2rem;
+    gap: 0.85rem;
+}
+.go-empty-icon {
+    width: 68px; height: 68px;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    background: rgba(30,64,175,.08);
+    font-size: 1.5rem;
+    color: var(--sms-primary, #1e40af);
+}
+.go-empty-state h3 { margin:0; font-size:1.05rem; font-weight:800; color:var(--sms-heading); }
+.go-empty-state p  { margin:0; font-size:.86rem; color:var(--sms-text-muted); max-width:320px; line-height:1.5; }
+
+/* ============================================================
+   NO-RESULTS (inside grid)
+   ============================================================ */
+.go-no-results {
+    grid-column: 1 / -1;
+    display: flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+    padding: 2.5rem 2rem; gap: 0.55rem; color: var(--sms-text-muted);
+}
+.go-no-results i  { font-size:1.8rem; opacity:.4; }
+.go-no-results p  { margin:0; font-size:.86rem; }
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+.go-pagination {
+    display: flex; align-items:center; justify-content:center;
+    flex-wrap:wrap; gap:0.3rem; margin-top:1.35rem;
+}
+.go-pagination-btn {
+    display: inline-flex; align-items:center; justify-content:center;
+    min-width:34px; height:34px; padding:0 0.5rem;
+    border-radius:8px; border:1.5px solid var(--sms-border,#e2e8f0);
+    background:var(--sms-surface-solid,#fff); color:var(--sms-text,#334155);
+    font-size:.8rem; font-weight:700; cursor:pointer;
+    transition:background .15s, border-color .15s; user-select:none;
+}
+.go-pagination-btn:hover:not(:disabled):not(.active) {
+    border-color:var(--sms-primary,#1e40af);
+    color:var(--sms-primary,#1e40af);
+    background:rgba(30,64,175,.05);
+}
+.go-pagination-btn.active {
+    border-color:var(--sms-primary,#1e40af);
+    background:var(--sms-primary,#1e40af); color:#fff;
+}
+.go-pagination-btn:disabled { opacity:.4; cursor:not-allowed; }
+[data-theme="dark"] .go-pagination-btn        { background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.1); color:#cbd5e1; }
+[data-theme="dark"] .go-pagination-btn.active { background:#3b82f6; border-color:#3b82f6; color:#fff; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:768px) {
+    .go-page-header      { flex-direction:column; align-items:flex-start; }
+    .go-filter-search    { max-width:100%; margin-left:0; }
+}
+@media (max-width:576px) {
+    .go-page-header-text h1 { font-size:1.1rem; }
+    .go-card-grid           { gap:.75rem; }
+    .go-card-header         { padding:.65rem .85rem .3rem; }
+    .go-card-body           { padding:.25rem .85rem .6rem; }
+    .go-card-footer         { padding:.55rem .85rem .7rem; }
+    .go-card-meta           { grid-template-columns:1fr; }
+    .go-card-meta-row-full  { grid-column:auto; }
+}

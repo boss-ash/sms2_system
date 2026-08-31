@@ -1,0 +1,94 @@
+/**
+ * Tabler Icons sizing — align with previous Font Awesome usage
+ */
+.ti {
+    display: inline-block;
+    vertical-align: -0.125em;
+    line-height: 1;
+    font-style: normal;
+    font-weight: normal;
+    speak: never;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ti-lg {
+    font-size: 1.25em;
+}
+
+.ti-sm {
+    font-size: 0.875em;
+}
+
+.sidebar-nav .ti,
+.admin-sidebar .ti {
+    font-size: 1.05rem;
+}
+
+.navbar .ti {
+    font-size: 1rem;
+}
+
+.card-icon .ti,
+.module-card .ti {
+    font-size: 1.35rem;
+}
+
+.sms-welcome-mod-icon .ti {
+    font-size: 1.05rem;
+}
+
+.sms-welcome-btn .ti,
+.sms-welcome-tag .ti,
+.sms-welcome-secure .ti,
+.sms-welcome-version .ti {
+    font-size: 1em;
+}
+
+.perf-icon .ti,
+.act-icon .ti,
+.glass-chip .ti,
+.academic-notices-icon .ti,
+.dash-period .ti,
+.stat-icon .ti {
+    font-size: 1.05rem;
+}
+
+.perf-icon .ti {
+    font-size: 1.15rem;
+}
+
+.perf-trend .ti {
+    font-size: 0.85em;
+}
+
+.perf-icon .ti,
+.act-icon .ti {
+    color: inherit;
+}
+
+.login-glass .ti,
+.login-side .ti {
+    font-size: 1em;
+}
+
+.dropdown-item .ti,
+.dropdown-item-text .ti {
+    font-size: 0.95em;
+    vertical-align: -0.15em;
+}
+
+.sms-notification-icon .ti {
+    flex-shrink: 0;
+    font-size: 0.95rem;
+}
+
+.ti-loader-2,
+.ti-spin {
+    animation: sms-ti-spin 0.85s linear infinite;
+}
+
+@keyframes sms-ti-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
