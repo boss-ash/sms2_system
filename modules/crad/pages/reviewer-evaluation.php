@@ -516,7 +516,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var totalEl = document.getElementById('greTotalScore');
     var form = document.getElementById('greEvalForm');
     var revisionGroup = document.getElementById('greRevisionReasonGroup');
-    var revisionInput = document.getElementById('greRevisionReason');
     var recommendationInputs = document.querySelectorAll('input[name="recommendation"]');
 
     function updateRecommendationUi() {
