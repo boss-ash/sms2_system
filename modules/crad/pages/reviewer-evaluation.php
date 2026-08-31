@@ -770,12 +770,14 @@ document.addEventListener('DOMContentLoaded', function () {
     var totalEl = document.getElementById('greTotalScore');
     var form = document.getElementById('greEvalForm');
     var isAdviserEval = form && form.getAttribute('data-adviser-eval') === '1';
+    var isApproverEval = form && form.getAttribute('data-approver-eval') === '1';
+    var skipRecommendation = isAdviserEval || isApproverEval;
     var revisionGroup = document.getElementById('greRevisionReasonGroup');
     var revisionInput = document.getElementById('greRevisionReason');
     var recommendationInputs = document.querySelectorAll('input[name="recommendation"]');
 
     function updateRecommendationUi() {
-        if (!revisionGroup || isAdviserEval) return;
+        if (!revisionGroup || skipRecommendation) return;
         var selected = document.querySelector('input[name="recommendation"]:checked');
         var needsRevision = selected && selected.value === 'require_revisions';
         revisionGroup.style.display = needsRevision ? '' : 'none';
