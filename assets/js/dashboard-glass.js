@@ -171,10 +171,15 @@
 
         destroyAll();
 
+        var donutLabels = ['A', 'B', 'C', 'D', 'E'];
+        if (role === 'crad_officer' && donutData.length === 2) {
+            donutLabels = ['Ongoing', 'Completed'];
+        }
+
         mountChart(document.getElementById('glassDonut'), {
             type: 'doughnut',
             data: {
-                labels: ['A', 'B', 'C', 'D', 'E'],
+                labels: donutLabels,
                 datasets: [{
                     data: donutData,
                     backgroundColor: donutColors,
