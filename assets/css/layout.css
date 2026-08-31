@@ -1275,9 +1275,9 @@ body.sidebar-open {
 }
 
 /* Hide keyboard hint when space is tight */
-@media (max-width: 1199.98px) {
+@media (max-width: 1399.98px) {
     .search-kbd-hint { display: none !important; }
-    .navbar-search-input { padding-right: 2.2rem !important; }
+    .navbar-search-input { padding-right: 2rem !important; }
 }
 
 @media (max-width: 991.98px) {
