@@ -49,6 +49,30 @@ if ($pdo) {
                 ('review_committee', 'Review Committee', 'Grant proposal review and rubric evaluation', 1)"
         )->execute();
         $pdo->prepare(
+            "INSERT INTO role_permissions (role_key, module_key, granted)
+             VALUES ('department_chair', 'crad', 1)
+             ON DUPLICATE KEY UPDATE granted = VALUES(granted)"
+        )->execute();
+        $pdo->prepare(
+            "INSERT INTO role_permissions (role_key, module_key, granted)
+             VALUES ('research_office', 'crad', 1)
+             ON DUPLICATE KEY UPDATE granted = VALUES(granted)"
+        )->execute();
+        $pdo->prepare(
+            "INSERT INTO role_permissions (role_key, module_key, granted)
+             VALUES ('vpaa', 'accreditation', 1)
+             ON DUPLICATE KEY UPDATE granted = VALUES(granted)"
+        )->execute();
+        $pdo->prepare(
+            "UPDATE users SET role_key = 'department_chair' WHERE username = 'deptchair' LIMIT 1"
+        )->execute();
+        $pdo->prepare(
+            "UPDATE users SET role_key = 'research_office' WHERE username = 'researchoffice' LIMIT 1"
+        )->execute();
+        $pdo->prepare(
+            "UPDATE users SET role_key = 'vpaa' WHERE username = 'vpaa' LIMIT 1"
+        )->execute();
+        $pdo->prepare(
             "UPDATE roles
              SET label = 'Super Admin', description = 'Legacy super admin access'
              WHERE role_key = 'admin'"
