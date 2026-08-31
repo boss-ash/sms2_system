@@ -436,10 +436,14 @@ renderBreadcrumbs($breadcrumbs);
         </form>
         <?php endif; ?>
 
-        <?php elseif ($isApproverView): ?>
+        <?php elseif ($isApproverView || $isMonitorView): ?>
         <div class="gre-scored-banner gre-adviser-banner">
-            <?= smsIcon('hourglass-half', ['class' => 'me-2']) ?>
+            <?= smsIcon($isMonitorView ? 'eye' : 'hourglass-half', ['class' => 'me-2']) ?>
+            <?php if ($isMonitorView): ?>
+            <strong>Pipeline Monitor</strong> — Review scores and track sign-off progress in Approval Workflows.
+            <?php else: ?>
             <strong>In Review</strong> — Review scores below, then sign off in Approval Workflows.
+            <?php endif; ?>
         </div>
 
         <?php if ($committeeEval): ?>
@@ -501,9 +505,13 @@ renderBreadcrumbs($breadcrumbs);
                 <?= smsIcon('signature', ['class' => 'me-1']) ?>Go to Approval Workflows
             </a>
             <p class="gre-adviser-hint mb-0">
-                <?= $canSignApproval
-                    ? 'You may sign and approve this proposal in Approval Workflows.'
-                    : 'This proposal is not yet ready for your sign-off.' ?>
+                <?php if ($isMonitorView): ?>
+                View the full signature trail and current approval stage in Approval Workflows.
+                <?php elseif ($canSignApproval): ?>
+                You may sign and approve this proposal in Approval Workflows.
+                <?php else: ?>
+                This proposal is not yet ready for your sign-off.
+                <?php endif; ?>
             </p>
         </div>
 

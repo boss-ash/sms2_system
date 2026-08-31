@@ -26,6 +26,8 @@
                 r.status,
                 r.my_evaluation_id,
                 r.my_total_score,
+                r.workflow_status,
+                r.current_step_key,
                 r.workflow_updated_at || r.updated_at,
                 r.committee_total_score
             ].join(':');
