@@ -96,11 +96,19 @@ $accounts = [
         'student_id' => null,
     ],
     [
+        'username' => 'researchoffice',
+        'email' => 'researchoffice@bestlink.edu.ph',
+        'password' => '@researchoffice123',
+        'full_name' => 'Research Office',
+        'role_key' => 'research_office',
+        'student_id' => null,
+    ],
+    [
         'username' => 'vpaa',
         'email' => 'vpaa@bestlink.edu.ph',
         'password' => '@vpaa123',
         'full_name' => 'VPAA',
-        'role_key' => 'qa',
+        'role_key' => 'vpaa',
         'student_id' => null,
     ],
     [
