@@ -88,6 +88,7 @@ function paStatusLabel(string $status): string
         'Submitted'         => 'Pending Evaluation',
         'Rejected'          => 'REJECTED',
         'Revision Required' => 'REVISION REQUIRED',
+        'Resubmitted'       => 'RESUBMITTED',
         default             => $status,
     };
 }
@@ -100,6 +101,7 @@ function paStatusBadge(string $status): string
         'Under Review'       => 'mpl-status pending',
         'REJECTED'           => 'mpl-status cancelled',
         'REVISION REQUIRED'  => 'mpl-status processing',
+        'RESUBMITTED'        => 'mpl-status pending',
         'Approved'           => 'mpl-status completed',
         'Denied'             => 'mpl-status cancelled',
         'Withdrawn'          => 'mpl-status cancelled',
@@ -113,6 +115,12 @@ function paStatusBadge(string $status): string
 <?php if ($dbError !== ''): ?>
     <div class="mpl-alert" role="alert" style="background:rgba(239,68,68,0.08);color:#b91c1c;">
         <?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?>
+    </div>
+<?php endif; ?>
+
+<?php if (!empty($_GET['resubmitted'])): ?>
+    <div class="mpl-alert" role="status" style="background:rgba(5,150,105,.08);color:#065f46;margin-bottom:1rem;">
+        <?= smsIcon('check-circle', ['class' => 'me-1']) ?>Proposal resubmitted successfully. Status is now <strong>UNDER REVIEW</strong> and returned to the review committee queue.
     </div>
 <?php endif; ?>
 
@@ -218,6 +226,7 @@ function paStatusBadge(string $status): string
             <table class="mpl-table" id="paTable">
                 <thead>
                     <tr>
+                        <th>Reference</th>
                         <th>Grant Opportunity</th>
                         <th>Lead Proponent</th>
                         <th>Research Project Title</th>
@@ -231,7 +240,7 @@ function paStatusBadge(string $status): string
                 <tbody id="paTableBody">
                     <?php if (empty($applications)): ?>
                         <tr>
-                            <td colspan="8" style="text-align:center;color:var(--sms-text-muted);padding:2.5rem;">
+                            <td colspan="9" style="text-align:center;color:var(--sms-text-muted);padding:2.5rem;">
                                 No proposals have been submitted yet.
                                 <?php if (!empty($opportunities)): ?>
                                     <br><a href="<?= BASE_URL ?>/modules/crad/pages/grant-opportunities.php"
@@ -272,6 +281,12 @@ function paStatusBadge(string $status): string
                             data-status="<?= htmlspecialchars(strtolower($statusLabel)) ?>"
                             data-opp="<?= (int) $app['grant_opportunity_id'] ?>"
                             data-id="<?= (int) $app['id'] ?>">
+                            <td style="font-weight:800;color:var(--sms-primary);white-space:nowrap;">
+                                <?= htmlspecialchars((string) ($app['proposal_reference'] ?? ('#' . (int) $app['id']))) ?>
+                                <div style="font-size:.7rem;font-weight:500;color:var(--sms-text-muted);">
+                                    v<?= max(1, (int) ($app['current_version'] ?? 1)) ?>
+                                </div>
+                            </td>
                             <td style="font-weight:600;max-width:200px;">
                                 <?= htmlspecialchars((string) $app['funding_title']) ?>
                             </td>
@@ -304,7 +319,16 @@ function paStatusBadge(string $status): string
                             <td style="font-size:.83rem;white-space:nowrap;">
                                 <?= htmlspecialchars($submittedFmt) ?>
                             </td>
-                            <td><?= paStatusBadge((string) $app['status']) ?></td>
+                            <td><?= paStatusBadge((string) $app['status']) ?>
+                                <?php if (!$canManage && (string) $app['status'] === 'Revision Required'): ?>
+                                <div style="margin-top:.35rem;">
+                                    <a href="<?= htmlspecialchars(grantReviseProposalUrl((int) $app['id'])) ?>"
+                                       class="mpl-btn mpl-btn-soft mpl-btn-sm" style="font-size:.7rem;">
+                                        <?= smsIcon('edit') ?> Revise
+                                    </a>
+                                </div>
+                                <?php endif; ?>
+                            </td>
                             <td style="text-align:center;">
                                 <button type="button"
                                         class="btn btn-outline-secondary btn-sm pa-detail-btn"

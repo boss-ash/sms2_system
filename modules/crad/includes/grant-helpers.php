@@ -993,6 +993,8 @@ function grantPublishOpportunity(PDO $crad, array $data): array
  */
 function grantSubmitProposal(PDO $crad, array $data, array $files): array
 {
+    grantEnsureTables($crad);
+
     // ── Unpack scalar fields ────────────────────────────────────────────────
     $grantId        = (int)    ($data['grant_opportunity_id'] ?? 0);
     $leadProponent  = trim((string) ($data['lead_proponent']   ?? ''));
