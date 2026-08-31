@@ -571,6 +571,8 @@ function requireModuleAccess(string $moduleKey): void
             ];
             if ($roleKey === 'finance') {
                 $grantApproverPages[] = '/modules/payment/pages/reviewer-evaluation.php';
+                $grantApproverPages[] = '/modules/crad/pages/budget-disbursement.php';
+                $grantApproverPages[] = '/modules/crad/pages/approved-funded.php';
             } elseif (!in_array($roleKey, ['crad_officer'], true)) {
                 $grantApproverPages = array_merge($grantReviewerPages, $grantApproverPages);
             }

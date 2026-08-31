@@ -212,15 +212,9 @@ function grantGetFundedDisbursementOverview(PDO $crad): array
                ga.requested_budget,
                COALESCE(ga.approved_budget, ga.requested_budget, 0) AS approved_budget,
                ga.updated_at AS funded_at,
-               go.funding_title,
-               COUNT(d.id) AS tranche_count,
-               SUM(CASE WHEN d.status = 'Released' THEN 1 ELSE 0 END) AS released_count,
-               SUM(CASE WHEN d.status = 'Pending' THEN 1 ELSE 0 END) AS pending_count,
-               COALESCE(SUM(CASE WHEN d.status = 'Released' THEN d.amount_released ELSE 0 END), 0) AS total_released,
-               MAX(d.updated_at) AS disbursement_updated_at
+               go.funding_title
           FROM grant_applications ga
          INNER JOIN grant_opportunities go ON go.id = ga.grant_opportunity_id
-          LEFT JOIN grant_funding_disbursements d ON d.grant_application_id = ga.id
          WHERE ga.status = ?
     ";
     $params = [grantStatusApprovedFunded()];
@@ -233,7 +227,6 @@ function grantGetFundedDisbursementOverview(PDO $crad): array
     }
 
     $sql .= '
-         GROUP BY ga.id
          ORDER BY ga.updated_at DESC, ga.id DESC
     ';
 
@@ -241,8 +234,37 @@ function grantGetFundedDisbursementOverview(PDO $crad): array
     $stmt->execute($params);
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    if ($rows === []) {
+        return [];
+    }
+
+    $ids = array_map(static fn(array $row): int => (int) ($row['grant_application_id'] ?? 0), $rows);
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $trancheStmt = $crad->prepare("
+        SELECT grant_application_id,
+               COUNT(*) AS tranche_count,
+               SUM(CASE WHEN status = 'Released' THEN 1 ELSE 0 END) AS released_count,
+               SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) AS pending_count,
+               COALESCE(SUM(CASE WHEN status = 'Released' THEN amount_released ELSE 0 END), 0) AS total_released,
+               MAX(updated_at) AS disbursement_updated_at
+          FROM grant_funding_disbursements
+         WHERE grant_application_id IN ({$placeholders})
+         GROUP BY grant_application_id
+    ");
+    $trancheStmt->execute($ids);
+    $trancheMap = [];
+    foreach ($trancheStmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $trancheRow) {
+        $trancheMap[(int) ($trancheRow['grant_application_id'] ?? 0)] = $trancheRow;
+    }
 
     foreach ($rows as &$row) {
+        $appId = (int) ($row['grant_application_id'] ?? 0);
+        $stats = $trancheMap[$appId] ?? [];
+        $row['tranche_count'] = (int) ($stats['tranche_count'] ?? 0);
+        $row['released_count'] = (int) ($stats['released_count'] ?? 0);
+        $row['pending_count'] = (int) ($stats['pending_count'] ?? 0);
+        $row['total_released'] = (float) ($stats['total_released'] ?? 0);
+        $row['disbursement_updated_at'] = (string) ($stats['disbursement_updated_at'] ?? '');
         $approved = (float) ($row['approved_budget'] ?? 0);
         $released = (float) ($row['total_released'] ?? 0);
         $row['balance_pending'] = max(0, round($approved - $released, 2));

@@ -9,6 +9,7 @@ require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-helpers.php';
 require_once __DIR__ . '/../includes/grant-approval-helpers.php';
+require_once __DIR__ . '/../includes/grant-funding-helpers.php';
 
 requireAuth();
 grantRequireViewAccess();
@@ -69,6 +70,9 @@ renderBreadcrumbs($breadcrumbs);
                 <?= smsIcon('file-alt') ?> All Proposals
             </a>
             <?php if ($canManage): ?>
+            <a class="mpl-btn mpl-btn-primary" href="<?= htmlspecialchars(grantBudgetDisbursementUrl()) ?>">
+                <?= smsIcon('money-bill-wave') ?> Budget &amp; Disbursement
+            </a>
             <a class="mpl-btn mpl-btn-ghost" href="<?= BASE_URL ?>/modules/crad/pages/approval-workflows.php">
                 <?= smsIcon('tasks') ?> Approval Workflows
             </a>
