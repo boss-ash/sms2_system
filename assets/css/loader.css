@@ -1,5 +1,5 @@
 /**
- * SMS 2 – Page loader (flat academic style)
+ * SMS 2 – Page loader (simple spinner + fade)
  */
 
 html:not(.sms-app-ready) body.sms-app {
@@ -12,7 +12,10 @@ html:not(.sms-app-ready) body.sms-app {
     z-index: 20000;
     display: grid;
     place-items: center;
-    transition: opacity 0.24s ease, visibility 0.24s ease;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.26s ease, visibility 0.26s ease;
 }
 
 .sms-page-loader.is-leaving {
@@ -22,18 +25,28 @@ html:not(.sms-app-ready) body.sms-app {
 }
 
 .sms-page-loader.is-done {
-    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.sms-page-loader.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 .sms-loader-backdrop {
     position: absolute;
     inset: 0;
-    background: var(--sms-body-bg, #f4f7fb);
-    transition: opacity 0.24s ease;
+    background: color-mix(in srgb, var(--sms-body-bg, #f4f7fb) 92%, transparent);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    transition: opacity 0.26s ease;
 }
 
 [data-theme="dark"] .sms-loader-backdrop {
-    background: var(--sms-body-bg, #0b1224);
+    background: color-mix(in srgb, var(--sms-body-bg, #0b1224) 94%, transparent);
 }
 
 .sms-loader-content {
@@ -42,44 +55,69 @@ html:not(.sms-app-ready) body.sms-app {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    transition: opacity 0.2s ease;
+    gap: 0.85rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 14px;
+    background: var(--sms-surface-elevated, #fff);
+    border: 1px solid var(--sms-border, #e2e8f0);
+    box-shadow: var(--sms-shadow-md, 0 4px 18px rgba(15, 33, 88, 0.11));
+    min-width: 140px;
+}
+
+[data-theme="dark"] .sms-loader-content {
+    background: var(--sms-surface-elevated, #111827);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .sms-loader-spinner {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    border: 2px solid var(--sms-border, #e2e8f0);
+    border: 3px solid color-mix(in srgb, var(--sms-primary, #1e40af) 18%, var(--sms-border, #e2e8f0));
     border-top-color: var(--sms-primary, #1e40af);
-    animation: smsSpin 0.7s linear infinite;
+    animation: smsSpin 0.75s linear infinite;
 }
+
+.sms-loader-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    margin-top: -0.15rem;
+}
+
+.sms-loader-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--sms-primary, #1e40af);
+    opacity: 0.35;
+    animation: smsDotPulse 0.9s ease-in-out infinite;
+}
+
+.sms-loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+.sms-loader-dots span:nth-child(3) { animation-delay: 0.3s; }
 
 @keyframes smsSpin {
     to { transform: rotate(360deg); }
 }
 
+@keyframes smsDotPulse {
+    0%, 80%, 100% { opacity: 0.35; transform: scale(0.85); }
+    40% { opacity: 1; transform: scale(1); }
+}
+
 .sms-loader-label {
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--sms-text-muted, #64748b);
+    letter-spacing: 0.02em;
     min-height: 1em;
-}
-
-html.sms-soft-nav .sms-loader-spinner,
-html.sms-soft-nav .sms-loader-label {
-    opacity: 0;
-    visibility: hidden;
-    animation: none;
-}
-
-html.sms-soft-nav .sms-loader-backdrop {
-    opacity: 0.85;
 }
 
 body.sms-app .sms-wrapper {
     opacity: 0;
-    transition: opacity 0.28s ease;
+    transition: opacity 0.3s ease;
 }
 
 body.sms-app.sms-loaded .sms-wrapper {
@@ -88,13 +126,19 @@ body.sms-app.sms-loaded .sms-wrapper {
 
 @media (prefers-reduced-motion: reduce) {
     .sms-loader-spinner,
+    .sms-loader-dots span,
     body.sms-app .sms-wrapper,
     .sms-page-loader {
         animation: none !important;
         transition-duration: 0.01ms !important;
     }
+
     body.sms-app .sms-wrapper {
         opacity: 1;
+    }
+
+    .sms-loader-dots span {
+        opacity: 0.7;
     }
 }
 
@@ -102,6 +146,7 @@ body.sms-app.sms-loaded .sms-wrapper {
     .sms-page-loader {
         display: none !important;
     }
+
     body.sms-app .sms-wrapper {
         opacity: 1 !important;
     }
