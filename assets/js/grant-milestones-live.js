@@ -276,6 +276,7 @@
             if (milestoneId <= 0) return;
 
             submitting = true;
+            setSaveButtonBusy(true);
             var payload = {
                 milestone_id: milestoneId,
                 due_date: editDueDate ? editDueDate.value : '',
@@ -293,9 +294,10 @@
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     if (!data || !data.success) {
-                        submitting = false;
-                        alert((data && data.message) || 'Update failed.');
-                        return Promise.reject();
+                        var message = (data && data.message) || 'Update failed.';
+                        alert(message);
+                        forceHideLoader();
+                        return Promise.reject(new Error(message));
                     }
 
                     var hasFile = editDocument && editDocument.files && editDocument.files.length > 0;
@@ -315,20 +317,21 @@
                     if (!data) return;
                     if (!data.success) {
                         alert((data && data.message) || 'Document upload failed.');
+                        forceHideLoader();
                         return;
                     }
-                    closeEditDialog();
-                    lastOverviewFp = data.overview_fingerprint || lastOverviewFp;
-                    lastDetailFp = data.detail_fingerprint || lastDetailFp;
-                    if (data.overview) {
-                        updateStats(data.overview);
-                        renderProjectSelect(data.overview);
-                    }
-                    if (data.detail) renderDetail(data.detail);
-                    flashUpdate();
+                    applyMilestoneResponse(data);
                 })
-                .catch(function () {})
-                .finally(function () { submitting = false; });
+                .catch(function (err) {
+                    if (!err || !err.message) {
+                        alert('Milestone update failed.');
+                    }
+                    forceHideLoader();
+                })
+                .finally(function () {
+                    submitting = false;
+                    setSaveButtonBusy(false);
+                });
         });
     }
 
