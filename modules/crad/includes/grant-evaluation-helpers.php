@@ -464,14 +464,14 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
 
         $stmt = $crad->prepare("
             INSERT INTO grant_proposal_evaluations
-                (grant_application_id, evaluator_user_id, evaluator_name,
+                (grant_application_id, proposal_version, evaluator_user_id, evaluator_name,
                  score_rationale, score_methodology, score_budget,
                  score_team_capability, score_compliance, total_score,
                  comments, recommendations, required_corrections,
                  recommendation, revision_reason,
                  submitted_at, updated_at)
             VALUES
-                (?, ?, ?,
+                (?, ?, ?, ?,
                  ?, ?, ?,
                  ?, ?, ?,
                  ?, ?, ?,
@@ -480,6 +480,7 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
         ");
         $stmt->execute([
             $applicationId,
+            $proposalVersion,
             $evaluatorUserId,
             $evaluatorName,
             $scores['score_rationale'],
@@ -501,14 +502,16 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
              WHERE id = ?
         ")->execute([$newStatus, $applicationId]);
 
-        grantNotifyApplicantEvaluationDecision(
-            $crad,
-            $application,
-            $recommendation,
-            $total,
-            $evaluatorName,
-            $revisionReason !== '' ? $revisionReason : null
-        );
+        if (in_array($recommendation, ['disapprove', 'require_revisions'], true)) {
+            grantNotifyApplicantEvaluationDecision(
+                $crad,
+                $application,
+                $recommendation,
+                $total,
+                $evaluatorName,
+                $revisionReason !== '' ? $revisionReason : null
+            );
+        }
 
         $crad->commit();
 
