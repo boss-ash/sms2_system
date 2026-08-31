@@ -587,22 +587,24 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             var recommendation = document.querySelector('input[name="recommendation"]:checked');
-            if (!recommendation) {
-                alertEl.style.display = '';
-                alertEl.style.background = 'rgba(239,68,68,.08)';
-                alertEl.style.color = '#b91c1c';
-                alertEl.textContent = 'Please select a recommendation.';
-                return;
-            }
-            if (recommendation.value === 'require_revisions') {
-                var reason = revisionInput ? revisionInput.value.trim() : '';
-                if (!reason) {
+            if (!isAdviserEval) {
+                if (!recommendation) {
                     alertEl.style.display = '';
                     alertEl.style.background = 'rgba(239,68,68,.08)';
                     alertEl.style.color = '#b91c1c';
-                    alertEl.textContent = 'Revision reason is required when selecting Require Revisions.';
-                    if (revisionInput) revisionInput.focus();
+                    alertEl.textContent = 'Please select a recommendation.';
                     return;
+                }
+                if (recommendation.value === 'require_revisions') {
+                    var reason = revisionInput ? revisionInput.value.trim() : '';
+                    if (!reason) {
+                        alertEl.style.display = '';
+                        alertEl.style.background = 'rgba(239,68,68,.08)';
+                        alertEl.style.color = '#b91c1c';
+                        alertEl.textContent = 'Revision reason is required when selecting Require Revisions.';
+                        if (revisionInput) revisionInput.focus();
+                        return;
+                    }
                 }
             }
 

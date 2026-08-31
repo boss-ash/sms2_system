@@ -21,7 +21,14 @@
     function fingerprint(queue) {
         if (!Array.isArray(queue)) return '';
         return queue.map(function (r) {
-            return [r.id, r.status, r.my_evaluation_id, r.my_total_score, r.updated_at].join(':');
+            return [
+                r.id,
+                r.status,
+                r.my_evaluation_id,
+                r.my_total_score,
+                r.workflow_updated_at || r.updated_at,
+                r.committee_total_score
+            ].join(':');
         }).join('|');
     }
 
