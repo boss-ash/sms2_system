@@ -544,6 +544,10 @@ $MODULES = [
                 'reviewer-evaluation',
                 'approval-workflows',
             ],
+            'Financial & Tracking' => [
+                'approved-funded',
+                'budget-disbursement',
+            ],
             'Research Documents' => [
                 'documentation-publication-management',
                 'final-manuscript-review',
@@ -568,6 +572,8 @@ $MODULES = [
             ['slug' => 'proposals-applications', 'title' => 'Proposals & Applications'],
             ['slug' => 'reviewer-evaluation', 'title' => 'Reviewer Evaluation'],
             ['slug' => 'approval-workflows', 'title' => 'Approval Workflows'],
+            ['slug' => 'approved-funded', 'title' => 'Approved & Funded'],
+            ['slug' => 'budget-disbursement', 'title' => 'Budget & Disbursement'],
             ['slug' => 'documentation-publication-management', 'title' => 'Documentation & Publication Management'],
             ['slug' => 'final-manuscript-review', 'title' => 'Final Manuscript Review'],
             ['slug' => 'revision-compliance', 'title' => 'Revision & Compliance'],

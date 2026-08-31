@@ -537,6 +537,7 @@ function requireModuleAccess(string $moduleKey): void
             '/modules/crad/pages/revisions-requested.php',
             '/modules/crad/pages/revise-proposal.php',
             '/modules/crad/pages/approved-funded.php',
+            '/modules/crad/pages/budget-disbursement.php',
         ];
         $grantReviewerPages = [
             '/modules/crad/pages/reviewer-evaluation.php',
