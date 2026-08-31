@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
-"""Upload SMS2 deploy staging folder to InfinityFree via FTPS."""
 import os
 import sys
 from ftplib import FTP_TLS, error_perm
 
 HOSTS = ['ftpupload.net', 'ftp.epizy.com']
 USER = 'if0_42794375'
-PASS = sys.argv[1] if len(sys.argv) > 1 else os.environ.get('SMS2_FTP_PASS', '')
+PASS = 'HVfvZIn3gF8RfyR'
 LOCAL = r'C:\xampp\htdocs\sms2_deploy_staging'
 REMOTE_ROOT = '/htdocs'
-
-if not PASS:
-    print('Usage: python ftp-upload.py PASSWORD')
-    sys.exit(1)
 
 def upload_tree(ftp, local_dir, remote_dir):
     try:
@@ -20,7 +15,7 @@ def upload_tree(ftp, local_dir, remote_dir):
     except error_perm:
         pass
     ftp.cwd(remote_dir)
-    for name in os.listdir(local_dir):
+    for name in sorted(os.listdir(local_dir)):
         local_path = os.path.join(local_dir, name)
         if os.path.isdir(local_path):
             upload_tree(ftp, local_path, name)
@@ -34,7 +29,7 @@ for host in HOSTS:
     print(f'Trying {host}...')
     try:
         ftp = FTP_TLS()
-        ftp.connect(host, 21, timeout=30)
+        ftp.connect(host, 21, timeout=60)
         ftp.auth()
         ftp.prot_p()
         ftp.login(USER, PASS)
