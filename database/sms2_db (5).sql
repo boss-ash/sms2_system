@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 28, 2026 at 12:10 PM
+-- Generation Time: Aug 31, 2026 at 06:06 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -1857,7 +1857,144 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `user_name`, `role_key`, `action`,
 (1822, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36', '2026-08-28 16:38:29'),
 (1823, 3, 'CRAD Officer', 'crad_officer', 'update', 'crad', 'Approved final manuscript for research group #63', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36', '2026-08-28 16:39:02'),
 (1824, 3, 'CRAD Officer', 'crad_officer', 'create', 'crad', 'Created publication record for research group #63', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36', '2026-08-28 16:39:18'),
-(1825, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-08-28 18:03:13');
+(1825, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-08-28 18:03:13'),
+(1826, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 04:42:23'),
+(1827, 9, 'Student User', 'student', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 04:43:24'),
+(1828, 9, 'Student User', 'student', 'login', 'student_portal', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 04:45:05'),
+(1829, 9, 'Student User', 'student', 'logout', 'student_portal', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 04:54:30'),
+(1830, 9, 'Student User', 'student', 'login', 'student_portal', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 04:55:02'),
+(1831, 3, 'CRAD Officer', 'crad_officer', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:14:39'),
+(1832, 9, 'Student User', 'student', 'login', 'student_portal', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:15:06'),
+(1833, 54, 'Dr. Roberto M. Santos', 'adviser', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:16:41'),
+(1834, 54, 'Dr. Roberto M. Santos', 'adviser', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:21:00'),
+(1835, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:21:22'),
+(1836, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:21:56'),
+(1837, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:22:17'),
+(1838, 3, 'CRAD Officer', 'crad_officer', 'create', 'crad', 'Generated title approval research group number: RG-2026-001', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:22:34'),
+(1839, 3, 'CRAD Officer', 'crad_officer', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:25:58'),
+(1840, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:26:12'),
+(1841, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:26:33'),
+(1842, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:27:01'),
+(1843, 3, 'CRAD Officer', 'crad_officer', 'assign', 'crad', 'Assigned coordinator \"Mrs. Kris Guevarra\" to research group RG-2026-001', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:27:08'),
+(1844, 3, 'CRAD Officer', 'crad_officer', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:27:23'),
+(1845, 54, 'Dr. Roberto M. Santos', 'adviser', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:27:38'),
+(1846, 9, 'Student User', 'student', 'create', 'student_portal', 'Chapter 1 Version 1 submitted for grammarian evaluation', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:30:20'),
+(1847, 9, 'Student User', 'student', 'create', 'student_portal', 'Chapter 2 Version 1 submitted for grammarian evaluation', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:30:27'),
+(1848, 9, 'Student User', 'student', 'create', 'student_portal', 'Chapter 3 Version 1 submitted for grammarian evaluation', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:30:33'),
+(1849, 54, 'Dr. Roberto M. Santos', 'adviser', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:30:57'),
+(1850, 475, 'Grammarian', 'grammarian', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:31:13'),
+(1851, 475, 'Grammarian', 'grammarian', 'update', 'faculty', 'Started review for Chapter 1 Version 1', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:31:36'),
+(1852, 475, 'Grammarian', 'grammarian', 'update', 'faculty', 'Submitted evaluation for Chapter 1 Version 1', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:32:02'),
+(1853, 475, 'Grammarian', 'grammarian', 'update', 'faculty', 'Started review for Chapter 2 Version 1', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:32:07'),
+(1854, 475, 'Grammarian', 'grammarian', 'update', 'faculty', 'Submitted evaluation for Chapter 2 Version 1', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:32:16'),
+(1855, 475, 'Grammarian', 'grammarian', 'update', 'faculty', 'Started review for Chapter 3 Version 1', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:32:23'),
+(1856, 475, 'Grammarian', 'grammarian', 'update', 'faculty', 'Submitted evaluation for Chapter 3 Version 1', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:32:32'),
+(1857, 475, 'Grammarian', 'grammarian', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:33:14'),
+(1858, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:33:47'),
+(1859, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:34:49'),
+(1860, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:35:04'),
+(1861, 116, 'Research Director', 'research_director', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:35:15'),
+(1862, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:35:24'),
+(1863, 116, 'Research Director', 'research_director', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:35:56'),
+(1864, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:36:13'),
+(1865, 116, 'Research Director', 'research_director', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:37:03'),
+(1866, 475, 'Grammarian', 'grammarian', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:37:15'),
+(1867, 475, 'Grammarian', 'grammarian', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:47:35'),
+(1868, 475, 'Grammarian', 'grammarian', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:48:02'),
+(1869, 475, 'Grammarian', 'grammarian', 'view', 'faculty', 'Opened Security Settings', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:48:16'),
+(1870, 475, 'Grammarian', 'grammarian', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:48:31'),
+(1871, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:48:42'),
+(1872, 3, 'CRAD Officer', 'crad_officer', 'view', 'crad', 'Opened Security Settings', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:48:51'),
+(1873, 9, 'Student User', 'student', 'logout', 'student_portal', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:50:00'),
+(1874, 3, 'CRAD Officer', 'crad_officer', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:50:17'),
+(1875, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 05:50:26'),
+(1876, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:03:20'),
+(1877, 475, 'Grammarian', 'grammarian', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:03:35'),
+(1878, 475, 'Grammarian', 'grammarian', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:03:51'),
+(1879, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:03:59'),
+(1880, 116, 'Research Director', 'research_director', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:04:33'),
+(1881, 9, 'Student User', 'student', 'login', 'student_portal', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:06:22'),
+(1882, 475, 'Grammarian', 'grammarian', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:07:50'),
+(1883, 475, 'Grammarian', 'grammarian', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:07:59'),
+(1884, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:08:17'),
+(1885, 40, 'Mrs. Kris Guevarra', 'research_coordinator', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:08:39'),
+(1886, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:09:00'),
+(1887, 116, 'Research Director', 'research_director', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:10:46'),
+(1888, 491, 'Dr. Jobert Valentino', 'panel', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:11:10'),
+(1889, 491, 'Dr. Jobert Valentino', 'panel', 'create', 'faculty', 'Submitted Pre-Oral Defense evaluation for schedule #48', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:11:32'),
+(1890, 491, 'Dr. Jobert Valentino', 'panel', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:12:11'),
+(1891, 492, 'Dr. Jonathan Estrada', 'panel', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:12:53'),
+(1892, 492, 'Dr. Jonathan Estrada', 'panel', 'create', 'faculty', 'Submitted Pre-Oral Defense evaluation for schedule #48', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:13:13'),
+(1893, 492, 'Dr. Jonathan Estrada', 'panel', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:13:25'),
+(1894, 493, 'Dr. Michelle Guevarra', 'panel', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:13:43'),
+(1895, 493, 'Dr. Michelle Guevarra', 'panel', 'create', 'faculty', 'Submitted Pre-Oral Defense evaluation for schedule #48', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:14:04'),
+(1896, 493, 'Dr. Michelle Guevarra', 'panel', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:14:16'),
+(1897, 54, 'Dr. Roberto M. Santos', 'adviser', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:14:46'),
+(1898, 54, 'Dr. Roberto M. Santos', 'adviser', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:16:45'),
+(1899, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:16:57'),
+(1900, 3, 'CRAD Officer', 'crad_officer', 'update', 'crad', 'Approved final manuscript submission #4', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:17:25'),
+(1901, 3, 'CRAD Officer', 'crad_officer', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:17:38'),
+(1902, 491, 'Dr. Jobert Valentino', 'panel', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:18:13'),
+(1903, 491, 'Dr. Jobert Valentino', 'panel', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:18:19'),
+(1904, 116, 'Research Director', 'research_director', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:18:29'),
+(1905, 116, 'Research Director', 'research_director', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:22:43'),
+(1906, 491, 'Dr. Jobert Valentino', 'panel', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:27:41'),
+(1907, 491, 'Dr. Jobert Valentino', 'panel', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:28:05'),
+(1908, 492, 'Dr. Jonathan Estrada', 'panel', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:28:19'),
+(1909, 492, 'Dr. Jonathan Estrada', 'panel', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:30:59'),
+(1910, 493, 'Dr. Michelle Guevarra', 'panel', 'login', 'faculty', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:31:20'),
+(1911, 493, 'Dr. Michelle Guevarra', 'panel', 'logout', 'faculty', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:31:51'),
+(1912, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:32:06'),
+(1913, 3, 'CRAD Officer', 'crad_officer', 'update', 'crad', 'Approved final manuscript for research group #64', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:32:22'),
+(1914, 3, 'CRAD Officer', 'crad_officer', 'create', 'crad', 'Created publication record for research group #64', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:32:29'),
+(1915, 3, 'CRAD Officer', 'crad_officer', 'update', 'crad', 'Updated publication record #6', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:33:01'),
+(1916, 9, 'Student User', 'student', 'logout', 'student_portal', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:57:26'),
+(1917, 1, 'Super Admin', 'superadmin', 'login', 'user-management', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 06:57:52'),
+(1918, NULL, 'System', 'admin', 'seed', 'System', 'Official role accounts seeded', 'cli', NULL, '2026-08-31 07:04:36');
+INSERT INTO `activity_logs` (`id`, `user_id`, `user_name`, `role_key`, `action`, `module_key`, `detail`, `ip_address`, `user_agent`, `created_at`) VALUES
+(1919, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user reviewcommittee', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:21:18'),
+(1920, 1, 'Super Admin', 'superadmin', 'logout', 'user-management', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:22:38'),
+(1921, 766, 'Review Committee Member', 'review_committee', 'login', 'crad_grant', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:22:58'),
+(1922, 766, 'Review Committee Member', 'review_committee', 'logout', 'crad_grant', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:45:34'),
+(1923, 9, 'Student User', 'student', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:46:13'),
+(1924, 9, 'Student User', 'student', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:46:26'),
+(1925, 9, 'Student User', 'student', 'lockout', 'System', 'Login locked after failed attempts', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:47:04'),
+(1926, 9, 'Student User', 'student', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:47:04'),
+(1927, 1, 'Super Admin', 'superadmin', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:47:39'),
+(1928, 3, 'CRAD Officer', 'crad_officer', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:48:05'),
+(1929, 3, 'CRAD Officer', 'crad_officer', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:48:18'),
+(1930, 1, 'Super Admin', 'superadmin', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:50:07'),
+(1931, NULL, 'System', 'admin', 'seed', 'System', 'Official role accounts seeded', 'cli', NULL, '2026-08-31 07:50:20'),
+(1932, 1, 'Super Admin', 'superadmin', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:51:14'),
+(1933, 1, 'Super Admin', 'superadmin', 'login', 'user-management', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:51:21'),
+(1934, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user superadmin', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:53:31'),
+(1935, 1, 'Super Admin', 'superadmin', 'logout', 'user-management', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:53:39'),
+(1936, 1, 'Super Admin', 'superadmin', 'login', 'user-management', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:53:51'),
+(1937, 1, 'Super Admin', 'superadmin', 'logout', 'user-management', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:53:57'),
+(1938, 9, 'Student User', 'student', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:54:11'),
+(1939, 1, 'Super Admin', 'superadmin', 'login', 'user-management', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:54:34'),
+(1940, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user s230000001', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:55:08'),
+(1941, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user s230000001', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:55:09'),
+(1942, 1, 'Super Admin', 'superadmin', 'logout', 'user-management', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:55:12'),
+(1943, 9, 'Student User', 'student', 'login', 'student_portal', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:55:25'),
+(1944, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 07:55:40'),
+(1945, 3, 'CRAD Officer', 'crad_officer', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:01:34'),
+(1946, 1, 'Super Admin', 'superadmin', 'login', 'user-management', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:01:48'),
+(1947, 1, 'Super Admin', 'superadmin', 'logout', 'user-management', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:02:24'),
+(1948, 3, 'CRAD Officer', 'crad_officer', 'login', 'crad', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:02:33'),
+(1949, 3, 'CRAD Officer', 'crad_officer', 'logout', 'crad', 'Logged out', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:03:27'),
+(1950, 766, 'Review Committee Member', 'review_committee', 'login_failed', 'System', 'Invalid password', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:03:43'),
+(1951, 1, 'Super Admin', 'superadmin', 'login', 'user-management', 'Logged in successfully', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:04:01'),
+(1952, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user researchcoordinator', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:04:22'),
+(1953, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user reviewcommittee', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:04:41'),
+(1954, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user rsantos', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:04:55'),
+(1955, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user jobert.valentino', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:05:01'),
+(1956, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user michelle.guevarra', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:05:52'),
+(1957, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user michelle.guevarra', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:05:53'),
+(1958, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user jonathan.estrada', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:06:01'),
+(1959, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user jobert.valentino', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:06:08'),
+(1960, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user grammarian', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:06:20'),
+(1961, 1, 'Super Admin', 'superadmin', 'update', 'user-management', 'Updated user researchdirector', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 OPR/135.0.0.0', '2026-08-31 08:06:29');
 
 -- --------------------------------------------------------
 
@@ -1956,7 +2093,8 @@ INSERT INTO `roles` (`id`, `role_key`, `label`, `description`, `is_system`, `cre
 (384, 'research_grant', 'CRAD Officer', 'Research grant management access', 1, '2026-08-10 20:01:49'),
 (770, 'grammarian', 'Grammarian', 'Research grammar and manuscript evaluation account', 1, '2026-08-14 11:06:49'),
 (788, 'panel', 'Panel Member', 'Research defense panel account', 1, '2026-08-15 17:07:16'),
-(800, 'sms_admin', 'Admin', 'General administrator account', 1, '2026-08-18 00:38:50');
+(800, 'sms_admin', 'Admin', 'General administrator account', 1, '2026-08-18 00:38:50'),
+(901, 'review_committee', 'Review Committee', 'Grant proposal review and rubric evaluation', 1, '2026-08-31 07:04:35');
 
 -- --------------------------------------------------------
 
@@ -1977,35 +2115,35 @@ CREATE TABLE `role_permissions` (
 --
 
 INSERT INTO `role_permissions` (`id`, `role_key`, `module_key`, `granted`, `updated_at`) VALUES
-(194, 'superadmin', 'user-management', 1, '2026-08-08 22:07:16'),
-(195, 'superadmin', 'student_portal', 0, '2026-08-08 22:07:21'),
-(196, 'admission', 'enrollment', 1, '2026-08-08 22:07:16'),
-(197, 'registrar', 'registrar', 1, '2026-08-08 22:07:16'),
-(198, 'registrar', 'curriculum', 1, '2026-08-08 22:07:16'),
-(199, 'registrar', 'scheduling', 1, '2026-08-08 22:07:16'),
-(200, 'finance', 'payment', 1, '2026-08-08 22:07:16'),
-(201, 'hr', 'faculty', 1, '2026-08-08 22:07:16'),
-(202, 'adviser', 'faculty', 1, '2026-08-08 22:07:16'),
-(204, 'it_office', 'lms', 1, '2026-08-08 22:07:16'),
-(205, 'osa', 'cocurricular', 1, '2026-08-08 22:07:16'),
-(206, 'qa', 'accreditation', 1, '2026-08-08 22:07:16'),
-(207, 'crad_officer', 'crad', 1, '2026-08-08 22:07:16'),
-(208, 'research_coordinator', 'crad', 1, '2026-08-08 22:07:16'),
-(209, 'student', 'student_portal', 1, '2026-08-08 22:07:16'),
-(247, 'research_director', 'faculty', 1, '2026-08-09 19:31:14'),
-(353, 'research_grant', 'crad_grant', 1, '2026-08-10 20:01:49'),
-(602, 'grammarian', 'faculty', 1, '2026-08-14 11:06:49'),
-(618, 'panel', 'faculty', 1, '2026-08-15 17:07:16'),
-(619, 'sms_admin', 'enrollment', 1, '2026-08-18 00:38:50'),
-(620, 'sms_admin', 'registrar', 1, '2026-08-18 00:38:50'),
-(621, 'sms_admin', 'curriculum', 1, '2026-08-18 00:38:50'),
-(622, 'sms_admin', 'accreditation', 1, '2026-08-18 00:38:50'),
-(623, 'sms_admin', 'payment', 1, '2026-08-18 00:38:50'),
-(624, 'sms_admin', 'faculty', 1, '2026-08-18 00:38:50'),
-(625, 'sms_admin', 'scheduling', 1, '2026-08-18 00:38:50'),
-(626, 'sms_admin', 'cocurricular', 1, '2026-08-18 00:38:50'),
-(627, 'sms_admin', 'lms', 1, '2026-08-18 00:38:50'),
-(628, 'sms_admin', 'crad', 1, '2026-08-18 00:38:50');
+(818, 'superadmin', 'user-management', 1, '2026-08-31 07:50:18'),
+(819, 'admission', 'enrollment', 1, '2026-08-31 07:50:18'),
+(820, 'registrar', 'registrar', 1, '2026-08-31 07:50:18'),
+(821, 'registrar', 'curriculum', 1, '2026-08-31 07:50:18'),
+(822, 'registrar', 'scheduling', 1, '2026-08-31 07:50:18'),
+(823, 'crad_officer', 'crad', 1, '2026-08-31 07:50:18'),
+(824, 'research_coordinator', 'crad', 1, '2026-08-31 07:50:18'),
+(825, 'research_director', 'faculty', 1, '2026-08-31 07:50:18'),
+(826, 'grammarian', 'faculty', 1, '2026-08-31 07:50:18'),
+(827, 'review_committee', 'crad_grant', 1, '2026-08-31 07:50:19'),
+(828, 'panel', 'faculty', 1, '2026-08-31 07:50:19'),
+(829, 'finance', 'payment', 1, '2026-08-31 07:50:19'),
+(830, 'osa', 'cocurricular', 1, '2026-08-31 07:50:19'),
+(831, 'it_office', 'lms', 1, '2026-08-31 07:50:19'),
+(832, 'qa', 'accreditation', 1, '2026-08-31 07:50:19'),
+(833, 'hr', 'faculty', 1, '2026-08-31 07:50:19'),
+(834, 'student', 'student_portal', 1, '2026-08-31 07:50:19'),
+(835, 'sms_admin', 'enrollment', 1, '2026-08-31 07:51:28'),
+(836, 'sms_admin', 'registrar', 1, '2026-08-31 07:51:28'),
+(837, 'sms_admin', 'curriculum', 1, '2026-08-31 07:51:28'),
+(838, 'sms_admin', 'accreditation', 1, '2026-08-31 07:51:28'),
+(839, 'sms_admin', 'payment', 1, '2026-08-31 07:51:28'),
+(840, 'sms_admin', 'faculty', 1, '2026-08-31 07:51:28'),
+(841, 'sms_admin', 'scheduling', 1, '2026-08-31 07:51:28'),
+(842, 'sms_admin', 'cocurricular', 1, '2026-08-31 07:51:28'),
+(843, 'sms_admin', 'lms', 1, '2026-08-31 07:51:28'),
+(844, 'sms_admin', 'crad', 1, '2026-08-31 07:51:28'),
+(845, 'adviser', 'faculty', 1, '2026-08-31 07:51:29'),
+(849, 'research_grant', 'crad_grant', 1, '2026-08-31 07:51:29');
 
 -- --------------------------------------------------------
 
@@ -2135,25 +2273,26 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `full_name`, `role_key`, `student_id`, `status`, `must_change_password`, `failed_login_attempts`, `locked_until`, `password_changed_at`, `last_login_at`, `last_seen_at`, `last_login_ip`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 'superadmin', 'kennethabejuela0308@gmail.com', '$2y$10$/RGwqzpAEAaLyP7pVvhRKeuDDpmD3HIa.IIRuiBH7.Pw7UUiLD8V.', 'Super Admin', 'superadmin', NULL, 'active', 0, 0, NULL, '2026-08-09 19:46:23', '2026-08-15 17:10:42', NULL, '::1', NULL, '2026-07-22 22:53:59', '2026-08-15 17:16:11'),
-(2, 'registrar', 'registrar@bestlink.edu.ph', '$2y$10$QSecEV1xm5HFRWv2awHzTuqi2pOS4v1dhBROvrCxKjVXoZHMbBov.', 'Registrar', 'registrar', NULL, 'active', 0, 0, NULL, '2026-08-08 22:01:25', '2026-08-08 22:06:54', NULL, '::1', NULL, '2026-07-22 22:53:59', '2026-08-08 22:06:59'),
-(3, 'cradofficer', 'cradofficer@bestlink.ph', '$2y$10$MpwtxHnKofWTxV5/axRiPuudxLEFIdLJChvSoykU9poFiH/W9wRPK', 'CRAD Officer', 'crad_officer', NULL, 'active', 0, 0, NULL, '2026-08-06 13:31:50', '2026-08-28 18:03:13', '2026-08-28 18:10:08', '::1', NULL, '2026-07-22 22:53:59', '2026-08-28 18:10:08'),
-(4, 'finance', 'monvictortesiorna@gmail.com', '$2y$10$mOPKz95hA/OlTNHGzzgLEuvYqMBNAE1RdQFThECQjfv94o.RbvIZq', 'Finance', 'finance', NULL, 'active', 0, 0, NULL, '2026-08-06 20:20:39', '2026-08-11 17:31:31', NULL, '::1', NULL, '2026-07-22 22:54:00', '2026-08-11 17:31:39'),
-(5, 'studentaffairs', 'studentaffairs@bestlink.edu.ph', '$2y$10$QSPLuT09VAB/X8J02CRi3erPEuhgAR2fKNCg.YLaOY.o2mnRuULii', 'Student Affairs', 'osa', NULL, 'active', 0, 0, NULL, '2026-08-08 01:38:23', NULL, NULL, NULL, NULL, '2026-07-22 22:54:00', '2026-08-08 01:38:23'),
-(6, 'itofficer', 'itofficer@bestlink.edu.ph', '$2y$10$fIFFgaSnSssf4ZdaYupnZ.fzX6dYDfE7escqc/GMedxVZUHCaqCPe', 'IT Officer', 'it_office', NULL, 'active', 0, 0, NULL, '2026-07-22 22:54:00', NULL, NULL, NULL, NULL, '2026-07-22 22:54:00', '2026-07-22 22:54:00'),
-(7, 'qualityassurance', 'qualityassurance@bestlink.edu.ph', '$2y$10$Bm/Te5m0uFyTRDhDDV.lf.9HuUEe7qIUOfZtHXF2eufIIXL1N3IVC', 'Quality Assurance', 'qa', NULL, 'active', 0, 0, NULL, '2026-07-22 22:54:00', NULL, NULL, NULL, NULL, '2026-07-22 22:54:00', '2026-07-22 22:54:00'),
-(8, 'dean', 'dean@bestlink.edu.ph', '$2y$10$Vnny70aSsPiimmO3/u6WKelc2VvQaKgSOujmZJP4C7q3IUFsUwfcy', 'Dean', 'hr', NULL, 'active', 0, 0, NULL, '2026-08-07 14:10:53', '2026-08-07 14:11:03', NULL, '::1', NULL, '2026-07-22 22:54:00', '2026-08-08 17:15:19'),
-(9, 's230000001', 'kenlangmalakas0308@gmail.com', '$2y$10$E0IiZOWMscnUfdX8H7gxt.5YzIkUqLK.qn07WF9MCA0StJhToFn2q', 'Student User', 'student', 'S230000001', 'active', 0, 0, NULL, '2026-08-06 13:17:16', '2026-08-28 16:26:10', '2026-08-28 16:41:25', '::1', NULL, '2026-07-22 22:54:00', '2026-08-28 16:41:25'),
-(20, 'admission', 'admission@bestlink.edu.ph', '$2y$10$pF3fNVXy1Nuk01exnJobbO6lilErbTYkcG9AECZ53XNQIHA33iMv2', 'Admission', 'admission', NULL, 'active', 0, 0, NULL, '2026-08-08 17:25:20', NULL, NULL, NULL, NULL, '2026-08-08 17:25:20', '2026-08-08 17:25:20'),
-(40, 'researchcoordinator', 'researchcoordinator@bestlink.edu.ph', '$2y$10$kr8C7.GCqXURUm8BWUNg/.98dRB8HESD90LRGb/LA3iCndzwl9Qa6', 'Mrs. Kris Guevarra', 'research_coordinator', NULL, 'active', 0, 0, NULL, '2026-08-08 18:22:59', '2026-08-28 16:30:58', NULL, '::1', NULL, '2026-08-08 18:09:48', '2026-08-28 16:31:16'),
-(54, 'rsantos', 'rsantos@bestlink.edu.ph', '$2y$10$0XN5yHlMMXzk8nMrP9xqeusk0lcTiH0Y29HtbW3hMK3hbgaMWj3FS', 'Dr. Roberto M. Santos', 'adviser', NULL, 'active', 0, 0, NULL, '2026-08-08 21:43:02', '2026-08-28 16:33:38', NULL, '::1', NULL, '2026-08-08 21:35:14', '2026-08-28 16:34:48'),
-(116, 'researchdirector', 'researchdirector@bestlink.edu.ph', '$2y$10$KO2qqc52TXijFqOqzaA52.VuAXrqaO71S6Jp0u6YvpyxFe50BoCo.', 'Research Director', 'research_director', NULL, 'active', 0, 0, NULL, '2026-08-09 19:48:31', '2026-08-28 16:36:01', NULL, '::1', NULL, '2026-08-09 19:31:14', '2026-08-28 16:37:10'),
+(1, 'superadmin', 'superadmin@bestlink.edu.ph', '$2y$10$yeuumNmFTLjaAsv8N8hNu.QgOpg9DlrTiKrbWet2Q01jtvUasOfAW', 'Super Admin', 'superadmin', NULL, 'active', 0, 0, NULL, '2026-08-31 07:53:31', '2026-08-31 08:04:01', '2026-09-01 00:06:19', '::1', NULL, '2026-07-22 22:53:59', '2026-08-31 08:06:19'),
+(2, 'registrar', 'registrar@bestlink.edu.ph', '$2y$10$/HmOuAP54dAuUkNOyNJo/e2GwrAszJqpF0sQmGvjofAtM/.6tcp.m', 'Registrar', 'registrar', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:19', '2026-08-08 22:06:54', NULL, '::1', NULL, '2026-07-22 22:53:59', '2026-08-31 07:50:19'),
+(3, 'cradofficer', 'cradofficer@bestlink.edu.ph', '$2y$10$WZfe.MOXEjl8iS7hTaT/D.K7glWjpm3V8BmTZbbxmXPI9FectXuPq', 'CRAD Officer', 'crad_officer', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:19', '2026-08-31 08:02:33', NULL, '::1', NULL, '2026-07-22 22:53:59', '2026-08-31 08:03:27'),
+(4, 'finance', 'finance@bestlink.edu.ph', '$2y$10$ryCgB4R4g9MkgK5wBln8WO279xeqhztZIqEgUCEOpDMyA2wXsmkyW', 'Finance', 'finance', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:19', '2026-08-11 17:31:31', NULL, '::1', NULL, '2026-07-22 22:54:00', '2026-08-31 07:50:19'),
+(5, 'studentaffairs', 'studentaffairs@bestlink.edu.ph', '$2y$10$ykS9zsSeg8ESbJDrnyaixuRg.OYKWUljfEzgDhwBWsn4MYjdRR9O2', 'Student Affairs', 'osa', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:19', NULL, NULL, NULL, NULL, '2026-07-22 22:54:00', '2026-08-31 07:50:19'),
+(6, 'itofficer', 'itofficer@bestlink.edu.ph', '$2y$10$h1GQBrr0K5SM8whZCT2QxOmvpIN2aPKslctCSX3VMflxoiHVIdWGC', 'IT Officer', 'it_office', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:19', NULL, NULL, NULL, NULL, '2026-07-22 22:54:00', '2026-08-31 07:50:19'),
+(7, 'qualityassurance', 'qualityassurance@bestlink.edu.ph', '$2y$10$cqKm0cN1jMdxpdS5l3yee.ygI3KG05tRBGw5cyagSwNFT.6YaytVq', 'Quality Assurance', 'qa', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:20', NULL, NULL, NULL, NULL, '2026-07-22 22:54:00', '2026-08-31 07:50:20'),
+(8, 'dean', 'dean@bestlink.edu.ph', '$2y$10$WU3FSM1vVIz3HqzXEHAWHOdKlvImfKYlOiGSd7r1XWIgF4IVJdtci', 'Dean', 'hr', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:20', '2026-08-07 14:11:03', NULL, '::1', NULL, '2026-07-22 22:54:00', '2026-08-31 07:50:20'),
+(9, 's230000001', 's230000001@bestlink.edu.ph', '$2y$10$oFkiHM6jHKgiRWylpzl.7OiCMx627rzLUmUbyQhZYQQ63YgGq/gsy', 'Student User', 'student', 'S230000001', 'active', 0, 0, NULL, '2026-08-31 07:55:09', '2026-08-31 07:55:25', '2026-09-01 00:06:38', '::1', NULL, '2026-07-22 22:54:00', '2026-08-31 08:06:38'),
+(20, 'admission', 'admission@bestlink.edu.ph', '$2y$10$1M./oyAWOwzHhIjWoxGCWu5wm/6F/Jc3bzmYeF7hLt/jnhzg6KW9u', 'Admission', 'admission', NULL, 'active', 0, 0, NULL, '2026-08-31 07:50:19', NULL, NULL, NULL, NULL, '2026-08-08 17:25:20', '2026-08-31 07:50:19'),
+(40, 'researchcoordinator', 'researchcoordinator@bestlink.edu.ph', '$2y$10$f6AGY/ZDFdykQTCiSK5YYePxBGti0SMMIqIOBuLU0OtnNY6Xwpcn2', 'Mrs. Kris Guevarra', 'research_coordinator', NULL, 'active', 0, 0, NULL, '2026-08-31 08:04:22', '2026-08-31 06:08:17', NULL, '::1', NULL, '2026-08-08 18:09:48', '2026-08-31 08:04:22'),
+(54, 'rsantos', 'rsantos@bestlink.edu.ph', '$2y$10$8K5JenMWtmwLwKeqq2086.AXlEED4PzOs/BZvilw.zVzq2Wdc0M.u', 'Dr. Roberto M. Santos', 'adviser', NULL, 'active', 0, 0, NULL, '2026-08-31 08:04:55', '2026-08-31 06:14:46', NULL, '::1', NULL, '2026-08-08 21:35:14', '2026-08-31 08:04:55'),
+(116, 'researchdirector', 'research.director@bestlink.edu.ph', '$2y$10$xyO2oPPFEo9x3xs.Jpx12.TyHHtvsiniPa7/qVH6AIiQI.v5O14ZK', 'Research Director', 'research_director', NULL, 'active', 0, 0, NULL, '2026-08-31 08:06:29', '2026-08-31 06:18:29', NULL, '::1', NULL, '2026-08-09 19:31:14', '2026-08-31 08:06:29'),
 (222, 'researchgrant', 'researchgrant@bestlink.edu.ph', '$2y$10$Kmx3XLgjIdLL3S4rP0Bs.uKL0oqNZyDRN4DpDwhtbYc249mAcYx8i', 'Research Grant', 'research_grant', NULL, 'active', 0, 0, NULL, '2026-08-10 20:07:43', '2026-08-13 08:34:27', NULL, '::1', NULL, '2026-08-10 20:01:49', '2026-08-13 08:34:35'),
-(475, 'grammarian', 'grammarian@bestlink.edu.ph', '$2y$10$fOWrKtM88k6moYiEZ71Bw.LV3FKzyuJocg7Ml5iW0G26hf8CkpebK', 'Grammarian', 'grammarian', NULL, 'active', 0, 0, NULL, '2026-08-14 11:08:15', '2026-08-28 16:29:53', NULL, '::1', NULL, '2026-08-14 11:06:49', '2026-08-28 16:30:52'),
-(491, 'jobert.valentino', 'jobertvalentino@bestlink.edu.ph', '$2y$10$1r/4Wf8PoTZ.OcKHzzPCA.UK8B6cNZ8l9VDXCeIjiE/iWklRjl...', 'Dr. Jobert Valentino', 'panel', NULL, 'active', 0, 0, NULL, '2026-08-15 17:12:05', '2026-08-28 16:37:17', NULL, '::1', NULL, '2026-08-15 17:07:16', '2026-08-28 16:37:30'),
-(492, 'jonathan.estrada', 'jonathanestrada@bestlink.edu.ph', '$2y$10$W6tscCbx8atD4zerWYFc4evBkQcVQH.TF1jcXTfdpHX11u8F.6hu.', 'Dr. Jonathan Estrada', 'panel', NULL, 'active', 0, 0, NULL, '2026-08-15 17:12:09', '2026-08-28 16:37:55', NULL, '::1', NULL, '2026-08-15 17:07:16', '2026-08-28 16:38:07'),
-(493, 'michelle.guevarra', 'michelleguevarra@bestlink.edu.ph', '$2y$10$BtapXdVV4SKsd7b.RZtYOeyHh0IcShf6FSHYdYtHEN47yFywXxLR.', 'Dr. Michelle Guevarra', 'panel', NULL, 'active', 0, 0, NULL, '2026-08-15 17:12:15', '2026-08-28 16:38:13', NULL, '::1', NULL, '2026-08-15 17:07:16', '2026-08-28 16:38:23'),
-(758, 'admin', 'admin@bestlink.edu.ph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'sms_admin', NULL, 'active', 0, 0, NULL, '2026-08-18 00:38:50', NULL, NULL, NULL, NULL, '2026-08-18 00:38:50', '2026-08-18 00:38:50');
+(475, 'grammarian', 'grammarian@bestlink.edu.ph', '$2y$10$DOubhW7dlaxRDFenQkOz2u0I.zVI3mF17NAGenmLyYU8cvYS4x9CS', 'Grammarian', 'grammarian', NULL, 'active', 0, 0, NULL, '2026-08-31 08:06:20', '2026-08-31 06:07:49', NULL, '::1', NULL, '2026-08-14 11:06:49', '2026-08-31 08:06:20'),
+(491, 'jobert.valentino', 'jobert.valentino@bestlink.edu.ph', '$2y$10$AkCzL7RmKfYgXNwrujBK6.nJh7BRnDK3Lb.iwkgJ8r8SVYSJU5.Ge', 'Dr. Jobert Valentino', 'panel', NULL, 'active', 0, 0, NULL, '2026-08-31 08:06:08', '2026-08-31 06:27:41', NULL, '::1', NULL, '2026-08-15 17:07:16', '2026-08-31 08:06:08'),
+(492, 'jonathan.estrada', 'jonathan.estrada@bestlink.edu.ph', '$2y$10$OkM9HAk8zWpIlGC.L4h/6.g9CbsjrWcZUt5PAUyUh2OF.HDGRMfyi', 'Dr. Jonathan Estrada', 'panel', NULL, 'active', 0, 0, NULL, '2026-08-31 08:06:01', '2026-08-31 06:28:19', NULL, '::1', NULL, '2026-08-15 17:07:16', '2026-08-31 08:06:01'),
+(493, 'michelle.guevarra', 'michelle.guevarra@bestlink.edu.ph', '$2y$10$Y6XHywAVrKL.JSBrpkSMbe8RAtYrHjL9D0eCtprI/p7ViGTwL2DBi', 'Dr. Michelle Guevarra', 'panel', NULL, 'active', 0, 0, NULL, '2026-08-31 08:05:53', '2026-08-31 06:31:20', NULL, '::1', NULL, '2026-08-15 17:07:16', '2026-08-31 08:05:53'),
+(758, 'admin', 'admin@bestlink.edu.ph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'sms_admin', NULL, 'active', 0, 0, NULL, '2026-08-18 00:38:50', NULL, NULL, NULL, NULL, '2026-08-18 00:38:50', '2026-08-18 00:38:50'),
+(766, 'reviewcommittee', 'reviewcommittee@bestlink.edu.ph', '$2y$10$GQbE2PiU0TKW3DhZ7bPt3uqTMc5XAOfBMutgb9KpnN6lsVS75rev6', 'Review Committee Member', 'review_committee', NULL, 'active', 0, 1, NULL, '2026-08-31 08:04:41', '2026-08-31 07:22:58', NULL, '::1', NULL, '2026-08-31 07:04:36', '2026-08-31 08:04:41');
 
 -- --------------------------------------------------------
 
@@ -2286,7 +2425,7 @@ ALTER TABLE `user_passkeys`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1826;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1962;
 
 --
 -- AUTO_INCREMENT for table `password_resets`
@@ -2304,13 +2443,13 @@ ALTER TABLE `password_reset_requests`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=888;
+  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1139;
 
 --
 -- AUTO_INCREMENT for table `role_permissions`
 --
 ALTER TABLE `role_permissions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=690;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1075;
 
 --
 -- AUTO_INCREMENT for table `security_otps`
@@ -2322,7 +2461,7 @@ ALTER TABLE `security_otps`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=759;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=990;
 
 --
 -- AUTO_INCREMENT for table `user_authenticators`
