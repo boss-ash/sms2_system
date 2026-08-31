@@ -1,132 +1,134 @@
-/* CRAD Grant — Sequential Approval Workflow stepper */
+/* CRAD Grant — Multi-Level Approval Pipeline */
 .gaw {
-    --gaw-green: #16a34a;
-    --gaw-orange: #ea580c;
+    --gaw-green: #22c55e;
+    --gaw-green-dark: #16a34a;
+    --gaw-orange: #f97316;
+    --gaw-orange-dark: #ea580c;
     --gaw-grey: #94a3b8;
     --gaw-line: #e2e8f0;
+    --gaw-navy: #0f172a;
+    --gaw-card-shadow: 0 1px 3px rgba(15, 23, 42, .06), 0 8px 24px rgba(15, 23, 42, .04);
 }
 
-.gaw-layout {
-    display: grid;
-    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+.gaw-page-header {
+    margin-bottom: 1.35rem;
+}
+
+.gaw-page-header h1 {
+    margin: 0 0 .35rem;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--gaw-navy);
+    letter-spacing: -.02em;
+}
+
+.gaw-page-header p {
+    margin: 0;
+    font-size: .9rem;
+    color: #64748b;
+    line-height: 1.55;
+    max-width: 720px;
+}
+
+.gaw-project-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 1rem;
-    align-items: start;
-}
-
-@media (max-width: 992px) {
-    .gaw-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
-.gaw-queue {
+    flex-wrap: wrap;
     background: #fff;
     border: 1px solid var(--gaw-line);
-    border-radius: 12px;
-    overflow: hidden;
+    border-radius: 10px;
+    padding: .85rem 1.1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--gaw-card-shadow);
 }
 
-.gaw-queue-head {
-    padding: .85rem 1rem;
-    border-bottom: 1px solid var(--gaw-line);
-    background: #f8fafc;
-}
-
-.gaw-queue-head h2 {
+.gaw-project-bar label {
     margin: 0;
-    font-size: .95rem;
-    font-weight: 800;
-    color: #0f172a;
-}
-
-.gaw-queue-list {
-    max-height: 70vh;
-    overflow: auto;
-}
-
-.gaw-queue-item {
-    display: block;
-    width: 100%;
-    text-align: left;
-    border: 0;
-    border-bottom: 1px solid #f1f5f9;
-    background: #fff;
-    padding: .85rem 1rem;
-    cursor: pointer;
-    transition: background .15s ease;
-}
-
-.gaw-queue-item:hover,
-.gaw-queue-item.active {
-    background: #eff6ff;
-}
-
-.gaw-queue-ref {
-    font-size: .78rem;
-    font-weight: 800;
-    color: #1d4ed8;
-    letter-spacing: .02em;
-}
-
-.gaw-queue-title {
-    margin: .2rem 0 0;
     font-size: .88rem;
     font-weight: 700;
+    color: #334155;
+    white-space: nowrap;
+}
+
+.gaw-project-select {
+    flex: 1 1 280px;
+    max-width: 480px;
+    margin-left: auto;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: .55rem .85rem;
+    font-size: .88rem;
+    font-weight: 600;
     color: #0f172a;
-    line-height: 1.35;
+    background: #fff;
+    cursor: pointer;
+    appearance: auto;
 }
 
-.gaw-queue-meta {
-    margin-top: .35rem;
-    font-size: .75rem;
-    color: #64748b;
+.gaw-project-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .15);
 }
 
-.gaw-detail {
+.gaw-pipeline-card {
     background: #fff;
     border: 1px solid var(--gaw-line);
     border-radius: 12px;
-    padding: 1.25rem 1.35rem 1.35rem;
+    padding: 1.5rem 1.6rem 1.35rem;
+    box-shadow: var(--gaw-card-shadow);
 }
 
 .gaw-detail-empty {
     text-align: center;
     color: #64748b;
-    padding: 3rem 1rem;
+    padding: 3.5rem 1.5rem;
 }
 
-.gaw-detail-title {
-    margin: 0 0 1.25rem;
-    font-size: 1.05rem;
+.gaw-detail-empty i {
+    font-size: 2.2rem;
+    color: #cbd5e1;
+    margin-bottom: .65rem;
+    display: block;
+}
+
+.gaw-pipeline-title {
+    margin: 0 0 1.75rem;
+    font-size: 1rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--gaw-navy);
 }
 
 .gaw-stepper {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: .35rem;
+    gap: 0;
     overflow-x: auto;
-    padding: .25rem .15rem 1rem;
+    padding: .5rem 0 1.25rem;
+    margin: 0 -.25rem;
 }
 
 .gaw-step {
     flex: 1 1 0;
-    min-width: 108px;
+    min-width: 118px;
     text-align: center;
     position: relative;
+    padding: 0 .35rem;
 }
 
 .gaw-step:not(:last-child)::after {
     content: '';
     position: absolute;
-    top: 18px;
-    left: calc(50% + 20px);
-    width: calc(100% - 40px);
-    height: 2px;
-    background: var(--gaw-line);
+    top: 22px;
+    left: calc(50% + 24px);
+    width: calc(100% - 48px);
+    height: 3px;
+    background: #e2e8f0;
     z-index: 0;
+    border-radius: 2px;
 }
 
 .gaw-step.approved:not(:last-child)::after {
@@ -134,138 +136,204 @@
 }
 
 .gaw-step.active:not(:last-child)::after {
-    background: linear-gradient(90deg, #86efac 0%, var(--gaw-line) 100%);
+    background: linear-gradient(90deg, #86efac 0%, #e2e8f0 100%);
 }
 
 .gaw-step-icon {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    margin: 0 auto .55rem;
+    margin: 0 auto .7rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: .82rem;
+    font-size: .95rem;
     font-weight: 800;
     position: relative;
     z-index: 1;
     background: #fff;
+    transition: all .2s ease;
 }
 
 .gaw-step.approved .gaw-step-icon {
     background: var(--gaw-green);
     color: #fff;
-    border: 2px solid var(--gaw-green);
+    border: none;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, .35);
+}
+
+.gaw-step.approved .gaw-step-icon i {
+    font-size: 1.15rem;
+    font-weight: 700;
 }
 
 .gaw-step.active .gaw-step-icon {
-    border: 2px solid var(--gaw-orange);
-    color: var(--gaw-orange);
-    background: #fff7ed;
+    border: 3px solid var(--gaw-orange);
+    color: var(--gaw-orange-dark);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, .12);
 }
 
-.gaw-step.queued .gaw-step-icon,
-.gaw-step.returned .gaw-step-icon {
-    border: 2px solid #cbd5e1;
-    color: #64748b;
+.gaw-step.queued .gaw-step-icon {
+    border: 2px solid #e2e8f0;
+    color: #94a3b8;
     background: #f8fafc;
 }
 
 .gaw-step.returned .gaw-step-icon {
-    border-color: #f87171;
+    border: 2px solid #fca5a5;
     color: #dc2626;
     background: #fef2f2;
 }
 
 .gaw-step-name {
-    font-size: .72rem;
+    font-size: .78rem;
     font-weight: 800;
-    color: #334155;
-    line-height: 1.25;
-    min-height: 2.2em;
+    color: #1e293b;
+    line-height: 1.3;
+    min-height: 2.4em;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 }
 
 .gaw-step-status {
-    margin-top: .2rem;
-    font-size: .7rem;
+    margin-top: .35rem;
+    font-size: .72rem;
     font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: .03em;
+    letter-spacing: .02em;
 }
 
-.gaw-step.approved .gaw-step-status { color: var(--gaw-green); }
-.gaw-step.active .gaw-step-status { color: var(--gaw-orange); }
+.gaw-step.approved .gaw-step-status { color: var(--gaw-green-dark); }
+.gaw-step.active .gaw-step-status { color: var(--gaw-orange-dark); }
 .gaw-step.queued .gaw-step-status { color: var(--gaw-grey); }
 .gaw-step.returned .gaw-step-status { color: #dc2626; }
 
-.gaw-step-sub,
 .gaw-step-date {
-    font-size: .68rem;
+    font-size: .7rem;
     color: #94a3b8;
-    margin-top: .15rem;
+    margin-top: .2rem;
+    font-weight: 600;
 }
 
 .gaw-action-panel {
-    margin-top: 1.25rem;
-    padding: 1rem 1.1rem;
+    margin-top: .5rem;
+    padding: 1.15rem 1.25rem;
     border-radius: 10px;
-    background: #f8fafc;
+    background: #f1f5f9;
     border: 1px solid #e2e8f0;
 }
 
 .gaw-action-panel h3 {
-    margin: 0 0 .45rem;
-    font-size: .72rem;
+    margin: 0 0 .5rem;
+    font-size: .68rem;
     font-weight: 900;
-    letter-spacing: .08em;
-    color: #475569;
+    letter-spacing: .1em;
+    color: #64748b;
+    text-transform: uppercase;
 }
 
-.gaw-action-panel p {
-    margin: 0 0 .9rem;
+.gaw-action-panel > p {
+    margin: 0 0 1rem;
     font-size: .84rem;
     color: #64748b;
-    line-height: 1.5;
+    line-height: 1.55;
+}
+
+.gaw-action-panel > p strong {
+    color: #334155;
 }
 
 .gaw-action-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: .65rem;
+    gap: .75rem;
 }
 
 .gaw-btn-approve {
-    background: #166534;
-    border-color: #166534;
-    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    background: #166534 !important;
+    border: 1px solid #166534 !important;
+    color: #fff !important;
+    font-weight: 700;
+    font-size: .86rem;
+    padding: .6rem 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s ease;
 }
 
 .gaw-btn-approve:hover {
-    background: #14532d;
-    color: #fff;
+    background: #14532d !important;
+    border-color: #14532d !important;
+    color: #fff !important;
 }
 
 .gaw-btn-return {
-    background: #fff;
-    border: 1px solid #fecaca;
-    color: #dc2626;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    background: #fff !important;
+    border: 1px solid #fecaca !important;
+    color: #dc2626 !important;
+    font-weight: 700;
+    font-size: .86rem;
+    padding: .6rem 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s ease;
 }
 
 .gaw-btn-return:hover {
-    background: #fef2f2;
-    color: #b91c1c;
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
 }
 
 .gaw-monitor-note {
-    margin-top: .75rem;
-    font-size: .8rem;
-    color: #64748b;
+    margin-top: 1rem;
+    padding: .85rem 1rem;
+    border-radius: 8px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    font-size: .84rem;
+    color: #1e40af;
+    line-height: 1.5;
+}
+
+.gaw-monitor-note strong {
+    color: #1e3a8a;
+}
+
+.gaw-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #16a34a;
+    margin-left: .5rem;
+}
+
+.gaw-live-badge::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: gaw-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes gaw-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(.85); }
 }
 
 .gaw-signature-dialog {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, .45);
+    background: rgba(15, 23, 42, .5);
     display: none;
     align-items: center;
     justify-content: center;
@@ -281,8 +349,8 @@
     width: min(500px, 100%);
     background: #fff;
     border-radius: 12px;
-    padding: 1rem 1.1rem 1.1rem;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, .2);
+    padding: 1.25rem 1.35rem 1.35rem;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, .25);
 }
 
 .gaw-signature-canvas-wrap {
@@ -308,17 +376,43 @@
     padding: .65rem .75rem;
     font-size: .88rem;
     resize: vertical;
+    font-family: inherit;
 }
 
-.gaw-status-pill {
-    display: inline-block;
-    padding: .18rem .5rem;
-    border-radius: 999px;
-    font-size: .68rem;
-    font-weight: 800;
-    text-transform: uppercase;
-}
+@media (max-width: 768px) {
+    .gaw-project-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-.gaw-status-pill.in-progress { background: #ffedd5; color: #c2410c; }
-.gaw-status-pill.completed { background: #dcfce7; color: #166534; }
-.gaw-status-pill.returned { background: #fee2e2; color: #b91c1c; }
+    .gaw-project-select {
+        max-width: none;
+        margin-left: 0;
+    }
+
+    .gaw-step {
+        min-width: 96px;
+    }
+
+    .gaw-step-icon {
+        width: 38px;
+        height: 38px;
+        font-size: .82rem;
+    }
+
+    .gaw-step:not(:last-child)::after {
+        top: 19px;
+        left: calc(50% + 20px);
+        width: calc(100% - 40px);
+    }
+
+    .gaw-action-buttons {
+        flex-direction: column;
+    }
+
+    .gaw-btn-approve,
+    .gaw-btn-return {
+        width: 100%;
+        justify-content: center;
+    }
+}

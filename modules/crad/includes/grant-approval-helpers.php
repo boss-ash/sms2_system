@@ -660,12 +660,12 @@ function grantApprovalStepDisplayState(array $step, string $currentStepKey, stri
     }
 
     if ($workflowStatus !== 'In Progress') {
-        return ['state' => 'queued', 'label' => 'Queued', 'sub' => '', 'date' => ''];
+        return ['state' => 'queued', 'label' => 'Queued', 'sub' => '', 'date' => '--'];
     }
 
     if ($stepKey === $currentStepKey && in_array($status, ['Pending', 'Queued'], true)) {
-        return ['state' => 'active', 'label' => 'In Review', 'sub' => 'Pending', 'date' => ''];
+        return ['state' => 'active', 'label' => 'In Review', 'sub' => '', 'date' => 'Pending'];
     }
 
-    return ['state' => 'queued', 'label' => 'Queued', 'sub' => '', 'date' => ''];
+    return ['state' => 'queued', 'label' => 'Queued', 'sub' => '', 'date' => '--'];
 }
