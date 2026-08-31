@@ -628,6 +628,10 @@
     color: #334155;
 }
 
+.gaw-monitor-score-pill strong {
+    color: #0f172a;
+}
+
 .gre-detail-scores {
     margin: 0 0 1rem;
 }
