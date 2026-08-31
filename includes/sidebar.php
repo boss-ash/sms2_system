@@ -410,8 +410,15 @@ $researchDirectorNavGroups = [
                             $isGroupActive = true;
                         }
                     }
-                    if ($facultyWorkspaceExpandFirst && $facultyWorkspaceFirstGroup) {
-                        $isGroupActive = true;
+                    if (!$roleHomeActive && $facultyWorkspaceFirstGroup && ($activePage ?? '') !== '') {
+                        foreach ($groupItems as $groupItemProbe) {
+                            if (($activePage ?? '') === ($groupItemProbe['slug'] ?? '')) {
+                                $isGroupActive = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ($facultyWorkspaceFirstGroup) {
                         $facultyWorkspaceFirstGroup = false;
                     }
                     $groupIcon = (string) ($groupItems[0]['icon'] ?? 'fa-folder');
