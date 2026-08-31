@@ -249,12 +249,10 @@ $upsert = $pdo->prepare(
      VALUES (?, ?, ?, ?, ?, ?, \'active\', NOW(), 0, 0, NULL)
      ON DUPLICATE KEY UPDATE
         email = VALUES(email),
-        password_hash = VALUES(password_hash),
         full_name = VALUES(full_name),
         role_key = VALUES(role_key),
         student_id = VALUES(student_id),
         status = \'active\',
-        password_changed_at = NOW(),
         must_change_password = 0,
         failed_login_attempts = 0,
         locked_until = NULL'
