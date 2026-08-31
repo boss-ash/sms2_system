@@ -17,6 +17,7 @@
     })();
 
     var lastFingerprint = '';
+    var lastWorkflowCount = null;
     var paused = false;
     var signing = false;
 
