@@ -107,7 +107,7 @@ function paStatusBadge(string $status): string
         'APPROVED & FUNDED'  => 'mpl-status completed',
         'Denied'             => 'mpl-status cancelled',
         'Withdrawn'          => 'mpl-status cancelled',
-    };
+    ];
     $css = $map[$label] ?? ($map[$status] ?? 'mpl-status processing');
     return '<span class="' . htmlspecialchars($css) . '">' . htmlspecialchars($label) . '</span>';
 }
