@@ -436,14 +436,28 @@ function grantStatusApprovedFunded(): string
     return 'Approved & Funded';
 }
 
+/** Researcher submitted final output / publication for CRAD verification. */
+function grantStatusFinalOutputSubmitted(): string
+{
+    return 'Final Output Submitted';
+}
+
+/** CRAD verified and recorded publication & IP in repository. */
+function grantStatusPublicationVerified(): string
+{
+    return 'Publication Verified';
+}
+
 function grantApplicationStatusLabel(string $status): string
 {
     return match ($status) {
-        grantStatusApprovedFunded() => 'APPROVED & FUNDED',
-        'Submitted'                 => 'Pending Evaluation',
-        'Revision Required'         => 'REVISION REQUIRED',
-        'Rejected'                  => 'REJECTED',
-        default                     => $status,
+        grantStatusApprovedFunded()      => 'APPROVED & FUNDED',
+        grantStatusFinalOutputSubmitted() => 'FINAL OUTPUT SUBMITTED',
+        grantStatusPublicationVerified()  => 'PUBLICATION VERIFIED',
+        'Submitted'                       => 'Pending Evaluation',
+        'Revision Required'               => 'REVISION REQUIRED',
+        'Rejected'                        => 'REJECTED',
+        default                           => $status,
     };
 }
 
@@ -769,7 +783,9 @@ function _grantEnsureApplicationStatusEnum(PDO $crad): void
         if (strpos($columnType, 'Rejected') !== false
             && strpos($columnType, 'Revision Required') !== false
             && strpos($columnType, 'Resubmitted') !== false
-            && strpos($columnType, 'Approved & Funded') !== false) {
+            && strpos($columnType, 'Approved & Funded') !== false
+            && strpos($columnType, 'Final Output Submitted') !== false
+            && strpos($columnType, 'Publication Verified') !== false) {
             return;
         }
 
@@ -780,6 +796,8 @@ function _grantEnsureApplicationStatusEnum(PDO $crad): void
                 'Under Review',
                 'Approved',
                 'Approved & Funded',
+                'Final Output Submitted',
+                'Publication Verified',
                 'Denied',
                 'Withdrawn',
                 'Rejected',
