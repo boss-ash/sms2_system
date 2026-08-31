@@ -9,7 +9,7 @@
 // Optional: Cursor API key for future AI enhancements (do not commit real keys).
 // define('CURSOR_API_KEY', '');
 
-define('BASE_URL', '/sms2_system');
+define('SMS2_LOCAL_BASE_URL', '/sms2_system');
 
 // Main SMS2 database.
 define('DB_HOST', 'localhost');

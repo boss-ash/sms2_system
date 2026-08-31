@@ -81,10 +81,35 @@ if (!function_exists('sms2_detect_base_url')) {
     }
 }
 
+if (!function_exists('sms2_normalize_base_url')) {
+    /**
+     * Canonical lowercase path for the local XAMPP install folder.
+     */
+    function sms2_normalize_base_url(string $url): string
+    {
+        $url = rtrim($url, '/');
+        if ($url === '' || $url === '/') {
+            return '';
+        }
+
+        $segments = explode('/', trim($url, '/'));
+        $lastIndex = count($segments) - 1;
+        if ($lastIndex >= 0 && strcasecmp((string) $segments[$lastIndex], 'sms2_system') === 0) {
+            $segments[$lastIndex] = 'sms2_system';
+            return '/' . implode('/', $segments);
+        }
+
+        return $url;
+    }
+}
+
 // Auto-detect the folder name so the app still works when copied to another
 // XAMPP htdocs directory. Set SMS2_BASE_URL or APP_BASE_URL to override.
 if (!defined('BASE_URL')) {
-    define('BASE_URL', rtrim((string) sms2_env('SMS2_BASE_URL', sms2_env('APP_BASE_URL', sms2_detect_base_url())), '/'));
+    $baseUrlCandidate = defined('SMS2_LOCAL_BASE_URL')
+        ? (string) SMS2_LOCAL_BASE_URL
+        : (string) sms2_env('SMS2_BASE_URL', sms2_env('APP_BASE_URL', sms2_detect_base_url()));
+    define('BASE_URL', sms2_normalize_base_url(rtrim($baseUrlCandidate, '/')));
 }
 
 if (!function_exists('smsBrandLogoUrl')) {

@@ -1,0 +1,4 @@
+PHP Parse error:  Unclosed '[' on line 100 does not match '}' in C:\xampp\htdocs\sms2_system\modules\crad\pages\proposals-applications.php on line 110
+
+Parse error: Unclosed '[' on line 100 does not match '}' in C:\xampp\htdocs\sms2_system\modules\crad\pages\proposals-applications.php on line 110
+Errors parsing C:\xampp\htdocs\sms2_system\modules\crad\pages\proposals-applications.php
