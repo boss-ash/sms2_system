@@ -4,7 +4,7 @@
 (function () {
     'use strict';
 
-    var POLL_MS = 8000;
+    var POLL_MS = 5000;
     var root = document.querySelector('[data-grant-approval-live="1"]');
     if (!root) return;
 
