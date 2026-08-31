@@ -1,3 +1,7 @@
+param(
+    [string]$Password = $env:SMS2_FTP_PASS
+)
+
 $ErrorActionPreference = 'Stop'
 $src  = Split-Path $PSScriptRoot -Parent
 $dest = Join-Path (Split-Path $src -Parent) 'sms2_deploy_staging'
@@ -10,12 +14,14 @@ robocopy $src $dest /E /XD .git .cursor /XF config\local.php .git-sync.log .git-
 
 Copy-Item (Join-Path $src '.htaccess.infinityfree') (Join-Path $dest '.htaccess') -Force
 
-$localTemplate = Join-Path $dest 'config\local.infinityfree.example.php'
-$localTarget   = Join-Path $dest 'config\local.php'
-Copy-Item $localTemplate $localTarget -Force
+$localTarget = Join-Path $dest 'config\local.php'
+Copy-Item (Join-Path $src 'config\local.infinityfree.example.php') $localTarget -Force
+
+if ($Password) {
+    (Get-Content $localTarget -Raw).Replace('your_hosting_account_password', $Password) | Set-Content $localTarget -NoNewline
+}
 
 if (Test-Path $zip) { Remove-Item $zip -Force }
 Compress-Archive -Path (Join-Path $dest '*') -DestinationPath $zip
 
 Write-Host "Created: $zip"
-Write-Host "Next: edit config/local.php on server with MySQL password, then upload/extract zip in File Manager."
