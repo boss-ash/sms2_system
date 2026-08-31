@@ -11,7 +11,7 @@ require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
 
 requireAuth();
 
-if (grantIsGrantWorkflowMonitor()) {
+if (function_exists('getCurrentUserRoleKey') && getCurrentUserRoleKey() === 'crad_officer') {
     header('Location: ' . BASE_URL . '/modules/crad/pages/approval-workflows.php');
     exit;
 }

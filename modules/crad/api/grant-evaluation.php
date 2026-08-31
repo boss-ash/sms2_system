@@ -13,6 +13,12 @@ require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
 
 requireAuth();
 
+if (function_exists('getCurrentUserRoleKey') && getCurrentUserRoleKey() === 'crad_officer') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'CRAD Officer uses Approval Workflows for grant sign-off monitoring.']);
+    exit;
+}
+
 if (!grantUserCanEvaluate()) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Access denied.']);
