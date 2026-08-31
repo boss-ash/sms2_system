@@ -589,22 +589,25 @@ if (smsIsGrantedAdminRole($roleKey)) {
         ['icon'=>'fa-calendar-alt',       'label'=>'Next Visit',          'value'=>'Sep 2026', 'type'=>'info',    'delta'=>'On track', 'deltaDir'=>'neutral', 'deltaLabel'=>'schedule'],
     ];
 } elseif ($roleKey === 'crad_officer') {
+    $grantDashboardMetrics = grantDashboardMetricsDefaults();
     $grantDashStats = ['submitted' => 0, 'in_progress' => 0, 'completed' => 0, 'committee_scored' => 0];
     try {
         require_once ROOT_PATH . '/modules/crad/config/config.php';
+        require_once ROOT_PATH . '/modules/crad/includes/grant-helpers.php';
         require_once ROOT_PATH . '/modules/crad/includes/grant-approval-helpers.php';
         $cradDb = cradDb();
         if ($cradDb) {
+            $grantDashboardMetrics = grantGetDashboardMetrics($cradDb);
             $grantDashStats = grantApprovalDashboardStats($cradDb);
         }
     } catch (Throwable $e) {
         error_log('dashboard crad_officer grant stats: ' . $e->getMessage());
     }
     $statCards = [
-        ['icon'=>'fa-file-alt',        'label'=>'Grant Proposals',       'value'=>(string) $grantDashStats['submitted'],         'type'=>'primary', 'delta'=>'Live',    'deltaDir'=>'neutral', 'deltaLabel'=>'from CRAD database'],
-        ['icon'=>'fa-tasks',           'label'=>'In Approval Pipeline',  'value'=>(string) $grantDashStats['in_progress'],     'type'=>'warning', 'delta'=>'Live',    'deltaDir'=>'neutral', 'deltaLabel'=>'awaiting sign-off'],
-        ['icon'=>'fa-check-circle',    'label'=>'Fully Approved',        'value'=>(string) $grantDashStats['completed'],       'type'=>'success', 'delta'=>'Live',    'deltaDir'=>'neutral', 'deltaLabel'=>'workflow completed'],
-        ['icon'=>'fa-clipboard-check', 'label'=>'Committee Recommended', 'value'=>(string) $grantDashStats['committee_scored'],'type'=>'info',    'delta'=>'Live',    'deltaDir'=>'neutral', 'deltaLabel'=>'ready for pipeline'],
+        ['icon'=>'fa-bullhorn',         'label'=>'Total Grant Calls',          'value'=>grantFormatDashboardMetricValue('total_grant_calls', $grantDashboardMetrics),         'type'=>'primary', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'from CRAD database'],
+        ['icon'=>'fa-file-alt',         'label'=>'Submitted Proposals',        'value'=>grantFormatDashboardMetricValue('submitted_proposals', $grantDashboardMetrics),       'type'=>'info',    'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'all applications'],
+        ['icon'=>'fa-check-circle',     'label'=>'Approved & Funded',        'value'=>grantFormatDashboardMetricValue('approved_funded_projects', $grantDashboardMetrics), 'type'=>'success', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'active funded projects'],
+        ['icon'=>'fa-peso-sign',        'label'=>'Total Funding Released',   'value'=>grantFormatDashboardMetricValue('total_funding', $grantDashboardMetrics),            'type'=>'warning', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'disbursements'],
     ];
 } elseif ($roleKey === 'research_coordinator') {
     $statCards = [

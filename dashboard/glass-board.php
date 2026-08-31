@@ -664,6 +664,10 @@ $trendDelta       = smsDashboardScaleDelta((string) $trendDelta, $dashboardPerio
             </div>
         </section>
 
+        <?php if ($roleKey === 'crad_officer'): ?>
+            <?php include __DIR__ . '/partials/grant-dashboard-metrics.php'; ?>
+        <?php endif; ?>
+
         <?php if ($roleKey === 'crad_officer'):
             require_once __DIR__ . '/../modules/crad/config/config.php';
             require_once __DIR__ . '/../modules/crad/includes/grant-approval-helpers.php';
