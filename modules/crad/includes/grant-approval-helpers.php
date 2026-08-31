@@ -2,7 +2,7 @@
 /**
  * CRAD Grant Proposal — Sequential approval workflow helpers.
  *
- * Sign-off sequence: Adviser → Dept. Chair → Dean → Research Office → VPAA → Finance
+ * Sign-off sequence: Adviser → Dept. Chair → Dean → Research Office → VPAA
  */
 declare(strict_types=1);
 
@@ -18,7 +18,6 @@ function grantApprovalStepDefinitions(): array
         ['key' => 'dean',              'order' => 3, 'label' => 'College Dean',        'short' => 'Dean',             'role' => 'hr'],
         ['key' => 'research_office',   'order' => 4, 'label' => 'Research Office',     'short' => 'Research Office',  'role' => 'crad_officer'],
         ['key' => 'vpaa',              'order' => 5, 'label' => 'VPAA Sign-off',       'short' => 'VPAA',             'role' => 'qa'],
-        ['key' => 'finance',           'order' => 6, 'label' => 'Finance Allocation',  'short' => 'Finance',          'role' => 'finance'],
     ];
 }
 
@@ -83,7 +82,6 @@ function grantApprovalActiveModuleKey(): string
         'adviser'                => 'faculty',
         'research_coordinator'   => 'crad',
         'hr'                     => 'faculty',
-        'finance'                => 'payment',
         'qa'                     => 'accreditation',
         default                  => 'crad',
     };
@@ -93,7 +91,6 @@ function grantApprovalBreadcrumbModuleLabel(): string
 {
     return match (grantApprovalActiveModuleKey()) {
         'faculty'        => 'Faculty',
-        'payment'        => 'Finance',
         'accreditation'  => 'QA Office',
         default          => 'CRAD',
     };
@@ -103,7 +100,6 @@ function grantApprovalBreadcrumbModuleUrl(): string
 {
     return match (grantApprovalActiveModuleKey()) {
         'faculty'        => BASE_URL . '/modules/faculty/pages/approved-research.php',
-        'payment'        => BASE_URL . '/modules/payment/index.php',
         'accreditation'  => BASE_URL . '/modules/accreditation/index.php',
         default          => BASE_URL . '/modules/crad/index.php',
     };
@@ -117,7 +113,6 @@ function grantApprovalRoleLabel(string $roleKey): string
         'hr'                   => 'College Dean',
         'crad_officer'         => 'Research Office',
         'qa'                   => 'VPAA',
-        'finance'              => 'Finance Officer',
         'superadmin'           => 'Administrator',
         default                => ucwords(str_replace('_', ' ', $roleKey)),
     };
