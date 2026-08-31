@@ -838,27 +838,13 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
     }
 
     $criteria = grantRubricCriteria();
-    $scores   = [];
-    $total    = 0.0;
-
-    foreach ($criteria as $key => $max) {
-        $field = 'score_' . $key;
-        if (!array_key_exists($field, $input) && !array_key_exists($key, $input)) {
-            return ['ok' => false, 'error' => 'All rubric criteria scores are required.'];
-        }
-        $raw = (float) ($input[$field] ?? $input[$key] ?? -1);
-        if ($raw < 0 || $raw > $max) {
-            $label = ucwords(str_replace('_', ' ', $key));
-            return ['ok' => false, 'error' => "{$label} score must be between 0 and {$max}."];
-        }
-        $scores[$field] = round($raw, 2);
-        $total += $scores[$field];
+    $parsed   = grantValidateRubricScoresFromInput($input);
+    if (empty($parsed['ok'])) {
+        return ['ok' => false, 'error' => $parsed['error'] ?? 'Invalid rubric scores.'];
     }
 
-    $total = round($total, 2);
-    if ($total > grantRubricMaxTotal()) {
-        return ['ok' => false, 'error' => 'Total score cannot exceed 100.'];
-    }
+    $scores = $parsed['scores'];
+    $total  = (float) $parsed['total'];
 
     $comments            = trim((string) ($input['comments'] ?? ''));
     $recommendations     = trim((string) ($input['recommendations'] ?? ''));
@@ -872,14 +858,14 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
 
         $stmt = $crad->prepare("
             INSERT INTO grant_proposal_evaluations
-                (grant_application_id, proposal_version, evaluator_user_id, evaluator_name,
+                (grant_application_id, proposal_version, evaluator_user_id, evaluator_name, evaluation_type,
                  score_rationale, score_methodology, score_budget,
                  score_team_capability, score_compliance, total_score,
                  comments, recommendations, required_corrections,
                  recommendation, revision_reason,
                  submitted_at, updated_at)
             VALUES
-                (?, ?, ?, ?,
+                (?, ?, ?, ?, ?,
                  ?, ?, ?,
                  ?, ?, ?,
                  ?, ?, ?,
@@ -891,6 +877,7 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
             $proposalVersion,
             $evaluatorUserId,
             $evaluatorName,
+            grantEvaluationTypeCommittee(),
             $scores['score_rationale'],
             $scores['score_methodology'],
             $scores['score_budget'],
