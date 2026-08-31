@@ -378,6 +378,31 @@ if (smsIsGrantedAdminRole($roleKey)) {
         ['icon' => 'fa-archive', 'class' => 'b5', 'label' => 'Repository', 'state' => 'Active'],
     ];
     $dashboardIntro = 'Live CRAD research performance board.';
+    if (!empty($grantDashboardMetrics)) {
+        $sourceTitle = 'Research pipeline';
+        $sourceSub = 'Ongoing vs completed funded research';
+        $ongoing = (int) ($grantDashboardMetrics['ongoing_research'] ?? 0);
+        $completed = (int) ($grantDashboardMetrics['completed_research'] ?? 0);
+        $pipelineTotal = max(1, $ongoing + $completed);
+        $ongoingPct = (int) round(($ongoing / $pipelineTotal) * 100);
+        $completedPct = 100 - $ongoingPct;
+        $donutCenterValue = (string) ($ongoing + $completed);
+        $donutCenterLabel = 'Projects';
+        $sourceLegend = [
+            ['label' => 'Ongoing', 'pct' => $ongoingPct . '%', 'color' => '#3b82f6'],
+            ['label' => 'Completed', 'pct' => $completedPct . '%', 'color' => '#22c55e'],
+        ];
+        $trendTitle = 'Funding released';
+        $trendSub = 'Total disbursements to funded projects';
+        $trendBig = grantFormatDashboardMetricValue('total_funding', $grantDashboardMetrics);
+        $trendDelta = 'Live';
+        $pipelineInLabel = 'Ongoing';
+        $pipelineOutLabel = 'Completed';
+        $inflow = (string) $ongoing;
+        $outflow = (string) $completed;
+        $netFlow = $completedPct . '%';
+        $pipelineGaugeLabel = 'Completion';
+    }
 } elseif ($roleKey === 'research_coordinator') {
     $sourceTitle = 'Assignments by college';
     $sourceSub = 'Approved research coordination load';
