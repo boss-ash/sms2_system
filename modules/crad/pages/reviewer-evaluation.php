@@ -201,7 +201,9 @@ renderBreadcrumbs($breadcrumbs);
                            href="?id=<?= (int) $row['id'] ?>">
                             <?= $isAdviserView
                                 ? ($isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score')
-                                : ($isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score') ?>
+                                : ($isApproverView
+                                    ? smsIcon('eye') . ' Review'
+                                    : ($isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score')) ?>
                         </a>
                     </td>
                 </tr>
