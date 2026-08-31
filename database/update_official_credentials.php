@@ -72,7 +72,7 @@ function smsSyncCradEmails(PDO $crad, array $emails): void
 
 $find = $pdo->prepare(
     'SELECT id, username, email FROM users
-     WHERE username = :key OR LOWER(email) = LOWER(:key)
+     WHERE username = :uname OR LOWER(email) = LOWER(:email)
      LIMIT 1'
 );
 
