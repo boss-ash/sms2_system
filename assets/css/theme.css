@@ -1871,6 +1871,175 @@ hr { border-color: var(--sms-border); opacity: 1; }
 .student-id-card p { margin-bottom: 1rem; opacity: 0.9; }
 .student-id-number { display: inline-flex; padding: 0.45rem 0.85rem; border-radius: 999px; background: rgba(255,255,255,0.16); font-weight: 800; }
 
+/* Student profile page */
+.sp-profile-hero {
+    overflow: hidden;
+    border: 1px solid var(--sms-border);
+    background:
+        linear-gradient(135deg, rgba(30, 64, 175, 0.08), rgba(14, 165, 233, 0.05)),
+        var(--sms-surface);
+}
+.sp-profile-hero .card-body { padding: 1.35rem 1.4rem; }
+.sp-profile-hero__main {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    min-width: 0;
+}
+.sp-profile-hero__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 88px;
+    height: 88px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: #fff;
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    box-shadow: 0 12px 28px rgba(30, 64, 175, 0.24);
+}
+.sp-profile-hero__copy { min-width: 0; }
+.sp-profile-kicker {
+    display: inline-flex;
+    margin-bottom: 0.3rem;
+    color: var(--sms-primary);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.sp-profile-hero__name {
+    margin: 0;
+    color: var(--sms-heading);
+    font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+    font-weight: 800;
+    line-height: 1.2;
+}
+.sp-profile-hero__program {
+    margin: 0.35rem 0 0.8rem;
+    color: var(--sms-text-muted);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.45;
+}
+.sp-profile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+.sp-profile-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0.28rem 0.72rem;
+    border: 1px solid var(--sms-border);
+    border-radius: 999px;
+    background: var(--sms-surface-muted);
+    color: var(--sms-text);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+.sp-profile-badge--success {
+    border-color: rgba(22, 163, 74, 0.22);
+    background: rgba(22, 163, 74, 0.1);
+    color: var(--sms-success);
+}
+.sp-profile-section {
+    border: 1px solid var(--sms-border);
+    overflow: hidden;
+}
+.sp-profile-section__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--sms-border);
+    background: var(--sms-surface-muted);
+}
+.sp-profile-section__head h5 {
+    color: var(--sms-heading);
+    font-size: 1rem;
+    font-weight: 700;
+}
+.sp-profile-section__head p {
+    margin-top: 0.2rem;
+    color: var(--sms-text-muted);
+    font-size: 0.82rem;
+}
+.sp-profile-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+.sp-profile-field {
+    min-width: 0;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid var(--sms-border);
+    border-radius: 12px;
+    background: var(--sms-surface-muted);
+}
+.sp-profile-field--wide { grid-column: 1 / -1; }
+.sp-profile-field__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--sms-text-muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.sp-profile-field__label .ti { font-size: 0.9em; opacity: 0.85; }
+.sp-profile-field__value {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--sms-heading);
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.sp-profile-actions .card-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.sp-profile-actions__copy { max-width: 42rem; }
+.sp-profile-actions__copy h5 {
+    color: var(--sms-heading);
+    font-size: 1rem;
+    font-weight: 700;
+}
+.sp-profile-actions__copy p {
+    color: var(--sms-text-muted);
+    font-size: 0.86rem;
+}
+[data-theme="dark"] .sp-profile-hero {
+    background:
+        linear-gradient(135deg, rgba(30, 58, 138, 0.34), rgba(15, 23, 42, 0.72)),
+        var(--sms-surface);
+}
+[data-theme="dark"] .sp-profile-badge {
+    background: rgba(15, 23, 42, 0.45);
+    border-color: rgba(148, 163, 184, 0.22);
+}
+[data-theme="dark"] .sp-profile-badge--success {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(52, 211, 153, 0.24);
+    color: #6ee7b7;
+}
+[data-theme="dark"] .sp-profile-field,
+[data-theme="dark"] .sp-profile-section__head {
+    background: rgba(15, 23, 42, 0.42);
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
 /* ============================================================
    Submodule Process Pages
    ============================================================ */
@@ -1891,6 +2060,10 @@ hr { border-color: var(--sms-border); opacity: 1; }
     .student-term-badge { margin-top: 0.85rem; }
     .student-record-grid { grid-template-columns: 1fr; }
     .student-process-bar .btn, .submodule-action-bar .btn { width: 100%; }
+    .sp-profile-hero__main { align-items: flex-start; flex-direction: column; }
+    .sp-profile-fields { grid-template-columns: 1fr; }
+    .sp-profile-actions .card-body { align-items: flex-start; }
+    .sp-profile-actions .student-process-bar { width: 100%; }
 }
 
 /* Reduced motion */

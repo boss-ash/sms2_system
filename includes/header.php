@@ -88,7 +88,7 @@ if ($isCradPage && strpos(' ' . $bodyClass . ' ', ' crad-app ') === false) {
     $isWelcomeLanding = strpos(' ' . ($bodyClass ?? '') . ' ', ' welcome-page ') !== false;
     if (!$isWelcomeLanding):
     ?>
-    <link href="<?= BASE_URL ?>/assets/css/theme.css?v=5" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/theme.css?v=6" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/layout.css?v=5" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/responsive.css?v=4" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/components.css?v=2" rel="stylesheet">
