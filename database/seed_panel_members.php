@@ -14,6 +14,7 @@ if (PHP_SAPI !== 'cli') {
 
 require_once __DIR__ . '/../config/config.php';
 require_once ROOT_PATH . '/config/database.php';
+require_once __DIR__ . '/official_accounts.php';
 
 $pdo = getDatabaseConnection();
 
@@ -26,12 +27,6 @@ $pdo->prepare(
     'INSERT INTO role_permissions (role_key, module_key, granted) VALUES (?, ?, 1)
      ON DUPLICATE KEY UPDATE granted = 1'
 )->execute(['panel', 'faculty']);
-
-$accounts = [
-    ['jobert.valentino', 'jobert.valentino@bestlink.edu.ph', 'Dr. Jobert Valentino'],
-    ['jonathan.estrada', 'jonathan.estrada@bestlink.edu.ph', 'Dr. Jonathan Estrada'],
-    ['michelle.guevarra', 'michelle.guevarra@bestlink.edu.ph', 'Dr. Michelle Guevarra'],
-];
 
 $upsert = $pdo->prepare(
     'INSERT INTO users
@@ -49,15 +44,18 @@ $upsert = $pdo->prepare(
         locked_until = NULL'
 );
 
-foreach ($accounts as [$username, $email, $fullName]) {
+foreach (smsOfficialAccounts() as $account) {
+    if ($account['role_key'] !== 'panel') {
+        continue;
+    }
     $upsert->execute([
-        $username,
-        $email,
-        password_hash('@panel123', PASSWORD_DEFAULT),
-        $fullName,
+        $account['username'],
+        $account['email'],
+        password_hash($account['password'], PASSWORD_DEFAULT),
+        $account['full_name'],
         'panel',
     ]);
-    echo "Seeded {$username} ({$fullName})" . PHP_EOL;
+    echo "Seeded {$account['username']} ({$account['full_name']})" . PHP_EOL;
 }
 
 echo 'DONE. Panel accounts ready.' . PHP_EOL;
