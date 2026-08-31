@@ -315,3 +315,16 @@
     .gpip-form-grid-2 { grid-template-columns: 1fr; }
     .gpip-span-2 { grid-column: auto; }
 }
+
+.gpip-verify-panel {
+    background: #f8fafc;
+    border-color: #93c5fd;
+}
+
+.gpip-verify-list {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: .86rem;
+    color: #334155;
+    line-height: 1.6;
+}
