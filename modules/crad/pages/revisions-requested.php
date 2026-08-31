@@ -110,18 +110,37 @@ renderBreadcrumbs($breadcrumbs);
                 <?php else: ?>
                     <?php foreach ($revisions as $row):
                         $eval = $feedback[(int) $row['id']] ?? null;
+                        $approvalReturn = $approvalReturns[(int) $row['id']] ?? null;
                         $ref  = (string) ($row['proposal_reference'] ?? ('#' . (int) $row['id']));
                         $ver  = max(1, (int) ($row['current_version'] ?? 1));
+                        $returnedBy = '—';
+                        $reason = '—';
+                        $returnedAt = (string) ($row['updated_at'] ?? '');
+                        if ($approvalReturn) {
+                            $returnedBy = (string) ($approvalReturn['approver_name'] ?? grantApprovalRoleLabel((string) ($approvalReturn['approver_role_key'] ?? '')));
+                            $level = (int) ($approvalReturn['step_order'] ?? 0);
+                            if ($level > 0) {
+                                $returnedBy .= ' (Level ' . $level . ')';
+                            }
+                            $reason = trim((string) ($approvalReturn['remarks'] ?? ''));
+                            $returnedAt = (string) ($approvalReturn['acted_at'] ?? $returnedAt);
+                        } elseif ($eval) {
+                            $returnedBy = 'Review Committee';
+                            $reason = trim((string) ($eval['revision_reason'] ?? $eval['required_corrections'] ?? $eval['comments'] ?? ''));
+                            $returnedAt = (string) ($eval['submitted_at'] ?? $returnedAt);
+                        }
                     ?>
                     <tr data-app-id="<?= (int) $row['id'] ?>">
-                        <td style="font-weight:800;color:var(--sms-primary);"><?= htmlspecialchars($ref) ?></td>
+                        <td style="font-weight:800;color:var(--sms-primary);">
+                            <?= htmlspecialchars($ref) ?>
+                            <div style="font-size:.7rem;font-weight:500;color:var(--sms-text-muted);">v<?= $ver ?></div>
+                        </td>
                         <td style="font-weight:600;max-width:180px;"><?= htmlspecialchars((string) $row['funding_title']) ?></td>
-                        <td style="max-width:240px;font-size:.86rem;"><?= htmlspecialchars((string) ($row['research_title'] ?? '—')) ?></td>
-                        <td>Version <?= $ver ?> — <?= htmlspecialchars(grantVersionLabel($ver)) ?></td>
+                        <td style="max-width:200px;font-size:.86rem;"><?= htmlspecialchars((string) ($row['research_title'] ?? '—')) ?></td>
+                        <td style="font-size:.82rem;max-width:140px;"><?= htmlspecialchars($returnedBy) ?></td>
+                        <td style="font-size:.82rem;max-width:220px;"><?= $reason !== '' ? nl2br(htmlspecialchars($reason)) : '—' ?></td>
                         <td style="font-size:.82rem;white-space:nowrap;">
-                            <?= $eval
-                                ? htmlspecialchars(date('M d, Y g:i A', strtotime((string) $eval['submitted_at'])))
-                                : htmlspecialchars(date('M d, Y g:i A', strtotime((string) $row['updated_at']))) ?>
+                            <?= htmlspecialchars(date('M d, Y g:i A', strtotime($returnedAt))) ?>
                         </td>
                         <td>
                             <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
