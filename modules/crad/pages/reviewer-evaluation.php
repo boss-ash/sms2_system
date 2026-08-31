@@ -24,6 +24,7 @@ $pageBannerDescription = grantIsAdviserEvaluationViewer()
 $hideModulePageBanner  = true;
 $isAdviserView         = grantIsAdviserEvaluationViewer();
 $isApproverView        = grantIsGrantApproverEvaluationViewer();
+$isMonitorView         = grantIsGrantWorkflowMonitor();
 
 $breadcrumbs = [
     ['label' => grantEvaluationBreadcrumbModuleLabel(), 'url' => grantEvaluationBreadcrumbModuleUrl()],
@@ -67,6 +68,12 @@ if ($crad) {
                 $adviserEval = grantGetLatestAdviserEvaluationByApplication($crad, $selectedId);
                 $approvalDetail = grantGetApprovalWorkflowDetail($crad, $selectedId);
                 $canSignApproval = !empty($approvalDetail['can_act']);
+            } elseif ($selected && $isMonitorView) {
+                require_once __DIR__ . '/../includes/grant-approval-helpers.php';
+                $evals = grantGetLatestEvaluationsForApplications($crad, [$selectedId]);
+                $committeeEval = $evals[$selectedId] ?? null;
+                $adviserEval = grantGetLatestAdviserEvaluationByApplication($crad, $selectedId);
+                $approvalDetail = grantGetApprovalWorkflowDetail($crad, $selectedId);
             } elseif ($selected) {
                 $existingEval = grantGetEvaluationByApplication($crad, $selectedId);
             }

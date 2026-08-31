@@ -512,7 +512,7 @@ function grantMonitorEvaluationQueue(PDO $crad): array
     $committeeType = grantEvaluationTypeCommittee();
     $adviserType   = grantEvaluationTypeAdviser();
 
-    $stmt = $crad->query("
+    $stmt = $crad->prepare("
         SELECT
             ga.id,
             ga.grant_opportunity_id,
@@ -560,7 +560,7 @@ function grantMonitorEvaluationQueue(PDO $crad): array
                       FROM grant_proposal_evaluations e2
                      WHERE e2.grant_application_id = ga.id
                        AND e2.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
-                       AND e2.evaluation_type = '{$committeeType}'
+                       AND e2.evaluation_type = ?
                )
         LEFT JOIN grant_proposal_evaluations adviser_eval
                ON adviser_eval.id = (
@@ -568,10 +568,11 @@ function grantMonitorEvaluationQueue(PDO $crad): array
                       FROM grant_proposal_evaluations e3
                      WHERE e3.grant_application_id = ga.id
                        AND e3.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
-                       AND e3.evaluation_type = '{$adviserType}'
+                       AND e3.evaluation_type = ?
                )
         ORDER BY w.updated_at DESC, ga.id DESC
     ");
+    $stmt->execute([$committeeType, $adviserType]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
@@ -750,6 +751,12 @@ function grantApplicationOpenForEvaluationViewer(PDO $crad, int $applicationId):
         return (bool) $stmt->fetchColumn();
     }
 
+    if (grantIsGrantWorkflowMonitor()) {
+        require_once __DIR__ . '/grant-approval-helpers.php';
+
+        return grantGetApprovalWorkflowByApplicationId($crad, $applicationId) !== null;
+    }
+
     $application = grantGetApplicationForEvaluation($crad, $applicationId);
 
     return $application !== null
@@ -766,6 +773,10 @@ function grantEvaluationQueue(PDO $crad, ?int $evaluatorUserId = null): array
 
     if (grantIsGrantApproverEvaluationViewer()) {
         return grantApproverEvaluationQueue($crad);
+    }
+
+    if (grantIsGrantWorkflowMonitor()) {
+        return grantMonitorEvaluationQueue($crad);
     }
 
     $evaluatorUserId = $evaluatorUserId ?? (int) ($_SESSION['user_id'] ?? 0);
