@@ -181,37 +181,8 @@ function grantEvaluationTypeAdviser(): string
 }
 
 /**
- * @return array<string, float>|null
+ * @return array{ok: true, scores: array<string, float>, total: float}|array{ok: false, error: string}
  */
-function grantParseRubricScoresFromInput(array $input): ?array
-{
-    $criteria = grantRubricCriteria();
-    $scores   = [];
-    $total    = 0.0;
-
-    foreach ($criteria as $key => $max) {
-        $field = 'score_' . $key;
-        if (!array_key_exists($field, $input) && !array_key_exists($key, $input)) {
-            return null;
-        }
-        $raw = (float) ($input[$field] ?? $input[$key] ?? -1);
-        if ($raw < 0 || $raw > $max) {
-            return null;
-        }
-        $scores[$field] = round($raw, 2);
-        $total += $scores[$field];
-    }
-
-    $total = round($total, 2);
-    if ($total > grantRubricMaxTotal()) {
-        return null;
-    }
-
-    $scores['total_score'] = $total;
-
-    return $scores;
-}
-
 function grantValidateRubricScoresFromInput(array $input): array
 {
     $criteria = grantRubricCriteria();
