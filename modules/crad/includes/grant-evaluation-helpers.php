@@ -55,11 +55,36 @@ function grantIsAdviserEvaluationViewer(): bool
     return $roleKey === 'adviser';
 }
 
+function grantApprovalStepKeyForRole(string $roleKey): ?string
+{
+    require_once __DIR__ . '/grant-approval-helpers.php';
+
+    foreach (grantApprovalStepDefinitions() as $step) {
+        if (($step['role'] ?? '') === $roleKey) {
+            return (string) ($step['key'] ?? '');
+        }
+    }
+
+    return null;
+}
+
+/** Dept. Chair, Dean, Research Office, VPAA — view scores before sign-off. */
+function grantIsGrantApproverEvaluationViewer(): bool
+{
+    $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+
+    return grantApprovalStepKeyForRole($roleKey) !== null;
+}
+
 function grantUserCanEvaluate(): bool
 {
     $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
 
     if (in_array($roleKey, ['review_committee', 'adviser'], true)) {
+        return true;
+    }
+
+    if (grantIsGrantApproverEvaluationViewer()) {
         return true;
     }
 
@@ -72,13 +97,29 @@ function grantUserCanEvaluate(): bool
 
 function grantEvaluationBreadcrumbModuleLabel(): string
 {
-    return grantIsAdviserEvaluationViewer() ? 'Faculty' : 'Research Grant';
+    if (grantIsAdviserEvaluationViewer()) {
+        return 'Faculty';
+    }
+
+    if (grantIsGrantApproverEvaluationViewer()) {
+        require_once __DIR__ . '/grant-approval-helpers.php';
+
+        return grantApprovalBreadcrumbModuleLabel();
+    }
+
+    return 'Research Grant';
 }
 
 function grantEvaluationBreadcrumbModuleUrl(): string
 {
     if (grantIsAdviserEvaluationViewer()) {
         return BASE_URL . '/modules/faculty/pages/assigned-research.php';
+    }
+
+    if (grantIsGrantApproverEvaluationViewer()) {
+        require_once __DIR__ . '/grant-approval-helpers.php';
+
+        return grantApprovalBreadcrumbModuleUrl();
     }
 
     return BASE_URL . '/modules/crad/pages/reviewer-evaluation.php';
@@ -95,7 +136,17 @@ function grantRequireEvaluateAccess(): void
 
 function grantEvaluationActiveModuleKey(): string
 {
-    return grantIsAdviserEvaluationViewer() ? 'faculty' : 'crad_grant';
+    if (grantIsAdviserEvaluationViewer()) {
+        return 'faculty';
+    }
+
+    if (grantIsGrantApproverEvaluationViewer()) {
+        require_once __DIR__ . '/grant-approval-helpers.php';
+
+        return grantApprovalActiveModuleKey();
+    }
+
+    return 'crad_grant';
 }
 
 function grantEnsureEvaluationTables(PDO $crad): void
@@ -319,6 +370,149 @@ function grantAdviserEvaluationQueue(PDO $crad): array
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
+/**
+ * Proposals at the current approver's workflow step (Dept. Chair → VPAA).
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function grantApproverEvaluationQueue(PDO $crad): array
+{
+    require_once __DIR__ . '/grant-approval-helpers.php';
+    grantEnsureApprovalTables($crad);
+    grantEnsureEvaluationTables($crad);
+
+    $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+    $stepKey = grantApprovalStepKeyForRole($roleKey);
+    if ($stepKey === null || $stepKey === '') {
+        return [];
+    }
+
+    $committeeType = grantEvaluationTypeCommittee();
+    $adviserType   = grantEvaluationTypeAdviser();
+
+    $stmt = $crad->prepare("
+        SELECT
+            ga.id,
+            ga.grant_opportunity_id,
+            ga.applicant_name,
+            ga.applicant_user_id,
+            ga.college_dept,
+            ga.requested_budget,
+            ga.research_title,
+            ga.abstract,
+            ga.objectives,
+            ga.proposal_pdf,
+            ga.proposal_pdf_original,
+            ga.supporting_docs,
+            ga.supporting_docs_original,
+            ga.ethics_doc,
+            ga.ethics_doc_original,
+            ga.status,
+            ga.submitted_at,
+            ga.updated_at,
+            ga.proposal_reference,
+            ga.current_version,
+            go.funding_title,
+            go.max_funding_cap,
+            go.eligibility,
+            go.application_deadline,
+            w.id AS workflow_id,
+            w.current_step_key,
+            w.workflow_status,
+            w.updated_at AS workflow_updated_at,
+            my_step.status AS approver_step_status,
+            my_step.acted_at AS approver_acted_at,
+            committee_eval.id AS committee_evaluation_id,
+            committee_eval.total_score AS committee_total_score,
+            committee_eval.submitted_at AS committee_evaluated_at,
+            adviser_eval.id AS adviser_evaluation_id,
+            adviser_eval.total_score AS adviser_total_score,
+            adviser_eval.submitted_at AS adviser_evaluated_at
+        FROM grant_proposal_approval_workflows w
+        INNER JOIN grant_applications ga ON ga.id = w.grant_application_id
+        INNER JOIN grant_opportunities go ON go.id = ga.grant_opportunity_id
+        INNER JOIN grant_proposal_approval_steps my_step
+                ON my_step.workflow_id = w.id
+               AND my_step.step_key = ?
+        LEFT JOIN grant_proposal_evaluations committee_eval
+               ON committee_eval.id = (
+                    SELECT MAX(e2.id)
+                      FROM grant_proposal_evaluations e2
+                     WHERE e2.grant_application_id = ga.id
+                       AND e2.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
+                       AND e2.evaluation_type = ?
+               )
+        LEFT JOIN grant_proposal_evaluations adviser_eval
+               ON adviser_eval.id = (
+                    SELECT MAX(e3.id)
+                      FROM grant_proposal_evaluations e3
+                     WHERE e3.grant_application_id = ga.id
+                       AND e3.proposal_version = COALESCE(NULLIF(ga.current_version, 0), 1)
+                       AND e3.evaluation_type = ?
+               )
+        WHERE w.workflow_status = 'In Progress'
+          AND w.current_step_key = ?
+          AND my_step.status IN ('Pending', 'Queued')
+        ORDER BY w.updated_at ASC, ga.id ASC
+    ");
+    $stmt->execute([$stepKey, $committeeType, $adviserType, $stepKey]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+function grantApproverSignoffCount(PDO $crad): int
+{
+    require_once __DIR__ . '/grant-approval-helpers.php';
+    grantEnsureApprovalTables($crad);
+
+    $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+    $userId  = (int) ($_SESSION['user_id'] ?? 0);
+    if ($roleKey === '' || $userId <= 0) {
+        return 0;
+    }
+
+    $stmt = $crad->prepare("
+        SELECT COUNT(*)
+          FROM grant_proposal_approval_steps
+         WHERE approver_role_key = ?
+           AND approver_user_id = ?
+           AND status = 'Approved'
+    ");
+    $stmt->execute([$roleKey, $userId]);
+
+    return (int) $stmt->fetchColumn();
+}
+
+function grantGetLatestAdviserEvaluationByApplication(PDO $crad, int $applicationId): ?array
+{
+    grantEnsureEvaluationTables($crad);
+
+    $app = grantGetApplicationForEvaluation($crad, $applicationId);
+    if ($app === null) {
+        return null;
+    }
+
+    $proposalVersion = max(1, (int) ($app['current_version'] ?? 1));
+
+    $stmt = $crad->prepare("
+        SELECT *
+          FROM grant_proposal_evaluations
+         WHERE grant_application_id = ?
+           AND evaluation_type = ?
+           AND proposal_version = ?
+         ORDER BY id DESC
+         LIMIT 1
+    ");
+    $stmt->execute([
+        $applicationId,
+        grantEvaluationTypeAdviser(),
+        $proposalVersion,
+    ]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: null;
+}
+
 function grantAdviserEvaluationScoredCount(PDO $crad): int
 {
     grantEnsureEvaluationTables($crad);
@@ -401,6 +595,29 @@ function grantApplicationOpenForEvaluationViewer(PDO $crad, int $applicationId):
         return (bool) $stmt->fetchColumn();
     }
 
+    if (grantIsGrantApproverEvaluationViewer()) {
+        require_once __DIR__ . '/grant-approval-helpers.php';
+        grantEnsureApprovalTables($crad);
+
+        $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
+        $stepKey = grantApprovalStepKeyForRole($roleKey);
+        if ($stepKey === null || $stepKey === '') {
+            return false;
+        }
+
+        $stmt = $crad->prepare("
+            SELECT w.id
+              FROM grant_proposal_approval_workflows w
+             WHERE w.grant_application_id = ?
+               AND w.workflow_status = 'In Progress'
+               AND w.current_step_key = ?
+             LIMIT 1
+        ");
+        $stmt->execute([$applicationId, $stepKey]);
+
+        return (bool) $stmt->fetchColumn();
+    }
+
     $application = grantGetApplicationForEvaluation($crad, $applicationId);
 
     return $application !== null
@@ -413,6 +630,10 @@ function grantEvaluationQueue(PDO $crad, ?int $evaluatorUserId = null): array
 
     if (grantIsAdviserEvaluationViewer()) {
         return grantAdviserEvaluationQueue($crad);
+    }
+
+    if (grantIsGrantApproverEvaluationViewer()) {
+        return grantApproverEvaluationQueue($crad);
     }
 
     $evaluatorUserId = $evaluatorUserId ?? (int) ($_SESSION['user_id'] ?? 0);

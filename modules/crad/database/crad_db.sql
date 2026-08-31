@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 31, 2026 at 07:46 PM
+-- Generation Time: Aug 31, 2026 at 08:17 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -1075,7 +1075,10 @@ INSERT INTO `research_defense_schedules` (`id`, `research_group_id`, `proposal_i
 (48, 64, NULL, 'TAP-2026-00053', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'Dr. Roberto M. Santos', 'Dr. Jobert Valentino\nDr. Jonathan Estrada\nDr. Michelle Guevarra', 'Dr. Jobert Valentino', 'AVR Room', 4, '2026-08-31 13:00:00', '2026-08-31 14:00:00', 'Pre-Oral', 'Finalized', 116, 116, '2026-08-31 06:10:27', '2026-08-31 06:10:14', '2026-08-31 06:10:27'),
 (49, 64, NULL, 'TAP-2026-00053', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'Dr. Roberto M. Santos', 'Dr. Jobert Valentino\nDr. Jonathan Estrada\nDr. Michelle Guevarra', 'Dr. Jobert Valentino', 'CRAD Conference Room', 1, '2026-09-03 09:00:00', '2026-09-03 10:00:00', 'Final Defense', 'Rejected', 116, NULL, NULL, '2026-08-31 06:22:22', '2026-08-31 06:22:35'),
 (50, 64, NULL, 'TAP-2026-00053', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'Dr. Roberto M. Santos', 'Dr. Jobert Valentino\nDr. Jonathan Estrada\nDr. Michelle Guevarra', 'Dr. Jobert Valentino', 'Computer Laboratory 1', 5, '2026-09-03 11:00:00', '2026-09-03 12:00:00', 'Final Defense', 'Finalized', 116, 116, '2026-08-31 06:22:35', '2026-08-31 06:22:22', '2026-08-31 06:22:35'),
-(51, 64, NULL, 'TAP-2026-00053', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'Dr. Roberto M. Santos', 'Dr. Jobert Valentino\nDr. Jonathan Estrada\nDr. Michelle Guevarra', 'Dr. Jobert Valentino', 'Computer Laboratory 1', 5, '2026-09-03 13:00:00', '2026-09-03 14:00:00', 'Final Defense', 'Rejected', 116, NULL, NULL, '2026-08-31 06:22:22', '2026-08-31 06:22:35');
+(51, 64, NULL, 'TAP-2026-00053', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'Dr. Roberto M. Santos', 'Dr. Jobert Valentino\nDr. Jonathan Estrada\nDr. Michelle Guevarra', 'Dr. Jobert Valentino', 'Computer Laboratory 1', 5, '2026-09-03 13:00:00', '2026-09-03 14:00:00', 'Final Defense', 'Rejected', 116, NULL, NULL, '2026-08-31 06:22:22', '2026-08-31 06:22:35'),
+(52, 65, NULL, 'TAP-2026-00054', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'Dr. Roberto M. Santos', 'Dr. Jobert Valentino\nDr. Jonathan Estrada\nDr. Michelle Guevarra', 'Dr. Jobert Valentino', 'Computer Laboratory 1', 5, '2026-09-01 09:00:00', '2026-09-01 11:00:00', 'Pre-Oral', 'Proposed', 116, NULL, NULL, '2026-08-31 10:02:23', '2026-08-31 10:02:23'),
+(53, 65, NULL, 'TAP-2026-00054', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'Dr. Roberto M. Santos', 'Dr. Jobert Valentino\nDr. Jonathan Estrada\nDr. Michelle Guevarra', 'Dr. Jobert Valentino', 'Computer Laboratory 1', 5, '2026-09-03 09:00:00', '2026-09-03 11:00:00', 'Pre-Oral', 'Proposed', 116, NULL, NULL, '2026-08-31 10:02:23', '2026-08-31 10:02:23'),
+(54, 65, NULL, 'TAP-2026-00054', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'Dr. Roberto M. Santos', 'Dr. Jobert Valentino\nDr. Jonathan Estrada\nDr. Michelle Guevarra', 'Dr. Jobert Valentino', 'Computer Laboratory 1', 5, '2026-09-07 09:00:00', '2026-09-07 11:00:00', 'Pre-Oral', 'Selected', 116, NULL, NULL, '2026-08-31 10:02:23', '2026-08-31 10:02:44');
 
 -- --------------------------------------------------------
 
@@ -2453,7 +2456,7 @@ ALTER TABLE `research_coordinator_assignments`
 -- AUTO_INCREMENT for table `research_defense_schedules`
 --
 ALTER TABLE `research_defense_schedules`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `research_groups`
@@ -2525,7 +2528,7 @@ ALTER TABLE `research_revision_cycles`
 -- AUTO_INCREMENT for table `research_venues`
 --
 ALTER TABLE `research_venues`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12902;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13772;
 
 --
 -- AUTO_INCREMENT for table `title_approvals`
