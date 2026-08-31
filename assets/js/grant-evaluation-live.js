@@ -1,10 +1,10 @@
 /**
- * SMS 2 – Real-time grant evaluation queue polling (Review Committee)
+ * SMS 2 – Real-time grant evaluation queue polling (Review Committee + approvers)
  */
 (function () {
     'use strict';
 
-    var POLL_MS = 10000;
+    var POLL_MS = 5000;
     var root = document.querySelector('[data-grant-eval-live="1"]');
     if (!root) return;
 
@@ -15,23 +15,48 @@
         return path.slice(0, idx) + '/modules/crad/api/grant-evaluation.php';
     })();
 
+    var detailAppId = root.getAttribute('data-grant-eval-app-id')
+        || new URLSearchParams(window.location.search).get('id')
+        || '';
+
     var lastFingerprint = '';
     var timer = null;
 
+    function rowFingerprint(r) {
+        return [
+            r.id,
+            r.status,
+            r.my_evaluation_id,
+            r.my_total_score,
+            r.workflow_status,
+            r.current_step_key,
+            r.workflow_updated_at || r.updated_at,
+            r.committee_total_score,
+            r.committee_evaluation_id,
+            r.adviser_total_score,
+            r.adviser_evaluation_id,
+            r.approver_step_status
+        ].join(':');
+    }
+
     function fingerprint(queue) {
         if (!Array.isArray(queue)) return '';
-        return queue.map(function (r) {
-            return [
-                r.id,
-                r.status,
-                r.my_evaluation_id,
-                r.my_total_score,
-                r.workflow_status,
-                r.current_step_key,
-                r.workflow_updated_at || r.updated_at,
-                r.committee_total_score
-            ].join(':');
-        }).join('|');
+
+        if (detailAppId) {
+            var row = null;
+            for (var i = 0; i < queue.length; i++) {
+                if (String(queue[i].id) === String(detailAppId)) {
+                    row = queue[i];
+                    break;
+                }
+            }
+            if (!row) {
+                return 'detail-missing:' + detailAppId;
+            }
+            return 'detail:' + rowFingerprint(row);
+        }
+
+        return queue.map(rowFingerprint).join('|');
     }
 
     function poll() {

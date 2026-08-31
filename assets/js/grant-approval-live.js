@@ -129,7 +129,9 @@
             var path = window.location.pathname || '';
             var idx = path.indexOf('/modules/');
             var base = idx === -1 ? '' : path.slice(0, idx);
-            return base + '/modules/crad/pages/reviewer-evaluation.php?id=' + encodeURIComponent(wf.grant_application_id || selectedId);
+            var moduleMatch = path.match(/\/modules\/([^/]+)\/pages\//);
+            var moduleFolder = moduleMatch ? moduleMatch[1] : 'crad';
+            return base + '/modules/' + moduleFolder + '/pages/reviewer-evaluation.php?id=' + encodeURIComponent(wf.grant_application_id || selectedId);
         })();
 
         var stepperHtml = steps.map(function (step) {

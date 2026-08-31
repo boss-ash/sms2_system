@@ -266,11 +266,21 @@ if (!function_exists('smsRoleHomeIsActive')) {
                 && (($activePage === '') || $activePage === 'overview'),
             'adviser'           => $activePage === 'assigned-research',
             'hr'                => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true)
+                || str_contains($scriptPath, '/modules/faculty/pages/approval-workflows.php')
+                || str_contains($scriptPath, '/modules/faculty/pages/reviewer-evaluation.php')
                 || str_contains($scriptPath, '/modules/crad/pages/approval-workflows.php')
                 || str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),
-            'department_chair', 'research_office', 'vpaa' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true)
+            'department_chair', 'research_office' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true)
                 || str_contains($scriptPath, '/modules/crad/pages/approval-workflows.php')
                 || str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),
+            'vpaa' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true)
+                || str_contains($scriptPath, '/modules/accreditation/pages/approval-workflows.php')
+                || str_contains($scriptPath, '/modules/accreditation/pages/reviewer-evaluation.php')
+                || str_contains($scriptPath, '/modules/crad/pages/approval-workflows.php')
+                || str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),
+            'qa' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true)
+                || str_contains($scriptPath, '/modules/accreditation/pages/approval-workflows.php')
+                || str_contains($scriptPath, '/modules/accreditation/pages/reviewer-evaluation.php'),
             'finance' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true)
                 || str_contains($scriptPath, '/modules/payment/pages/approval-workflows.php')
                 || str_contains($scriptPath, '/modules/payment/pages/reviewer-evaluation.php'),
