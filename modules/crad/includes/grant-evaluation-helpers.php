@@ -1821,34 +1821,13 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
         return ['ok' => false, 'error' => 'You have already submitted an evaluation for this proposal version.'];
     }
 
-    $recommendation = strtolower(trim((string) ($input['recommendation'] ?? '')));
-    if (!array_key_exists($recommendation, grantRecommendationOptions())) {
-        return ['ok' => false, 'error' => 'Please select a recommendation decision.'];
+    $parsedRecommendation = grantParseEvaluationRecommendationInput($input);
+    if (empty($parsedRecommendation['ok'])) {
+        return ['ok' => false, 'error' => $parsedRecommendation['error'] ?? 'Invalid recommendation.'];
     }
 
-    $newStatus = grantStatusForRecommendation($recommendation);
-    if ($newStatus === null) {
-        return ['ok' => false, 'error' => 'Invalid recommendation selected.'];
-    }
-
-    $currentStatus = (string) ($application['status'] ?? '');
-    $shouldUpdateStatus = true;
-    if ($recommendation === 'recommend') {
-        if (in_array($currentStatus, ['Rejected', 'Revision Required', 'Approved', 'Denied', 'Withdrawn'], true)) {
-            $newStatus = $currentStatus;
-            $shouldUpdateStatus = false;
-        } elseif ($currentStatus === 'Submitted') {
-            $newStatus = 'Under Review';
-        } else {
-            $newStatus = $currentStatus;
-            $shouldUpdateStatus = false;
-        }
-    }
-
-    $revisionReason = trim((string) ($input['revision_reason'] ?? ''));
-    if ($recommendation === 'require_revisions' && $revisionReason === '') {
-        return ['ok' => false, 'error' => 'Revision reason is required when selecting Require Revisions.'];
-    }
+    $recommendation = (string) $parsedRecommendation['recommendation'];
+    $revisionReason = (string) $parsedRecommendation['revision_reason'];
 
     $criteria = grantRubricCriteria();
     $parsed   = grantValidateRubricScoresFromInput($input);
