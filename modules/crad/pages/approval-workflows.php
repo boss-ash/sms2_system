@@ -142,10 +142,8 @@ renderBreadcrumbs($breadcrumbs);
                 $wfStatus = (string) ($wf['workflow_status'] ?? '');
                 $currentStepKey = (string) ($wf['current_step_key'] ?? '');
                 $adviserEvalComplete = !empty($detail['adviser_eval_complete']);
-                $needsAdviserScore = $roleKey === 'adviser'
-                    && $currentStepKey === 'adviser'
-                    && !$adviserEvalComplete
-                    && $wfStatus === 'In Progress';
+                $needsRubricScore = !empty($detail['needs_rubric_score']) || !empty($detail['needs_adviser_score']);
+                $pipelineScorePills = $detail['pipeline_score_pills'] ?? [];
                 ?>
                 <h2 class="gaw-pipeline-title">Sign-off Sequence for <?= $ref ?></h2>
 
@@ -172,9 +170,11 @@ renderBreadcrumbs($breadcrumbs);
                     <?php endforeach; ?>
                 </div>
 
-                <?php if ($needsAdviserScore): ?>
+                <?php grantRenderPipelineScorePills($pipelineScorePills); ?>
+
+                <?php if ($needsRubricScore): ?>
                 <div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">
-                    <h3><?= smsIcon('clipboard-check', ['class' => 'me-1']) ?>Adviser Evaluation Required</h3>
+                    <h3><?= smsIcon('clipboard-check', ['class' => 'me-1']) ?>Rubric Evaluation Required</h3>
                     <p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here.</p>
                     <a class="gaw-btn-approve" href="<?= htmlspecialchars(grantReviewerEvaluationUrl((int) $selectedId)) ?>" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">
                         <?= smsIcon('star-half-alt') ?> Go to Reviewer Evaluation
