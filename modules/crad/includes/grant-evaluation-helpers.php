@@ -408,13 +408,15 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
         return ['ok' => false, 'error' => 'This proposal is no longer open for committee evaluation.'];
     }
 
-    if (grantGetEvaluationByApplication($crad, $applicationId, $evaluatorUserId)) {
-        return ['ok' => false, 'error' => 'You have already submitted an evaluation for this proposal.'];
+    $proposalVersion = max(1, (int) ($application['current_version'] ?? 1));
+
+    if (grantGetEvaluationByApplication($crad, $applicationId, $evaluatorUserId, $proposalVersion)) {
+        return ['ok' => false, 'error' => 'You have already submitted an evaluation for this proposal version.'];
     }
 
     $recommendation = strtolower(trim((string) ($input['recommendation'] ?? '')));
     if (!array_key_exists($recommendation, grantRecommendationOptions())) {
-        return ['ok' => false, 'error' => 'Please select a recommendation decision (Disapprove or Require Revisions).'];
+        return ['ok' => false, 'error' => 'Please select a recommendation decision.'];
     }
 
     $newStatus = grantStatusForRecommendation($recommendation);
