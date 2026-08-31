@@ -891,37 +891,6 @@ function smsNotificationRequiredExpertise(string $title): string
     return $matches === [] ? 'General Research Methods' : implode(' / ', array_slice(array_unique($matches), 0, 2));
 }
 
-function smsNotificationPayloadForCurrentUser(): array
-{
-    $rows = smsCurrentUserNotifications(50);
-    $items = array_map(static function (array $row): array {
-        $created = strtotime((string) ($row['created_at'] ?? '')) ?: time();
-        $status = (string) ($row['status'] ?? 'read');
-        $body = (string) ($row['body'] ?? '');
-        return [
-            'id' => (int) $row['id'],
-            'batch_key' => (string) ($row['batch_key'] ?? ''),
-            'icon' => (string) ($row['icon'] ?? 'fa-bell'),
-            'class' => 'text-primary',
-            'label' => (string) ($row['title'] ?? 'Notification'),
-            'body' => $body,
-            'preview' => smsNotificationPreviewText($body),
-            'status' => $status,
-            'is_unread' => $status === 'unread',
-            'time' => date('M j, Y h:i A', $created),
-            'url' => (string) ($row['url'] ?? '#'),
-        ];
-    }, $rows);
-
-    return smsNotificationDedupe(array_merge(
-        smsCurrentUserAssignmentNotifications(8),
-        $items,
-        smsStudentResearchStatusNotifications(),
-        smsStudentReturnedTitleApprovalNotifications(),
-        smsGrantProposalNotificationsPayload(8)
-    ));
-}
-
 function smsNotificationDedupe(array $items): array
 {
     $seen = [];
