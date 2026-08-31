@@ -175,8 +175,8 @@ renderBreadcrumbs($breadcrumbs);
             <canvas id="gawSignCanvas" width="460" height="140"></canvas>
         </div>
         <div style="display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap;">
-            <button type="button" class="gaw-btn-return" id="gawSignClearBtn" style="border-color:#cbd5e1;color:#475569;">Clear</button>
-            <button type="button" class="gaw-btn-return" id="gawSignCancelBtn" style="border-color:#cbd5e1;color:#475569;">Cancel</button>
+            <button type="button" class="gaw-btn-return gaw-btn-return-outline" id="gawSignClearBtn">Clear</button>
+            <button type="button" class="gaw-btn-return gaw-btn-return-outline" id="gawSignCancelBtn">Cancel</button>
             <button type="button" class="gaw-btn-approve" id="gawSignConfirmBtn">
                 <?= smsIcon('check') ?> Confirm Sign-off
             </button>
@@ -192,7 +192,7 @@ renderBreadcrumbs($breadcrumbs);
         <p style="margin:0 0 .75rem;color:#64748b;font-size:.86rem;">Provide remarks for the proponent. This will set the proposal status to Revision Required.</p>
         <textarea id="gawReturnRemarks" placeholder="Enter revision instructions…" required></textarea>
         <div style="display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap;margin-top:.75rem;">
-            <button type="button" class="gaw-btn-return" id="gawReturnCancelBtn" style="border-color:#cbd5e1;color:#475569;">Cancel</button>
+            <button type="button" class="gaw-btn-return gaw-btn-return-outline" id="gawReturnCancelBtn">Cancel</button>
             <button type="button" class="gaw-btn-return" id="gawReturnConfirmBtn">
                 <?= smsIcon('x') ?> Return to Proponent
             </button>
@@ -200,5 +200,5 @@ renderBreadcrumbs($breadcrumbs);
     </div>
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=2"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-approval-live.js?v=3"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
