@@ -204,9 +204,8 @@
         var colSpan = canTrackRows ? 7 : 6;
 
         var evidenceSection = canTrackRows
-            ? '<div class="gpm-panel" style="margin-top:1rem;padding:1rem 0 0;border-top:1px solid #e2e8f0;">' +
-                '<h3 class="gpm-section-title" style="margin:0 0 .85rem;font-size:.95rem;font-weight:800;">' +
-                '<i class="ti ti-folder me-1"></i>Researcher Progress Evidence</h3>' +
+            ? '<div class="gpm-evidence-panel">' +
+                '<h3 class="gpm-section-title"><i class="ti ti-folder me-1"></i>Researcher Progress Evidence</h3>' +
                 '<div class="gpm-table-wrap"><table class="gpm-table"><thead><tr>' +
                 '<th>Submitted</th><th>Milestone</th><th>Title</th><th>File</th><th>Status</th>' +
                 '</tr></thead><tbody>' + buildEvidenceRows(evidence) + '</tbody></table></div></div>'

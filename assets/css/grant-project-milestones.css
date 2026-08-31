@@ -204,6 +204,19 @@
     background: #1e40af !important;
 }
 
+.gpm-section-title {
+    margin: 0 0 .85rem;
+    font-size: .95rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.gpm-evidence-panel {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gpm-border);
+}
+
 .gpm-btn-ghost {
     background: #fff !important;
     border-color: var(--gpm-border) !important;
@@ -324,4 +337,17 @@
     flex-shrink: 0;
     position: sticky;
     bottom: 0;
+}
+
+.gpm-section-title {
+    margin: 0 0 .85rem;
+    font-size: .95rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.gpm-evidence-panel {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gpm-border);
 }

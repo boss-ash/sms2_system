@@ -54,7 +54,7 @@ if ($crad) {
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-project-milestones.css?v=3" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-project-milestones.css?v=4" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gpm-alert" role="alert"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?></div>
@@ -179,6 +179,51 @@ renderBreadcrumbs($breadcrumbs);
                         </tbody>
                     </table>
                 </div>
+
+                <?php if ($canTrack):
+                    $researchEvidence = [];
+                    if ($selectedId > 0 && function_exists('grantGetFundedResearchEvidence')) {
+                        $researchEvidence = grantGetFundedResearchEvidence($crad, $selectedId);
+                    }
+                ?>
+                <div class="gpm-evidence-panel">
+                    <h3 class="gpm-section-title"><?= smsIcon('folder-open', ['class' => 'me-1']) ?>Researcher Progress Evidence</h3>
+                    <div class="gpm-table-wrap">
+                        <table class="gpm-table">
+                            <thead>
+                                <tr>
+                                    <th>Submitted</th>
+                                    <th>Milestone</th>
+                                    <th>Title</th>
+                                    <th>File</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if ($researchEvidence === []): ?>
+                                <tr><td colspan="5" style="text-align:center;padding:1.25rem;color:#64748b;">No researcher evidence submitted yet.</td></tr>
+                                <?php else: ?>
+                                <?php foreach ($researchEvidence as $evRow): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars(date('M j, Y g:i A', strtotime((string) ($evRow['created_at'] ?? 'now')))) ?></td>
+                                    <td><?= htmlspecialchars((string) ($evRow['milestone_name'] ?? '—')) ?></td>
+                                    <td><?= htmlspecialchars((string) ($evRow['evidence_title'] ?? '')) ?></td>
+                                    <td>
+                                        <?php if (!empty($evRow['has_file'])): ?>
+                                        <a href="<?= htmlspecialchars((string) ($evRow['file_url'] ?? '')) ?>" target="_blank" rel="noopener">
+                                            <?= smsIcon('file-alt') ?> <?= htmlspecialchars((string) ($evRow['file_original'] ?? 'View')) ?>
+                                        </a>
+                                        <?php else: ?>—<?php endif; ?>
+                                    </td>
+                                    <td><span class="gpm-status in-progress"><?= htmlspecialchars((string) ($evRow['status'] ?? 'Submitted')) ?></span></td>
+                                </tr>
+                                <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
     <?php endif; ?>
