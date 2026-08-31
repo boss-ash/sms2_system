@@ -13,6 +13,7 @@ require_once __DIR__ . '/../config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-helpers.php';
+require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
 
 requireAuth();
 
@@ -40,6 +41,7 @@ require_once ROOT_PATH . '/includes/breadcrumbs.php';
 $crad         = cradDb();
 $applications = [];
 $opportunities = [];
+$evaluationsByApp = [];
 $dbError      = '';
 
 if ($crad) {
@@ -51,6 +53,20 @@ if ($crad) {
             $applications = grantGetMyApplications($crad);
         }
         $opportunities = grantGetOpportunities($crad);
+        $feedbackAppIds = array_values(array_map(
+            static fn(array $row): int => (int) ($row['id'] ?? 0),
+            array_filter(
+                $applications,
+                static fn(array $row): bool => in_array(
+                    (string) ($row['status'] ?? ''),
+                    ['Rejected', 'Revision Required'],
+                    true
+                )
+            )
+        ));
+        if ($feedbackAppIds !== []) {
+            $evaluationsByApp = grantGetLatestEvaluationsForApplications($crad, $feedbackAppIds);
+        }
     } catch (Throwable $e) {
         $dbError = htmlspecialchars($e->getMessage());
         error_log('proposals-applications: ' . $e->getMessage());
