@@ -306,3 +306,30 @@
     font-size: .82rem;
     color: var(--sms-text-muted);
 }
+
+.gre-committee-ref {
+    margin: 0 0 1.25rem;
+    border: 1px solid var(--sms-border);
+    border-radius: 12px;
+    background: var(--sms-surface-muted, #f8fafc);
+}
+
+.gre-committee-ref-summary {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .85rem 1rem;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--sms-primary);
+    list-style: none;
+}
+
+.gre-committee-ref-summary::-webkit-details-marker {
+    display: none;
+}
+
+.gre-committee-ref-body {
+    padding: 0 1rem 1rem;
+    border-top: 1px solid var(--sms-border);
+}

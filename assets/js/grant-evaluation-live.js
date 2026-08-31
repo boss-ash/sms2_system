@@ -54,7 +54,7 @@
                     lastFingerprint = fp;
                     return;
                 }
-                if (fp !== lastFingerprint && !window.location.search.includes('id=')) {
+                if (fp !== lastFingerprint) {
                     window.location.reload();
                 }
             })
