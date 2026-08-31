@@ -157,63 +157,9 @@ function daBadge(string $status): string
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     SUMMARY CARDS  (all values from DB)
+     GRANT METRICS (real-time, all 11 KPIs)
      ════════════════════════════════════════════════════════════════════ -->
-<section class="mpl-stats" aria-label="Grant management summary" data-da-stats>
-    <article class="mpl-stat" data-stat="open">
-        <div class="mpl-stat-icon blue"><?= smsIcon('hand-holding-usd') ?></div>
-        <div>
-            <span>Active / Open Grants</span>
-            <strong><?= $stats['open'] ?></strong>
-        </div>
-    </article>
-    <article class="mpl-stat" data-stat="total_applications">
-        <div class="mpl-stat-icon green"><?= smsIcon('file-alt') ?></div>
-        <div>
-            <span>Submitted Applications</span>
-            <strong><?= $stats['total_applications'] ?></strong>
-        </div>
-    </article>
-    <article class="mpl-stat" data-stat="under_review">
-        <div class="mpl-stat-icon amber"><?= smsIcon('search') ?></div>
-        <div>
-            <span>Under Review</span>
-            <strong><?= $stats['under_review'] ?></strong>
-        </div>
-    </article>
-    <article class="mpl-stat" data-stat="approved">
-        <div class="mpl-stat-icon purple"><?= smsIcon('check-circle') ?></div>
-        <div>
-            <span>Approved</span>
-            <strong><?= $stats['approved'] ?></strong>
-        </div>
-    </article>
-</section>
-
-<!-- Secondary row -->
-<section class="mpl-stats" style="margin-top:0;" aria-label="Secondary stats">
-    <article class="mpl-stat" data-stat="total_opportunities">
-        <div class="mpl-stat-icon blue"><?= smsIcon('layer-group') ?></div>
-        <div><span>Total Grant Calls</span><strong><?= $stats['total_opportunities'] ?></strong></div>
-    </article>
-    <article class="mpl-stat" data-stat="total_funding_cap">
-        <div class="mpl-stat-icon green"><?= smsIcon('peso-sign') ?></div>
-        <div>
-            <span>Open Funding Cap (₱)</span>
-            <strong><?= $stats['total_funding_cap'] > 0
-                ? '₱' . number_format($stats['total_funding_cap'], 0)
-                : '₱0' ?></strong>
-        </div>
-    </article>
-    <article class="mpl-stat" data-stat="denied">
-        <div class="mpl-stat-icon amber"><?= smsIcon('ban') ?></div>
-        <div><span>Denied</span><strong><?= $stats['denied'] ?></strong></div>
-    </article>
-    <article class="mpl-stat" data-stat="expired">
-        <div class="mpl-stat-icon purple"><?= smsIcon('calendar-times') ?></div>
-        <div><span>Expired Grants</span><strong><?= $stats['expired'] ?></strong></div>
-    </article>
-</section>
+<?php include ROOT_PATH . '/dashboard/partials/grant-dashboard-metrics.php'; ?>
 
 <!-- ══════════════════════════════════════════════════════════════════════
      CHARTS ROW

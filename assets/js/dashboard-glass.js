@@ -85,7 +85,25 @@
         } else if (role === 'qa') {
             donutData = [32, 24, 18, 14, 12];
         } else if (role === 'crad_officer' || role === 'research_coordinator' || role === 'research_grant' || role === 'adviser' || role === 'panel' || role === 'research_director') {
-            donutData = [32, 22, 18, 14, 14];
+            var cradDonutRaw = board.getAttribute('data-crad-donut');
+            if (role === 'crad_officer' && cradDonutRaw) {
+                try {
+                    var cradDonut = JSON.parse(cradDonutRaw);
+                    var ongoing = Math.max(0, parseInt(cradDonut.ongoing, 10) || 0);
+                    var completed = Math.max(0, parseInt(cradDonut.completed, 10) || 0);
+                    if (ongoing + completed > 0) {
+                        donutData = [ongoing, completed];
+                        donutColors = [blue, green];
+                    } else {
+                        donutData = [1, 1];
+                        donutColors = [blue, green];
+                    }
+                } catch (e) {
+                    donutData = [32, 22, 18, 14, 14];
+                }
+            } else {
+                donutData = [32, 22, 18, 14, 14];
+            }
         }
 
         var trendData = [42, 55, 48, 70, 62, 78, 74, 90];
