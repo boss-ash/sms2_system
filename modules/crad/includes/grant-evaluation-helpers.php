@@ -289,11 +289,19 @@ function grantGetLatestEvaluationsForApplications(PDO $crad, array $applicationI
     $stmt = $crad->prepare("
         SELECT e.*
         FROM grant_proposal_evaluations e
+        INNER JOIN grant_applications ga ON ga.id = e.grant_application_id
         INNER JOIN (
-            SELECT grant_application_id, MAX(id) AS latest_id
-            FROM grant_proposal_evaluations
-            WHERE grant_application_id IN ({$placeholders})
-            GROUP BY grant_application_id
+            SELECT e2.grant_application_id, MAX(e2.id) AS latest_id
+            FROM grant_proposal_evaluations e2
+            INNER JOIN grant_applications ga2 ON ga2.id = e2.grant_application_id
+            WHERE e2.grant_application_id IN ({$placeholders})
+              AND e2.proposal_version = COALESCE(NULLIF(ga2.current_version, 0), 1)
+              AND (
+                    ga2.status NOT IN ('Revision Required', 'Rejected')
+                 OR (ga2.status = 'Revision Required' AND e2.recommendation = 'require_revisions')
+                 OR (ga2.status = 'Rejected' AND e2.recommendation = 'disapprove')
+              )
+            GROUP BY e2.grant_application_id
         ) latest ON latest.latest_id = e.id
     ");
     $stmt->execute($applicationIds);
@@ -359,7 +367,9 @@ function grantNotifyApplicantEvaluationDecision(
         return;
     }
 
-    $eventKey = 'grant-proposal:' . $type . ':' . $applicationId . ':u' . $recipientUserId;
+    $eventKey = 'grant-proposal:' . $type . ':' . $applicationId
+        . ':v' . max(1, (int) ($application['current_version'] ?? 1))
+        . ':u' . $recipientUserId;
     $stmt = $crad->prepare("
         INSERT INTO grant_proposal_notifications
             (event_key, recipient_user_id, recipient_role, recipient_email,
@@ -422,6 +432,17 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
     $newStatus = grantStatusForRecommendation($recommendation);
     if ($newStatus === null) {
         return ['ok' => false, 'error' => 'Invalid recommendation selected.'];
+    }
+
+    $currentStatus = (string) ($application['status'] ?? '');
+    if ($recommendation === 'recommend') {
+        if (in_array($currentStatus, ['Rejected', 'Revision Required'], true)) {
+            $newStatus = $currentStatus;
+        } elseif ($currentStatus === 'Submitted') {
+            $newStatus = 'Under Review';
+        } else {
+            $newStatus = $currentStatus !== '' ? $currentStatus : 'Under Review';
+        }
     }
 
     $revisionReason = trim((string) ($input['revision_reason'] ?? ''));
@@ -500,7 +521,16 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
             UPDATE grant_applications
                SET status = ?, updated_at = NOW()
              WHERE id = ?
+               AND status NOT IN ('Rejected', 'Revision Required', 'Approved', 'Denied', 'Withdrawn')
         ")->execute([$newStatus, $applicationId]);
+
+        if ($recommendation !== 'recommend') {
+            $crad->prepare("
+                UPDATE grant_applications
+                   SET status = ?, updated_at = NOW()
+                 WHERE id = ?
+            ")->execute([$newStatus, $applicationId]);
+        }
 
         if (in_array($recommendation, ['disapprove', 'require_revisions'], true)) {
             grantNotifyApplicantEvaluationDecision(
