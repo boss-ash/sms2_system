@@ -537,8 +537,11 @@ function requireModuleAccess(string $moduleKey): void
             '/modules/crad/pages/revisions-requested.php',
             '/modules/crad/pages/revise-proposal.php',
             '/modules/crad/pages/approved-funded.php',
+            '/modules/crad/pages/funded-research.php',
             '/modules/crad/pages/budget-disbursement.php',
             '/modules/crad/pages/project-milestones.php',
+            '/modules/crad/grant-funded-research-file.php',
+            '/modules/crad/grant-milestone-file.php',
         ];
         $grantReviewerPages = [
             '/modules/crad/pages/reviewer-evaluation.php',
