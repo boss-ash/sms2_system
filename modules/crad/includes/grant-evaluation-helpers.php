@@ -1477,7 +1477,9 @@ function grantApplyPipelineEvaluationRecommendation(
             }
         }
 
-        $crad->prepare("
+        if ($currentStep !== null) {
+            $returnedByLabel = grantApprovalReturnedByLabel($currentStep);
+            $crad->prepare("
             UPDATE grant_proposal_approval_steps
                SET status = 'Returned',
                    approver_user_id = ?,
@@ -1488,7 +1490,7 @@ function grantApplyPipelineEvaluationRecommendation(
              WHERE workflow_id = ? AND step_key = ?
         ")->execute([
             $evaluatorUserId > 0 ? $evaluatorUserId : null,
-            $evaluatorName,
+            $returnedByLabel,
             $revisionReason,
             $workflowId,
             $stepKey,
@@ -1505,7 +1507,7 @@ function grantApplyPipelineEvaluationRecommendation(
                 $crad,
                 $application,
                 $currentStep,
-                $evaluatorName,
+                $returnedByLabel,
                 $revisionReason
             );
         }
