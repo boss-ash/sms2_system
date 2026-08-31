@@ -218,6 +218,15 @@ renderBreadcrumbs($breadcrumbs);
         <?php if (!empty($existingEval['comments'])): ?><div class="gre-block"><h3>Comments</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['comments'])) ?></p></div><?php endif; ?>
         <?php if (!empty($existingEval['recommendations'])): ?><div class="gre-block"><h3>Recommendations</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['recommendations'])) ?></p></div><?php endif; ?>
         <?php if (!empty($existingEval['required_corrections'])): ?><div class="gre-block"><h3>Required Corrections</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['required_corrections'])) ?></p></div><?php endif; ?>
+        <?php if (!empty($existingEval['recommendation'])): ?>
+        <div class="gre-block">
+            <h3>Recommendation Decision</h3>
+            <p><strong><?= htmlspecialchars(grantRecommendationLabel((string) $existingEval['recommendation'])) ?></strong></p>
+            <?php if (!empty($existingEval['revision_reason'])): ?>
+                <p class="mb-0"><span style="font-size:.75rem;font-weight:700;color:var(--sms-text-muted);">Revision reason:</span><br><?= nl2br(htmlspecialchars((string) $existingEval['revision_reason'])) ?></p>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
 
         <?php else: ?>
         <h2><?= smsIcon('star-half-alt', ['class' => 'me-2 text-primary']) ?>Score Proposal Using Rubric</h2>
@@ -275,6 +284,25 @@ renderBreadcrumbs($breadcrumbs);
                 <label for="greCorrections" class="go-form-label">Required Corrections</label>
                 <textarea id="greCorrections" name="required_corrections" class="go-form-input" rows="3"
                           placeholder="List required corrections, if any…"></textarea>
+            </div>
+
+            <div class="gre-form-group">
+                <span class="go-form-label">Recommendation <span class="text-danger">*</span></span>
+                <div class="gre-recommendation-options" role="radiogroup" aria-label="Recommendation decision">
+                    <?php foreach (grantRecommendationOptions() as $value => $label): ?>
+                    <label class="gre-recommendation-option">
+                        <input type="radio" name="recommendation" value="<?= htmlspecialchars($value) ?>" required>
+                        <span><?= htmlspecialchars($label) ?></span>
+                    </label>
+                    <?php endforeach; ?>
+                </div>
+                <p class="gre-recommendation-hint">Disapprove ends the proposal. Require Revisions notifies the researcher with your feedback.</p>
+            </div>
+
+            <div class="gre-form-group" id="greRevisionReasonGroup" style="display:none;">
+                <label for="greRevisionReason" class="go-form-label">Revision Reason <span class="text-danger">*</span></label>
+                <textarea id="greRevisionReason" name="revision_reason" class="go-form-input" rows="3"
+                          placeholder="Explain what must be revised before resubmission…"></textarea>
             </div>
 
             <button type="submit" class="mpl-btn mpl-btn-primary" id="greSubmitBtn">
