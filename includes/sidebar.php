@@ -177,6 +177,9 @@ $studentNavGroups = [
         ['slug' => 'funded-research', 'href' => BASE_URL . '/modules/crad/pages/funded-research.php', 'icon' => 'fa-flask', 'label' => 'Funded Research', 'locked' => false],
         ['slug' => 'project-milestones', 'href' => BASE_URL . '/modules/crad/pages/project-milestones.php', 'icon' => 'fa-tasks', 'label' => 'Project Milestones', 'locked' => false],
     ],
+    'Outputs & Records' => [
+        ['slug' => 'publications-ip', 'href' => BASE_URL . '/modules/crad/pages/publications-ip.php', 'icon' => 'fa-book-open', 'label' => 'Publications & IP', 'locked' => false],
+    ],
     'System' => [
         ['slug' => 'security-settings', 'href' => BASE_URL . '/account/module-security.php?module=student_portal', 'icon' => 'fa-shield-alt', 'label' => 'Security Settings', 'locked' => false],
     ],

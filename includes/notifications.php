@@ -942,12 +942,16 @@ function smsGrantProposalNotificationsPayload(int $limit = 12): array
             || str_contains($batchKey, 'grant_approval_return');
         $isFundRelease = $notifType === 'grant_fund_release' || str_contains($batchKey, 'grant_fund_release');
         $isMilestoneUpdate = $notifType === 'grant_milestone_update' || str_contains($batchKey, 'grant_milestone_update');
+        $isFinalOutput = in_array($notifType, ['grant_final_output_submitted', 'grant_final_output_verified', 'grant_final_output_returned'], true)
+            || str_contains($batchKey, 'final_output');
         $isApprovedFunded = $notifType === 'grant_approved_funded' || str_contains($batchKey, 'grant_approved_funded');
         $icon = (string) ($row['icon'] ?? 'fa-hand-holding-usd');
         if ($isFundRelease) {
             $icon = 'fa-money-bill-wave';
         } elseif ($isMilestoneUpdate) {
             $icon = 'fa-tasks';
+        } elseif ($isFinalOutput) {
+            $icon = 'fa-book-open';
         } elseif ($isApprovedFunded) {
             $icon = 'fa-check-circle';
         } elseif ($isRevision) {
@@ -957,7 +961,7 @@ function smsGrantProposalNotificationsPayload(int $limit = 12): array
             'id' => (int) ($row['id'] ?? 0),
             'batch_key' => $batchKey,
             'icon' => $icon,
-            'class' => $isRevision ? 'text-warning' : ($isFundRelease ? 'text-success' : ($isMilestoneUpdate ? 'text-info' : 'text-primary')),
+            'class' => $isRevision ? 'text-warning' : ($isFundRelease ? 'text-success' : ($isMilestoneUpdate ? 'text-info' : ($isFinalOutput ? 'text-primary' : 'text-primary'))),
             'label' => (string) ($row['title'] ?? 'Grant Proposal Update'),
             'body' => $body,
             'preview' => smsNotificationPreviewText($body),

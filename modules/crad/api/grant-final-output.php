@@ -78,6 +78,7 @@ switch ($action) {
         }
 
         require_once ROOT_PATH . '/includes/security.php';
+        require_once ROOT_PATH . '/includes/uploads.php';
 
         $applicationId = (int) ($_POST['grant_application_id'] ?? 0);
         if ($applicationId <= 0) {
