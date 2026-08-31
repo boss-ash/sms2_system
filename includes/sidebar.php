@@ -455,7 +455,7 @@ $researchDirectorNavGroups = [
 
                 <?php foreach ($visibleModules as $navModuleKey => $module): ?>
                     <?php
-                    $isModuleActive = ($activeModule === $navModuleKey);
+                    $isModuleActive = ($highlightModule === $navModuleKey);
                     $moduleFolder = $navModuleKey === 'student_portal' ? 'student-portal' : $navModuleKey;
                     $overviewUrl = BASE_URL . '/modules/' . $moduleFolder . '/index.php';
                     $moduleInMaint = smsIsModuleInMaintenance((string) $navModuleKey);
