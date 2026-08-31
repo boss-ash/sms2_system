@@ -35,14 +35,14 @@
     function applyMetrics(metrics, flash) {
         if (!metrics) return;
 
-        root.querySelectorAll('[data-gdm-value]').forEach(function (el) {
+        document.querySelectorAll('[data-gdm-value]').forEach(function (el) {
             var key = el.getAttribute('data-gdm-value');
             if (!key || metrics[key] === undefined) return;
             var next = formatValue(key, metrics[key]);
             if (el.textContent !== next) {
                 el.textContent = next;
                 if (flash) {
-                    var card = el.closest('.gdm-card');
+                    var card = el.closest('.gdm-card') || el.closest('.perf-item');
                     if (card) {
                         card.classList.add('updated');
                         setTimeout(function () { card.classList.remove('updated'); }, 1200);

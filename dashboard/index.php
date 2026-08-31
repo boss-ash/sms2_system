@@ -609,10 +609,10 @@ if (smsIsGrantedAdminRole($roleKey)) {
         error_log('dashboard crad_officer grant stats: ' . $e->getMessage());
     }
     $statCards = [
-        ['icon'=>'fa-bullhorn',         'label'=>'Total Grant Calls',          'value'=>grantFormatDashboardMetricValue('total_grant_calls', $grantDashboardMetrics),         'type'=>'primary', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'from CRAD database'],
-        ['icon'=>'fa-file-alt',         'label'=>'Submitted Proposals',        'value'=>grantFormatDashboardMetricValue('submitted_proposals', $grantDashboardMetrics),       'type'=>'info',    'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'all applications'],
-        ['icon'=>'fa-check-circle',     'label'=>'Approved & Funded',        'value'=>grantFormatDashboardMetricValue('approved_funded_projects', $grantDashboardMetrics), 'type'=>'success', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'active funded projects'],
-        ['icon'=>'fa-peso-sign',        'label'=>'Total Funding Released',   'value'=>grantFormatDashboardMetricValue('total_funding', $grantDashboardMetrics),            'type'=>'warning', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'disbursements'],
+        ['icon'=>'fa-bullhorn',         'label'=>'Total Grant Calls',          'value'=>grantFormatDashboardMetricValue('total_grant_calls', $grantDashboardMetrics),         'metricKey'=>'total_grant_calls',        'type'=>'primary', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'from CRAD database'],
+        ['icon'=>'fa-file-alt',         'label'=>'Submitted Proposals',        'value'=>grantFormatDashboardMetricValue('submitted_proposals', $grantDashboardMetrics),       'metricKey'=>'submitted_proposals',      'type'=>'info',    'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'all applications'],
+        ['icon'=>'fa-check-circle',     'label'=>'Approved & Funded',        'value'=>grantFormatDashboardMetricValue('approved_funded_projects', $grantDashboardMetrics), 'metricKey'=>'approved_funded_projects', 'type'=>'success', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'active funded projects'],
+        ['icon'=>'fa-peso-sign',        'label'=>'Total Funding Released',   'value'=>grantFormatDashboardMetricValue('total_funding', $grantDashboardMetrics),            'metricKey'=>'total_funding',            'type'=>'warning', 'delta'=>'Live', 'deltaDir'=>'neutral', 'deltaLabel'=>'disbursements'],
     ];
 } elseif ($roleKey === 'research_coordinator') {
     $statCards = [

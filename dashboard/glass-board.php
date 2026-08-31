@@ -683,7 +683,7 @@ $trendDelta       = smsDashboardScaleDelta((string) $trendDelta, $dashboardPerio
                         <article class="perf-item">
                             <div class="perf-icon <?= $tone ?>"><?= smsIcon($card['icon'], ['aria-hidden' => 'true']) ?></div>
                             <p class="perf-label"><?= htmlspecialchars($card['label']) ?></p>
-                            <p class="perf-value"><?= htmlspecialchars($card['value']) ?></p>
+                            <p class="perf-value"<?php if (!empty($card['metricKey'])): ?> data-gdm-value="<?= htmlspecialchars((string) $card['metricKey']) ?>"<?php endif; ?>><?= htmlspecialchars($card['value']) ?></p>
                             <p class="perf-trend <?= htmlspecialchars($dir) ?>">
                                 <?= smsIcon($arrow, ['aria-hidden' => 'true']) ?>
                                 <?= htmlspecialchars($card['delta'] ?? '') ?>
