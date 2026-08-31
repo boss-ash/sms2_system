@@ -290,12 +290,20 @@ if ($roleKey === 'adviser') {
     $facultyAccountNavGroups = $facultyInsert;
 }
 
-$grantApprovalSidebarRoles = ['hr', 'qa', 'research_coordinator'];
-$grantApprovalSidebarItem = [
-    'slug' => 'approval-workflows',
-    'href' => BASE_URL . '/modules/crad/pages/approval-workflows.php',
-    'icon' => 'fa-tasks',
-    'label' => 'Approval Workflows',
+$grantApprovalSidebarRoles = ['hr', 'qa', 'research_coordinator', 'crad_officer'];
+$grantApprovalSidebarItems = [
+    [
+        'slug' => 'reviewer-evaluation',
+        'href' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php',
+        'icon' => 'fa-clipboard-check',
+        'label' => 'Reviewer Evaluation',
+    ],
+    [
+        'slug' => 'approval-workflows',
+        'href' => BASE_URL . '/modules/crad/pages/approval-workflows.php',
+        'icon' => 'fa-tasks',
+        'label' => 'Approval Workflows',
+    ],
 ];
 
 $grammarianNavGroups = [
@@ -517,8 +525,9 @@ $researchDirectorNavGroups = [
 
                 <?php if ($sidebarMode === 'admin_modules' && in_array($roleKey, $grantApprovalSidebarRoles, true)): ?>
                     <?php
-                    $gawActive = (($activePage ?? '') === 'approval-workflows');
+                    $gawActive = in_array(($activePage ?? ''), ['approval-workflows', 'reviewer-evaluation'], true);
                     $gawCollapseId = 'navGrp_grant_approval_workflow';
+                    $gawOverviewUrl = $grantApprovalSidebarItems[0]['href'];
                     ?>
                     <li class="nav-item admin-module-item">
                         <button type="button"
@@ -527,25 +536,27 @@ $researchDirectorNavGroups = [
                                 data-bs-target="#<?= htmlspecialchars($gawCollapseId) ?>"
                                 aria-expanded="<?= $gawActive ? 'true' : 'false' ?>"
                                 aria-controls="<?= htmlspecialchars($gawCollapseId) ?>"
-                                data-overview-url="<?= htmlspecialchars($grantApprovalSidebarItem['href']) ?>"
+                                data-overview-url="<?= htmlspecialchars($gawOverviewUrl) ?>"
                                 data-title="Review &amp; Workflow"
                                 title="Review &amp; Workflow">
-                            <?= smsIcon('tasks', ['aria-hidden' => 'true']) ?>
+                            <?= smsIcon('clipboard-check', ['aria-hidden' => 'true']) ?>
                             <span>Review &amp; Workflow</span>
                             <?= smsIcon('chevron-down', ['class' => 'sidebar-chevron ms-auto', 'aria-hidden' => 'true']) ?>
                         </button>
                         <div class="collapse admin-module-body sidebar-submenu <?= $gawActive ? 'show' : '' ?>"
                              id="<?= htmlspecialchars($gawCollapseId) ?>">
                             <ul class="nav flex-column">
+                                <?php foreach ($grantApprovalSidebarItems as $gawItem): ?>
                                 <li class="nav-item">
-                                    <a class="nav-link sidebar-sub <?= $gawActive ? 'active' : '' ?>"
-                                       href="<?= htmlspecialchars($grantApprovalSidebarItem['href']) ?>"
-                                       data-title="<?= htmlspecialchars($grantApprovalSidebarItem['label']) ?>"
-                                       title="<?= htmlspecialchars($grantApprovalSidebarItem['label']) ?>">
-                                        <?= smsIcon($grantApprovalSidebarItem['icon'], ['aria-hidden' => 'true']) ?>
-                                        <span><?= htmlspecialchars($grantApprovalSidebarItem['label']) ?></span>
+                                    <a class="nav-link sidebar-sub <?= (($activePage ?? '') === $gawItem['slug']) ? 'active' : '' ?>"
+                                       href="<?= htmlspecialchars($gawItem['href']) ?>"
+                                       data-title="<?= htmlspecialchars($gawItem['label']) ?>"
+                                       title="<?= htmlspecialchars($gawItem['label']) ?>">
+                                        <?= smsIcon($gawItem['icon'], ['aria-hidden' => 'true']) ?>
+                                        <span><?= htmlspecialchars($gawItem['label']) ?></span>
                                     </a>
                                 </li>
+                                <?php endforeach; ?>
                             </ul>
                         </div>
                     </li>
