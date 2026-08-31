@@ -692,6 +692,8 @@ function rdScheduleConflictMessages(PDO $pdo, int $groupId, int $venueId, string
     return array_values(array_unique($messages));
 }
 
+require_once __DIR__ . '/../includes/rd-scheduling-optimizer.php';
+
 $requestedDefenseType = trim((string) ($_GET['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL));
 if (!in_array($requestedDefenseType, [CRAD_DEFENSE_TYPE_PRE_ORAL, CRAD_DEFENSE_TYPE_FINAL], true)) {
     $requestedDefenseType = CRAD_DEFENSE_TYPE_PRE_ORAL;
@@ -857,6 +859,38 @@ if ($crad) {
                 }
             }
         }
+    }
+
+    if ($view === 'manual-scheduling-optimizer'
+        && $_SERVER['REQUEST_METHOD'] === 'POST'
+        && ($_POST['schedule_action'] ?? '') === 'ai_generate_slots') {
+        header('Content-Type: application/json; charset=utf-8');
+        if (!csrfVerify()) {
+            echo json_encode(['ok' => false, 'message' => 'Security token expired.']);
+            exit;
+        }
+
+        $groupId = (int) ($_POST['research_group_id'] ?? ($_GET['group_id'] ?? 0));
+        $defenseType = trim((string) ($_POST['defense_type'] ?? $requestedDefenseType));
+        if (!in_array($defenseType, [CRAD_DEFENSE_TYPE_PRE_ORAL, CRAD_DEFENSE_TYPE_FINAL], true)) {
+            $defenseType = CRAD_DEFENSE_TYPE_PRE_ORAL;
+        }
+
+        $periodStart = trim((string) ($_POST['period_start'] ?? ''));
+        $periodEnd   = trim((string) ($_POST['period_end'] ?? ''));
+        $expectedAttendees = max(1, (int) ($_POST['expected_attendees'] ?? 15));
+
+        $result = rdScheduleGenerateOptimizedSlots(
+            $crad,
+            $groupId,
+            $defenseType,
+            $periodStart,
+            $periodEnd,
+            $expectedAttendees
+        );
+
+        echo json_encode($result);
+        exit;
     }
 
     if (in_array($view, ['manual-scheduling-optimizer', 'alternative-time-slots'], true)
