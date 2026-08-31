@@ -16,11 +16,14 @@ $pageTitle             = 'Reviewer Evaluation';
 $activeModule          = grantEvaluationActiveModuleKey();
 $activePage            = 'reviewer-evaluation';
 $pageBannerIcon        = 'fa-clipboard-check';
-$pageBannerDescription = 'Score research grant proposals submitted for committee review.';
+$pageBannerDescription = grantIsAdviserEvaluationViewer()
+    ? 'Review committee scores before your administrative sign-off.'
+    : 'Score research grant proposals submitted for committee review.';
 $hideModulePageBanner  = true;
+$isAdviserView         = grantIsAdviserEvaluationViewer();
 
 $breadcrumbs = [
-    ['label' => 'Research Grant', 'url' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php'],
+    ['label' => grantEvaluationBreadcrumbModuleLabel(), 'url' => grantEvaluationBreadcrumbModuleUrl()],
     ['label' => 'Reviewer Evaluation', 'url' => null],
 ];
 
@@ -32,6 +35,9 @@ $dbError = '';
 $selectedId = (int) ($_GET['id'] ?? 0);
 $selected   = null;
 $existingEval = null;
+$committeeEval = null;
+$approvalDetail = null;
+$canSignApproval = false;
 
 $rubric = grantRubricCriteria();
 
@@ -40,10 +46,16 @@ if ($crad) {
         $queue = grantEvaluationQueue($crad);
         if ($selectedId > 0) {
             $selected = grantGetApplicationForEvaluation($crad, $selectedId);
-            if ($selected && !in_array((string) ($selected['status'] ?? ''), ['Submitted', 'Under Review'], true)) {
+            if ($selected && !grantApplicationOpenForEvaluationViewer($crad, $selectedId)) {
                 $selected = null;
             }
-            if ($selected) {
+            if ($selected && $isAdviserView) {
+                require_once __DIR__ . '/../includes/grant-approval-helpers.php';
+                $evals = grantGetLatestEvaluationsForApplications($crad, [$selectedId]);
+                $committeeEval = $evals[$selectedId] ?? null;
+                $approvalDetail = grantGetApprovalWorkflowDetail($crad, $selectedId);
+                $canSignApproval = !empty($approvalDetail['can_act']);
+            } elseif ($selected) {
                 $existingEval = grantGetEvaluationByApplication($crad, $selectedId);
             }
         }
