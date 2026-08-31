@@ -51,6 +51,9 @@ $selected   = null;
 $existingEval = null;
 $committeeEval = null;
 $adviserEval = null;
+$pipelineEvals = [];
+$approverRoleLabel = '';
+$currentApproverEvalType = null;
 $approvalDetail = null;
 $canSignApproval = false;
 
