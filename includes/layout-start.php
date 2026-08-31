@@ -36,6 +36,16 @@ $activePage   = $activePage ?? '';
 $breadcrumbs  = $breadcrumbs ?? [];
 $bodyClass    = 'sms-app';
 
+require_once ROOT_PATH . '/includes/navigation-context.php';
+$layoutRoleKey = getCurrentUserRoleKey();
+$activeModule = smsEffectiveActiveModule((string) $activeModule, $layoutRoleKey);
+if ($activePage === '') {
+    $activePage = smsResolveActivePageFromRequest();
+}
+if ($activePage === '' && str_ends_with($scriptPath, '/dashboard/index.php') && smsSidebarMode($layoutRoleKey) === 'student') {
+    $activePage = 'dashboard';
+}
+
 requireModuleAccess($activeModule);
 
 require_once ROOT_PATH . '/includes/header.php';
