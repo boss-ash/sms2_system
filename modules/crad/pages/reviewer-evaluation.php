@@ -240,9 +240,9 @@ renderBreadcrumbs($breadcrumbs);
                     <td>
                         <a class="mpl-btn mpl-btn-primary mpl-btn-sm"
                            href="?id=<?= (int) $row['id'] ?>">
-                            <?= $isAdviserView
+                            <?= $isAdviserView || $isApproverView
                                 ? ($isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score')
-                                : ($isApproverView || $isMonitorView
+                                : ($isMonitorView
                                     ? smsIcon('eye') . ' Review'
                                     : ($isScored ? smsIcon('eye') . ' View' : smsIcon('star-half-alt') . ' Score')) ?>
                         </a>
