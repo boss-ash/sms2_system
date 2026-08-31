@@ -94,7 +94,7 @@ if ($isCradPage && strpos(' ' . $bodyClass . ' ', ' crad-app ') === false) {
     <link href="<?= BASE_URL ?>/assets/css/components.css?v=6" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/module-process-list.css?v=3" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/navbar-components.css?v=7" rel="stylesheet">
-    <link href="<?= BASE_URL ?>/assets/css/dashboard-academic.css?v=2" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/dashboard-academic.css?v=3" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/loader.css?v=3" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/sms-security-ui.css?v=20" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/password-strength.css?v=2" rel="stylesheet">

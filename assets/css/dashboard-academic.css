@@ -201,7 +201,7 @@
     flex-wrap: wrap;
 }
 
-.glass-panel-head > div {
+.glass-panel-head > div:first-child {
     min-width: 0;
     flex: 1 1 auto;
 }
@@ -250,6 +250,9 @@
 
 .glass-period-filter {
     position: relative;
+    flex: 0 0 auto;
+    margin-left: auto;
+    align-self: flex-start;
 }
 
 .glass-period-btn,
