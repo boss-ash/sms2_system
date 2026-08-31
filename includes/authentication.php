@@ -502,6 +502,9 @@ function requireModuleAccess(string $moduleKey): void
             '/modules/crad/pages/assign-panel-members.php',
             '/modules/crad/pages/send-notifications.php',
             '/modules/crad/pages/manage-assignments.php',
+            '/modules/crad/pages/reviewer-evaluation.php',
+            '/modules/crad/pages/approval-workflows.php',
+            '/modules/crad/grant-proposal-file.php',
         ];
         $isAllowedCoordinatorPage = false;
         foreach ($allowedCoordinatorPages as $allowedPath) {

@@ -504,6 +504,7 @@ $MODULES = [
                 'proposals-applications',
             ],
             'Review & Workflow' => [
+                'reviewer-evaluation',
                 'approval-workflows',
             ],
             'Research Documents' => [
@@ -528,6 +529,7 @@ $MODULES = [
             ['slug' => 'dashboard-analytics', 'title' => 'Dashboard & Analytics'],
             ['slug' => 'grant-opportunities', 'title' => 'Grant Opportunities'],
             ['slug' => 'proposals-applications', 'title' => 'Proposals & Applications'],
+            ['slug' => 'reviewer-evaluation', 'title' => 'Reviewer Evaluation'],
             ['slug' => 'approval-workflows', 'title' => 'Approval Workflows'],
             ['slug' => 'documentation-publication-management', 'title' => 'Documentation & Publication Management'],
             ['slug' => 'final-manuscript-review', 'title' => 'Final Manuscript Review'],
