@@ -266,7 +266,7 @@ if (!function_exists('smsRoleHomeIsActive')) {
             'hr'                => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true)
                 || str_contains($scriptPath, '/modules/crad/pages/approval-workflows.php')
                 || str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),
-            'department_chair', 'research_office', 'vpaa' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true),
+            'department_chair', 'research_office', 'vpaa', 'finance' => in_array($activePage, ['approval-workflows', 'reviewer-evaluation'], true),
             'research_coordinator' => str_contains($scriptPath, '/modules/crad/index.php'),
             'research_grant' => str_contains($scriptPath, '/modules/crad/pages/grant-opportunities.php'),
             'review_committee' => str_contains($scriptPath, '/modules/crad/pages/reviewer-evaluation.php'),

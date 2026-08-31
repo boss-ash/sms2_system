@@ -572,6 +572,7 @@ $researchDirectorNavGroups = [
                              id="<?= htmlspecialchars($gawCollapseId) ?>">
                             <ul class="nav flex-column">
                                 <?php foreach ($grantApprovalSidebarItems as $gawItem): ?>
+                                <?php if ($roleKey === 'finance' && ($gawItem['slug'] ?? '') === 'reviewer-evaluation') { continue; } ?>
                                 <li class="nav-item">
                                     <a class="nav-link sidebar-sub <?= (($activePage ?? '') === $gawItem['slug']) ? 'active' : '' ?>"
                                        href="<?= htmlspecialchars($gawItem['href']) ?>"
