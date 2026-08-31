@@ -517,12 +517,3 @@ button:focus-visible,
         opacity: 1 !important;
     }
 }
-
-/* Theme picker — avoid mid-word breaks from global dropdown-item rules */
-.sms-theme-option,
-.sms-theme-option .sms-theme-option-label,
-.sms-theme-option .sms-theme-option-hint {
-    overflow-wrap: normal;
-    word-break: normal;
-    white-space: nowrap;
-}
