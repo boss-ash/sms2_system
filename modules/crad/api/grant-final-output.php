@@ -49,6 +49,26 @@ $uploadOpts = [
 ];
 
 switch ($action) {
+    case 'outputs_stats':
+        if (!grantUserCanVerifyPublicationsIp()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            break;
+        }
+        require_once __DIR__ . '/../includes/grant-document-repository-helpers.php';
+        $overview = grantGetFinalOutputOverview($crad);
+        $repoOverview = grantGetDocumentRepositoryOverview($crad);
+        echo json_encode([
+            'success'               => true,
+            'pending_verification'  => count(array_filter($overview, static fn(array $r): bool => !empty($r['needs_verification']))),
+            'pending_archive'       => count(array_filter($repoOverview, static fn(array $r): bool => !empty($r['needs_archive']))),
+            'stats_fingerprint'     => md5(implode('|', [
+                grantFinalOutputOverviewFingerprint($overview),
+                grantDocumentRepositoryOverviewFingerprint($repoOverview),
+            ])),
+        ]);
+        break;
+
     case 'get_overview':
         $overview = grantGetFinalOutputOverview($crad);
         $selectedId = (int) ($_GET['id'] ?? 0);
