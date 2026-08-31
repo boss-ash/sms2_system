@@ -597,7 +597,8 @@ function grantResubmitProposal(PDO $crad, int $applicationId, array $data, array
                    ethics_doc = ?,
                    ethics_doc_original = ?,
                    current_version = ?,
-                   status = 'Resubmitted',
+                   status = 'Under Review',
+                   submitted_at = NOW(),
                    updated_at = NOW()
              WHERE id = ?
         ")->execute([
@@ -610,14 +611,6 @@ function grantResubmitProposal(PDO $crad, int $applicationId, array $data, array
             $nextVersion,
             $applicationId,
         ]);
-
-        $crad->prepare("
-            UPDATE grant_applications
-               SET status = 'Under Review',
-                   submitted_at = NOW(),
-                   updated_at = NOW()
-             WHERE id = ?
-        ")->execute([$applicationId]);
 
         $crad->commit();
 

@@ -111,6 +111,11 @@ switch ($action) {
     // ── Read actions ──────────────────────────────────────────────────────────
 
     case 'get_dashboard_stats':
+        if (!grantUserCanManage()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            exit;
+        }
         echo json_encode(['success' => true, 'stats' => grantDashboardStats($crad)]);
         break;
 

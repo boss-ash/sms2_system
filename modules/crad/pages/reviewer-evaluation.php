@@ -411,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alertEl.style.display = '';
                 alertEl.style.background = 'rgba(239,68,68,.08)';
                 alertEl.style.color = '#b91c1c';
-                alertEl.textContent = 'Please select a recommendation (Disapprove or Require Revisions).';
+                alertEl.textContent = 'Please select a recommendation.';
                 return;
             }
             if (recommendation.value === 'require_revisions') {

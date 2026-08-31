@@ -37,7 +37,7 @@ if ($crad && $applicationId > 0) {
             $versions   = grantGetProposalVersions($crad, $applicationId);
         }
     } catch (Throwable $e) {
-        $dbError = htmlspecialchars($e->getMessage());
+        $dbError = $e->getMessage();
         error_log('revise-proposal: ' . $e->getMessage());
     }
 } elseif ($applicationId <= 0) {
