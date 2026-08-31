@@ -1607,7 +1607,7 @@ hr { border-color: var(--sms-border); opacity: 1; }
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.72rem;
+    font-size: 0.76rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     line-height: 1;
