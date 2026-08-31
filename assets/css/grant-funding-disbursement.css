@@ -275,14 +275,21 @@
     text-decoration: none;
 }
 
-.gfd-btn-release {
+.gfd-tranche-card .gfd-btn-release {
     background: var(--gfd-green) !important;
     border-color: var(--gfd-green) !important;
     color: #fff !important;
     margin-top: .35rem;
 }
 
-.gfd-btn-release:hover {
+.gfd-dialog-actions .gfd-btn-release {
+    margin-top: 0;
+    min-width: 9.5rem;
+    justify-content: center;
+}
+
+.gfd-tranche-card .gfd-btn-release:hover,
+.gfd-dialog-actions .gfd-btn-release:hover {
     background: #14532d !important;
 }
 
@@ -315,10 +322,34 @@
 
 .gfd-dialog-box {
     width: min(100%, 460px);
+    max-height: min(90vh, 640px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     background: #fff;
     border-radius: 12px;
-    padding: 1.1rem 1.15rem;
+    padding: 1.1rem 1.15rem 0;
     box-shadow: 0 20px 40px rgba(15, 23, 42, .18);
+}
+
+.gfd-dialog-header {
+    flex-shrink: 0;
+    padding-bottom: .75rem;
+}
+
+.gfd-dialog-form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+}
+
+.gfd-dialog-body {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    padding-right: .15rem;
+    padding-bottom: .5rem;
 }
 
 .gfd-dialog-box h3 {
@@ -353,8 +384,15 @@
 .gfd-dialog-actions {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: .5rem;
-    margin-top: 1rem;
+    margin-top: 0;
+    padding: .9rem 0 1.1rem;
+    border-top: 1px solid var(--gfd-border);
+    background: #fff;
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
 }
 
 @media (max-width: 640px) {

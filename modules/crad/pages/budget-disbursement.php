@@ -53,7 +53,7 @@ if ($crad) {
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-funding-disbursement.css?v=1" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-funding-disbursement.css?v=2" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gfd-alert" role="alert"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?></div>
@@ -196,22 +196,25 @@ renderBreadcrumbs($breadcrumbs);
 <?php if ($canRelease): ?>
 <div class="gfd-dialog" id="gfdReleaseDialog" role="dialog" aria-modal="true" aria-labelledby="gfdReleaseTitle">
     <div class="gfd-dialog-box">
-        <h3 id="gfdReleaseTitle"><?= smsIcon('money-bill-wave') ?> Record Fund Release</h3>
-        <p class="gfd-dialog-lead" id="gfdReleaseTrancheLabel">Tranche 1</p>
-        <form id="gfdReleaseForm" class="gfd-form">
+        <div class="gfd-dialog-header">
+            <h3 id="gfdReleaseTitle"><?= smsIcon('money-bill-wave') ?> Record Fund Release</h3>
+            <p class="gfd-dialog-lead" id="gfdReleaseTrancheLabel">Tranche 1</p>
+        </div>
+        <form id="gfdReleaseForm" class="gfd-form gfd-dialog-form">
             <input type="hidden" id="gfdReleaseDisbursementId" name="disbursement_id" value="">
-            <label for="gfdReleaseAmount">Amount Released (₱)</label>
-            <input type="number" id="gfdReleaseAmount" name="amount_released" min="0" step="0.01" required>
+            <div class="gfd-dialog-body">
+                <label for="gfdReleaseAmount">Amount Released (₱)</label>
+                <input type="number" id="gfdReleaseAmount" name="amount_released" min="0" step="0.01" required>
 
-            <label for="gfdReleaseDate">Release Date</label>
-            <input type="date" id="gfdReleaseDate" name="release_date" required>
+                <label for="gfdReleaseDate">Release Date</label>
+                <input type="date" id="gfdReleaseDate" name="release_date" required>
 
-            <label for="gfdReleaseReference">Reference Number</label>
-            <input type="text" id="gfdReleaseReference" name="reference_number" placeholder="Auto-generated if blank">
+                <label for="gfdReleaseReference">Reference Number</label>
+                <input type="text" id="gfdReleaseReference" name="reference_number" placeholder="Auto-generated if blank">
 
-            <label for="gfdReleaseRemarks">Remarks</label>
-            <textarea id="gfdReleaseRemarks" name="remarks" rows="3" placeholder="Optional notes for audit trail…"></textarea>
-
+                <label for="gfdReleaseRemarks">Remarks</label>
+                <textarea id="gfdReleaseRemarks" name="remarks" rows="3" placeholder="Optional notes for audit trail…"></textarea>
+            </div>
             <div class="gfd-dialog-actions">
                 <button type="button" class="gfd-btn gfd-btn-ghost" id="gfdReleaseCancelBtn">Cancel</button>
                 <button type="submit" class="gfd-btn gfd-btn-release" id="gfdReleaseConfirmBtn">
