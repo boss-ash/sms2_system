@@ -32,10 +32,15 @@ try {
 }
 
 switch ($action) {
-    case 'get_queue':
+        case 'get_queue':
         $queue = grantEvaluationQueue($crad);
-        $pending = count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
-        $scored  = count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])));
+        if (grantIsAdviserEvaluationViewer()) {
+            $pending = count($queue);
+            $scored  = grantAdviserEvaluationSignedCount($crad);
+        } else {
+            $pending = count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])));
+            $scored  = count(array_filter($queue, static fn(array $r): bool => !empty($r['my_evaluation_id'])));
+        }
         echo json_encode([
             'success' => true,
             'queue'   => $queue,
