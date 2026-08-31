@@ -302,30 +302,13 @@ $deanGrantNavGroups = [
         ['slug' => 'evaluation-summary', 'href' => $deanFacultyBaseUrl . 'evaluation-summary.php', 'icon' => 'fa-star', 'label' => 'Evaluation Summary'],
         ['slug' => 'faculty-directory', 'href' => $deanFacultyBaseUrl . 'faculty-directory.php', 'icon' => 'fa-address-book', 'label' => 'Faculty Directory'],
     ],
-    'Review & Workflow' => [
-        ['slug' => 'reviewer-evaluation', 'href' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php', 'icon' => 'fa-clipboard-check', 'label' => 'Reviewer Evaluation'],
-        ['slug' => 'approval-workflows', 'href' => BASE_URL . '/modules/crad/pages/approval-workflows.php', 'icon' => 'fa-tasks', 'label' => 'Approval Workflows'],
-    ],
+    'Review & Workflow' => grantReviewWorkflowSidebarItems('hr'),
     'System' => [
         ['slug' => 'security-settings', 'href' => BASE_URL . '/account/module-security.php?module=faculty', 'icon' => 'fa-shield-alt', 'label' => 'Security Settings'],
     ],
 ];
 
 $grantApprovalSidebarRoles = ['qa', 'vpaa', 'department_chair', 'research_office'];
-$grantApprovalSidebarItems = [
-    [
-        'slug' => 'reviewer-evaluation',
-        'href' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php',
-        'icon' => 'fa-clipboard-check',
-        'label' => 'Reviewer Evaluation',
-    ],
-    [
-        'slug' => 'approval-workflows',
-        'href' => BASE_URL . '/modules/crad/pages/approval-workflows.php',
-        'icon' => 'fa-tasks',
-        'label' => 'Approval Workflows',
-    ],
-];
 
 $grammarianNavGroups = [
     'Evaluation' => [
@@ -548,6 +531,7 @@ $researchDirectorNavGroups = [
 
                 <?php if ($sidebarMode === 'admin_modules' && in_array($roleKey, $grantApprovalSidebarRoles, true)): ?>
                     <?php
+                    $grantApprovalSidebarItems = grantReviewWorkflowSidebarItems($roleKey);
                     $gawActive = in_array(($activePage ?? ''), ['approval-workflows', 'reviewer-evaluation'], true);
                     $gawCollapseId = 'navGrp_grant_approval_workflow';
                     $gawOverviewUrl = $grantApprovalSidebarItems[0]['href'];

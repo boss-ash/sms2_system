@@ -322,6 +322,10 @@ $MODULES = [
             'Reports' => [
                 'accreditation-reports-analytics',
             ],
+            'Review & Workflow' => [
+                'reviewer-evaluation',
+                'approval-workflows',
+            ],
         ],
         'pages' => [
             ['slug' => 'accreditation-document-repository', 'title' => 'Accreditation Document Repository'],
