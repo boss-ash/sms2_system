@@ -1,7 +1,7 @@
 <?php
 /**
  * CRAD Module — Database Installer
- * Run this ONCE via browser: /sms2_system/modules/crad/database/install.php
+ * Run this ONCE via browser: /SMS2_system/modules/crad/database/install.php
  * or via CLI:  php modules/crad/database/install.php
  *
  * Creates the crad_db database and all required tables.

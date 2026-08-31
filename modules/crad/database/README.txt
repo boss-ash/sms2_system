@@ -13,7 +13,7 @@ PAANO MAG-INSTALL
 1. I-start ang XAMPP (Apache + MySQL)
 2. Buksan ang browser at pumunta sa:
 
-   http://localhost/sms2_system/modules/crad/database/install.php
+   http://localhost/SMS2_system/modules/crad/database/install.php
 
 3. Makikita mo ang installation progress. Dapat makita mo ang:
    ✔ Connected to MySQL
@@ -30,7 +30,7 @@ ALTERNATE: CLI INSTALLATION
 ----------------------------
 Kung gusto mo via command line:
 
-   cd F:\xampp\htdocs\sms2_system
+   cd F:\xampp\htdocs\SMS2_system
    php modules/crad/database/install.php
 
 TABLES CREATED

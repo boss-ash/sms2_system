@@ -25,7 +25,7 @@
         /**
          * Resolve the app's base URL from the current page path so polling
          * works both at the domain root and inside a subdirectory install
-         * (e.g. /sms2_system). The legacy hardcoded config.apiBaseUrl broke
+         * (e.g. /SMS2_system). The legacy hardcoded config.apiBaseUrl broke
          * every poll request on subdirectory installs.
          */
         resolveBaseUrl: function() {

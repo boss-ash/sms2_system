@@ -56,16 +56,6 @@ if (!function_exists('sms2_env_first')) {
 if (!function_exists('sms2_detect_base_url')) {
     function sms2_detect_base_url(): string
     {
-        if (PHP_SAPI === 'cli' && defined('ROOT_PATH')) {
-            $folder = basename(str_replace('\\', '/', (string) ROOT_PATH));
-            if (strcasecmp($folder, 'sms2_system') === 0) {
-                return '/sms2_system';
-            }
-            if ($folder !== '' && $folder !== '.' && $folder !== '..') {
-                return '/' . $folder;
-            }
-        }
-
         $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
         $markers = [
             '/account/',
@@ -91,37 +81,10 @@ if (!function_exists('sms2_detect_base_url')) {
     }
 }
 
-if (!function_exists('sms2_normalize_base_url')) {
-    /**
-     * Canonical lowercase path for the local XAMPP install folder.
-     * Visiting /SMS2_system still works on Windows, but links always use /sms2_system.
-     */
-    function sms2_normalize_base_url(string $url): string
-    {
-        $url = rtrim($url, '/');
-        if ($url === '' || $url === '/') {
-            return '';
-        }
-
-        $segments = explode('/', trim($url, '/'));
-        $lastIndex = count($segments) - 1;
-        if ($lastIndex >= 0 && strcasecmp((string) $segments[$lastIndex], 'sms2_system') === 0) {
-            $segments[$lastIndex] = 'sms2_system';
-            return '/' . implode('/', $segments);
-        }
-
-        return $url;
-    }
-}
-
 // Auto-detect the folder name so the app still works when copied to another
 // XAMPP htdocs directory. Set SMS2_BASE_URL or APP_BASE_URL to override.
 if (!defined('BASE_URL')) {
-    $detectedBaseUrl = rtrim(
-        (string) sms2_env('SMS2_BASE_URL', sms2_env('APP_BASE_URL', sms2_detect_base_url())),
-        '/'
-    );
-    define('BASE_URL', sms2_normalize_base_url($detectedBaseUrl));
+    define('BASE_URL', rtrim((string) sms2_env('SMS2_BASE_URL', sms2_env('APP_BASE_URL', sms2_detect_base_url())), '/'));
 }
 
 if (!function_exists('smsBrandLogoUrl')) {
