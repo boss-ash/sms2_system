@@ -60,12 +60,8 @@ $breadcrumbs = [
 require_once ROOT_PATH . '/includes/breadcrumbs.php';
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
-
-$ref         = (string) ($application['proposal_reference'] ?? '');
-$nextVersion = max(1, (int) ($application['current_version'] ?? 1)) + 1;
 ?>
 <link href="<?= BASE_URL ?>/assets/css/module-process-list.css?v=2" rel="stylesheet">
-
 <link href="<?= BASE_URL ?>/assets/css/grant-reviewer-evaluation.css?v=2" rel="stylesheet">
 
 <?php if ($dbError !== '' || !$application): ?>
