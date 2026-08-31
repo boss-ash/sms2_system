@@ -117,7 +117,7 @@ renderBreadcrumbs($breadcrumbs);
                         $reason = '—';
                         $returnedAt = (string) ($row['updated_at'] ?? '');
                         if ($approvalReturn) {
-                            $returnedBy = (string) ($approvalReturn['approver_name'] ?? grantApprovalRoleLabel((string) ($approvalReturn['approver_role_key'] ?? '')));
+                            $returnedBy = grantApprovalReturnedByLabel($approvalReturn);
                             $level = (int) ($approvalReturn['step_order'] ?? 0);
                             if ($level > 0) {
                                 $returnedBy .= ' (Level ' . $level . ')';

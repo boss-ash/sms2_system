@@ -308,7 +308,7 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Access denied.']);
             exit;
         }
-        $revisions = grantGetMyRevisionRequiredApplications($crad);
+        $revisions = grantEnrichRevisionApplications($crad, grantGetMyRevisionRequiredApplications($crad));
         echo json_encode(['success' => true, 'revisions' => $revisions, 'count' => count($revisions)]);
         break;
 

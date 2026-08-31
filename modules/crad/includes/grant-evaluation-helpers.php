@@ -1496,13 +1496,12 @@ function grantApplyPipelineEvaluationRecommendation(
             $stepKey,
         ]);
 
-        $crad->prepare("
+            $crad->prepare("
             UPDATE grant_proposal_approval_workflows
                SET workflow_status = 'Returned', updated_at = NOW()
              WHERE id = ?
         ")->execute([$workflowId]);
 
-        if ($currentStep !== null) {
             grantNotifyApplicantApprovalReturn(
                 $crad,
                 $application,

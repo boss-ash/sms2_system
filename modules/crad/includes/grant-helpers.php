@@ -560,6 +560,61 @@ function grantGetMyRevisionRequiredApplications(PDO $crad): array
     }
 }
 
+/**
+ * Attach return metadata for real-time Revisions Requested polling.
+ *
+ * @param  list<array<string, mixed>> $revisions
+ * @return list<array<string, mixed>>
+ */
+function grantEnrichRevisionApplications(PDO $crad, array $revisions): array
+{
+    if ($revisions === []) {
+        return [];
+    }
+
+    require_once __DIR__ . '/grant-evaluation-helpers.php';
+    require_once __DIR__ . '/grant-approval-helpers.php';
+
+    grantEnsureEvaluationTables($crad);
+    grantEnsureApprovalTables($crad);
+
+    $ids = array_values(array_filter(array_map(
+        static fn(array $row): int => (int) ($row['id'] ?? 0),
+        $revisions
+    ), static fn(int $id): bool => $id > 0));
+
+    $approvalReturns = grantGetLatestApprovalReturnsForApplications($crad, $ids);
+    $evaluations = grantGetLatestEvaluationsForApplications($crad, $ids);
+
+    foreach ($revisions as &$row) {
+        $appId = (int) ($row['id'] ?? 0);
+        $approvalReturn = $approvalReturns[$appId] ?? null;
+        $evaluation = $evaluations[$appId] ?? null;
+
+        $row['return_source'] = '';
+        $row['returned_by'] = '';
+        $row['approval_level'] = 0;
+        $row['return_reason'] = '';
+        $row['returned_at'] = (string) ($row['updated_at'] ?? '');
+
+        if ($approvalReturn) {
+            $row['return_source'] = 'approval';
+            $row['returned_by'] = grantApprovalReturnedByLabel($approvalReturn);
+            $row['approval_level'] = (int) ($approvalReturn['step_order'] ?? 0);
+            $row['return_reason'] = trim((string) ($approvalReturn['remarks'] ?? ''));
+            $row['returned_at'] = (string) ($approvalReturn['acted_at'] ?? $row['returned_at']);
+        } elseif ($evaluation) {
+            $row['return_source'] = 'committee';
+            $row['returned_by'] = 'Review Committee';
+            $row['return_reason'] = trim((string) ($evaluation['revision_reason'] ?? $evaluation['required_corrections'] ?? $evaluation['comments'] ?? ''));
+            $row['returned_at'] = (string) ($evaluation['submitted_at'] ?? $row['returned_at']);
+        }
+    }
+    unset($row);
+
+    return $revisions;
+}
+
 function grantGetApplicationForResearcher(PDO $crad, int $applicationId): ?array
 {
     $stmt = $crad->prepare("
