@@ -2063,6 +2063,7 @@ function grantProposalNotificationsForCurrentUser(int $limit = 8): array
                 'grant_rejected'        => 'fa-times-circle',
                 'grant_approved_funded' => 'fa-check-circle',
                 'grant_fund_release'    => 'fa-money-bill-wave',
+                'grant_milestone_update'=> 'fa-tasks',
                 'grant_approval_return' => 'fa-undo',
                 default                 => 'fa-edit',
             };

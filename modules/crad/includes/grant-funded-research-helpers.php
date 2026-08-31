@@ -375,7 +375,23 @@ function grantSubmitFundedProgressEvidence(
  */
 function grantFundedResearchOverviewFingerprint(array $rows): string
 {
-    return grantMilestoneOverviewFingerprint($rows);
+    $parts = [];
+    foreach ($rows as $row) {
+        $parts[] = implode(':', [
+            $row['grant_application_id'] ?? '',
+            $row['completed_count'] ?? '',
+            $row['in_progress_count'] ?? '',
+            $row['pending_count'] ?? '',
+            $row['avg_completion_pct'] ?? '',
+            $row['milestones_updated_at'] ?? '',
+            $row['evidence_count'] ?? '',
+            $row['evidence_updated_at'] ?? '',
+            $row['released_count'] ?? '',
+            $row['disbursement_updated_at'] ?? '',
+        ]);
+    }
+
+    return md5(implode('|', $parts));
 }
 
 /**
