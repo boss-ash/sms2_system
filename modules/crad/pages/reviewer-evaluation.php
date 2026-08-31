@@ -13,6 +13,11 @@ require_once __DIR__ . '/../includes/grant-approval-helpers.php';
 requireAuth();
 
 if (function_exists('getCurrentUserRoleKey') && getCurrentUserRoleKey() === 'crad_officer') {
+    header('Location: ' . BASE_URL . '/modules/crad/pages/approval-workflows.php');
+    exit;
+}
+
+grantRequireEvaluateAccess();
 
 if (getCurrentUserRoleKey() === 'finance' && !defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')) {
     $redirect = grantReviewerEvaluationUrl();

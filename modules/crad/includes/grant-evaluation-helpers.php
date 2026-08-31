@@ -163,6 +163,23 @@ function grantRequireEvaluateAccess(): void
     grantRedirectUnauthorized();
 }
 
+function grantReviewerEvaluationUrl(int $applicationId = 0): string
+{
+    $moduleKey = defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')
+        ? (string) SMS2_GRANT_APPROVAL_SHELL_MODULE
+        : grantEvaluationActiveModuleKey();
+
+    $url = $moduleKey === 'payment'
+        ? BASE_URL . '/modules/payment/pages/reviewer-evaluation.php'
+        : BASE_URL . '/modules/crad/pages/reviewer-evaluation.php';
+
+    if ($applicationId > 0) {
+        $url .= '?id=' . $applicationId;
+    }
+
+    return $url;
+}
+
 function grantEvaluationActiveModuleKey(): string
 {
     if (defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')) {

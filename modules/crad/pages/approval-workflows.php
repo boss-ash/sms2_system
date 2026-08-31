@@ -8,6 +8,7 @@ require_once __DIR__ . '/../config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-approval-helpers.php';
+require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
 
 requireAuth();
 grantRequireApprovalAccess();
@@ -182,7 +183,7 @@ renderBreadcrumbs($breadcrumbs);
                 <div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">
                     <h3><?= smsIcon('clipboard-check', ['class' => 'me-1']) ?>Adviser Evaluation Required</h3>
                     <p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here.</p>
-                    <a class="gaw-btn-approve" href="<?= BASE_URL ?>/modules/crad/pages/reviewer-evaluation.php?id=<?= (int) $selectedId ?>" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">
+                    <a class="gaw-btn-approve" href="<?= htmlspecialchars(grantReviewerEvaluationUrl((int) $selectedId)) ?>" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">
                         <?= smsIcon('star-half-alt') ?> Go to Reviewer Evaluation
                     </a>
                 </div>
