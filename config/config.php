@@ -359,6 +359,7 @@ $MODULES = [
                 'audit-access-control',
             ],
             'Review & Workflow' => [
+                'reviewer-evaluation',
                 'approval-workflows',
             ],
         ],
@@ -373,6 +374,7 @@ $MODULES = [
             ['slug' => 'accounts-receivable-management', 'title' => 'Accounts Receivable Management'],
             ['slug' => 'penalty-due-date-management', 'title' => 'Penalty & Due Date Management'],
             ['slug' => 'audit-access-control', 'title' => 'Audit & Access Control'],
+            ['slug' => 'reviewer-evaluation', 'title' => 'Reviewer Evaluation'],
             ['slug' => 'approval-workflows', 'title' => 'Approval Workflows'],
         ],
     ],

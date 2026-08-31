@@ -615,9 +615,6 @@ $researchDirectorNavGroups = [
                         $pageTitles[$p['slug']] = $p['title'];
                     }
                     $showModuleOverview = empty($module['hide_overview']);
-                    if ($navModuleKey === 'payment' && $roleKey === 'finance') {
-                        $showModuleOverview = false;
-                    }
                     $onModuleOverview = ($activeModule === $navModuleKey && $activePage === '');
                     $showModuleGroups = $hasGroups;
                     ?>
@@ -656,9 +653,6 @@ $researchDirectorNavGroups = [
                                 <?php if ($showModuleGroups): ?>
                                     <?php foreach ($module['groups'] as $groupLabel => $groupSlugs): ?>
                                         <?php
-                                        if ($navModuleKey === 'payment' && $roleKey === 'finance' && (string) $groupLabel !== 'Review & Workflow') {
-                                            continue;
-                                        }
                                         $groupCollapseId = $moduleCollapseId . '_grp_' . preg_replace('/[^a-z0-9_]/', '_', strtolower((string) $groupLabel));
                                         $isGroupActive = ($activeGroupLabel === (string) $groupLabel);
                                         $reportSidebarItems = null;

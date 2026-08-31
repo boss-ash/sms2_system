@@ -165,6 +165,10 @@ function grantRequireEvaluateAccess(): void
 
 function grantEvaluationActiveModuleKey(): string
 {
+    if (defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')) {
+        return (string) SMS2_GRANT_APPROVAL_SHELL_MODULE;
+    }
+
     if (grantIsAdviserEvaluationViewer()) {
         return 'faculty';
     }
