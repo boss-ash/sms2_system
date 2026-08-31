@@ -649,6 +649,7 @@ $MODULES = [
             ],
             'Outputs & Records' => [
                 'publications-ip',
+                'document-repository',
             ],
             'Reports' => [
                 'grant-reports',
@@ -677,6 +678,7 @@ $MODULES = [
             ['slug' => 'project-milestones',        'title' => 'Project Milestones'],
             ['slug' => 'progress-tracking',         'title' => 'Progress Tracking'],
             ['slug' => 'publications-ip',           'title' => 'Publications & IP'],
+            ['slug' => 'document-repository',      'title' => 'Document Repository'],
             ['slug' => 'grant-reports',             'title' => 'Grant Reports'],
             ['slug' => 'funding-reports',           'title' => 'Funding Reports'],
             ['slug' => 'research-analytics',        'title' => 'Research Analytics'],
