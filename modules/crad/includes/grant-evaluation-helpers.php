@@ -435,13 +435,16 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
     }
 
     $currentStatus = (string) ($application['status'] ?? '');
+    $shouldUpdateStatus = true;
     if ($recommendation === 'recommend') {
-        if (in_array($currentStatus, ['Rejected', 'Revision Required'], true)) {
+        if (in_array($currentStatus, ['Rejected', 'Revision Required', 'Approved', 'Denied', 'Withdrawn'], true)) {
             $newStatus = $currentStatus;
+            $shouldUpdateStatus = false;
         } elseif ($currentStatus === 'Submitted') {
             $newStatus = 'Under Review';
         } else {
-            $newStatus = $currentStatus !== '' ? $currentStatus : 'Under Review';
+            $newStatus = $currentStatus;
+            $shouldUpdateStatus = false;
         }
     }
 
@@ -517,20 +520,7 @@ function grantSubmitProposalEvaluation(PDO $crad, int $applicationId, array $inp
             $revisionReason !== '' ? $revisionReason : null,
         ]);
 
-        $currentStatus = (string) ($application['status'] ?? '');
-        $shouldUpdateStatus = true;
-        if ($recommendation === 'recommend') {
-            if (in_array($currentStatus, ['Rejected', 'Revision Required', 'Approved', 'Denied', 'Withdrawn'], true)) {
-                $newStatus = $currentStatus;
-                $shouldUpdateStatus = false;
-            } elseif ($currentStatus === 'Submitted') {
-                $newStatus = 'Under Review';
-            } else {
-                $shouldUpdateStatus = false;
-            }
-        }
-
-        if ($shouldUpdateStatus) {
+        if ($shouldUpdateStatus && $newStatus !== $currentStatus) {
             $crad->prepare("
                 UPDATE grant_applications
                    SET status = ?, updated_at = NOW()

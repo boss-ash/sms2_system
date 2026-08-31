@@ -472,12 +472,31 @@ function grantGetMyRevisionRequiredApplications(PDO $crad): array
         return [];
     }
 
-    return array_values(array_filter(
-        grantGetApplications($crad),
-        static fn(array $row): bool =>
-            (int) ($row['applicant_user_id'] ?? 0) === $userId
-            && (string) ($row['status'] ?? '') === 'Revision Required'
-    ));
+    grantEnsureTables($crad);
+
+    try {
+        $stmt = $crad->prepare("
+            SELECT ga.id
+              FROM grant_applications ga
+             WHERE ga.applicant_user_id = ?
+               AND ga.status = 'Revision Required'
+        ");
+        $stmt->execute([$userId]);
+        $ids = array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN) ?: []);
+        if ($ids === []) {
+            return [];
+        }
+
+        $all = grantGetApplications($crad);
+        $idSet = array_flip($ids);
+        return array_values(array_filter(
+            $all,
+            static fn(array $row): bool => isset($idSet[(int) ($row['id'] ?? 0)])
+        ));
+    } catch (Throwable $e) {
+        error_log('grantGetMyRevisionRequiredApplications: ' . $e->getMessage());
+        return [];
+    }
 }
 
 function grantGetApplicationForResearcher(PDO $crad, int $applicationId): ?array
@@ -867,7 +886,7 @@ function grantDashboardStats(PDO $crad): array
                 COUNT(*)                                AS total_applications,
                 SUM(status = 'Under Review')            AS under_review,
                 SUM(status = 'Approved')                AS approved,
-                SUM(status = 'Denied')                  AS denied
+                SUM(status IN ('Denied', 'Rejected'))          AS denied
             FROM grant_applications
         ");
         $app = $appStmt ? ($appStmt->fetch(PDO::FETCH_ASSOC) ?: []) : [];
