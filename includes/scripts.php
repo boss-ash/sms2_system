@@ -17,7 +17,7 @@
 <script src="<?= BASE_URL ?>/assets/js/sms-confirm.js?v=3"></script>
 <script src="<?= BASE_URL ?>/assets/js/sms-security-ui.js?v=6"></script>
 <!-- Global Search -->
-<script src="<?= BASE_URL ?>/assets/js/search.js?v=2"></script>
+<script src="<?= BASE_URL ?>/assets/js/search.js?v=3"></script>
 <?php endif; ?>
 
 <?php 

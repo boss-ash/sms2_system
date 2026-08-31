@@ -284,6 +284,10 @@
         document.addEventListener('keydown', function (e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
+                if (navbarEl && window.matchMedia('(max-width: 767.98px)').matches) {
+                    navbarEl.classList.add('search-open');
+                    if (searchToggle) searchToggle.setAttribute('aria-expanded', 'true');
+                }
                 input.focus();
                 input.select();
             }
