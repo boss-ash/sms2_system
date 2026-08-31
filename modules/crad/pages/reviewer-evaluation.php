@@ -87,6 +87,7 @@ if ($crad) {
                 $canSignApproval = !empty($approvalDetail['can_act']);
             } elseif ($selected && $isMonitorView) {
                 require_once __DIR__ . '/../includes/grant-approval-helpers.php';
+                $pipelineEvals = grantGetPipelineEvaluationsForApplication($crad, $selectedId);
                 $evals = grantGetLatestEvaluationsForApplications($crad, [$selectedId]);
                 $committeeEval = $evals[$selectedId] ?? null;
                 $adviserEval = grantGetLatestAdviserEvaluationByApplication($crad, $selectedId);
@@ -106,7 +107,7 @@ if ($crad) {
 $pendingCount = $isMonitorView && $crad
     ? grantMonitorEvaluationCounts($crad)['pending']
     : (($isAdviserView || $isApproverView)
-        ? count($queue)
+        ? count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id'])))
         : count(array_filter($queue, static fn(array $r): bool => empty($r['my_evaluation_id']))));
 $scoredCount  = $isAdviserView
     ? ($crad ? grantAdviserEvaluationScoredCount($crad) : 0)
@@ -452,83 +453,192 @@ renderBreadcrumbs($breadcrumbs);
         </form>
         <?php endif; ?>
 
-        <?php elseif ($isApproverView || $isMonitorView): ?>
-        <div class="gre-scored-banner gre-adviser-banner">
-            <?= smsIcon($isMonitorView ? 'eye' : 'hourglass-half', ['class' => 'me-2']) ?>
-            <?php if ($isMonitorView): ?>
-            <strong>Pipeline Monitor</strong> — Review scores and track sign-off progress in Approval Workflows.
-            <?php else: ?>
-            <strong>In Review</strong> — Review scores below, then sign off in Approval Workflows.
-            <?php endif; ?>
+        <?php elseif ($isApproverView): ?>
+        <?php if ($existingEval): ?>
+        <div class="gre-scored-banner">
+            <?= smsIcon('check-circle', ['class' => 'me-2']) ?>
+            Your evaluation submitted on <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $existingEval['submitted_at']))) ?>
+            — Total: <strong><?= number_format((float) $existingEval['total_score'], 1) ?> / 100</strong>
         </div>
-
-        <?php if ($committeeEval): ?>
-        <details class="gre-committee-ref" open>
-            <summary class="gre-committee-ref-summary">
-                <?= smsIcon('users', ['class' => 'me-1']) ?>
-                Review Committee Evaluation
-                <strong><?= number_format((float) $committeeEval['total_score'], 1) ?> / 100</strong>
-            </summary>
-            <div class="gre-committee-ref-body">
-                <p class="text-muted mb-3">Submitted on <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $committeeEval['submitted_at']))) ?></p>
-                <table class="gre-rubric-table gre-rubric-readonly">
-                    <thead><tr><th>Criteria</th><th>Maximum</th><th>Score</th></tr></thead>
-                    <tbody>
-                    <?php foreach ($rubric as $key => $max):
-                        $col = 'score_' . $key;
-                        $label = ucwords(str_replace('_', ' ', $key));
-                    ?>
-                        <tr><td><?= htmlspecialchars($label) ?></td><td><?= $max ?></td><td><strong><?= number_format((float) ($committeeEval[$col] ?? 0), 1) ?></strong></td></tr>
-                    <?php endforeach; ?>
-                        <tr class="gre-total-row"><td colspan="2"><strong>Total Score</strong></td><td><strong><?= number_format((float) $committeeEval['total_score'], 1) ?></strong></td></tr>
-                    </tbody>
-                </table>
-                <?php if (!empty($committeeEval['comments'])): ?><div class="gre-block"><h3>Comments</h3><p><?= nl2br(htmlspecialchars((string) $committeeEval['comments'])) ?></p></div><?php endif; ?>
-                <?php if (!empty($committeeEval['recommendations'])): ?><div class="gre-block"><h3>Recommendations</h3><p><?= nl2br(htmlspecialchars((string) $committeeEval['recommendations'])) ?></p></div><?php endif; ?>
-            </div>
-        </details>
-        <?php endif; ?>
-
-        <?php if ($adviserEval): ?>
-        <details class="gre-committee-ref" open>
-            <summary class="gre-committee-ref-summary">
-                <?= smsIcon('user-tie', ['class' => 'me-1']) ?>
-                Academic Adviser Evaluation
-                <strong><?= number_format((float) $adviserEval['total_score'], 1) ?> / 100</strong>
-            </summary>
-            <div class="gre-committee-ref-body">
-                <p class="text-muted mb-3">Submitted on <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $adviserEval['submitted_at']))) ?></p>
-                <table class="gre-rubric-table gre-rubric-readonly">
-                    <thead><tr><th>Criteria</th><th>Maximum</th><th>Score</th></tr></thead>
-                    <tbody>
-                    <?php foreach ($rubric as $key => $max):
-                        $col = 'score_' . $key;
-                        $label = ucwords(str_replace('_', ' ', $key));
-                    ?>
-                        <tr><td><?= htmlspecialchars($label) ?></td><td><?= $max ?></td><td><strong><?= number_format((float) ($adviserEval[$col] ?? 0), 1) ?></strong></td></tr>
-                    <?php endforeach; ?>
-                        <tr class="gre-total-row"><td colspan="2"><strong>Total Score</strong></td><td><strong><?= number_format((float) $adviserEval['total_score'], 1) ?></strong></td></tr>
-                    </tbody>
-                </table>
-                <?php if (!empty($adviserEval['comments'])): ?><div class="gre-block"><h3>Comments</h3><p><?= nl2br(htmlspecialchars((string) $adviserEval['comments'])) ?></p></div><?php endif; ?>
-                <?php if (!empty($adviserEval['recommendations'])): ?><div class="gre-block"><h3>Recommendations</h3><p><?= nl2br(htmlspecialchars((string) $adviserEval['recommendations'])) ?></p></div><?php endif; ?>
-            </div>
-        </details>
-        <?php endif; ?>
+        <h2><?= smsIcon('clipboard-check', ['class' => 'me-2 text-primary']) ?>Your <?= htmlspecialchars($approverRoleLabel) ?> Evaluation</h2>
+        <table class="gre-rubric-table gre-rubric-readonly">
+            <thead><tr><th>Criteria</th><th>Maximum</th><th>Your Score</th></tr></thead>
+            <tbody>
+            <?php foreach ($rubric as $key => $max):
+                $col = 'score_' . $key;
+                $label = ucwords(str_replace('_', ' ', $key));
+            ?>
+                <tr><td><?= htmlspecialchars($label) ?></td><td><?= $max ?></td><td><strong><?= number_format((float) ($existingEval[$col] ?? 0), 1) ?></strong></td></tr>
+            <?php endforeach; ?>
+                <tr class="gre-total-row"><td colspan="2"><strong>Total Score</strong></td><td><strong><?= number_format((float) $existingEval['total_score'], 1) ?></strong></td></tr>
+            </tbody>
+        </table>
+        <?php if (!empty($existingEval['comments'])): ?><div class="gre-block"><h3>Comments</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['comments'])) ?></p></div><?php endif; ?>
+        <?php if (!empty($existingEval['recommendations'])): ?><div class="gre-block"><h3>Recommendations</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['recommendations'])) ?></p></div><?php endif; ?>
+        <?php if (!empty($existingEval['required_corrections'])): ?><div class="gre-block"><h3>Required Corrections</h3><p><?= nl2br(htmlspecialchars((string) $existingEval['required_corrections'])) ?></p></div><?php endif; ?>
 
         <div class="gre-adviser-actions">
             <a class="mpl-btn mpl-btn-primary" href="<?= htmlspecialchars(grantApprovalWorkflowListUrl() . '?id=' . (int) $selected['id']) ?>">
                 <?= smsIcon('signature', ['class' => 'me-1']) ?>Go to Approval Workflows
             </a>
-            <p class="gre-adviser-hint mb-0">
-                <?php if ($isMonitorView): ?>
-                View the full signature trail and current approval stage in Approval Workflows.
-                <?php elseif ($canSignApproval): ?>
-                You may sign and approve this proposal in Approval Workflows.
-                <?php else: ?>
-                This proposal is not yet ready for your sign-off.
-                <?php endif; ?>
-            </p>
+            <p class="gre-adviser-hint mb-0">You may now sign and approve this proposal in Approval Workflows.</p>
+        </div>
+
+        <?php else: ?>
+        <div class="gre-scored-banner gre-adviser-banner">
+            <?= smsIcon('hourglass-half', ['class' => 'me-2']) ?>
+            <strong>In Review</strong> — Score this proposal before signing off in Approval Workflows.
+        </div>
+
+        <?php
+        $priorEvalTypes = [];
+        foreach (grantPipelineEvaluationTypes() as $pipelineType) {
+            if ($pipelineType === $currentApproverEvalType) {
+                break;
+            }
+            $priorEvalTypes[] = $pipelineType;
+        }
+        foreach ($priorEvalTypes as $pipelineType):
+            $priorEval = $pipelineEvals[$pipelineType] ?? null;
+            if (!$priorEval) {
+                continue;
+            }
+        ?>
+        <details class="gre-committee-ref" open>
+            <summary class="gre-committee-ref-summary">
+                <?= smsIcon('clipboard-list', ['class' => 'me-1']) ?>
+                <?= htmlspecialchars(grantEvaluationStepLabel($pipelineType)) ?> Evaluation
+                <strong><?= number_format((float) $priorEval['total_score'], 1) ?> / 100</strong>
+            </summary>
+            <div class="gre-committee-ref-body">
+                <p class="text-muted mb-3">Submitted on <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $priorEval['submitted_at']))) ?></p>
+                <table class="gre-rubric-table gre-rubric-readonly">
+                    <thead><tr><th>Criteria</th><th>Maximum</th><th>Score</th></tr></thead>
+                    <tbody>
+                    <?php foreach ($rubric as $key => $max):
+                        $col = 'score_' . $key;
+                        $label = ucwords(str_replace('_', ' ', $key));
+                    ?>
+                        <tr><td><?= htmlspecialchars($label) ?></td><td><?= $max ?></td><td><strong><?= number_format((float) ($priorEval[$col] ?? 0), 1) ?></strong></td></tr>
+                    <?php endforeach; ?>
+                        <tr class="gre-total-row"><td colspan="2"><strong>Total Score</strong></td><td><strong><?= number_format((float) $priorEval['total_score'], 1) ?></strong></td></tr>
+                    </tbody>
+                </table>
+                <?php if (!empty($priorEval['comments'])): ?><div class="gre-block"><h3>Comments</h3><p><?= nl2br(htmlspecialchars((string) $priorEval['comments'])) ?></p></div><?php endif; ?>
+                <?php if (!empty($priorEval['recommendations'])): ?><div class="gre-block"><h3>Recommendations</h3><p><?= nl2br(htmlspecialchars((string) $priorEval['recommendations'])) ?></p></div><?php endif; ?>
+            </div>
+        </details>
+        <?php endforeach; ?>
+
+        <h2><?= smsIcon('star-half-alt', ['class' => 'me-2 text-primary']) ?><?= htmlspecialchars($approverRoleLabel) ?> Evaluation</h2>
+        <p class="text-muted mb-3">Enter your scores for each criterion. Total is computed automatically (max 100).</p>
+
+        <div id="greEvalAlert" class="mpl-alert" style="display:none;" role="alert"></div>
+
+        <form id="greEvalForm" data-no-loader novalidate data-approver-eval="1">
+            <input type="hidden" name="grant_application_id" value="<?= (int) $selected['id'] ?>">
+
+            <table class="gre-rubric-table">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th style="width:90px;">Maximum</th>
+                        <th style="width:140px;">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($rubric as $key => $max):
+                    $label = ucwords(str_replace('_', ' ', $key));
+                    $inputId = 'score_' . $key;
+                ?>
+                    <tr>
+                        <td><?= htmlspecialchars($label) ?></td>
+                        <td class="text-center"><?= $max ?></td>
+                        <td>
+                            <input type="number" class="go-form-input gre-score-input"
+                                   id="<?= htmlspecialchars($inputId) ?>"
+                                   name="<?= htmlspecialchars($inputId) ?>"
+                                   min="0" max="<?= $max ?>" step="0.5" required
+                                   data-max="<?= $max ?>"
+                                   aria-label="<?= htmlspecialchars($label) ?> score">
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                    <tr class="gre-total-row">
+                        <td colspan="2"><strong>Total Score</strong></td>
+                        <td><strong id="greTotalScore">0</strong> / 100</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="gre-form-group">
+                <label for="greComments" class="go-form-label">Comments</label>
+                <textarea id="greComments" name="comments" class="go-form-input" rows="3"
+                          placeholder="Your comments on the proposal…"></textarea>
+            </div>
+            <div class="gre-form-group">
+                <label for="greRecommendations" class="go-form-label">Recommendations</label>
+                <textarea id="greRecommendations" name="recommendations" class="go-form-input" rows="3"
+                          placeholder="Your recommendations…"></textarea>
+            </div>
+            <div class="gre-form-group">
+                <label for="greCorrections" class="go-form-label">Required Corrections</label>
+                <textarea id="greCorrections" name="required_corrections" class="go-form-input" rows="3"
+                          placeholder="List required corrections, if any…"></textarea>
+            </div>
+
+            <button type="submit" class="mpl-btn mpl-btn-primary" id="greSubmitBtn">
+                <?= smsIcon('check', ['class' => 'me-1']) ?>Submit <?= htmlspecialchars($approverRoleLabel) ?> Evaluation
+            </button>
+        </form>
+        <?php endif; ?>
+
+        <?php elseif ($isMonitorView): ?>
+        <div class="gre-scored-banner gre-adviser-banner">
+            <?= smsIcon('eye', ['class' => 'me-2']) ?>
+            <strong>Pipeline Monitor</strong> — Review scores and track sign-off progress in Approval Workflows.
+        </div>
+
+        <?php foreach (grantPipelineEvaluationTypes() as $pipelineType):
+            $pipelineEval = $pipelineEvals[$pipelineType] ?? null;
+            if (!$pipelineEval && $pipelineType === 'committee') {
+                $pipelineEval = $committeeEval;
+            } elseif (!$pipelineEval && $pipelineType === 'adviser') {
+                $pipelineEval = $adviserEval;
+            }
+            if (!$pipelineEval) {
+                continue;
+            }
+        ?>
+        <details class="gre-committee-ref" open>
+            <summary class="gre-committee-ref-summary">
+                <?= smsIcon('clipboard-list', ['class' => 'me-1']) ?>
+                <?= htmlspecialchars(grantEvaluationStepLabel($pipelineType)) ?> Evaluation
+                <strong><?= number_format((float) $pipelineEval['total_score'], 1) ?> / 100</strong>
+            </summary>
+            <div class="gre-committee-ref-body">
+                <p class="text-muted mb-3">Submitted on <?= htmlspecialchars(date('M d, Y g:i A', strtotime((string) $pipelineEval['submitted_at']))) ?></p>
+                <table class="gre-rubric-table gre-rubric-readonly">
+                    <thead><tr><th>Criteria</th><th>Maximum</th><th>Score</th></tr></thead>
+                    <tbody>
+                    <?php foreach ($rubric as $key => $max):
+                        $col = 'score_' . $key;
+                        $label = ucwords(str_replace('_', ' ', $key));
+                    ?>
+                        <tr><td><?= htmlspecialchars($label) ?></td><td><?= $max ?></td><td><strong><?= number_format((float) ($pipelineEval[$col] ?? 0), 1) ?></strong></td></tr>
+                    <?php endforeach; ?>
+                        <tr class="gre-total-row"><td colspan="2"><strong>Total Score</strong></td><td><strong><?= number_format((float) $pipelineEval['total_score'], 1) ?></strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </details>
+        <?php endforeach; ?>
+
+        <div class="gre-adviser-actions">
+            <a class="mpl-btn mpl-btn-primary" href="<?= htmlspecialchars(grantApprovalWorkflowListUrl() . '?id=' . (int) $selected['id']) ?>">
+                <?= smsIcon('signature', ['class' => 'me-1']) ?>Go to Approval Workflows
+            </a>
+            <p class="gre-adviser-hint mb-0">View the full signature trail and current approval stage in Approval Workflows.</p>
         </div>
 
         <?php elseif ($existingEval): ?>
