@@ -338,6 +338,8 @@ $MODULES = [
             ['slug' => 'physical-facilities-monitoring', 'title' => 'Physical Facilities Monitoring'],
             ['slug' => 'continuous-improvement-action-planning', 'title' => 'Continuous Improvement Action Planning'],
             ['slug' => 'accreditation-reports-analytics', 'title' => 'Accreditation Reports & Analytics'],
+            ['slug' => 'reviewer-evaluation', 'title' => 'Reviewer Evaluation'],
+            ['slug' => 'approval-workflows', 'title' => 'Approval Workflows'],
         ],
     ],
     'payment' => [
