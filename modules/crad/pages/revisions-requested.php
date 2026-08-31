@@ -9,6 +9,7 @@ require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once __DIR__ . '/../includes/grant-helpers.php';
 require_once __DIR__ . '/../includes/grant-evaluation-helpers.php';
+require_once __DIR__ . '/../includes/grant-approval-helpers.php';
 
 requireAuth();
 grantRequireViewAccess();
@@ -33,16 +34,19 @@ require_once ROOT_PATH . '/includes/breadcrumbs.php';
 $crad      = cradDb();
 $revisions = [];
 $feedback  = [];
+$approvalReturns = [];
 $dbError   = '';
 
 if ($crad) {
     try {
         grantEnsureTables($crad);
         grantEnsureEvaluationTables($crad);
+        grantEnsureApprovalTables($crad);
         $revisions = grantGetMyRevisionRequiredApplications($crad);
         if ($revisions !== []) {
             $ids = array_map(static fn(array $r): int => (int) ($r['id'] ?? 0), $revisions);
             $feedback = grantGetLatestEvaluationsForApplications($crad, $ids);
+            $approvalReturns = grantGetLatestApprovalReturnsForApplications($crad, $ids);
         }
     } catch (Throwable $e) {
         $dbError = htmlspecialchars($e->getMessage());
