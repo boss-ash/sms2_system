@@ -1019,6 +1019,155 @@ function grantNotifyApplicantEvaluationDecision(
     ]);
 }
 
+function grantInsertGrantProposalNotification(
+    PDO $crad,
+    int $applicationId,
+    int $recipientUserId,
+    string $recipientRole,
+    string $type,
+    string $eventKey,
+    string $title,
+    string $body,
+    string $url
+): void {
+    grantEnsureEvaluationTables($crad);
+
+    if ($applicationId <= 0 || $recipientUserId <= 0) {
+        return;
+    }
+
+    $stmt = $crad->prepare("
+        INSERT INTO grant_proposal_notifications
+            (event_key, recipient_user_id, recipient_role, recipient_email,
+             grant_application_id, type, title, body, url)
+        VALUES
+            (?, ?, ?, '', ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            title = VALUES(title),
+            body = VALUES(body),
+            url = VALUES(url),
+            is_read = 0,
+            created_at = NOW()
+    ");
+    $stmt->execute([
+        $eventKey,
+        $recipientUserId,
+        $recipientRole !== '' ? $recipientRole : 'student',
+        $applicationId,
+        $type,
+        $title,
+        $body,
+        $url,
+    ]);
+}
+
+/**
+ * Notify researcher when an approver returns the proposal for revision (NO branch).
+ *
+ * @param array<string, mixed> $application
+ * @param array<string, mixed> $currentStep
+ */
+function grantNotifyApplicantApprovalReturn(
+    PDO $crad,
+    array $application,
+    array $currentStep,
+    string $returnedByName,
+    string $remarks
+): void {
+    $applicationId = (int) ($application['id'] ?? 0);
+    $recipientUserId = (int) ($application['applicant_user_id'] ?? 0);
+    if ($applicationId <= 0 || $recipientUserId <= 0) {
+        return;
+    }
+
+    $ref = trim((string) ($application['proposal_reference'] ?? ''));
+    $refLabel = $ref !== '' ? $ref : ('Proposal #' . $applicationId);
+    $stepOrder = (int) ($currentStep['step_order'] ?? 0);
+    $stepLabel = (string) ($currentStep['step_label'] ?? 'Approver');
+    $reason = mb_strimwidth(trim($remarks), 0, 160, '…');
+
+    $body = sprintf(
+        '%s was returned for revision. Returned by: %s (Approval Level %d). Reason: %s Open Revisions Requested to revise and resubmit.',
+        $refLabel,
+        $returnedByName !== '' ? $returnedByName : $stepLabel,
+        $stepOrder,
+        $reason
+    );
+
+    $recipientRole = 'student';
+    if (function_exists('db')) {
+        $mainDb = db();
+        if ($mainDb) {
+            $userStmt = $mainDb->prepare('SELECT role_key FROM users WHERE id = ? LIMIT 1');
+            $userStmt->execute([$recipientUserId]);
+            $recipientRole = (string) ($userStmt->fetchColumn() ?: 'student');
+        }
+    }
+
+    $eventKey = 'grant-proposal:grant_approval_return:' . $applicationId
+        . ':v' . max(1, (int) ($application['current_version'] ?? 1))
+        . ':lvl' . $stepOrder
+        . ':u' . $recipientUserId;
+
+    grantInsertGrantProposalNotification(
+        $crad,
+        $applicationId,
+        $recipientUserId,
+        $recipientRole,
+        'grant_approval_return',
+        $eventKey,
+        'Proposal Returned for Revision',
+        $body,
+        grantRevisionsRequestedUrl()
+    );
+}
+
+/** Notify researcher when Finance completes the final approval (Level 6). */
+function grantNotifyApplicantApprovedFunded(PDO $crad, array $application, string $approverName): void
+{
+    $applicationId = (int) ($application['id'] ?? 0);
+    $recipientUserId = (int) ($application['applicant_user_id'] ?? 0);
+    if ($applicationId <= 0 || $recipientUserId <= 0) {
+        return;
+    }
+
+    $ref = trim((string) ($application['proposal_reference'] ?? ''));
+    $refLabel = $ref !== '' ? $ref : ('Proposal #' . $applicationId);
+    $titleShort = mb_strimwidth((string) ($application['research_title'] ?? 'your grant proposal'), 0, 80, '…');
+
+    $body = sprintf(
+        '%s (%s) is APPROVED & FUNDED after all six institutional sign-offs. Finance Office recorded the final approval.',
+        $refLabel,
+        $titleShort
+    );
+
+    $recipientRole = 'student';
+    if (function_exists('db')) {
+        $mainDb = db();
+        if ($mainDb) {
+            $userStmt = $mainDb->prepare('SELECT role_key FROM users WHERE id = ? LIMIT 1');
+            $userStmt->execute([$recipientUserId]);
+            $recipientRole = (string) ($userStmt->fetchColumn() ?: 'student');
+        }
+    }
+
+    $eventKey = 'grant-proposal:grant_approved_funded:' . $applicationId
+        . ':v' . max(1, (int) ($application['current_version'] ?? 1))
+        . ':u' . $recipientUserId;
+
+    grantInsertGrantProposalNotification(
+        $crad,
+        $applicationId,
+        $recipientUserId,
+        $recipientRole,
+        'grant_approved_funded',
+        $eventKey,
+        'Approved & Funded',
+        $body,
+        grantApprovedFundedUrl()
+    );
+}
+
 function grantSubmitAdviserProposalEvaluation(PDO $crad, int $applicationId, array $input): array
 {
     grantEnsureEvaluationTables($crad);

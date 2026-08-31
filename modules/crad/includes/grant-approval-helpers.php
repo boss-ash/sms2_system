@@ -1040,13 +1040,14 @@ function grantGetApprovedFundedApplications(PDO $crad): array
 {
     grantEnsureTables($crad);
 
-    $stmt = $crad->query("
+    $stmt = $crad->prepare("
         SELECT ga.*, go.funding_title, go.max_funding_cap
           FROM grant_applications ga
          INNER JOIN grant_opportunities go ON go.id = ga.grant_opportunity_id
-         WHERE ga.status = " . $crad->quote(grantStatusApprovedFunded()) . "
+         WHERE ga.status = ?
          ORDER BY ga.updated_at DESC, ga.id DESC
     ");
+    $stmt->execute([grantStatusApprovedFunded()]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
