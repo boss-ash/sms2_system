@@ -153,7 +153,6 @@ function paStatusBadge(string $status): string
     $underReview = count(array_filter($applications, fn($a) => $a['status'] === 'Under Review'));
     $approved    = count(array_filter($applications, fn($a) => $a['status'] === 'Approved'));
     $denied      = count(array_filter($applications, fn($a) => in_array($a['status'], ['Denied', 'Rejected'], true)));
-    $revisionReq = count(array_filter($applications, fn($a) => $a['status'] === 'Revision Required'));
     ?>
     <section class="mpl-stats" aria-label="Proposal summary">
         <article class="mpl-stat">
