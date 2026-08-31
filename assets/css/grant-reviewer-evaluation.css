@@ -47,8 +47,8 @@
 }
 .gre-layout {
     display: grid;
-    grid-template-columns: minmax(280px, 360px) 1fr;
-    gap: 1.25rem;
+    grid-template-columns: minmax(240px, 300px) 1fr;
+    gap: 1rem;
     align-items: start;
 }
 @media (max-width: 991px) {
@@ -58,8 +58,8 @@
 .gre-score-panel {
     background: var(--sms-card-bg, #fff);
     border: 1px solid var(--sms-border);
-    border-radius: 14px;
-    padding: 1.25rem;
+    border-radius: 12px;
+    padding: .85rem;
 }
 .gre-info-panel h2 {
     font-size: 1rem;
@@ -67,54 +67,171 @@
     margin: 0 0 1rem;
     line-height: 1.35;
 }
-.gre-meta {
-    margin: 0 0 1rem;
+
+/* ── Queue cards (title only until expanded) ── */
+.gre-queue-section .mpl-panel-head h2 {
+    font-size: .95rem;
 }
-.gre-meta div {
-    margin-bottom: .65rem;
+.gre-queue-section .mpl-panel-head p {
+    font-size: .82rem;
 }
-.gre-meta dt {
+.gre-queue-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--sms-text-muted);
+    font-size: .88rem;
+}
+.gre-queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+.gre-queue-card {
+    border: 1px solid var(--sms-border);
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+}
+.gre-queue-card[open] {
+    border-color: rgba(37, 99, 235, .35);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, .06);
+}
+.gre-queue-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .65rem;
+    padding: .7rem .9rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+.gre-queue-summary::-webkit-details-marker { display: none; }
+.gre-queue-title-text {
+    font-size: .88rem;
+    font-weight: 800;
+    color: var(--sms-heading);
+    line-height: 1.35;
+    flex: 1;
+    min-width: 0;
+}
+.gre-queue-chevron {
+    flex-shrink: 0;
+    font-size: .75rem;
+    color: var(--sms-text-muted);
+    transition: transform .2s ease;
+}
+.gre-queue-card[open] .gre-queue-chevron {
+    transform: rotate(180deg);
+}
+.gre-queue-body {
+    padding: 0 .9rem .85rem;
+    border-top: 1px solid var(--sms-border);
+}
+.gre-queue-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .65rem .85rem;
+    padding-top: .75rem;
+    font-size: .82rem;
+}
+@media (max-width: 600px) {
+    .gre-queue-meta-grid { grid-template-columns: 1fr; }
+}
+.gre-queue-label {
+    display: block;
     font-size: .62rem;
     font-weight: 800;
     letter-spacing: .05em;
     text-transform: uppercase;
     color: var(--sms-text-muted);
-    margin-bottom: .1rem;
+    margin-bottom: .15rem;
 }
-.gre-meta dd {
-    margin: 0;
-    font-size: .86rem;
-    font-weight: 600;
-    color: var(--sms-heading);
+.gre-queue-meta-grid strong {
+    color: var(--sms-primary);
 }
-.gre-meta dd small {
+.gre-queue-meta-grid small {
     display: block;
-    font-weight: 500;
+    font-size: .72rem;
     color: var(--sms-text-muted);
-    font-size: .75rem;
+    margin-top: .1rem;
 }
-.gre-block {
-    margin-bottom: 1rem;
+.gre-queue-actions {
+    margin-top: .75rem;
+    padding-top: .65rem;
+    border-top: 1px dashed var(--sms-border);
 }
-.gre-block h3 {
-    font-size: .68rem;
+
+/* ── Collapsible accordion sections ── */
+.gre-accordion {
+    border: 1px solid var(--sms-border);
+    border-radius: 8px;
+    margin-bottom: .45rem;
+    background: var(--sms-surface-muted, #f8fafc);
+    overflow: hidden;
+}
+.gre-accordion[open] {
+    background: #fff;
+    border-color: rgba(37, 99, 235, .25);
+}
+.gre-accordion-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: .6rem .75rem;
+    font-size: .78rem;
     font-weight: 800;
-    letter-spacing: .05em;
-    text-transform: uppercase;
-    color: var(--sms-text-muted);
-    margin: 0 0 .35rem;
+    color: var(--sms-heading);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
 }
-.gre-block p {
-    margin: 0;
+.gre-accordion-title::-webkit-details-marker { display: none; }
+.gre-accordion-title::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid var(--sms-text-muted);
+    border-bottom: 2px solid var(--sms-text-muted);
+    transform: rotate(45deg);
+    transition: transform .2s ease;
+    flex-shrink: 0;
+    margin-right: 2px;
+}
+.gre-accordion[open] .gre-accordion-title::after {
+    transform: rotate(-135deg);
+    margin-top: 4px;
+}
+.gre-accordion-body {
+    padding: .65rem .75rem .75rem;
     font-size: .84rem;
-    line-height: 1.55;
+    line-height: 1.5;
     color: var(--sms-text);
+    border-top: 1px solid var(--sms-border);
+}
+.gre-accordion-body-flush {
+    padding: 0;
+}
+.gre-accordion-body-flush .gre-rubric-table {
+    margin-bottom: 0;
+}
+.gre-accordion-sub {
+    font-size: .75rem;
+    color: var(--sms-text-muted);
+    font-weight: 500;
+    margin-top: .2rem;
+}
+.gre-accordion-highlight .gre-accordion-title {
+    color: #065f46;
+}
+.gre-scored-banner-inline {
+    margin-bottom: 0;
 }
 .gre-docs {
     display: flex;
     flex-wrap: wrap;
     gap: .5rem;
-    margin-top: .5rem;
 }
 .gre-score-panel h2 {
     font-size: 1rem;
