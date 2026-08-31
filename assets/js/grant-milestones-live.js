@@ -28,6 +28,7 @@
     var editStatus = document.getElementById('gpmEditStatus');
     var editRemarks = document.getElementById('gpmEditRemarks');
     var editDocument = document.getElementById('gpmEditDocument');
+    var editSaveBtn = document.getElementById('gpmEditSaveBtn');
 
     var lastOverviewFp = '';
     var lastDetailFp = '';
@@ -58,6 +59,38 @@
         } catch (e) {
             return value;
         }
+    }
+
+    function setSaveButtonBusy(busy) {
+        if (!editSaveBtn) return;
+        editSaveBtn.disabled = !!busy;
+        editSaveBtn.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    function forceHideLoader() {
+        if (window.SMS2Loader && typeof window.SMS2Loader.forceHide === 'function') {
+            window.SMS2Loader.forceHide();
+        }
+    }
+
+    function applyMilestoneResponse(data) {
+        if (!data || !data.success) return false;
+
+        closeEditDialog();
+        lastOverviewFp = data.overview_fingerprint || lastOverviewFp;
+        lastDetailFp = data.detail_fingerprint || lastDetailFp;
+        if (data.overview) {
+            updateStats(data.overview);
+            renderProjectSelect(data.overview);
+        }
+        if (data.detail) renderDetail(data.detail);
+        flashUpdate();
+
+        if (data.message) {
+            alert(data.message);
+        }
+
+        return true;
     }
 
     function updateStats(overview) {
@@ -168,6 +201,8 @@
         if (editStatus) editStatus.value = btn.getAttribute('data-status') || 'Pending';
         if (editRemarks) editRemarks.value = btn.getAttribute('data-remarks') || '';
         if (editDocument) editDocument.value = '';
+        submitting = false;
+        setSaveButtonBusy(false);
         paused = true;
         editDialog.classList.add('show');
     }
@@ -177,6 +212,7 @@
         editDialog.classList.remove('show');
         paused = false;
         submitting = false;
+        setSaveButtonBusy(false);
     }
 
     function bindEditButtons() {
