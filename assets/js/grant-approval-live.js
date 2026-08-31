@@ -192,6 +192,16 @@
             .then(function (r) { return r.ok ? r.json() : null; })
             .then(function (data) {
                 if (!data || !data.success) return;
+
+                var wfCount = Array.isArray(data.workflows) ? data.workflows.length : 0;
+                if (lastWorkflowCount !== null && wfCount !== lastWorkflowCount) {
+                    window.location.reload();
+                    return;
+                }
+                lastWorkflowCount = wfCount;
+
+                updateMonitorStats(data);
+
                 var fp = data.fingerprint || '';
                 var changed = isPoll && lastFingerprint !== '' && fp !== lastFingerprint;
                 lastFingerprint = fp;
