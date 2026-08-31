@@ -12,15 +12,15 @@ define('SMS2_DEPLOY_TOKEN', 'palitan-mo-ng-mahaba-at-random-na-string');
 // define('BASE_URL', '');
 
 // From vPanel → MySQL Databases (host is NOT localhost on InfinityFree).
-define('DB_HOST', 'sql123.infinityfree.com');
+define('DB_HOST', 'sql100.infinityfree.com');
 define('DB_PORT', '3306');
-define('DB_NAME', 'if0_12345678_sms2');
-define('DB_USER', 'if0_12345678');
-define('DB_PASS', 'your_mysql_password');
+define('DB_NAME', 'if0_42794375_sms2');
+define('DB_USER', 'if0_42794375');
+define('DB_PASS', 'your_hosting_account_password');
 define('DB_CHARSET', 'utf8mb4');
 
 // Free plan: use the SAME database name for every module.
-define('CRAD_DB_NAME', 'if0_12345678_sms2');
-define('STUDENT_PORTAL_DB_NAME', 'if0_12345678_sms2');
-define('REPORTS_DB_NAME', 'if0_12345678_sms2');
-define('USERMGMT_DB_NAME', 'if0_12345678_sms2');
+define('CRAD_DB_NAME', 'if0_42794375_sms2');
+define('STUDENT_PORTAL_DB_NAME', 'if0_42794375_sms2');
+define('REPORTS_DB_NAME', 'if0_42794375_sms2');
+define('USERMGMT_DB_NAME', 'if0_42794375_sms2');
