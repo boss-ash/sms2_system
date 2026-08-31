@@ -781,12 +781,6 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
                     . grantEvaluationStepLabel($currentStepKey)
                     . ' rubric score before sign-off.';
             }
-        } elseif ($currentStep !== null) {
-            $monitorStageHint = 'Awaiting '
-                . (string) ($currentStep['step_label'] ?? 'approval')
-                . ' sign-off ('
-                . grantApprovalRoleLabel((string) ($currentStep['approver_role_key'] ?? ''))
-                . ').';
         }
     }
 
