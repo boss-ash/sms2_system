@@ -790,7 +790,7 @@ document.addEventListener('DOMContentLoaded', function () {
     recommendationInputs.forEach(function (inp) {
         inp.addEventListener('change', updateRecommendationUi);
     });
-    if (!isAdviserEval) {
+    if (!skipRecommendation) {
         updateRecommendationUi();
     }
 
@@ -843,7 +843,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             var recommendation = document.querySelector('input[name="recommendation"]:checked');
-            if (!isAdviserEval) {
+            if (!skipRecommendation) {
                 if (!recommendation) {
                     alertEl.style.display = '';
                     alertEl.style.background = 'rgba(239,68,68,.08)';

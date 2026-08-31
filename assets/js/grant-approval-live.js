@@ -151,9 +151,9 @@
         }).join('');
 
         var actionHtml = '';
-        if (needsAdviserScore) {
+        if (needsRubricScore) {
             actionHtml = '<div class="gaw-action-panel gaw-action-panel-warn" id="gawAdviserScorePanel">' +
-                '<h3><i class="ti ti-clipboard-check me-1"></i>Adviser Evaluation Required</h3>' +
+                '<h3><i class="ti ti-clipboard-check me-1"></i>Rubric Evaluation Required</h3>' +
                 '<p>Score this proposal in <strong>Reviewer Evaluation</strong> before you can sign and approve here.</p>' +
                 '<a class="gaw-btn-approve" href="' + reviewerEvalUrl + '" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;">' +
                 '<i class="ti ti-star-half-filled"></i> Go to Reviewer Evaluation</a></div>';
