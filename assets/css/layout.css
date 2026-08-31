@@ -292,6 +292,33 @@
     color: inherit !important;
 }
 
+/* Workspace / role home link */
+.sidebar-home-item {
+    margin-bottom: 0.35rem !important;
+}
+.sidebar-home-link {
+    background: color-mix(in srgb, var(--sms-sidebar-active) 55%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sms-sidebar-border) 80%, transparent);
+}
+.sidebar-home-link:hover {
+    background: var(--sms-sidebar-hover) !important;
+}
+.sidebar-home-link.active {
+    background: var(--sms-sidebar-active) !important;
+    box-shadow: inset 3px 0 0 var(--sms-sidebar-active-accent);
+}
+.workspace-sidebar .sidebar-nav {
+    padding-top: 0.55rem;
+}
+.workspace-sidebar .admin-module-item {
+    margin-top: 0.12rem;
+}
+.workspace-sidebar .sidebar-parent span {
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+
 /* CRAD Officer branded sidebar — Student Services style */
 .crad-officer-sidebar {
     --crad-side-bg: #163a7a;

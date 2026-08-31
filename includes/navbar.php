@@ -3,6 +3,7 @@
  * SMS 2 - Top Navigation Bar
  */
 require_once __DIR__ . '/authentication.php';
+require_once __DIR__ . '/navigation-context.php';
 require_once __DIR__ . '/notifications.php';
 if (!isset($MODULES)) {
     require_once __DIR__ . '/../config/config.php';
@@ -92,7 +93,7 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
             <button class="btn btn-link text-white sidebar-toggle p-2" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
                 <?= smsIcon('menu-2') ?>
             </button>
-            <a class="navbar-brand d-flex align-items-center gap-2" href="<?= BASE_URL ?>/dashboard/index.php">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="<?= htmlspecialchars(smsRoleHomeUrl($navRoleKey)) ?>">
                 <img src="<?= e(smsBrandLogoUrl()) ?>" alt="BCP" style="height:30px;width:auto;object-fit:contain;">
                 <span class="d-none d-sm-inline"><?= htmlspecialchars(APP_SHORT_NAME) ?></span>
             </a>
