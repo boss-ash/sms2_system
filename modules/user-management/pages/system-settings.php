@@ -341,7 +341,7 @@ renderBreadcrumbs($breadcrumbs);
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Base URL</label>
-                        <input type="text" class="form-control" value="/SMS2_system">
+                        <input type="text" class="form-control" value="<?= htmlspecialchars(BASE_URL !== '' ? BASE_URL : '/sms2_system') ?>">
                         <div class="form-text">Change if deployed under a different folder.</div>
                     </div>
                 </div>

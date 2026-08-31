@@ -3,7 +3,7 @@
  * CRAD Module — Secure File Viewer
  * Serves uploaded student documents to authenticated CRAD officers.
  *
- * Usage: /SMS2_system/modules/crad/file-view.php?pid=123&key=manuscript
+ * Usage: /sms2_system/modules/crad/file-view.php?pid=123&key=manuscript
  *   pid = proposal_id (from crad_db research_proposals.id)
  *   key = doc_key (manuscript, approval, abstract, etc.)
  */

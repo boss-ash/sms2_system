@@ -1,6 +1,11 @@
 Options -Indexes
 
 RewriteEngine On
+
+# Canonical URL: redirect mixed-case /SMS2_system to /sms2_system
+RewriteCond %{THE_REQUEST} \s/+SMS2_system(\S*) [NC]
+RewriteRule ^ /sms2_system%1 [R=301,L,NE]
+
 RewriteRule ^up$ up.php [END]
 
 <IfModule mod_headers.c>
