@@ -68,7 +68,7 @@ function grantApprovalStepKeyForRole(string $roleKey): ?string
     return null;
 }
 
-/** Dept. Chair, Dean, Research Office, VPAA — view scores before sign-off. */
+/** Dept. Chair, Dean, Research Office, Finance, VPAA — view scores before sign-off. */
 function grantIsGrantApproverEvaluationViewer(): bool
 {
     $roleKey = function_exists('getCurrentUserRoleKey') ? getCurrentUserRoleKey() : '';
