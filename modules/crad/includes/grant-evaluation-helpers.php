@@ -444,6 +444,16 @@ function grantApproverEvaluationQueue(PDO $crad): array
     $committeeType = grantEvaluationTypeCommittee();
     $adviserType   = grantEvaluationTypeAdviser();
 
+    $financeVpaaClause = $stepKey === 'finance'
+        ? " AND EXISTS (
+                SELECT 1
+                  FROM grant_proposal_approval_steps vp
+                 WHERE vp.workflow_id = w.id
+                   AND vp.step_key = 'vpaa'
+                   AND vp.status = 'Approved'
+          )"
+        : '';
+
     $stmt = $crad->prepare("
         SELECT
             ga.id,

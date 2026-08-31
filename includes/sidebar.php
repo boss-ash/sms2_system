@@ -10,6 +10,7 @@ require_once __DIR__ . '/authentication.php';
 require_once __DIR__ . '/module-controls.php';
 require_once __DIR__ . '/nav-icons.php';
 require_once __DIR__ . '/navigation-context.php';
+require_once __DIR__ . '/grant-review-workflow-urls.php';
 
 $activeModule = $activeModule ?? '';
 $activePage   = $activePage ?? '';
@@ -269,10 +270,7 @@ if ($roleKey === 'adviser') {
         ['slug' => 'proposals-applications', 'href' => BASE_URL . '/modules/crad/pages/proposals-applications.php', 'icon' => 'fa-file-alt', 'label' => 'Proposals & Applications'],
         ['slug' => 'revisions-requested', 'href' => BASE_URL . '/modules/crad/pages/revisions-requested.php', 'icon' => 'fa-edit', 'label' => 'Revisions Requested'],
     ];
-    $reviewWorkflowItems = [
-        ['slug' => 'reviewer-evaluation', 'href' => BASE_URL . '/modules/crad/pages/reviewer-evaluation.php', 'icon' => 'fa-clipboard-check', 'label' => 'Reviewer Evaluation'],
-        ['slug' => 'approval-workflows', 'href' => BASE_URL . '/modules/crad/pages/approval-workflows.php', 'icon' => 'fa-tasks', 'label' => 'Approval Workflows'],
-    ];
+    $reviewWorkflowItems = grantReviewWorkflowSidebarItems('adviser');
     $facultyInsert = [];
     foreach ($facultyAccountNavGroups as $groupKey => $groupItems) {
         if ($groupKey === 'System') {
