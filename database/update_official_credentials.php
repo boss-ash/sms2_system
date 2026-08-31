@@ -106,7 +106,7 @@ foreach ($accounts as $account) {
 
     $row = null;
     foreach ($keys as $key) {
-        $find->execute([':key' => $key]);
+        $find->execute([':uname' => $key, ':email' => $key]);
         $row = $find->fetch(PDO::FETCH_ASSOC);
         if ($row) {
             break;
