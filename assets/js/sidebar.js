@@ -276,6 +276,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Module overview pages: only Dashboard/Overview should show — keep subgroup menus collapsed
+    if (sidebar.classList.contains('admin-sidebar-collapsible')) {
+        sidebar.querySelectorAll('.admin-module-toggle.active').forEach(function (moduleBtn) {
+            var moduleBodySel = moduleBtn.getAttribute('data-bs-target');
+            if (!moduleBodySel) return;
+            var moduleBody = document.querySelector(moduleBodySel);
+            if (!moduleBody) return;
+            if (!moduleBody.querySelector('.overview-link.active')) return;
+            moduleBody.querySelectorAll('.admin-subgroup-body.show').forEach(function (body) {
+                body.classList.remove('show');
+            });
+            moduleBody.querySelectorAll('.admin-subgroup-toggle[aria-expanded="true"]').forEach(function (btn) {
+                btn.setAttribute('aria-expanded', 'false');
+            });
+        });
+    }
+
     applyLayoutForViewport();
 
     function syncViewportUnit() {

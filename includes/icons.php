@@ -122,6 +122,7 @@ if (!function_exists('smsTablerIconName')) {
             'user-minus' => 'user-minus',
             'list-alt' => 'list',
             'plus-circle' => 'circle-plus',
+            'plus' => 'plus',
             'minus-circle' => 'circle-minus',
             'archive' => 'archive',
             'bookmark' => 'bookmark',
