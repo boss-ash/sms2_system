@@ -515,11 +515,13 @@ document.addEventListener('DOMContentLoaded', function () {
     var inputs = document.querySelectorAll('.gre-score-input');
     var totalEl = document.getElementById('greTotalScore');
     var form = document.getElementById('greEvalForm');
+    var isAdviserEval = form && form.getAttribute('data-adviser-eval') === '1';
     var revisionGroup = document.getElementById('greRevisionReasonGroup');
+    var revisionInput = document.getElementById('greRevisionReason');
     var recommendationInputs = document.querySelectorAll('input[name="recommendation"]');
 
     function updateRecommendationUi() {
-        if (!revisionGroup) return;
+        if (!revisionGroup || isAdviserEval) return;
         var selected = document.querySelector('input[name="recommendation"]:checked');
         var needsRevision = selected && selected.value === 'require_revisions';
         revisionGroup.style.display = needsRevision ? '' : 'none';
@@ -532,7 +534,9 @@ document.addEventListener('DOMContentLoaded', function () {
     recommendationInputs.forEach(function (inp) {
         inp.addEventListener('change', updateRecommendationUi);
     });
-    updateRecommendationUi();
+    if (!isAdviserEval) {
+        updateRecommendationUi();
+    }
 
     function updateTotal() {
         if (!totalEl) return;
