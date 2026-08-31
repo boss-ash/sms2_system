@@ -20,6 +20,10 @@ $onDashboard = str_ends_with(
     '/dashboard/index.php'
 );
 $highlightModule = smsSidebarHighlightModule((string) $activeModule, $roleKey);
+$roleHomeUrl = smsRoleHomeUrl($roleKey);
+$roleHomeLabel = smsRoleHomeLabel($roleKey);
+$roleHomeActive = smsRoleHomeIsActive($roleKey, str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? '')), (string) $activePage);
+$showMainDashboard = smsShowsMainDashboard($roleKey);
 $visibleModules = getVisibleModules($MODULES);
 $securitySettingsModule = '';
 if (!smsIsGrantedAdminRole($roleKey)) {
@@ -200,9 +204,6 @@ if ($studentHasResearchGroup && !isset($studentNavGroups['Research Development']
 }
 
 $facultyAccountNavGroups = [
-    'Dashboard' => [
-        ['slug' => '', 'href' => BASE_URL . '/modules/faculty/index.php', 'icon' => 'fa-th-large', 'label' => 'Overview'],
-    ],
     'Approved Research' => [
         ['slug' => 'approved-research', 'href' => BASE_URL . '/modules/faculty/pages/approved-research.php', 'icon' => 'fa-check-square', 'label' => 'View Approved Research'],
     ],

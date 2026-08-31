@@ -46,6 +46,11 @@ if ($activePage === '' && str_ends_with($scriptPath, '/dashboard/index.php') && 
     $activePage = 'dashboard';
 }
 
+if (str_ends_with($scriptPath, '/dashboard/index.php') && !smsShowsMainDashboard($layoutRoleKey)) {
+    header('Location: ' . smsRoleHomeUrl($layoutRoleKey));
+    exit;
+}
+
 requireModuleAccess($activeModule);
 
 require_once ROOT_PATH . '/includes/header.php';

@@ -419,7 +419,9 @@ function smsResearchCoordinatorCradModule(): array
 
 function smsPostLoginRedirectUrl(): string
 {
-    return BASE_URL . '/dashboard/index.php';
+    require_once __DIR__ . '/navigation-context.php';
+
+    return smsRoleHomeUrl(getCurrentUserRoleKey());
 }
 
 function requireModuleAccess(string $moduleKey): void

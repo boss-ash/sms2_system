@@ -138,3 +138,125 @@ if (!function_exists('smsSidebarHighlightModule')) {
         return ($primary !== '' && $primary !== 'System') ? $primary : $activeModule;
     }
 }
+
+if (!function_exists('smsShowsMainDashboard')) {
+    /**
+     * Whether the global glass dashboard should appear in sidebar / post-login.
+     */
+    function smsShowsMainDashboard(string $roleKey): bool
+    {
+        $roleKey = function_exists('smsNormalizeRoleKey')
+            ? smsNormalizeRoleKey($roleKey)
+            : $roleKey;
+
+        if ($roleKey === 'student') {
+            return false;
+        }
+
+        if (in_array($roleKey, [
+            'adviser',
+            'panel',
+            'grammarian',
+            'research_director',
+            'research_coordinator',
+        ], true)) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+if (!function_exists('smsRoleHomeUrl')) {
+    /**
+     * Default landing URL after login and sidebar Home link.
+     */
+    function smsRoleHomeUrl(string $roleKey): string
+    {
+        $roleKey = function_exists('smsNormalizeRoleKey')
+            ? smsNormalizeRoleKey($roleKey)
+            : $roleKey;
+
+        $homes = [
+            'student'              => BASE_URL . '/modules/student-portal/pages/dashboard.php',
+            'research_coordinator' => BASE_URL . '/modules/crad/index.php',
+            'crad_officer'         => BASE_URL . '/dashboard/index.php',
+            'grammarian'           => BASE_URL . '/modules/faculty/pages/for-evaluation.php',
+            'panel'                => BASE_URL . '/modules/faculty/pages/assigned-defenses.php',
+            'research_director'    => BASE_URL . '/modules/faculty/pages/research-director.php?view=overview',
+            'adviser'              => BASE_URL . '/modules/faculty/pages/assigned-research.php',
+            'research_grant'       => BASE_URL . '/modules/crad/index.php',
+        ];
+
+        if (isset($homes[$roleKey])) {
+            return $homes[$roleKey];
+        }
+
+        if (!function_exists('smsPrimaryModuleForRole')) {
+            require_once __DIR__ . '/security-workflow.php';
+        }
+
+        $primary = function_exists('smsPrimaryModuleForRole')
+            ? (string) smsPrimaryModuleForRole($roleKey)
+            : '';
+
+        if ($primary === 'student_portal') {
+            return BASE_URL . '/modules/student-portal/pages/dashboard.php';
+        }
+
+        if ($primary !== '' && $primary !== 'System' && $primary !== 'user-management') {
+            $folder = $primary === 'student_portal' ? 'student-portal' : $primary;
+            return BASE_URL . '/modules/' . $folder . '/index.php';
+        }
+
+        return BASE_URL . '/dashboard/index.php';
+    }
+}
+
+if (!function_exists('smsRoleHomeLabel')) {
+    function smsRoleHomeLabel(string $roleKey): string
+    {
+        $roleKey = function_exists('smsNormalizeRoleKey')
+            ? smsNormalizeRoleKey($roleKey)
+            : $roleKey;
+
+        $labels = [
+            'student'              => 'Home',
+            'research_coordinator' => 'Home',
+            'grammarian'           => 'Home',
+            'panel'                => 'Home',
+            'research_director'    => 'Home',
+            'adviser'              => 'Home',
+            'crad_officer'         => 'Dashboard',
+            'research_grant'       => 'Home',
+        ];
+
+        return $labels[$roleKey] ?? (smsShowsMainDashboard($roleKey) ? 'Dashboard' : 'Home');
+    }
+}
+
+if (!function_exists('smsRoleHomeIsActive')) {
+    function smsRoleHomeIsActive(string $roleKey, string $scriptPath, string $activePage): bool
+    {
+        $homeUrl = smsRoleHomeUrl($roleKey);
+        $homePath = (string) (parse_url($homeUrl, PHP_URL_PATH) ?? '');
+        if ($homePath !== '' && str_ends_with($scriptPath, $homePath)) {
+            return true;
+        }
+
+        $roleKey = function_exists('smsNormalizeRoleKey')
+            ? smsNormalizeRoleKey($roleKey)
+            : $roleKey;
+
+        return match ($roleKey) {
+            'grammarian'        => $activePage === 'for-evaluation',
+            'panel'             => $activePage === 'assigned-defenses',
+            'research_director' => str_contains($scriptPath, '/research-director.php')
+                && (($activePage === '') || $activePage === 'overview'),
+            'adviser'           => $activePage === 'assigned-research',
+            'research_coordinator', 'crad_officer', 'research_grant' => str_contains($scriptPath, '/modules/crad/index.php'),
+            'student'           => str_contains($scriptPath, '/modules/student-portal/pages/dashboard.php'),
+            default             => str_ends_with($scriptPath, '/dashboard/index.php'),
+        };
+    }
+}
