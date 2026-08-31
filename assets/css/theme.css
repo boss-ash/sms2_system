@@ -37,7 +37,7 @@
     --sms-sidebar-collapsed-width: 76px;
 
     /* Layout */
-    --sms-navbar-height:   52px;
+    --sms-navbar-height:   56px;
     --sms-body-bg:         #f4f7fb;
     --sms-body-bg-image:   none;
 
@@ -1598,10 +1598,10 @@ hr { border-color: var(--sms-border); opacity: 1; }
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    min-width: 6.5rem;
-    height: 32px;
-    padding: 0.25rem 0.55rem;
-    border-radius: 8px;
+    min-width: 7rem;
+    height: 34px;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9px;
     border: 1px solid rgba(255, 255, 255, 0.22);
     background: rgba(255, 255, 255, 0.12);
     color: #ffffff !important;
@@ -1632,8 +1632,8 @@ hr { border-color: var(--sms-border); opacity: 1; }
    Theme toggle button
    ============================================================ */
 .theme-toggle {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     display: inline-flex;
     align-items: center;
     justify-content: center;

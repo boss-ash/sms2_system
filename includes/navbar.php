@@ -93,7 +93,7 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
                 <?= smsIcon('menu-2') ?>
             </button>
             <a class="navbar-brand d-flex align-items-center gap-2" href="<?= BASE_URL ?>/dashboard/index.php">
-                <img src="<?= e(smsBrandLogoUrl()) ?>" alt="BCP" style="height:28px;width:auto;object-fit:contain;">
+                <img src="<?= e(smsBrandLogoUrl()) ?>" alt="BCP" style="height:30px;width:auto;object-fit:contain;">
                 <span class="d-none d-sm-inline"><?= htmlspecialchars(APP_SHORT_NAME) ?></span>
             </a>
         </div>
@@ -103,7 +103,7 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
             <div class="navbar-search position-relative">
                 <?= smsIcon('search', ['class' => 'navbar-search-icon']) ?>
                 <input type="text" id="globalSearch" class="form-control navbar-search-input"
-                       placeholder="Search…"
+                       placeholder="Search modules and pages..."
                        autocomplete="off"
                        aria-label="Search modules and pages"
                        aria-haspopup="listbox"

@@ -58,8 +58,8 @@
 
 .navbar-search {
     position: relative;
-    width: 220px;
-    max-width: 220px;
+    width: 360px;
+    max-width: min(360px, 100%);
     min-width: 0;
     flex: 0 0 auto;
 }
@@ -78,13 +78,13 @@
 
 .sms-navbar .navbar-brand {
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 1rem;
     letter-spacing: 0.01em;
     color: #fff !important;
     text-decoration: none;
 }
 .sms-navbar .navbar-brand img {
-    height: 28px !important;
+    height: 30px !important;
     width: auto;
 }
 .sms-navbar .sidebar-toggle {
@@ -1014,11 +1014,11 @@ body.sidebar-open {
 
 .navbar-search-icon {
     position: absolute;
-    left: 0.65rem;
+    left: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
     color: rgba(255,255,255,0.5);
-    font-size: 0.72rem;
+    font-size: 0.76rem;
     pointer-events: none;
     z-index: 2;
     transition: color 0.18s ease;
@@ -1026,13 +1026,13 @@ body.sidebar-open {
 
 .navbar-search-input {
     width: 100%;
-    height: 32px;
-    padding: 0 4rem 0 1.85rem;
+    height: 36px;
+    padding: 0 4.25rem 0 2rem;
     background: rgba(255,255,255,0.10) !important;
     border: 1px solid rgba(255,255,255,0.15) !important;
     border-radius: 8px !important;
     color: #fff !important;
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     outline: none;
     box-shadow: none !important;
@@ -1085,8 +1085,8 @@ body.sidebar-open {
     top: calc(100% + 4px);
     left: 0;
     transform: none;
-    width: 260px;
-    max-width: min(260px, calc(100vw - 1.5rem));
+    width: 380px;
+    max-width: min(380px, calc(100vw - 1.5rem));
     background: var(--sms-dropdown-bg);
     border: 1px solid var(--sms-dropdown-border);
     border-radius: 12px;
@@ -1275,14 +1275,14 @@ body.sidebar-open {
 }
 
 /* Hide keyboard hint when space is tight */
-@media (max-width: 1399.98px) {
+@media (max-width: 1199.98px) {
     .search-kbd-hint { display: none !important; }
-    .navbar-search-input { padding-right: 2rem !important; }
+    .navbar-search-input { padding-right: 2.2rem !important; }
 }
 
 @media (max-width: 991.98px) {
     .navbar-left { min-width: 0; }
-    .navbar-search-dropdown { width: min(260px, calc(100vw - 1.5rem)); }
+    .navbar-search-dropdown { width: min(380px, calc(100vw - 1.5rem)); }
 }
 
 /* ============================================================
