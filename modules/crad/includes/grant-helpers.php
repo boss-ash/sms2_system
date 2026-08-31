@@ -1082,11 +1082,13 @@ function grantSubmitProposal(PDO $crad, array $data, array $files): array
 
     // ── Insert application ──────────────────────────────────────────────────
     $submissionToken = bin2hex(random_bytes(16));
+    $proposalReference = grantGenerateProposalReference($crad);
 
     try {
         $stmt = $crad->prepare("
             INSERT INTO grant_applications
                 (grant_opportunity_id,
+                 proposal_reference, current_version,
                  applicant_name, applicant_user_id,
                  college_dept, requested_budget,
                  research_title, group_number,
@@ -1099,6 +1101,7 @@ function grantSubmitProposal(PDO $crad, array $data, array $files): array
                  submitted_at, updated_at)
             VALUES
                 (?,
+                 ?, 1,
                  ?, ?,
                  ?, ?,
                  ?, ?,
@@ -1112,6 +1115,7 @@ function grantSubmitProposal(PDO $crad, array $data, array $files): array
         ");
         $stmt->execute([
             $grantId,
+            $proposalReference,
             $leadProponent,
             $applicantUid,
             $collegeDept,
@@ -1129,7 +1133,22 @@ function grantSubmitProposal(PDO $crad, array $data, array $files): array
             $notes,
             $submissionToken,
         ]);
-        return ['ok' => true, 'id' => (int) $crad->lastInsertId()];
+        $newId = (int) $crad->lastInsertId();
+
+        grantInsertProposalVersion($crad, [
+            'id' => $newId,
+            'applicant_user_id' => $applicantUid,
+            'proposal_pdf' => $proposalFile['stored_name'] ?? null,
+            'proposal_pdf_original' => $proposalFile['original_name'] ?? null,
+            'supporting_docs' => $supportingFile['stored_name'] ?? null,
+            'supporting_docs_original' => $supportingFile['original_name'] ?? null,
+            'ethics_doc' => $ethicsFile['stored_name'] ?? null,
+            'ethics_doc_original' => $ethicsFile['original_name'] ?? null,
+            'abstract' => $abstract,
+            'objectives' => $objectives,
+        ], 1);
+
+        return ['ok' => true, 'id' => $newId, 'reference' => $proposalReference];
 
     } catch (Throwable $e) {
         error_log('grantSubmitProposal (insert): ' . $e->getMessage());

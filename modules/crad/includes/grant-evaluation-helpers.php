@@ -29,6 +29,7 @@ function grantRecommendationOptions(): array
     return [
         'disapprove'         => 'Disapprove',
         'require_revisions'  => 'Require Revisions',
+        'recommend'          => 'Recommend',
     ];
 }
 
@@ -42,6 +43,7 @@ function grantStatusForRecommendation(string $recommendation): ?string
     return match ($recommendation) {
         'disapprove'        => 'Rejected',
         'require_revisions' => 'Revision Required',
+        'recommend'         => 'Under Review',
         default             => null,
     };
 }
