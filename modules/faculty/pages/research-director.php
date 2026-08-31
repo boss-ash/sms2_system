@@ -2793,6 +2793,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const isFinalizeView = <?= $view === 'finalize-defense-schedule' ? 'true' : 'false' ?>;
     const currentDefenseType = <?= json_encode($requestedDefenseType) ?>;
     const isProposedView = <?= $view === 'proposed-schedules' ? 'true' : 'false' ?>;
+    const isManualOptimizerView = <?= $view === 'manual-scheduling-optimizer' ? 'true' : 'false' ?>;
     const csrfToken    = <?= json_encode(csrfToken()) ?>;
     const pageUrl      = window.location.pathname + '?view=venues';
     const search = document.querySelector('[data-director-search]');
@@ -3368,11 +3369,91 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     <?php endif; ?>
 
+    const bindAiScheduler = function () {
+        const schedulerForm = document.getElementById('directorSchedulerForm');
+        const generateBtn = document.getElementById('aiGenerateSlotsBtn');
+        const summaryEl = document.getElementById('aiScheduleSummary');
+        const hintsEl = document.getElementById('aiSlotHints');
+        const periodStart = document.getElementById('aiPeriodStart');
+        const periodEnd = document.getElementById('aiPeriodEnd');
+        const expectedAttendees = document.getElementById('aiExpectedAttendees');
+        if (!schedulerForm || !generateBtn || !summaryEl) return;
+
+        generateBtn.addEventListener('click', async function () {
+            const groupId = parseInt(schedulerForm.getAttribute('data-group-id') || '0', 10);
+            if (groupId < 1) {
+                summaryEl.style.display = '';
+                summaryEl.classList.add('is-error');
+                summaryEl.textContent = 'Select a defense-ready research group first.';
+                return;
+            }
+
+            generateBtn.disabled = true;
+            summaryEl.style.display = 'none';
+            summaryEl.classList.remove('is-error');
+            if (hintsEl) hintsEl.innerHTML = '';
+
+            const body = new URLSearchParams();
+            body.set('schedule_action', 'ai_generate_slots');
+            body.set('research_group_id', String(groupId));
+            body.set('defense_type', schedulerForm.getAttribute('data-defense-type') || '');
+            body.set('period_start', periodStart ? periodStart.value : '');
+            body.set('period_end', periodEnd ? periodEnd.value : '');
+            body.set('expected_attendees', expectedAttendees ? expectedAttendees.value : '15');
+            body.set('csrf_token', csrfToken);
+
+            try {
+                const res = await fetch(window.location.href, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: body.toString()
+                });
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.message || 'AI scheduling failed.');
+
+                const dates = schedulerForm.querySelectorAll('.js-defense-date');
+                const venues = schedulerForm.querySelectorAll('.js-venue-id');
+                const starts = schedulerForm.querySelectorAll('.js-start-time');
+                const ends = schedulerForm.querySelectorAll('.js-end-time');
+
+                (data.slots || []).forEach(function (slot, index) {
+                    if (dates[index]) dates[index].value = slot.date || '';
+                    if (venues[index]) venues[index].value = String(slot.venue_id || '');
+                    if (starts[index]) starts[index].value = slot.start_time || '';
+                    if (ends[index]) ends[index].value = slot.end_time || '';
+                });
+
+                summaryEl.style.display = '';
+                summaryEl.textContent = data.summary || 'AI generated optimal slots. Review and save when ready.';
+
+                if (hintsEl && Array.isArray(data.slots)) {
+                    hintsEl.innerHTML = data.slots.map(function (slot, index) {
+                        return '<div class="director-ai-slot-hint"><strong>Slot ' + (index + 1) + ':</strong> '
+                            + esc(slot.date) + ' · ' + esc(slot.start_time) + '–' + esc(slot.end_time)
+                            + ' · ' + esc(slot.venue_name) + ' (' + esc(slot.capacity) + ' cap) — '
+                            + esc(slot.reason || '') + '</div>';
+                    }).join('');
+                }
+            } catch (err) {
+                summaryEl.style.display = '';
+                summaryEl.classList.add('is-error');
+                summaryEl.textContent = err.message || 'Could not generate slots. Try a wider period.';
+            }
+
+            generateBtn.disabled = false;
+        });
+    };
+
     applyFilters();
     if (isVenueView) {
         bindStatusSelects();
         bindCapacityInputs();
     }
+    if (isManualOptimizerView) bindAiScheduler();
     if (isFinalizeView) bindFinalizeButtons();
     if (isProposedView) bindReviewButtons();
     refreshRows();
