@@ -103,7 +103,7 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
             <div class="navbar-search position-relative">
                 <?= smsIcon('search', ['class' => 'navbar-search-icon']) ?>
                 <input type="text" id="globalSearch" class="form-control navbar-search-input"
-                       placeholder="Search modules and pages..."
+                       placeholder="Search…"
                        autocomplete="off"
                        aria-label="Search modules and pages"
                        aria-haspopup="listbox"
