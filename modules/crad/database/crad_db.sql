@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 31, 2026 at 06:06 PM
+-- Generation Time: Aug 31, 2026 at 07:46 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -64,7 +64,10 @@ INSERT INTO `chapter_evaluations` (`id`, `submission_id`, `research_group_id`, `
 (33, 37, 63, 475, 'Grammarian', 99.00, 99.00, 99.00, 99.00, '', '', '', '', '', 'APPROVED', 99.00, '2026-08-28 16:30:48', '2026-08-28 16:30:48'),
 (34, 38, 64, 475, 'Grammarian', 100.00, 100.00, 100.00, 100.00, '', '', '', '', '', 'APPROVED', 100.00, '2026-08-31 05:32:02', '2026-08-31 05:32:02'),
 (35, 39, 64, 475, 'Grammarian', 100.00, 100.00, 100.00, 100.00, '', '', '', '', '', 'APPROVED', 100.00, '2026-08-31 05:32:16', '2026-08-31 05:32:16'),
-(36, 40, 64, 475, 'Grammarian', 100.00, 100.00, 100.00, 100.00, '', '', '', '', '', 'APPROVED', 100.00, '2026-08-31 05:32:32', '2026-08-31 05:32:32');
+(36, 40, 64, 475, 'Grammarian', 100.00, 100.00, 100.00, 100.00, '', '', '', '', '', 'APPROVED', 100.00, '2026-08-31 05:32:32', '2026-08-31 05:32:32'),
+(37, 41, 65, 475, 'Grammarian', 100.00, 100.00, 100.00, 100.00, '', '', '', '', '', 'APPROVED', 100.00, '2026-08-31 09:42:10', '2026-08-31 09:42:10'),
+(38, 42, 65, 475, 'Grammarian', 100.00, 100.00, 99.97, 100.00, '', '', '', '', '', 'APPROVED', 99.99, '2026-08-31 09:42:25', '2026-08-31 09:42:25'),
+(39, 43, 65, 475, 'Grammarian', 100.00, 100.00, 100.00, 100.00, '', '', '', '', '', 'APPROVED', 100.00, '2026-08-31 09:42:36', '2026-08-31 09:42:36');
 
 -- --------------------------------------------------------
 
@@ -207,7 +210,16 @@ INSERT INTO `chapter_evaluation_notifications` (`id`, `event_key`, `recipient_us
 (113, 'student:accepted:39', 9, 'student', 'kenlangmalakas0308@gmail.com', 39, 'accepted', 'Chapter 2 accepted', 'Chapter 2 Version 1 is now Accepted.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 05:32:16'),
 (114, 'student:under_review:40', 9, 'student', 'kenlangmalakas0308@gmail.com', 40, 'under_review', 'Chapter 3 is under review', 'Chapter 3 Version 1 is now under review.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 05:32:23'),
 (115, 'student:accepted:40', 9, 'student', 'kenlangmalakas0308@gmail.com', 40, 'accepted', 'Chapter 3 accepted', 'Chapter 3 Version 1 is now Accepted.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 05:32:32'),
-(116, 'student:final_manuscript_approved:4', 9, 'student', 'kenlangmalakas0308@gmail.com', 4, 'final_manuscript_approved', 'Final Manuscript Approved', 'Your latest final manuscript for your research group has been approved for the next CRAD stage.', '/sms2_system/modules/student-portal/pages/final-manuscript.php', 0, '2026-08-31 06:32:22');
+(116, 'student:final_manuscript_approved:4', 9, 'student', 'kenlangmalakas0308@gmail.com', 4, 'final_manuscript_approved', 'Final Manuscript Approved', 'Your latest final manuscript for your research group has been approved for the next CRAD stage.', '/sms2_system/modules/student-portal/pages/final-manuscript.php', 0, '2026-08-31 06:32:22'),
+(117, 'evaluator:new:41:u475', 475, 'grammarian', 'grammarian@bestlink.edu.ph', 41, 'new_submission', 'New Chapter Submission', 'Group 01 submitted Chapter 1 Version 1 for evaluation.', '/SMS2_system/modules/faculty/pages/evaluation-scoring.php?id=41', 0, '2026-08-31 09:41:02'),
+(118, 'evaluator:new:42:u475', 475, 'grammarian', 'grammarian@bestlink.edu.ph', 42, 'new_submission', 'New Chapter Submission', 'Group 01 submitted Chapter 2 Version 1 for evaluation.', '/SMS2_system/modules/faculty/pages/evaluation-scoring.php?id=42', 0, '2026-08-31 09:41:14'),
+(119, 'evaluator:new:43:u475', 475, 'grammarian', 'grammarian@bestlink.edu.ph', 43, 'new_submission', 'New Chapter Submission', 'Group 01 submitted Chapter 3 Version 1 for evaluation.', '/SMS2_system/modules/faculty/pages/evaluation-scoring.php?id=43', 0, '2026-08-31 09:41:20'),
+(120, 'student:under_review:41', 9, 'student', 's230000001@bestlink.edu.ph', 41, 'under_review', 'Chapter 1 is under review', 'Chapter 1 Version 1 is now under review.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 09:41:37'),
+(121, 'student:accepted:41', 9, 'student', 's230000001@bestlink.edu.ph', 41, 'accepted', 'Chapter 1 accepted', 'Chapter 1 Version 1 is now Accepted.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 09:42:10'),
+(122, 'student:under_review:42', 9, 'student', 's230000001@bestlink.edu.ph', 42, 'under_review', 'Chapter 2 is under review', 'Chapter 2 Version 1 is now under review.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 09:42:16'),
+(123, 'student:accepted:42', 9, 'student', 's230000001@bestlink.edu.ph', 42, 'accepted', 'Chapter 2 accepted', 'Chapter 2 Version 1 is now Accepted.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 09:42:25'),
+(124, 'student:under_review:43', 9, 'student', 's230000001@bestlink.edu.ph', 43, 'under_review', 'Chapter 3 is under review', 'Chapter 3 Version 1 is now under review.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 09:42:30'),
+(125, 'student:accepted:43', 9, 'student', 's230000001@bestlink.edu.ph', 43, 'accepted', 'Chapter 3 accepted', 'Chapter 3 Version 1 is now Accepted.', '/sms2_system/modules/student-portal/pages/submission-status.php', 0, '2026-08-31 09:42:37');
 
 -- --------------------------------------------------------
 
@@ -254,7 +266,10 @@ INSERT INTO `chapter_submissions` (`id`, `research_group_id`, `research_plan_id`
 (37, 63, 24, 3, 1, 'Accepted', 9, 'Student User', 'kenlangmalakas0308@gmail.com', '', 'OJT_PRACTICUM_1_NARRATIVE_REPORT (1) (1).docx', 'student_chapters/u9', 'd63ca46384609e00826df060745c3a10.docx', 302605, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', '1091e650c3ac7f3e6ed48b4f6dab3290ab309e75293e5842455bb08943720b3c', '2026-08-28 16:30:18', '2026-08-28 16:30:44', '2026-08-28 16:30:48', '2026-08-28 16:30:48'),
 (38, 64, 25, 1, 1, 'Accepted', 9, 'Student User', 'kenlangmalakas0308@gmail.com', '', 'OLIVEROS CV.pdf', 'student_chapters/u9', 'db565eabd531f233133d7398bd3affcf.pdf', 294354, 'application/pdf', 'eb04651e6e4d8811e7596935b11cc7517de971da398a0aaf6d94f089148b33c3', '2026-08-31 05:30:20', '2026-08-31 05:31:36', '2026-08-31 05:32:02', '2026-08-31 05:32:02'),
 (39, 64, 25, 2, 1, 'Accepted', 9, 'Student User', 'kenlangmalakas0308@gmail.com', '', 'OLIVEROS CV.pdf', 'student_chapters/u9', '9df614acae2f05933d0af2a09abed945.pdf', 294354, 'application/pdf', '88b6cc5da546d5b6c56dcb13bb28a25ac7cea4f939ff5f0a64edffe902785150', '2026-08-31 05:30:27', '2026-08-31 05:32:07', '2026-08-31 05:32:16', '2026-08-31 05:32:16'),
-(40, 64, 25, 3, 1, 'Accepted', 9, 'Student User', 'kenlangmalakas0308@gmail.com', '', 'OLIVEROS CV.pdf', 'student_chapters/u9', '6b9019e3663ac5e3ba2b152abf5c8857.pdf', 294354, 'application/pdf', '53c9b60411c62a659c6dee58ba830ab87477c4945af47482fadee00c85a8d8a5', '2026-08-31 05:30:32', '2026-08-31 05:32:23', '2026-08-31 05:32:32', '2026-08-31 05:32:32');
+(40, 64, 25, 3, 1, 'Accepted', 9, 'Student User', 'kenlangmalakas0308@gmail.com', '', 'OLIVEROS CV.pdf', 'student_chapters/u9', '6b9019e3663ac5e3ba2b152abf5c8857.pdf', 294354, 'application/pdf', '53c9b60411c62a659c6dee58ba830ab87477c4945af47482fadee00c85a8d8a5', '2026-08-31 05:30:32', '2026-08-31 05:32:23', '2026-08-31 05:32:32', '2026-08-31 05:32:32'),
+(41, 65, 26, 1, 1, 'Accepted', 9, 'Student User', 's230000001@bestlink.edu.ph', '', 'OLIVEROS CV.pdf', 'student_chapters/u9', '4f694cb5d0416281cbf798b4f2512b24.pdf', 294354, 'application/pdf', '68dd9f53e015b14e08a5eb96c1a5c383f5e02f34082846d940097fec8b97cc20', '2026-08-31 09:41:02', '2026-08-31 09:41:37', '2026-08-31 09:42:10', '2026-08-31 09:42:10'),
+(42, 65, 26, 2, 1, 'Accepted', 9, 'Student User', 's230000001@bestlink.edu.ph', '', 'OLIVEROS CV.pdf', 'student_chapters/u9', 'b54dde9265a89caa8fe66d1c22cdbd62.pdf', 294354, 'application/pdf', '30cd83bc72425ee46feb4a5f1bfb0fd0d35db6061321fe3e590b3c296486416d', '2026-08-31 09:41:14', '2026-08-31 09:42:16', '2026-08-31 09:42:25', '2026-08-31 09:42:25'),
+(43, 65, 26, 3, 1, 'Accepted', 9, 'Student User', 's230000001@bestlink.edu.ph', '', 'OLIVEROS CV.pdf', 'student_chapters/u9', 'c88aaf9cd7d1786adef383829d96f19d.pdf', 294354, 'application/pdf', '8caa0800c83f9cb0d4d5c6ff1739d304e1b31b7863feff6dcc779c651fded0ae', '2026-08-31 09:41:20', '2026-08-31 09:42:30', '2026-08-31 09:42:37', '2026-08-31 09:42:37');
 
 -- --------------------------------------------------------
 
@@ -317,7 +332,16 @@ INSERT INTO `chapter_submission_history` (`id`, `submission_id`, `research_group
 (110, 39, 64, 2, 1, 'Under Review', 'review_started', 475, 'Grammarian', 'grammarian', 'Grammarian started review.', '2026-08-31 05:32:07'),
 (111, 39, 64, 2, 1, 'Accepted', 'evaluated', 475, 'Grammarian', 'grammarian', 'APPROVED', '2026-08-31 05:32:16'),
 (112, 40, 64, 3, 1, 'Under Review', 'review_started', 475, 'Grammarian', 'grammarian', 'Grammarian started review.', '2026-08-31 05:32:23'),
-(113, 40, 64, 3, 1, 'Accepted', 'evaluated', 475, 'Grammarian', 'grammarian', 'APPROVED', '2026-08-31 05:32:32');
+(113, 40, 64, 3, 1, 'Accepted', 'evaluated', 475, 'Grammarian', 'grammarian', 'APPROVED', '2026-08-31 05:32:32'),
+(114, 41, 65, 1, 1, 'Submitted', 'submitted', 9, 'Student User', 'student', '', '2026-08-31 09:41:02'),
+(115, 42, 65, 2, 1, 'Submitted', 'submitted', 9, 'Student User', 'student', '', '2026-08-31 09:41:14'),
+(116, 43, 65, 3, 1, 'Submitted', 'submitted', 9, 'Student User', 'student', '', '2026-08-31 09:41:20'),
+(117, 41, 65, 1, 1, 'Under Review', 'review_started', 475, 'Grammarian', 'grammarian', 'Grammarian started review.', '2026-08-31 09:41:37'),
+(118, 41, 65, 1, 1, 'Accepted', 'evaluated', 475, 'Grammarian', 'grammarian', 'APPROVED', '2026-08-31 09:42:10'),
+(119, 42, 65, 2, 1, 'Under Review', 'review_started', 475, 'Grammarian', 'grammarian', 'Grammarian started review.', '2026-08-31 09:42:16'),
+(120, 42, 65, 2, 1, 'Accepted', 'evaluated', 475, 'Grammarian', 'grammarian', 'APPROVED', '2026-08-31 09:42:25'),
+(121, 43, 65, 3, 1, 'Under Review', 'review_started', 475, 'Grammarian', 'grammarian', 'Grammarian started review.', '2026-08-31 09:42:30'),
+(122, 43, 65, 3, 1, 'Accepted', 'evaluated', 475, 'Grammarian', 'grammarian', 'APPROVED', '2026-08-31 09:42:37');
 
 -- --------------------------------------------------------
 
@@ -457,7 +481,7 @@ CREATE TABLE `grant_applications` (
 --
 
 INSERT INTO `grant_applications` (`id`, `proposal_reference`, `current_version`, `grant_opportunity_id`, `research_group_id`, `group_number`, `research_title`, `applicant_name`, `college_dept`, `requested_budget`, `abstract`, `objectives`, `proposal_pdf`, `proposal_pdf_original`, `supporting_docs`, `supporting_docs_original`, `ethics_doc`, `ethics_doc_original`, `applicant_user_id`, `application_notes`, `status`, `submission_token`, `submitted_at`, `updated_at`) VALUES
-(2, 'GR-2026-001', 1, 1, NULL, NULL, 'AI ANALYSIS', 'Student User', 'College of Studies', 2900.00, 'dsada', 'asdas', 'b594409c59e3ba6839050c9dd63f50a6.pdf', 'OLIVEROS CV.pdf', '6a9719b97b1c60266f543bba2f313c38.pdf', 'OLIVEROS CV.pdf', '757f2e0bf3a62bd565b415570d7df5e8.pdf', 'OLIVEROS CV.pdf', 9, NULL, 'Submitted', 'c595e3d94db3cd0f42199da922185f07', '2026-08-31 08:03:18', '2026-08-31 08:03:18');
+(2, 'GR-2026-001', 2, 1, NULL, NULL, 'AI ANALYSIS', 'Student User', 'College of Studies', 2900.00, 'dsada', 'asdas', 'f3f3ec4b05c99f1fbbe58278c60d4afe.pdf', 'OLIVEROS CV.pdf', 'e411ba015c79a77a27013c4206313257.pdf', 'OLIVEROS CV.pdf', '95ae712a926e7a6e5ceef81ed3ba0f14.pdf', 'OLIVEROS CV.pdf', 9, NULL, 'Under Review', 'c595e3d94db3cd0f42199da922185f07', '2026-08-31 08:46:40', '2026-08-31 08:47:21');
 
 -- --------------------------------------------------------
 
@@ -489,6 +513,64 @@ INSERT INTO `grant_opportunities` (`id`, `funding_title`, `max_funding_cap`, `ap
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `grant_proposal_approval_steps`
+--
+
+CREATE TABLE `grant_proposal_approval_steps` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `workflow_id` int(10) UNSIGNED NOT NULL,
+  `grant_application_id` int(10) UNSIGNED NOT NULL,
+  `step_key` varchar(40) NOT NULL,
+  `step_order` tinyint(3) UNSIGNED NOT NULL,
+  `step_label` varchar(80) NOT NULL,
+  `approver_role_key` varchar(40) NOT NULL,
+  `status` enum('Queued','Pending','Approved','Returned') NOT NULL DEFAULT 'Queued',
+  `approver_user_id` int(10) UNSIGNED DEFAULT NULL,
+  `approver_name` varchar(150) DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `signature_data` mediumtext DEFAULT NULL,
+  `acted_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `grant_proposal_approval_steps`
+--
+
+INSERT INTO `grant_proposal_approval_steps` (`id`, `workflow_id`, `grant_application_id`, `step_key`, `step_order`, `step_label`, `approver_role_key`, `status`, `approver_user_id`, `approver_name`, `remarks`, `signature_data`, `acted_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 2, 'adviser', 1, 'Academic Adviser', 'adviser', 'Pending', NULL, NULL, NULL, NULL, NULL, '2026-08-31 08:47:21', '2026-08-31 08:47:21'),
+(2, 1, 2, 'department_chair', 2, 'Dept. Chair', 'research_coordinator', 'Queued', NULL, NULL, NULL, NULL, NULL, '2026-08-31 08:47:21', '2026-08-31 08:47:21'),
+(3, 1, 2, 'dean', 3, 'College Dean', 'hr', 'Queued', NULL, NULL, NULL, NULL, NULL, '2026-08-31 08:47:21', '2026-08-31 08:47:21'),
+(4, 1, 2, 'research_office', 4, 'Research Office', 'crad_officer', 'Queued', NULL, NULL, NULL, NULL, NULL, '2026-08-31 08:47:21', '2026-08-31 08:47:21'),
+(5, 1, 2, 'vpaa', 5, 'VPAA Sign-off', 'qa', 'Queued', NULL, NULL, NULL, NULL, NULL, '2026-08-31 08:47:21', '2026-08-31 08:47:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `grant_proposal_approval_workflows`
+--
+
+CREATE TABLE `grant_proposal_approval_workflows` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `grant_application_id` int(10) UNSIGNED NOT NULL,
+  `current_step_key` varchar(40) NOT NULL DEFAULT 'adviser',
+  `workflow_status` enum('In Progress','Completed','Returned') NOT NULL DEFAULT 'In Progress',
+  `started_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `completed_at` datetime DEFAULT NULL,
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `grant_proposal_approval_workflows`
+--
+
+INSERT INTO `grant_proposal_approval_workflows` (`id`, `grant_application_id`, `current_step_key`, `workflow_status`, `started_at`, `completed_at`, `updated_at`) VALUES
+(1, 2, 'adviser', 'In Progress', '2026-08-31 08:47:21', NULL, '2026-08-31 08:47:21');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `grant_proposal_evaluations`
 --
 
@@ -498,6 +580,7 @@ CREATE TABLE `grant_proposal_evaluations` (
   `proposal_version` int(10) UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Proposal version evaluated',
   `evaluator_user_id` int(10) UNSIGNED NOT NULL,
   `evaluator_name` varchar(150) NOT NULL DEFAULT '',
+  `evaluation_type` varchar(20) NOT NULL DEFAULT 'committee' COMMENT 'committee | adviser',
   `score_rationale` decimal(5,2) NOT NULL DEFAULT 0.00,
   `score_methodology` decimal(5,2) NOT NULL DEFAULT 0.00,
   `score_budget` decimal(5,2) NOT NULL DEFAULT 0.00,
@@ -517,8 +600,10 @@ CREATE TABLE `grant_proposal_evaluations` (
 -- Dumping data for table `grant_proposal_evaluations`
 --
 
-INSERT INTO `grant_proposal_evaluations` (`id`, `grant_application_id`, `proposal_version`, `evaluator_user_id`, `evaluator_name`, `score_rationale`, `score_methodology`, `score_budget`, `score_team_capability`, `score_compliance`, `total_score`, `comments`, `recommendations`, `required_corrections`, `recommendation`, `revision_reason`, `submitted_at`, `updated_at`) VALUES
-(1, 1, 1, 766, 'Review Committee Member', 25.00, 30.00, 19.00, 10.00, 5.00, 89.00, 'asdsa', 'asdas', 'asdas', NULL, NULL, '2026-08-31 07:27:00', '2026-08-31 07:27:00');
+INSERT INTO `grant_proposal_evaluations` (`id`, `grant_application_id`, `proposal_version`, `evaluator_user_id`, `evaluator_name`, `evaluation_type`, `score_rationale`, `score_methodology`, `score_budget`, `score_team_capability`, `score_compliance`, `total_score`, `comments`, `recommendations`, `required_corrections`, `recommendation`, `revision_reason`, `submitted_at`, `updated_at`) VALUES
+(1, 1, 1, 766, 'Review Committee Member', 'committee', 25.00, 30.00, 19.00, 10.00, 5.00, 89.00, 'asdsa', 'asdas', 'asdas', NULL, NULL, '2026-08-31 07:27:00', '2026-08-31 07:27:00'),
+(2, 2, 1, 766, 'Review Committee Member', 'committee', 13.00, 13.00, 13.00, 13.00, 1.00, 53.00, 'sadas', 'asdsa', 'asdas', 'require_revisions', 'sadas', '2026-08-31 08:09:44', '2026-08-31 08:09:44'),
+(3, 2, 2, 766, 'Review Committee Member', 'committee', 25.00, 25.00, 20.00, 15.00, 10.00, 95.00, 'sadas', 'asdsa', 'adsaa', 'recommend', NULL, '2026-08-31 08:47:21', '2026-08-31 08:47:21');
 
 -- --------------------------------------------------------
 
@@ -540,6 +625,13 @@ CREATE TABLE `grant_proposal_notifications` (
   `is_read` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `grant_proposal_notifications`
+--
+
+INSERT INTO `grant_proposal_notifications` (`id`, `event_key`, `recipient_user_id`, `recipient_role`, `recipient_email`, `grant_application_id`, `type`, `title`, `body`, `url`, `is_read`, `created_at`) VALUES
+(1, 'grant-proposal:grant_revision_required:2:v1:u9', 9, '', '', 2, 'grant_revision_required', 'Revise Grant Proposal', 'GR-2026-001 requires revisions. sadas Tap to revise and resubmit.', '/sms2_system/modules/crad/pages/revise-proposal.php?id=2', 1, '2026-08-31 08:46:38');
 
 -- --------------------------------------------------------
 
@@ -571,7 +663,8 @@ CREATE TABLE `grant_proposal_versions` (
 
 INSERT INTO `grant_proposal_versions` (`id`, `grant_application_id`, `version_number`, `version_label`, `proposal_pdf`, `proposal_pdf_original`, `supporting_docs`, `supporting_docs_original`, `ethics_doc`, `ethics_doc_original`, `abstract`, `objectives`, `researcher_notes`, `submitted_by_user_id`, `submitted_at`) VALUES
 (1, 1, 1, 'Original', '53ac796ed0ad7af6ca74703f6e4a5b41.pdf', 'OLIVEROS CV.pdf', '72706d8b5bfd82f1135557fa92faf84a.pdf', 'OLIVEROS CV.pdf', '3b1bf340d2db787753a7f77efb0fcdaf.pdf', 'OLIVEROS CV.pdf', 'adsadas', 'adsadas', NULL, 9, '2026-08-31 07:42:38'),
-(2, 2, 1, 'Original', 'b594409c59e3ba6839050c9dd63f50a6.pdf', 'OLIVEROS CV.pdf', '6a9719b97b1c60266f543bba2f313c38.pdf', 'OLIVEROS CV.pdf', '757f2e0bf3a62bd565b415570d7df5e8.pdf', 'OLIVEROS CV.pdf', 'dsada', 'asdas', NULL, 9, '2026-08-31 08:03:18');
+(2, 2, 1, 'Original', 'b594409c59e3ba6839050c9dd63f50a6.pdf', 'OLIVEROS CV.pdf', '6a9719b97b1c60266f543bba2f313c38.pdf', 'OLIVEROS CV.pdf', '757f2e0bf3a62bd565b415570d7df5e8.pdf', 'OLIVEROS CV.pdf', 'dsada', 'asdas', NULL, 9, '2026-08-31 08:46:40'),
+(4, 2, 2, 'Revised', 'f3f3ec4b05c99f1fbbe58278c60d4afe.pdf', 'OLIVEROS CV.pdf', 'e411ba015c79a77a27013c4206313257.pdf', 'OLIVEROS CV.pdf', '95ae712a926e7a6e5ceef81ed3ba0f14.pdf', 'OLIVEROS CV.pdf', 'dsada', 'asdas', 'sada', 9, '2026-08-31 08:46:40');
 
 -- --------------------------------------------------------
 
@@ -707,7 +800,10 @@ INSERT INTO `panel_assignment_notifications` (`id`, `event_key`, `recipient_user
 (54, 'pre-oral-finalized:s48:u493', 493, 'panel', 'michelleguevarra@bestlink.edu.ph', 33, 64, 'Pre-Oral Scheduled', 'RG-2026-001\nDEVELOPMENT OF AI ANALYSIS\nDate/Time: Aug 31, 2026 01:00 PM - 02:00 PM\nVenue: AVR Room', '/sms2_system/modules/faculty/pages/defense-details.php?id=48', 0, '2026-08-31 06:10:27'),
 (55, 'final-defense-finalized:s50:u491', 491, 'panel', 'jobertvalentino@bestlink.edu.ph', 31, 64, 'Final Defense Scheduled', 'RG-2026-001\nDEVELOPMENT OF AI ANALYSIS\nDate/Time: Sep 3, 2026 11:00 AM - 12:00 PM\nVenue: Computer Laboratory 1', '/sms2_system/modules/faculty/pages/defense-details.php?id=50', 0, '2026-08-31 06:22:35'),
 (56, 'final-defense-finalized:s50:u492', 492, 'panel', 'jonathanestrada@bestlink.edu.ph', 32, 64, 'Final Defense Scheduled', 'RG-2026-001\nDEVELOPMENT OF AI ANALYSIS\nDate/Time: Sep 3, 2026 11:00 AM - 12:00 PM\nVenue: Computer Laboratory 1', '/sms2_system/modules/faculty/pages/defense-details.php?id=50', 0, '2026-08-31 06:22:35'),
-(57, 'final-defense-finalized:s50:u493', 493, 'panel', 'michelleguevarra@bestlink.edu.ph', 33, 64, 'Final Defense Scheduled', 'RG-2026-001\nDEVELOPMENT OF AI ANALYSIS\nDate/Time: Sep 3, 2026 11:00 AM - 12:00 PM\nVenue: Computer Laboratory 1', '/sms2_system/modules/faculty/pages/defense-details.php?id=50', 0, '2026-08-31 06:22:35');
+(57, 'final-defense-finalized:s50:u493', 493, 'panel', 'michelleguevarra@bestlink.edu.ph', 33, 64, 'Final Defense Scheduled', 'RG-2026-001\nDEVELOPMENT OF AI ANALYSIS\nDate/Time: Sep 3, 2026 11:00 AM - 12:00 PM\nVenue: Computer Laboratory 1', '/sms2_system/modules/faculty/pages/defense-details.php?id=50', 0, '2026-08-31 06:22:35'),
+(58, 'preoral-panel-assignment:65:u491', 491, 'panel', 'jobert.valentino@bestlink.edu.ph', 37, 65, 'Pre-Oral Panel Assignment', 'You have been assigned as a Panel Member for Group 01\nDEVELOPMENT OF AI ANALYSIS\nDefense Phase: Pre-Oral Defense', '/sms2_system/modules/faculty/pages/assigned-defenses.php?group=RG-2026-001', 0, '2026-08-31 09:43:31'),
+(59, 'preoral-panel-assignment:65:u492', 492, 'panel', 'jonathan.estrada@bestlink.edu.ph', 38, 65, 'Pre-Oral Panel Assignment', 'You have been assigned as a Panel Member for Group 01\nDEVELOPMENT OF AI ANALYSIS\nDefense Phase: Pre-Oral Defense', '/sms2_system/modules/faculty/pages/assigned-defenses.php?group=RG-2026-001', 0, '2026-08-31 09:43:31'),
+(60, 'preoral-panel-assignment:65:u493', 493, 'panel', 'michelle.guevarra@bestlink.edu.ph', 39, 65, 'Pre-Oral Panel Assignment', 'You have been assigned as a Panel Member for Group 01\nDEVELOPMENT OF AI ANALYSIS\nDefense Phase: Pre-Oral Defense', '/sms2_system/modules/faculty/pages/assigned-defenses.php?group=RG-2026-001', 0, '2026-08-31 09:43:31');
 
 -- --------------------------------------------------------
 
@@ -756,15 +852,6 @@ CREATE TABLE `preoral_defense_evaluations` (
   `submitted_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `preoral_defense_evaluations`
---
-
-INSERT INTO `preoral_defense_evaluations` (`id`, `defense_schedule_id`, `research_group_id`, `panel_user_id`, `panel_name`, `content_score`, `methodology_score`, `references_score`, `format_score`, `remarks`, `result`, `overall_score`, `status`, `submitted_at`, `created_at`) VALUES
-(34, 48, 64, 491, 'Dr. Jobert Valentino', 100.00, 100.00, 100.00, 100.00, '', 'APPROVED', 100.00, 'Submitted', '2026-08-31 06:11:32', '2026-08-31 06:11:32'),
-(35, 48, 64, 492, 'Dr. Jonathan Estrada', 100.00, 100.00, 100.00, 100.00, '', 'APPROVED', 100.00, 'Submitted', '2026-08-31 06:13:13', '2026-08-31 06:13:13'),
-(36, 48, 64, 493, 'Dr. Michelle Guevarra', 100.00, 100.00, 100.00, 100.00, '', 'APPROVED', 100.00, 'Submitted', '2026-08-31 06:14:04', '2026-08-31 06:14:04');
 
 -- --------------------------------------------------------
 
@@ -896,7 +983,7 @@ CREATE TABLE `research_adviser_assignments` (
 --
 
 INSERT INTO `research_adviser_assignments` (`id`, `research_group_id`, `proposal_id`, `proposal_number`, `group_number`, `adviser_name`, `adviser_email`, `adviser_user_id`, `expertise`, `availability_status`, `assignment_status`, `notes`, `assigned_by`, `assigned_at`, `created_at`, `updated_at`, `notification_sent_at`, `notification_sent_by`) VALUES
-(107, 64, NULL, 'TAP-2026-00053', 'RG-2026-001', 'Dr. Roberto M. Santos', 'rsantos@bestlink.edu.ph', 54, 'Artificial Intelligence / Machine Learning / Data Analytics / Data Analysis', 'Available', 'Assigned', 'Synced from fully approved research record.', 40, '2026-08-31 05:26:27', '2026-08-14 12:45:37', '2026-08-31 06:03:12', '2026-08-31 05:26:27', 40);
+(107, 65, NULL, 'TAP-2026-00054', 'RG-2026-001', 'Dr. Roberto M. Santos', 'rsantos@bestlink.edu.ph', 54, 'Artificial Intelligence / Machine Learning / Data Analytics / Data Analysis', 'Available', 'Assigned', 'Synced from fully approved research record.', 40, '2026-08-31 09:29:05', '2026-08-14 12:45:37', '2026-08-31 09:29:12', '2026-08-31 09:29:05', 40);
 
 -- --------------------------------------------------------
 
@@ -928,7 +1015,7 @@ CREATE TABLE `research_coordinator_assignments` (
 --
 
 INSERT INTO `research_coordinator_assignments` (`id`, `research_group_id`, `proposal_id`, `title_approval_id`, `proposal_number`, `group_number`, `group_name`, `research_title`, `coordinator_user_id`, `coordinator_name`, `coordinator_email`, `status`, `assigned_by`, `assigned_at`, `created_at`, `updated_at`) VALUES
-(41, 64, NULL, 53, 'TAP-2026-00053', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 40, 'Mrs. Kris Guevarra', 'researchcoordinator@bestlink.edu.ph', 'Active', 3, '2026-08-31 05:27:08', '2026-08-31 05:27:08', '2026-08-31 05:27:08');
+(42, 65, NULL, 54, 'TAP-2026-00054', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 40, 'Mrs. Kris Guevarra', 'researchcoordinator@bestlink.edu.ph', 'Active', 3, '2026-08-31 09:29:54', '2026-08-31 09:29:54', '2026-08-31 09:29:54');
 
 -- --------------------------------------------------------
 
@@ -1022,7 +1109,7 @@ CREATE TABLE `research_groups` (
 --
 
 INSERT INTO `research_groups` (`id`, `proposal_id`, `title_approval_id`, `proposal_number`, `group_number`, `group_name`, `research_title`, `college_dept`, `adviser`, `academic_year`, `leader_name`, `leader_id`, `leader_email`, `leader_contact`, `status`, `date_assigned`, `created_by`, `created_at`) VALUES
-(64, NULL, 53, 'TAP-2026-00053', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'College of Computer Studies', 'Dr. Roberto M. Santos', '2026-2027', 'Student User', 'S230000001', '', '', 'Approved', '2026-08-31', 3, '2026-08-31 13:22:34');
+(65, NULL, 54, 'TAP-2026-00054', 'RG-2026-001', 'Group 01', 'DEVELOPMENT OF AI ANALYSIS', 'College of Computer Studies', 'Dr. Roberto M. Santos', '2026-2027', 'Student User', 'S230000001', '', '', 'Approved', '2026-09-01', 3, '2026-08-31 17:28:17');
 
 --
 -- Triggers `research_groups`
@@ -1112,7 +1199,15 @@ INSERT INTO `research_milestones` (`id`, `research_plan_id`, `milestone_name`, `
 (205, 25, 'Chapter 5', 'Summary, Conclusions and Recommendations', 5, 100.00, 1.00, 'Approved', NULL, NULL, '2026-08-31 06:15:17', NULL, 'Progress approved.', NULL, '2026-08-31 05:28:10', '2026-08-31 06:15:17'),
 (206, 25, 'System Development', 'System Implementation', 6, 100.00, 1.00, 'Approved', NULL, NULL, '2026-08-31 06:15:28', NULL, 'Progress approved.', NULL, '2026-08-31 05:28:10', '2026-08-31 06:15:28'),
 (207, 25, 'Testing', 'Testing and Quality Assurance', 7, 100.00, 1.00, 'Approved', NULL, NULL, '2026-08-31 06:15:35', NULL, 'Progress approved.', NULL, '2026-08-31 05:28:10', '2026-08-31 06:15:35'),
-(208, 25, 'Documentation', 'Final Documentation and Report', 8, 100.00, 1.00, 'Approved', NULL, NULL, '2026-08-31 06:15:42', NULL, 'Progress approved.', NULL, '2026-08-31 05:28:10', '2026-08-31 06:15:42');
+(208, 25, 'Documentation', 'Final Documentation and Report', 8, 100.00, 1.00, 'Approved', NULL, NULL, '2026-08-31 06:15:42', NULL, 'Progress approved.', NULL, '2026-08-31 05:28:10', '2026-08-31 06:15:42'),
+(209, 26, 'Chapter 1', 'Introduction and Background', 1, 0.00, 1.00, 'Submitted for Review', NULL, NULL, NULL, NULL, 'Progress approved.', NULL, '2026-08-31 09:34:19', '2026-08-31 09:36:20'),
+(210, 26, 'Chapter 2', 'Review of Related Literature', 2, 0.00, 1.00, 'Submitted for Review', NULL, NULL, NULL, NULL, 'Progress approved.', NULL, '2026-08-31 09:34:19', '2026-08-31 09:36:29'),
+(211, 26, 'Chapter 3', 'Methodology', 3, 0.00, 1.00, 'Submitted for Review', NULL, NULL, NULL, NULL, 'Progress approved.', NULL, '2026-08-31 09:34:19', '2026-08-31 09:36:53'),
+(212, 26, 'Chapter 4', 'Results / System Design and Development', 4, 0.00, 1.00, 'Submitted for Review', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-31 09:34:19', '2026-08-31 09:35:01'),
+(213, 26, 'Chapter 5', 'Summary, Conclusions and Recommendations', 5, 0.00, 1.00, 'Submitted for Review', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-31 09:34:19', '2026-08-31 09:35:12'),
+(214, 26, 'System Development', 'System Implementation', 6, 0.00, 1.00, 'Submitted for Review', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-31 09:34:19', '2026-08-31 09:35:29'),
+(215, 26, 'Testing', 'Testing and Quality Assurance', 7, 0.00, 1.00, 'Submitted for Review', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-31 09:34:19', '2026-08-31 09:35:37'),
+(216, 26, 'Documentation', 'Final Documentation and Report', 8, 0.00, 1.00, 'Submitted for Review', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-31 09:34:19', '2026-08-31 09:35:48');
 
 -- --------------------------------------------------------
 
@@ -1182,7 +1277,10 @@ INSERT INTO `research_panel_assignments` (`id`, `research_group_id`, `defense_sc
 (33, 64, 48, NULL, 53, 'TAP-2026-00053', 'RG-2026-001', 'DEVELOPMENT OF AI ANALYSIS', 493, 'Dr. Michelle Guevarra', 'michelleguevarra@bestlink.edu.ph', '', 'Available', 'Assigned', 'Pre-Oral Defense', 40, '2026-08-31 05:34:37', '2026-08-31 05:34:23', '2026-08-31 06:10:27'),
 (34, 64, 50, NULL, 53, 'TAP-2026-00053', 'RG-2026-001', 'DEVELOPMENT OF AI ANALYSIS', 491, 'Dr. Jobert Valentino', 'jobertvalentino@bestlink.edu.ph', '', 'Available', 'Assigned', 'Final Defense', 40, '2026-08-31 06:22:35', '2026-08-31 06:22:35', '2026-08-31 06:22:35'),
 (35, 64, 50, NULL, 53, 'TAP-2026-00053', 'RG-2026-001', 'DEVELOPMENT OF AI ANALYSIS', 492, 'Dr. Jonathan Estrada', 'jonathanestrada@bestlink.edu.ph', '', 'Available', 'Assigned', 'Final Defense', 40, '2026-08-31 06:22:35', '2026-08-31 06:22:35', '2026-08-31 06:22:35'),
-(36, 64, 50, NULL, 53, 'TAP-2026-00053', 'RG-2026-001', 'DEVELOPMENT OF AI ANALYSIS', 493, 'Dr. Michelle Guevarra', 'michelleguevarra@bestlink.edu.ph', '', 'Available', 'Assigned', 'Final Defense', 40, '2026-08-31 06:22:35', '2026-08-31 06:22:35', '2026-08-31 06:22:35');
+(36, 64, 50, NULL, 53, 'TAP-2026-00053', 'RG-2026-001', 'DEVELOPMENT OF AI ANALYSIS', 493, 'Dr. Michelle Guevarra', 'michelleguevarra@bestlink.edu.ph', '', 'Available', 'Assigned', 'Final Defense', 40, '2026-08-31 06:22:35', '2026-08-31 06:22:35', '2026-08-31 06:22:35'),
+(37, 65, NULL, NULL, 54, 'TAP-2026-00054', 'RG-2026-001', 'DEVELOPMENT OF AI ANALYSIS', 491, 'Dr. Jobert Valentino', 'jobert.valentino@bestlink.edu.ph', '', 'Available', 'Assigned', 'Pre-Oral Defense', 40, '2026-08-31 09:43:31', '2026-08-31 09:43:31', '2026-08-31 09:43:31'),
+(38, 65, NULL, NULL, 54, 'TAP-2026-00054', 'RG-2026-001', 'DEVELOPMENT OF AI ANALYSIS', 492, 'Dr. Jonathan Estrada', 'jonathan.estrada@bestlink.edu.ph', '', 'Available', 'Assigned', 'Pre-Oral Defense', 40, '2026-08-31 09:43:31', '2026-08-31 09:43:31', '2026-08-31 09:43:31'),
+(39, 65, NULL, NULL, 54, 'TAP-2026-00054', 'RG-2026-001', 'DEVELOPMENT OF AI ANALYSIS', 493, 'Dr. Michelle Guevarra', 'michelle.guevarra@bestlink.edu.ph', '', 'Available', 'Assigned', 'Pre-Oral Defense', 40, '2026-08-31 09:43:31', '2026-08-31 09:43:31', '2026-08-31 09:43:31');
 
 -- --------------------------------------------------------
 
@@ -1221,7 +1319,8 @@ INSERT INTO `research_plans` (`id`, `research_group_id`, `research_title`, `grou
 (22, NULL, 'DEVELOPMENT OF AI ANALYSIS', 'RG-2026-001', 54, 'Dr. Roberto M. Santos', '', '2026-08-23', NULL, 'Pre-Oral Defense', 100.00, 'Active', '2026-08-23 03:49:51', '2026-08-28 08:00:25', 0, NULL, NULL, NULL, NULL),
 (23, NULL, 'DEVELOPMENT OF AI ASSISTED DOCUMENT', 'RG-2026-001', 54, 'Dr. Roberto M. Santos', '', '2026-08-28', NULL, 'Pre-Oral Defense', 100.00, 'Active', '2026-08-28 15:30:09', '2026-08-28 16:05:34', 1, 54, 'Dr. Roberto M. Santos', '2026-08-28 15:45:21', ''),
 (24, NULL, 'DEVELOPMENT OF AI', 'RG-2026-001', 54, 'Dr. Roberto M. Santos', '', '2026-08-28', NULL, 'Pre-Oral Defense', 100.00, 'Active', '2026-08-28 16:28:29', '2026-08-28 16:34:47', 1, 54, 'Dr. Roberto M. Santos', '2026-08-28 16:34:27', ''),
-(25, 64, 'DEVELOPMENT OF AI ANALYSIS', 'RG-2026-001', 54, 'Dr. Roberto M. Santos', '', '2026-08-31', NULL, 'Pre-Oral Defense', 100.00, 'Active', '2026-08-31 05:28:10', '2026-08-31 06:16:38', 1, 54, 'Dr. Roberto M. Santos', '2026-08-31 06:15:48', '');
+(25, NULL, 'DEVELOPMENT OF AI ANALYSIS', 'RG-2026-001', 54, 'Dr. Roberto M. Santos', '', '2026-08-31', NULL, 'Pre-Oral Defense', 100.00, 'Active', '2026-08-31 05:28:10', '2026-08-31 06:16:38', 1, 54, 'Dr. Roberto M. Santos', '2026-08-31 06:15:48', ''),
+(26, 65, 'DEVELOPMENT OF AI ANALYSIS', 'RG-2026-001', 54, 'Dr. Roberto M. Santos', '', '2026-08-31', NULL, 'Planning', 0.00, 'Active', '2026-08-31 09:34:19', '2026-08-31 09:36:53', 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1315,7 +1414,18 @@ INSERT INTO `research_progress_activity_logs` (`id`, `research_plan_id`, `user_i
 (152, 25, 54, 'Dr. Roberto M. Santos', 'adviser', 'progress_approved', 'feedback', 65, NULL, NULL, 'Adviser approved progress', '2026-08-31 06:15:17'),
 (153, 25, 54, 'Dr. Roberto M. Santos', 'adviser', 'progress_approved', 'feedback', 66, NULL, NULL, 'Adviser approved progress', '2026-08-31 06:15:28'),
 (154, 25, 54, 'Dr. Roberto M. Santos', 'adviser', 'progress_approved', 'feedback', 67, NULL, NULL, 'Adviser approved progress', '2026-08-31 06:15:35'),
-(155, 25, 54, 'Dr. Roberto M. Santos', 'adviser', 'progress_approved', 'feedback', 68, NULL, NULL, 'Adviser approved progress', '2026-08-31 06:15:42');
+(155, 25, 54, 'Dr. Roberto M. Santos', 'adviser', 'progress_approved', 'feedback', 68, NULL, NULL, 'Adviser approved progress', '2026-08-31 06:15:42'),
+(156, 26, 9, 'Student User', 'student', 'progress_updated', 'progress_update', 86, NULL, NULL, 'Progress updated to 0%', '2026-08-31 09:34:32'),
+(157, 26, 9, 'Student User', 'student', 'progress_updated', 'progress_update', 87, NULL, NULL, 'Progress updated to 0%', '2026-08-31 09:34:41'),
+(158, 26, 9, 'Student User', 'student', 'progress_updated', 'progress_update', 88, NULL, NULL, 'Progress updated to 0%', '2026-08-31 09:34:49'),
+(159, 26, 9, 'Student User', 'student', 'progress_updated', 'progress_update', 89, NULL, NULL, 'Progress updated to 0%', '2026-08-31 09:35:01'),
+(160, 26, 9, 'Student User', 'student', 'progress_updated', 'progress_update', 90, NULL, NULL, 'Progress updated to 0%', '2026-08-31 09:35:12'),
+(161, 26, 9, 'Student User', 'student', 'progress_updated', 'progress_update', 91, NULL, NULL, 'Progress updated to 0%', '2026-08-31 09:35:29'),
+(162, 26, 9, 'Student User', 'student', 'progress_updated', 'progress_update', 92, NULL, NULL, 'Progress updated to 0%', '2026-08-31 09:35:37'),
+(163, 26, 9, 'Student User', 'student', 'progress_updated', 'progress_update', 93, NULL, NULL, 'Progress updated to 0%', '2026-08-31 09:35:48'),
+(164, 26, 54, 'Dr. Roberto M. Santos', 'adviser', 'progress_approved', 'feedback', 69, NULL, NULL, 'Adviser approved progress', '2026-08-31 09:36:20'),
+(165, 26, 54, 'Dr. Roberto M. Santos', 'adviser', 'progress_approved', 'feedback', 70, NULL, NULL, 'Adviser approved progress', '2026-08-31 09:36:29'),
+(166, 26, 54, 'Dr. Roberto M. Santos', 'adviser', 'progress_approved', 'feedback', 71, NULL, NULL, 'Adviser approved progress', '2026-08-31 09:36:53');
 
 -- --------------------------------------------------------
 
@@ -1371,7 +1481,14 @@ INSERT INTO `research_progress_attachments` (`id`, `progress_update_id`, `file_n
 (69, 82, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/ddd91c717013890ffa4bd9e6503f9789.pdf', 'application/pdf', 294354, 9, '2026-08-31 05:29:03'),
 (70, 83, 'Diaz CV.pdf_20260813_105004_0000.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/3c49d34ce74b8c1fb4f6a3820bc4fd77.pdf', 'application/pdf', 62390, 9, '2026-08-31 05:29:15'),
 (71, 84, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/e9b4c863c0cdcb67975619e7f63d9e57.pdf', 'application/pdf', 294354, 9, '2026-08-31 05:29:24'),
-(72, 85, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/c1b6a2b034dbec7c9fe660ba7ab5cddb.pdf', 'application/pdf', 294354, 9, '2026-08-31 05:29:32');
+(72, 85, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/c1b6a2b034dbec7c9fe660ba7ab5cddb.pdf', 'application/pdf', 294354, 9, '2026-08-31 05:29:32'),
+(73, 86, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/0b9cb630bca2013fc5b5055241753819.pdf', 'application/pdf', 294354, 9, '2026-08-31 09:34:32'),
+(74, 87, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/ef6e446036b4ba2a88d92faf65ddc654.pdf', 'application/pdf', 294354, 9, '2026-08-31 09:34:41'),
+(75, 88, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/b0b0378a61ce66eaaca964143b30b63d.pdf', 'application/pdf', 294354, 9, '2026-08-31 09:34:49'),
+(76, 89, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/06cc39770a42bf06fff7da5285a54c52.pdf', 'application/pdf', 294354, 9, '2026-08-31 09:35:01'),
+(77, 90, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/4b2c7b8f8662c0acfecf51b09123ed51.pdf', 'application/pdf', 294354, 9, '2026-08-31 09:35:12'),
+(78, 92, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/3f2e2e77ca556957100166cd43b11e4b.pdf', 'application/pdf', 294354, 9, '2026-08-31 09:35:37'),
+(79, 93, 'OLIVEROS CV.pdf', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/afc9627ed4ff5d61ef4658268ee83f4c.pdf', 'application/pdf', 294354, 9, '2026-08-31 09:35:48');
 
 -- --------------------------------------------------------
 
@@ -1431,7 +1548,10 @@ INSERT INTO `research_progress_feedback` (`id`, `progress_update_id`, `milestone
 (65, 82, 205, 25, 54, 'Dr. Roberto M. Santos', 'Progress approved.', 'Approved', '1d847884e699e2c863f9e3cd6e9ea48c', 'Progress Approved', '2026-08-31 06:15:17', '2026-08-31 06:15:17'),
 (66, 83, 206, 25, 54, 'Dr. Roberto M. Santos', 'Progress approved.', 'Approved', '989713e3784796ab62b6d27a46aeb2e4', 'Progress Approved', '2026-08-31 06:15:28', '2026-08-31 06:15:28'),
 (67, 84, 207, 25, 54, 'Dr. Roberto M. Santos', 'Progress approved.', 'Approved', '0bf8cf6e90e94bbb8479232779451cba', 'Progress Approved', '2026-08-31 06:15:35', '2026-08-31 06:15:35'),
-(68, 85, 208, 25, 54, 'Dr. Roberto M. Santos', 'Progress approved.', 'Approved', 'cb4538db89818a051a2ccb5dc5c034cb', 'Progress Approved', '2026-08-31 06:15:42', '2026-08-31 06:15:42');
+(68, 85, 208, 25, 54, 'Dr. Roberto M. Santos', 'Progress approved.', 'Approved', 'cb4538db89818a051a2ccb5dc5c034cb', 'Progress Approved', '2026-08-31 06:15:42', '2026-08-31 06:15:42'),
+(69, 86, 209, 26, 54, 'Dr. Roberto M. Santos', 'Progress approved.', 'Approved', 'd44b47d44416bf872495d1a2148ecbbe', 'Progress Approved', '2026-08-31 09:36:20', '2026-08-31 09:36:20'),
+(70, 87, 210, 26, 54, 'Dr. Roberto M. Santos', 'Progress approved.', 'Approved', '85cbb39397d0a40d618d796befc7b83d', 'Progress Approved', '2026-08-31 09:36:29', '2026-08-31 09:36:29'),
+(71, 88, 211, 26, 54, 'Dr. Roberto M. Santos', 'Progress approved.', 'Approved', 'fa09c3d0d541bb1b2d0ba34ed41ad298', 'Progress Approved', '2026-08-31 09:36:53', '2026-08-31 09:36:53');
 
 -- --------------------------------------------------------
 
@@ -1526,7 +1646,18 @@ INSERT INTO `research_progress_notifications` (`id`, `recipient_user_id`, `recip
 (112, 9, '', 'student', 'approval:65', 'progress_approved', 'Progress Approved', 'Your adviser approved your progress update', 'feedback', 65, NULL, 'unread', '2026-08-31 06:15:17', NULL),
 (113, 9, '', 'student', 'approval:66', 'progress_approved', 'Progress Approved', 'Your adviser approved your progress update', 'feedback', 66, NULL, 'unread', '2026-08-31 06:15:28', NULL),
 (114, 9, '', 'student', 'approval:67', 'progress_approved', 'Progress Approved', 'Your adviser approved your progress update', 'feedback', 67, NULL, 'unread', '2026-08-31 06:15:35', NULL),
-(115, 9, '', 'student', 'approval:68', 'progress_approved', 'Progress Approved', 'Your adviser approved your progress update', 'feedback', 68, NULL, 'unread', '2026-08-31 06:15:42', NULL);
+(115, 9, '', 'student', 'approval:68', 'progress_approved', 'Progress Approved', 'Your adviser approved your progress update', 'feedback', 68, NULL, 'unread', '2026-08-31 06:15:42', NULL),
+(116, 54, 'rsantos@bestlink.edu.ph', 'adviser', 'progress_update:86', 'progress_update', 'New Progress Update', 'RG-2026-001 submitted a progress update for Chapter 1', 'progress_update', 86, '/SMS2_system/modules/crad/modules/faculty/pages/research-progress.php?group=RG-2026-001', 'unread', '2026-08-31 09:34:32', NULL),
+(117, 54, 'rsantos@bestlink.edu.ph', 'adviser', 'progress_update:87', 'progress_update', 'New Progress Update', 'RG-2026-001 submitted a progress update for Chapter 2', 'progress_update', 87, '/SMS2_system/modules/crad/modules/faculty/pages/research-progress.php?group=RG-2026-001', 'unread', '2026-08-31 09:34:41', NULL),
+(118, 54, 'rsantos@bestlink.edu.ph', 'adviser', 'progress_update:88', 'progress_update', 'New Progress Update', 'RG-2026-001 submitted a progress update for Chapter 3', 'progress_update', 88, '/SMS2_system/modules/crad/modules/faculty/pages/research-progress.php?group=RG-2026-001', 'unread', '2026-08-31 09:34:49', NULL),
+(119, 54, 'rsantos@bestlink.edu.ph', 'adviser', 'progress_update:89', 'progress_update', 'New Progress Update', 'RG-2026-001 submitted a progress update for Chapter 4', 'progress_update', 89, '/SMS2_system/modules/crad/modules/faculty/pages/research-progress.php?group=RG-2026-001', 'unread', '2026-08-31 09:35:01', NULL),
+(120, 54, 'rsantos@bestlink.edu.ph', 'adviser', 'progress_update:90', 'progress_update', 'New Progress Update', 'RG-2026-001 submitted a progress update for Chapter 5', 'progress_update', 90, '/SMS2_system/modules/crad/modules/faculty/pages/research-progress.php?group=RG-2026-001', 'unread', '2026-08-31 09:35:12', NULL),
+(121, 54, 'rsantos@bestlink.edu.ph', 'adviser', 'progress_update:91', 'progress_update', 'New Progress Update', 'RG-2026-001 submitted a progress update for System Development', 'progress_update', 91, '/SMS2_system/modules/crad/modules/faculty/pages/research-progress.php?group=RG-2026-001', 'unread', '2026-08-31 09:35:29', NULL),
+(122, 54, 'rsantos@bestlink.edu.ph', 'adviser', 'progress_update:92', 'progress_update', 'New Progress Update', 'RG-2026-001 submitted a progress update for Testing', 'progress_update', 92, '/SMS2_system/modules/crad/modules/faculty/pages/research-progress.php?group=RG-2026-001', 'unread', '2026-08-31 09:35:37', NULL),
+(123, 54, 'rsantos@bestlink.edu.ph', 'adviser', 'progress_update:93', 'progress_update', 'New Progress Update', 'RG-2026-001 submitted a progress update for Documentation', 'progress_update', 93, '/SMS2_system/modules/crad/modules/faculty/pages/research-progress.php?group=RG-2026-001', 'unread', '2026-08-31 09:35:48', NULL),
+(124, 9, '', 'student', 'approval:69', 'progress_approved', 'Progress Approved', 'Your adviser approved your progress update', 'feedback', 69, NULL, 'unread', '2026-08-31 09:36:20', NULL),
+(125, 9, '', 'student', 'approval:70', 'progress_approved', 'Progress Approved', 'Your adviser approved your progress update', 'feedback', 70, NULL, 'unread', '2026-08-31 09:36:29', NULL),
+(126, 9, '', 'student', 'approval:71', 'progress_approved', 'Progress Approved', 'Your adviser approved your progress update', 'feedback', 71, NULL, 'unread', '2026-08-31 09:36:53', NULL);
 
 -- --------------------------------------------------------
 
@@ -1593,7 +1724,15 @@ INSERT INTO `research_progress_updates` (`id`, `research_plan_id`, `research_gro
 (82, 25, 64, 205, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'adsad', '', 'asda', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/ddd91c717013890ffa4bd9e6503f9789.pdf', 'OLIVEROS CV.pdf', '588a7637ead45e533964661ef45235cc', 0.00, 0.00, 'Approved', '2026-08-31 05:29:03', '2026-08-31 06:15:17'),
 (83, 25, 64, 206, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'asdas', '', 'sadas', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/3c49d34ce74b8c1fb4f6a3820bc4fd77.pdf', 'Diaz CV.pdf_20260813_105004_0000.pdf', 'f3b467991b22a417cc5ac786133470cb', 0.00, 0.00, 'Approved', '2026-08-31 05:29:15', '2026-08-31 06:15:28'),
 (84, 25, 64, 207, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'asdas', '', 'sdada', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/e9b4c863c0cdcb67975619e7f63d9e57.pdf', 'OLIVEROS CV.pdf', '4909840571a5dd9de8c7713abea1e589', 0.00, 0.00, 'Approved', '2026-08-31 05:29:24', '2026-08-31 06:15:35'),
-(85, 25, 64, 208, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'asdad', '', 'sadas', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/c1b6a2b034dbec7c9fe660ba7ab5cddb.pdf', 'OLIVEROS CV.pdf', '106cb9c755aefea1b9e2cd409390e32f', 0.00, 0.00, 'Approved', '2026-08-31 05:29:32', '2026-08-31 06:15:42');
+(85, 25, 64, 208, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'asdad', '', 'sadas', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g64/u9/c1b6a2b034dbec7c9fe660ba7ab5cddb.pdf', 'OLIVEROS CV.pdf', '106cb9c755aefea1b9e2cd409390e32f', 0.00, 0.00, 'Approved', '2026-08-31 05:29:32', '2026-08-31 06:15:42'),
+(86, 26, 65, 209, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'eadsa', '', 'asdas', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/0b9cb630bca2013fc5b5055241753819.pdf', 'OLIVEROS CV.pdf', '83ab9604308555f7be25b0e22e83a444', 0.00, 0.00, 'Approved', '2026-08-31 09:34:32', '2026-08-31 09:36:20'),
+(87, 26, 65, 210, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'sdfds', '', 'sdfsd', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/ef6e446036b4ba2a88d92faf65ddc654.pdf', 'OLIVEROS CV.pdf', '09bb616bb90ee961baeda499028434b3', 0.00, 0.00, 'Approved', '2026-08-31 09:34:41', '2026-08-31 09:36:29'),
+(88, 26, 65, 211, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'asdas', '', 'sadas', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/b0b0378a61ce66eaaca964143b30b63d.pdf', 'OLIVEROS CV.pdf', '6880a5506088e0b98ba8ee2cd202c193', 0.00, 0.00, 'Approved', '2026-08-31 09:34:49', '2026-08-31 09:36:53'),
+(89, 26, 65, 212, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'sadas', '', 'asda', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/06cc39770a42bf06fff7da5285a54c52.pdf', 'OLIVEROS CV.pdf', 'c6d14c3b5a11e89648f42eb1a5922592', 0.00, 0.00, 'Submitted for Review', '2026-08-31 09:35:01', '2026-08-31 09:35:01'),
+(90, 26, 65, 213, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'sadsad', '', 'asdas', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/4b2c7b8f8662c0acfecf51b09123ed51.pdf', 'OLIVEROS CV.pdf', '37dcc8cb4c7ac5030b7e408f23e510db', 0.00, 0.00, 'Submitted for Review', '2026-08-31 09:35:12', '2026-08-31 09:35:12'),
+(91, 26, 65, 214, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'eqweq', '', 'qweqw', NULL, NULL, 'f3c04411627f6e3711879b7b2670948c', 0.00, 0.00, 'Submitted for Review', '2026-08-31 09:35:29', '2026-08-31 09:35:29'),
+(92, 26, 65, 215, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'qweqw', '', 'qweq', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/3f2e2e77ca556957100166cd43b11e4b.pdf', 'OLIVEROS CV.pdf', '4b86cfc220d70f494f5a694899731d73', 0.00, 0.00, 'Submitted for Review', '2026-08-31 09:35:37', '2026-08-31 09:35:37'),
+(93, 26, 65, 216, 9, 'Student User', 'DEVELOPMENT OF AI ANALYSIS', 'fdssdfsd', '', 'weqwe', 'C:\\xampp\\htdocs\\sms2_system/storage/uploads/research_progress/g65/u9/afc9627ed4ff5d61ef4658268ee83f4c.pdf', 'OLIVEROS CV.pdf', '90c4c6b20d3280f3e1c556985d525e17', 0.00, 0.00, 'Submitted for Review', '2026-08-31 09:35:48', '2026-08-31 09:35:48');
 
 -- --------------------------------------------------------
 
@@ -1725,7 +1864,7 @@ CREATE TABLE `title_approvals` (
 --
 
 INSERT INTO `title_approvals` (`id`, `student_id`, `student_user_id`, `student_name`, `submission_date`, `department`, `proposed_title`, `discipline_cluster`, `primary_sdg`, `research_agenda`, `sdg_justification`, `members_json`, `adviser_name`, `adviser_email`, `coordinator_name`, `proposal_number`, `status`, `adviser_remarks`, `adviser_signature_data`, `coordinator_status`, `coordinator_remarks`, `coordinator_screening_json`, `coordinator_signature_data`, `coordinator_reviewed_at`, `crad_status`, `crad_signature_data`, `crad_reviewed_at`, `sent_at`, `reviewed_at`, `created_at`, `updated_at`) VALUES
-(53, 'S230000001', 9, 'Student User', '2026-08-31', 'College of Computer Studies', 'DEVELOPMENT OF AI ANALYSIS', 'Engineering, Information Technology, and Computing', 'SDG 9 — Industry, Innovation and Infrastructure', 'Science, Technology, Digital Transformation, and Innovation', 'dasdasdsada', '[[\"User, Student A.\",\"BSIT 4101\",\"OR-2680837\"]]', 'Dr. Roberto M. Santos', 'rsantos@bestlink.edu.ph', 'Mrs. Kris Guevarra', 'TAP-2026-00053', 'Approved', NULL, 'data:image/png;base64,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', 'Approved', NULL, '{\"agenda_alignment\":\"yes\",\"feasible_original\":\"yes\",\"ethical_sdg\":\"yes\"}', 'data:image/png;base64,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', '2026-08-31 05:21:47', 'Approved', 'data:image/png;base64,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', '2026-08-31 05:22:27', '2026-08-31 05:16:05', '2026-08-31 05:17:30', '2026-08-31 05:16:05', '2026-08-31 05:22:34');
+(54, 'S230000001', 9, 'Student User', '2026-09-01', 'College of Computer Studies', 'DEVELOPMENT OF AI ANALYSIS', 'Engineering, Information Technology, and Computing', 'SDG 9 — Industry, Innovation and Infrastructure', 'Science, Technology, Digital Transformation, and Innovation', 'adadsadasdasda', '[[\"User, Student A.\",\"BSIT 4101\",\"OR-2646376\"]]', 'Dr. Roberto M. Santos', 'rsantos@bestlink.edu.ph', 'Mrs. Kris Guevarra', 'TAP-2026-00054', 'Approved', NULL, 'data:image/png;base64,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', 'Approved', NULL, '{\"agenda_alignment\":\"yes\",\"feasible_original\":\"yes\",\"ethical_sdg\":\"yes\"}', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAABkCAYAAACoy2Z3AAAQAElEQVR4AeydCZxNdRvHf8hekV0peqNG2feQjGnsYZB1bEkyg5coCqkIgwkxUiTZiRQRxtLYDcbYCq2WZIZs2UnveZ5x7zvGDGbmzj33nPubz+c5dznL//98nzPn9z/Pc8656f/lHwmQAAmQAAmkgEB68I8ESIAESIAEUkCAApICaFyFBFxCgBshAYsToIBYPIDsPgmQAAmYRYACYhZ5tksCJEACFidgYQGxOHl2nwRIgAQsToACYvEAsvskQAIkYBYBCohZ5NkuCViYALtOAkKAAiIUaCRAAiRAAskmQAFJNjKuQAIkQAIkIAQoIELB3cb2SIAESMAGBCggNggiXSABEiABMwhQQMygzjZJgATMIsB2XUiAAuJCmNwUCZAACXgTAQqIN0WbvpIACZCACwlQQFwI0xs2RR9JgARIwEGAAuIgwVcSsCmBqr4B8Cnj67SPwqba1FO65W4CFBB3E2d7JOAGAus3RiIkdCKKl62FH348iDNnzqLOCzVw/Hgs/j5/wQ09YBOuJ+B5W6SAeF5M2CMSSBGBGzdu4HjMCUyaPAMvNuuE4aPCcPXqVTzycAEc/z0K7ds2T9F2uRIJJEWAApIUGX5PAhYj0CIwCMWNVFX/QSOQLl069AzqhKhNy7AvajXOX7iIge+OsphH7K6nE6CAeHqE2D9XEbDtdjZt2Y6CRcpj1Zr1yJnjQQx7vx9O/7kX77/TFzmMz6vXbkChJypi89YdKFgwP4oVfRz8IwFXEKCAuIIit0ECJhAYM34KnjZqHI1f6oxLly8jf7482L5pKYJebX9Lb17p9qZ+LlnCB5u//xotmjXUz5yQQGoJUEBSS5Drk4CbCRw+8gdad+iO9z4Yg2N/xiCwdVPEHo7Ggd0RyJ3rIe2NFNGr+gYgZ4FncNoooL878HWsX7VQz1B0AS+Y/H7oCD6fPg/NWndFQMsuXuCx+128ZwFxf9fYIgmQQEIC0bv3oVTF2vhuxVo88MD9mDdzIsaMHIxMmTLqolevXXMW0eXqq9y5H8KhA1vQq3tnnW/nydlzfyN61z4E/3cAatVtibJV6uH1fkOwddtO/PrbYTu7bppvFBDT0LNhEkgegfade6Fm7RZ4ungxzJ0RhnXhC1DnheedG2nVPhiNmnWCFNHlyx7d4oroOXI8IB9taes3blXBaG34Xr1WAHwN4Zg9/xucPXsO7xlnXfNnfozvV87HrsgVtvTfbKcoIGZHgO2TwF0IREXvRckK/li8NBzZsmVFg3p+qOtfE48XeVTXdBTRl6/8HgcO/qpF9DPH92HI4Lgiui5kk8mOnXsQvmY9pP7zTDk/NGreGSIYe/YdQNnSJTBt8od6AcGOzd+hZ/DL8Pd7DkX/U8Qm3nueGxQQz4sJe0QCTgIhoR+jfuP2OHL0mH4nI+kBb/bQ96HjPtW7yx1FdElXJVZE14UtPhk1ZpKm7uo3aY8WbbtB6j+Stpv2aSh+jF6LjWsWYfpnY9G4YW2Le2qt7lNArBUv9tZLCEgBuGW7IAwfNQGXr1xB546tcPLobnw2bR6CjBy/FMeHDB8HubNciuj9+wbjl30bnEV0q2OSiwNEICVt91ixyvggZDxiYk+g6BNFMHhAb4R/Ows7tyxH4xfroED+vLBzms6TY+kNAuIy/uf+Pq//sPJPm1YWE3vSZf3lhqxJQNI0Fao1xIrwCHUgbOxQrNuwFXkKlcKI0WFYsGgZChTIh1HDBkBSVVJE7983SJe16uTChYuGQJxE24498FDBEnp58rCREyBXk1WqWEZrGDGHduqZhlwQULFCGau6aqt+U0CSEU4ZBcV/KF1avC9R3g8y8pSCqMO2bI2CPKYiGV3lohYl0P6V3vBv0AbXr193ehDcayB++vk3/Tx3ehi+/epz7DfSNl1ebqPfWXUiZ1mDh4ZqEVyumiph1DSWLl+D++67D5KKWjjnU2yO+BoLZn+Cwo8Vsqqbtu43BSQF4ZU8s4z8XGFHf47EgH49ULd2TTU/3+o4c/YcpCDqsLqN2yHXwyX1mn5JXYiJuCwxiqqnTp9JgQdcxdMI7IjarTH/dtmqWwYLPk8+ofvFnu3herYh+0klK42+44E++NOvCF+9Tv0sX7U+ylSui3ETpuKrxcuRM+eDaFj/BX1m14kj0fhiyhjUrFHFSE/lA/88lwAFxOTY3H9/drzR+zXIyNJhSxbGjTBllOmwzRHf3NJTEZd2nXvhhx9/uuV7frAWgRmzv9JCeP2ADpBBgeNMs2qVCnqWsfq7ubpvPFroYWs5drO3e/bt17TU8/7N9d6MFoFB6ueRI8cQ2DpAfdwduRJLFk7D50ZBPEuWzDfX5IsVCFBAUhClClUb4J9/bqRgzXtbJVPGjJrjljy3w4o/VVRHoAnPeqpXrXhvG+VSHkNA6hhvDhimZ5Q9Xh+kdbUrV65q//r16aZxXvb1F7oPZM+eTb+3ymRtxCaMHvuJ1mp8ytTEc37NIGmp3w//gSaN6qCf4d/4D99H7JFoTBgzVH3Mmze380ZIq/jJfsYRoIDEcbinacjQt+DvV0OXzf1ISZw48Ze+T7sJt2x1ApevXFGB6NbzbRUMST+OGD0RU7+YqwfP4K4d0K5NU3Uzb55ceLOPtYrhJ/86rSmpWvVa4smSNfSRIUNHfIQPx01G5kyZVDBk0HPowGYVjP59gw1/m6m/nFifAAUkmTHsb4ygChbIp2uVqlQbw0aO1/eckEB8ApKOEpN7OHzK+GLO/P+nICVVuWjeZE3fPPboI5A0Vj9DOKIjVyBDes//l5w+awEkfdqqXTDKPVtPU1JRO/cC6dJhyDt9NeW2eOFU7DJSU2+90R38sy8Bz99bPYx9+XKl9Mal+nVr4dKlyxj54SQdWfboPQixvATXw6Llnu7IjzhJTappyy66L8hZhnwWO3rsuBbBv5w1SVNTMhqXQni5siUxfFQY+g0chuI+xXSZ7Nk8L10lNRm5hFh8efudEBQqWgk9+wyGXMARuX2nFrrDxg5R3w7ujkCPoE7qS5VK5dwDPw1b4abvToACcndGiS4xe9p4HUFOnTRa58+Y8xUq12ikBdErN/PZOoMT2xLwMc4sxKo831hH4WuM/L/D2f3Ra3X/2LpusY7I5ZEajnny+ufxWISETpS36Bj4EsqWfkbfe8pkwOAQlK5UR+/HEGGUs6mJn05HtqxZ1R/xb/vGZZg+ZSzatmrqKd1mP9xMgAKSCuBS4G7apB7WLp8Hye3mMXLYcoNh/sJltYgouW55amoqmuCqHkJArnaTeEpRWM4wxCTWYvI7HBL/iPAvdSQuZxmyb4g9lDPHbR7IBRhyIYbM6PpKILq+0lbemmbXrl3HJ1Nm6j7bpkN3FChSDmGfTMehw0e1T+Jb6IhBWLFkFg7uidAzDPEtV66cOp8T7yVAAXFB7MuWKWEISBC2bfgWNapV1uKoHGzkahv53QY52IjJCFUOOGJ/nTrtgpY9eBMW7prchyMxEpO4iVX1baIH2MNHj2l85QAqQiEmZxn9+wahdMmn78nrmNgTupy/Xw3IhRn6wY2Tixcv6V3f4l/tBm2Q99HSRiptOEaGfowNm7bhqWJPYMPqhSqG+3d9j769u+qjVCpXLOPGXrIpKxCggLg4SlI8lNN7KZQ6TO6qlWYkFSApDzEZgUpaQGzj5u0ym2YyAcn1SzyerdlEU5ESJ0eXqj1bQVM3m9Yu0tSUxNgxL7mv8nseyV3HFcsfMcRP7mr3b9gG8sQD8S9yxy59vpTsq/ONOs26VQshZ1IlnvFxRZPchs0JUEDSKMBSKHWY3FUrI1WxgEZ1NQVQuVJZ/GEUWKU42SCgg7P4Kr9dLd+JOR5fkUZd9MrNHv3jT73sVPg6TM4wxBo1f1nn5cuTW2Mk8ZOYiS1d9IV+98jDBVLNTR5Tki5dOmTIkDb/fjExJxCxfgvCV69Xfyo/10j3L3kk/PwFS/DvjX/h51sdHdo2hzwJYfvGperbC7Wqo0hhPjIE1v9zmwdpswe7rfvWa0jutpXRnthKI6csI1mxUiXiRnznL1zUgqyMhOXHcWSUGN/kLMZ6XpvTYxltx2cn76v5Bjj5CmMxR++avFhHzy6WL5mhZxsSI8c8V7/Ks50mfTTMJZvt1uNtfX6W+CcmRf2mrV5Fi8Bu6uuBn35BxowZ0aCuH/ZGrcaqZXPUv3Gh70GehOCSTnAjXkmAAmJi2LNmzeLMp0vqQEa6Yj9GrzVqKsHo/lpHdAxsjvsyZNCb0SRnLXUUGS0nNKm3xNlEI1fvsDD9ZTYTXXR50/Lsr7j6kvgYZvgaZ/IE14RMZs1d5OQm7OQO/26vtjPYBhkW7DRhLiY/RiS1jaxZsri83/E3KHGXBwn6N2yrZwrx5yX2Xs6UJk2eiZDRcT737PMOijz1LPIXLqdnFnO+/AbbjFRUbOxJ5HzwAS3Kv2HULd4b1AcjhryFmENRkOdLzZr2EaTgny1b1sSa4XckkGwCFJBkI0v7FeRGRSnKxlkw9u5YpQVNOcg5TB7lLQc7h02buQBTps11HlBHjJYD60QUNg40CQ+s8uM8ckCNb3JgTnvPkm7h1KkztxzspW/DR03QA2T8/v+neLV4PsoBdSI+M/zOnz+vU4yFiTzi3MHK8bp720qnaMSxFSG5/c7vpHvpmjlHf9mGvEaaTFKU8mNQ8f1L7L2cJfUfNBzDjZjKHd4rjdRUFmPw8biRbqpYvjQkBSU+njq2B1vWLXb62DOoE17rEojMmTO7puPcCgkkIEABSQDEKh+7vNxG0y37jbMVh0VvWa6pCUm9xLeEPiX2WPpK1RtqukMOVmZYhWoNnIVrn5v3V4SEfnxL19OnT5+of9GRK25j0al9i1vW9aQPGdKnR3Rk4rGKH7fb3s8Ig+MiDYm5iEX40tlaBPck/9gX7yFAAbFRrCWfLYXfhCaj04T21hvBWjh1LFvBGMmaiUJ+NMjRF3kd2L/nbWddMsKWeQktuwfewX03ltLnhH7c9bN/TfAO77uR5Xx3EnC9gLiz92wrxQTk2Uu3jXCnhyU6wjdjub69uqbYN65IAiTgHgIUEPdwZiskQAIkYDsCFBDbhZQOeTEBuk4CbiVAAXErbjZGAiRAAvYhQAGxTyzpCQmQAAm4lQAFJB5uviUBEiABErh3AhSQe2fFJUmABEiABOIRoIDEg8G3JEACZhFgu1YkQAGxYtTYZxIgARLwAAIUEA8IArtAAiRAAlYkQAGxYtRu7zO/IQESIAG3E6CAuB05GyQBEiABexCggNgjjvSCBEjALAJe3C4FxIuDT9dJgARIIDUEKCCpocd1SYAESMCLCVBAvDj4nuE6e0ECJGBVAhQQq0aO/SYBEiABkwlQQEwOAJsnARIgAbMIpLZdCkhqCXJ9EiABEvBSAhQQLw083SYBEiCB1BKggKSWINf3XgL0nAS8nAAFxMt3ALpPAiRAAiklQAFJKTmuRwIkQAJeTsBEAfFy8nSfBEiAb0YB5AAAAbFJREFUBCxOgAJi8QCy+yRAAiRgFgEKiFnk2S4JmEiATZOAKwhQQFxBkdsgARIgAS8kQAHxwqDTZRIgARJwBQEKSEooch0SIAESIAFQQLgTkAAJkAAJpIgABSRF2LgSCZCASQTYrAcRoIB4UDDYFRIgARKwEgEKiJWixb6SAAmQgAcRoIB4UDDc0RW2QQIkQAKuIkABcRVJbocESIAEvIwABcTLAk53SYAEzCJgv3YpIPaLKT0iARIgAbcQoIC4BTMbIQESIAH7EaCA2C+mdvWIfpEACXgYAQqIhwWE3SEBEiABqxCggFglUuwnCZAACZhFIIl2KSBJgOHXJEACJEACdyZAAbkzH84lARIgARJIggAFJAkw/JoEXEeAWyIBexKggNgzrvSKBEiABNKcAAUkzRGzARIgARKwJwErCIg9ydMrEiABErA4AQqIxQPI7pMACZCAWQQoIGaRZ7skYAUC7CMJ3IEABeQOcDiLBEiABEggaQIUkKTZcA4JkAAJkMAdCFBA7gAn9bO4BRIgARKwLwEKiH1jS89IgARIIE0JUEDSFC83TgIkYBYBtpv2BP4HAAD//1Sf/wsAAAAGSURBVAMAbRP+PbMZ2bsAAAAASUVORK5CYII=', '2026-08-31 09:27:29', 'Approved', 'data:image/png;base64,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', '2026-08-31 09:28:12', '2026-08-31 09:26:24', '2026-08-31 09:26:37', '2026-08-31 09:26:24', '2026-08-31 09:28:17');
 
 --
 -- Triggers `title_approvals`
@@ -1846,6 +1985,25 @@ ALTER TABLE `grant_opportunities`
   ADD KEY `idx_go_status` (`status`),
   ADD KEY `idx_go_deadline` (`application_deadline`),
   ADD KEY `idx_go_created_by` (`created_by_user_id`);
+
+--
+-- Indexes for table `grant_proposal_approval_steps`
+--
+ALTER TABLE `grant_proposal_approval_steps`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_gpas_workflow_step` (`workflow_id`,`step_key`),
+  ADD KEY `idx_gpas_application` (`grant_application_id`),
+  ADD KEY `idx_gpas_status` (`status`),
+  ADD KEY `idx_gpas_role` (`approver_role_key`);
+
+--
+-- Indexes for table `grant_proposal_approval_workflows`
+--
+ALTER TABLE `grant_proposal_approval_workflows`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_gpaw_application` (`grant_application_id`),
+  ADD KEY `idx_gpaw_status` (`workflow_status`),
+  ADD KEY `idx_gpaw_current_step` (`current_step_key`);
 
 --
 -- Indexes for table `grant_proposal_evaluations`
@@ -2139,25 +2297,25 @@ ALTER TABLE `title_approvals`
 -- AUTO_INCREMENT for table `chapter_evaluations`
 --
 ALTER TABLE `chapter_evaluations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `chapter_evaluation_notifications`
 --
 ALTER TABLE `chapter_evaluation_notifications`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT for table `chapter_submissions`
 --
 ALTER TABLE `chapter_submissions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `chapter_submission_history`
 --
 ALTER TABLE `chapter_submission_history`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
 
 --
 -- AUTO_INCREMENT for table `final_defense_evaluations`
@@ -2190,22 +2348,34 @@ ALTER TABLE `grant_opportunities`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `grant_proposal_approval_steps`
+--
+ALTER TABLE `grant_proposal_approval_steps`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `grant_proposal_approval_workflows`
+--
+ALTER TABLE `grant_proposal_approval_workflows`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `grant_proposal_evaluations`
 --
 ALTER TABLE `grant_proposal_evaluations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `grant_proposal_notifications`
 --
 ALTER TABLE `grant_proposal_notifications`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT for table `grant_proposal_versions`
 --
 ALTER TABLE `grant_proposal_versions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `manuscript_evaluations`
@@ -2223,7 +2393,7 @@ ALTER TABLE `manuscript_submissions`
 -- AUTO_INCREMENT for table `panel_assignment_notifications`
 --
 ALTER TABLE `panel_assignment_notifications`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `panel_member_availability`
@@ -2277,7 +2447,7 @@ ALTER TABLE `research_adviser_assignments`
 -- AUTO_INCREMENT for table `research_coordinator_assignments`
 --
 ALTER TABLE `research_coordinator_assignments`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `research_defense_schedules`
@@ -2289,55 +2459,55 @@ ALTER TABLE `research_defense_schedules`
 -- AUTO_INCREMENT for table `research_groups`
 --
 ALTER TABLE `research_groups`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `research_milestones`
 --
 ALTER TABLE `research_milestones`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=209;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=217;
 
 --
 -- AUTO_INCREMENT for table `research_panel_assignments`
 --
 ALTER TABLE `research_panel_assignments`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `research_plans`
 --
 ALTER TABLE `research_plans`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `research_progress_activity_logs`
 --
 ALTER TABLE `research_progress_activity_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=167;
 
 --
 -- AUTO_INCREMENT for table `research_progress_attachments`
 --
 ALTER TABLE `research_progress_attachments`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
 -- AUTO_INCREMENT for table `research_progress_feedback`
 --
 ALTER TABLE `research_progress_feedback`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT for table `research_progress_notifications`
 --
 ALTER TABLE `research_progress_notifications`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT for table `research_progress_updates`
 --
 ALTER TABLE `research_progress_updates`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT for table `research_proposals`
@@ -2355,13 +2525,13 @@ ALTER TABLE `research_revision_cycles`
 -- AUTO_INCREMENT for table `research_venues`
 --
 ALTER TABLE `research_venues`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12812;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12902;
 
 --
 -- AUTO_INCREMENT for table `title_approvals`
 --
 ALTER TABLE `title_approvals`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- Constraints for dumped tables
