@@ -427,6 +427,7 @@ function smsReviewCommitteeGrantModule(): array
     return [
         'label' => 'Research Grant',
         'icon'  => 'fa-hand-holding-usd',
+        'hide_overview' => true,
         'groups' => [
             'Review & Workflow' => [
                 'reviewer-evaluation',

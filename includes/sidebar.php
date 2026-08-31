@@ -523,6 +523,7 @@ $researchDirectorNavGroups = [
                     foreach ($module['pages'] as $p) {
                         $pageTitles[$p['slug']] = $p['title'];
                     }
+                    $showModuleOverview = empty($module['hide_overview']);
                     ?>
 
                     <li class="nav-item admin-module-item">
@@ -545,6 +546,7 @@ $researchDirectorNavGroups = [
                         <div class="collapse admin-module-body sidebar-submenu <?= $isModuleActive ? 'show' : '' ?>"
                              id="<?= htmlspecialchars($moduleCollapseId) ?>">
                             <ul class="nav flex-column">
+                                <?php if ($showModuleOverview): ?>
                                 <li class="nav-item">
                                     <a class="nav-link sidebar-sub overview-link <?= ($isModuleActive && $activePage === '') ? 'active' : '' ?>"
                                        href="<?= htmlspecialchars($overviewUrl) ?>"
@@ -554,6 +556,7 @@ $researchDirectorNavGroups = [
                                         <span>Overview</span>
                                     </a>
                                 </li>
+                                <?php endif; ?>
                                 <?php if ($hasGroups): ?>
                                     <?php foreach ($module['groups'] as $groupLabel => $groupSlugs): ?>
                                         <?php
