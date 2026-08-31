@@ -46,17 +46,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Current password is incorrect.';
         } elseif (strlen($password) < $minLen) {
             $error = "New password must be at least {$minLen} characters.";
-        } elseif (($strength = smsValidatePasswordStrength($password)) && !$strength['ok']) {
-            $error = $strength['message'];
         } elseif ($password !== $confirm) {
             $error = 'New passwords do not match.';
-        } elseif (smsSetUserPassword((int) $userId, $password, false)) {
-            $_SESSION['must_change_password'] = 0;
-            logActivity('password_change', 'Password changed by user', 'System');
-            header('Location: ' . smsPostLoginRedirectUrl());
-            exit;
         } else {
-            $error = 'Could not update password. Please try again.';
+            $strength = smsValidatePasswordStrength($password);
+            if (!$strength['ok']) {
+                $error = $strength['message'];
+            } elseif (smsSetUserPassword((int) $userId, $password, false)) {
+                $_SESSION['must_change_password'] = 0;
+                logActivity('password_change', 'Password changed by user', 'System');
+                header('Location: ' . smsPostLoginRedirectUrl());
+                exit;
+            } else {
+                $error = 'Could not update password. Please try again.';
+            }
         }
     }
 }

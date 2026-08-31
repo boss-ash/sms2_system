@@ -12,6 +12,8 @@ require_once ROOT_PATH . '/config/session.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once ROOT_PATH . '/includes/audit.php';
 require_once ROOT_PATH . '/includes/authentication.php';
+require_once ROOT_PATH . '/includes/security-ui.php';
+require_once ROOT_PATH . '/includes/security-workflow.php';
 
 if (!smsNeedsSetup()) {
     header('Location: ' . BASE_URL . '/login/login.php');
@@ -48,6 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($password !== $confirm) {
             $error = 'Passwords do not match.';
         } else {
+            $strength = smsValidatePasswordStrength($password);
+            if (!$strength['ok']) {
+                $error = $strength['message'];
+            } else {
             $pdo = db();
             if (!$pdo) {
                 $error = 'Database unavailable. Run database/install.php first.';
