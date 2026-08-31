@@ -393,6 +393,35 @@ function smsMarkCurrentUserSyntheticNotificationRead(string $batchKey): void
         return;
     }
 
+    if (strpos($batchKey, 'grant-proposal:') === 0) {
+        $crad = cradDb();
+        if (!$crad) {
+            return;
+        }
+        try {
+            if (!function_exists('grantEnsureEvaluationTables')) {
+                require_once ROOT_PATH . '/modules/crad/includes/grant-evaluation-helpers.php';
+            }
+            grantEnsureEvaluationTables($crad);
+            $where = smsCurrentUserNotificationWhere();
+            $stmt = $crad->prepare(
+                "UPDATE grant_proposal_notifications
+                 SET is_read = 1
+                 WHERE event_key = :event_key
+                   AND {$where['sql']}
+                 LIMIT 1"
+            );
+            $stmt->bindValue(':event_key', $batchKey);
+            foreach ($where['params'] as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->execute();
+        } catch (Throwable $e) {
+            error_log('Grant proposal notification mark-read failed: ' . $e->getMessage());
+        }
+        return;
+    }
+
     if (strpos($batchKey, 'evaluator:new:') === 0 || strpos($batchKey, 'student:') === 0) {
         $crad = cradDb();
         if (!$crad) {
@@ -891,8 +920,12 @@ function smsNotificationRequiredExpertise(string $title): string
     return $matches === [] ? 'General Research Methods' : implode(' / ', array_slice(array_unique($matches), 0, 2));
 }
 
-function smsGrantProposalNotificationsPayload(int $limit = 8): array
+function smsGrantProposalNotificationsPayload(int $limit = 12): array
 {
+    if (!in_array((string) ($_SESSION['user_role_key'] ?? ''), ['student', 'adviser'], true)) {
+        return [];
+    }
+
     if (!function_exists('grantProposalNotificationsForCurrentUser')) {
         require_once ROOT_PATH . '/modules/crad/includes/grant-evaluation-helpers.php';
     }
@@ -902,11 +935,13 @@ function smsGrantProposalNotificationsPayload(int $limit = 8): array
         $created = strtotime((string) ($row['created_at'] ?? '')) ?: time();
         $status = (string) ($row['status'] ?? 'read');
         $body = (string) ($row['body'] ?? '');
+        $type = (string) ($row['batch_key'] ?? '');
+        $isRevision = str_contains($type, 'grant_revision_required');
         return [
             'id' => (int) ($row['id'] ?? 0),
             'batch_key' => (string) ($row['batch_key'] ?? ''),
-            'icon' => (string) ($row['icon'] ?? 'fa-hand-holding-usd'),
-            'class' => 'text-primary',
+            'icon' => $isRevision ? 'fa-edit' : ((string) ($row['icon'] ?? 'fa-hand-holding-usd')),
+            'class' => $isRevision ? 'text-warning' : 'text-primary',
             'label' => (string) ($row['title'] ?? 'Grant Proposal Update'),
             'body' => $body,
             'preview' => smsNotificationPreviewText($body),
@@ -941,11 +976,11 @@ function smsNotificationPayloadForCurrentUser(): array
     }, $rows);
 
     return smsNotificationDedupe(array_merge(
+        smsGrantProposalNotificationsPayload(12),
         smsCurrentUserAssignmentNotifications(8),
         $items,
         smsStudentResearchStatusNotifications(),
-        smsStudentReturnedTitleApprovalNotifications(),
-        smsGrantProposalNotificationsPayload(8)
+        smsStudentReturnedTitleApprovalNotifications()
     ));
 }
 
