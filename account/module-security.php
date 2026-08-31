@@ -76,6 +76,8 @@ $accountContext = [
     'research_director' => ['module' => 'faculty', 'label' => 'Research Director Account', 'icon' => 'fa-user-shield'],
     'hr' => ['module' => 'faculty', 'label' => 'HR Account', 'icon' => 'fa-chalkboard-teacher'],
     'research_coordinator' => ['module' => 'crad', 'label' => 'Research Coordinator', 'icon' => 'fa-microscope'],
+    'department_chair' => ['module' => 'crad', 'label' => 'Department Chair', 'icon' => 'fa-user-tie'],
+    'research_office' => ['module' => 'crad', 'label' => 'Research Office', 'icon' => 'fa-flask'],
     'crad_officer' => ['module' => 'crad', 'label' => 'CRAD Officer', 'icon' => 'fa-flask'],
     'research_grant' => ['module' => 'crad_grant', 'label' => 'Research Grant Account', 'icon' => 'fa-hand-holding-usd'],
     'review_committee' => ['module' => 'crad_grant', 'label' => 'Review Committee Account', 'icon' => 'fa-clipboard-check'],
@@ -84,6 +86,7 @@ $accountContext = [
     'osa' => ['module' => 'cocurricular', 'label' => 'OSA Account', 'icon' => 'fa-users'],
     'it_office' => ['module' => 'lms', 'label' => 'IT Office Account', 'icon' => 'fa-laptop'],
     'qa' => ['module' => 'accreditation', 'label' => 'QA Account', 'icon' => 'fa-award'],
+    'vpaa' => ['module' => 'accreditation', 'label' => 'VPAA Account', 'icon' => 'fa-award'],
 ];
 if (isset($accountContext[$securityRoleKey])) {
     $context = $accountContext[$securityRoleKey];
