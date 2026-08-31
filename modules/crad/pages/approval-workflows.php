@@ -13,7 +13,9 @@ requireAuth();
 grantRequireApprovalAccess();
 
 $pageTitle             = 'Approval Workflows';
-$activeModule          = grantApprovalActiveModuleKey();
+$activeModule          = defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')
+    ? (string) SMS2_GRANT_APPROVAL_SHELL_MODULE
+    : grantApprovalActiveModuleKey();
 $activePage            = 'approval-workflows';
 $pageBannerIcon        = 'fa-tasks';
 $hideModulePageBanner  = true;
@@ -21,6 +23,7 @@ $isMonitor             = grantUserCanMonitorApprovalWorkflow();
 
 $breadcrumbs = [
     ['label' => grantApprovalBreadcrumbModuleLabel(), 'url' => grantApprovalBreadcrumbModuleUrl()],
+    ['label' => 'Review & Workflow', 'url' => grantApprovalWorkflowListUrl()],
     ['label' => 'Approval Workflows', 'url' => null],
 ];
 

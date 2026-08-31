@@ -141,6 +141,7 @@ function grantApprovalBreadcrumbModuleLabel(): string
     return match (grantApprovalActiveModuleKey()) {
         'faculty'        => 'Faculty',
         'accreditation'  => 'QA Office',
+        'payment'        => 'Payment Management',
         default          => 'CRAD',
     };
 }
@@ -150,8 +151,22 @@ function grantApprovalBreadcrumbModuleUrl(): string
     return match (grantApprovalActiveModuleKey()) {
         'faculty'        => BASE_URL . '/modules/faculty/pages/approved-research.php',
         'accreditation'  => BASE_URL . '/modules/accreditation/index.php',
+        'payment'        => BASE_URL . '/modules/payment/index.php',
         default          => BASE_URL . '/modules/crad/index.php',
     };
+}
+
+function grantApprovalWorkflowListUrl(): string
+{
+    $moduleKey = defined('SMS2_GRANT_APPROVAL_SHELL_MODULE')
+        ? (string) SMS2_GRANT_APPROVAL_SHELL_MODULE
+        : grantApprovalActiveModuleKey();
+
+    if ($moduleKey === 'payment') {
+        return BASE_URL . '/modules/payment/pages/approval-workflows.php';
+    }
+
+    return BASE_URL . '/modules/crad/pages/approval-workflows.php';
 }
 
 function grantApprovalRoleLabel(string $roleKey): string
@@ -427,9 +442,9 @@ function grantMigrateRemoveFinanceApprovalStep(PDO $crad): void
 
 function grantApprovalWorkflowUrl(int $applicationId = 0): string
 {
-    $url = str_replace('\\', '/', rtrim(BASE_URL, '/') . '/modules/crad/pages/approval-workflows.php');
+    $url = grantApprovalWorkflowListUrl();
     if ($applicationId > 0) {
-        $url .= '?id=' . $applicationId;
+        $url .= (str_contains($url, '?') ? '&' : '?') . 'id=' . $applicationId;
     }
 
     return $url;

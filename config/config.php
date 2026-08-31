@@ -358,6 +358,9 @@ $MODULES = [
                 'collection-reporting-analytics',
                 'audit-access-control',
             ],
+            'Review & Workflow' => [
+                'approval-workflows',
+            ],
         ],
         'pages' => [
             ['slug' => 'student-billing-invoicing', 'title' => 'Student Billing & Invoicing'],
@@ -370,6 +373,7 @@ $MODULES = [
             ['slug' => 'accounts-receivable-management', 'title' => 'Accounts Receivable Management'],
             ['slug' => 'penalty-due-date-management', 'title' => 'Penalty & Due Date Management'],
             ['slug' => 'audit-access-control', 'title' => 'Audit & Access Control'],
+            ['slug' => 'approval-workflows', 'title' => 'Approval Workflows'],
         ],
     ],
     'faculty' => [
