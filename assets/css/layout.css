@@ -1255,43 +1255,6 @@ body.sidebar-collapsed .crad-officer-sidebar .crad-sidebar-link {
     .navbar-search-input { padding-right: 2.2rem !important; }
 }
 
-/* Responsive — mobile search overlay (toggle opens .search-open) */
-@media (max-width: 767.98px) {
-    .navbar-center {
-        position: fixed;
-        inset: calc(var(--sms-navbar-height) + 0.5rem) 0.75rem auto;
-        left: 0.75rem;
-        right: 0.75rem;
-        display: block;
-        max-width: none;
-        z-index: 1040;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transform: translateY(-6px);
-        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-    }
-
-    .sms-navbar.search-open .navbar-center {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transform: translateY(0);
-    }
-
-    .navbar-search-dropdown {
-        width: 100%;
-        max-width: none;
-        left: 0;
-        transform: none;
-    }
-
-    @keyframes searchDropIn {
-        from { opacity: 0; transform: translateY(-6px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-}
-
 @media (max-width: 991.98px) {
     .navbar-left { min-width: 0; }
     .navbar-search-dropdown { width: min(340px, calc(100vw - 1.5rem)); }
