@@ -70,7 +70,7 @@ renderBreadcrumbs($breadcrumbs);
                 Track Progress of Funded Research
                 <span class="gpm-live-badge"><?= smsIcon('sync-alt') ?> Live</span>
             </h1>
-            <p>Monitor milestone progress for <strong>APPROVED &amp; FUNDED</strong> grant projects — due dates, completion %, status, supporting documents, and remarks.</p>
+            <p><?php if ($canTrack): ?>Monitor milestone progress for <strong>APPROVED &amp; FUNDED</strong> grant projects — due dates, completion %, status, supporting documents, and remarks.<?php else: ?>View milestone progress for your <strong>APPROVED &amp; FUNDED</strong> grant. For the full research dashboard, open <a href="<?= htmlspecialchars(grantFundedResearchUrl()) ?>">Funded Research</a>.<?php endif; ?></p>
         </div>
         <?php if ($canTrack): ?>
         <div class="gpm-stat-row">

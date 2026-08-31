@@ -574,6 +574,7 @@ $MODULES = [
             ['slug' => 'reviewer-evaluation', 'title' => 'Reviewer Evaluation'],
             ['slug' => 'approval-workflows', 'title' => 'Approval Workflows'],
             ['slug' => 'approved-funded', 'title' => 'Approved & Funded'],
+            ['slug' => 'funded-research', 'title' => 'Conduct Funded Research'],
             ['slug' => 'budget-disbursement', 'title' => 'Budget & Disbursement'],
             ['slug' => 'project-milestones', 'title' => 'Project Milestones'],
             ['slug' => 'documentation-publication-management', 'title' => 'Documentation & Publication Management'],
