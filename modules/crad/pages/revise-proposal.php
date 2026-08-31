@@ -69,7 +69,10 @@ renderBreadcrumbs($breadcrumbs);
     <?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= htmlspecialchars($dbError ?: 'Proposal not found.') ?>
 </div>
 <p><a href="<?= htmlspecialchars(grantRevisionsRequestedUrl()) ?>"><?= smsIcon('arrow-left') ?> Back to Revisions Requested</a></p>
-<?php else: ?>
+<?php else:
+    $ref         = (string) ($application['proposal_reference'] ?? '');
+    $nextVersion = max(1, (int) ($application['current_version'] ?? 1)) + 1;
+?>
 
 <div class="mpl gre-layout" style="display:block;max-width:920px;">
     <a class="mpl-btn mpl-btn-ghost mpl-btn-sm mb-3" href="<?= htmlspecialchars(grantRevisionsRequestedUrl()) ?>">
