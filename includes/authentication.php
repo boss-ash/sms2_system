@@ -194,6 +194,7 @@ function smsDefaultModulesForRole(string $roleKey): array
         'it_office'    => ['lms'],
         'osa'          => ['cocurricular'],
         'qa'           => ['accreditation'],
+        'vpaa'         => ['accreditation'],
     ];
 
     return $defaults[$roleKey] ?? [];
@@ -325,6 +326,10 @@ function getVisibleModules(array $modules): array
 
     if (getCurrentUserRoleKey() === 'research_coordinator' && isset($visible['crad'])) {
         $visible['crad'] = smsResearchCoordinatorCradModule();
+    }
+
+    if (getCurrentUserRoleKey() === 'department_chair' && isset($visible['crad'])) {
+        unset($visible['crad']);
     }
 
     if (getCurrentUserRoleKey() === 'review_committee' && isset($visible['crad_grant'])) {
@@ -551,7 +556,7 @@ function requireModuleAccess(string $moduleKey): void
                 }
             }
         }
-        $grantApproverRoles = ['research_coordinator', 'hr', 'crad_officer', 'qa'];
+        $grantApproverRoles = ['research_coordinator', 'department_chair', 'hr', 'crad_officer', 'research_office', 'qa', 'vpaa'];
         if (in_array($roleKey, $grantApproverRoles, true)) {
             $grantApproverPages = array_merge($grantReviewerPages, [
                 '/modules/crad/pages/approval-workflows.php',
