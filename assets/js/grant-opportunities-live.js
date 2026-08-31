@@ -100,7 +100,7 @@
     function start() {
         if (timer) return;
         poll();
-        timer = window.setInterval(poll, POLL_MS);
+        timer = window.setInterval(poll, isRevisionsPage ? REVISIONS_POLL_MS : POLL_MS);
     }
 
     function stop() {
