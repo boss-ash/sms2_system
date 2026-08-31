@@ -204,11 +204,6 @@ if (!function_exists('smsRoleHomeUrl')) {
             return BASE_URL . '/modules/student-portal/pages/dashboard.php';
         }
 
-        if ($primary !== '' && $primary !== 'System' && $primary !== 'user-management') {
-            $folder = $primary === 'student_portal' ? 'student-portal' : $primary;
-            return BASE_URL . '/modules/' . $folder . '/index.php';
-        }
-
         return BASE_URL . '/dashboard/index.php';
     }
 }

@@ -18,7 +18,7 @@ $roles = [
     'panel' => ['mode' => 'faculty_workspace', 'module' => 'faculty', 'dashboard' => false, 'home' => '/modules/faculty/pages/assigned-defenses.php'],
     'grammarian' => ['mode' => 'faculty_workspace', 'module' => 'faculty', 'dashboard' => false, 'home' => '/modules/faculty/pages/for-evaluation.php'],
     'research_director' => ['mode' => 'faculty_workspace', 'module' => 'faculty', 'dashboard' => false, 'home' => '/modules/faculty/pages/research-director.php'],
-    'hr' => ['mode' => 'admin_modules', 'module' => 'faculty', 'dashboard' => true, 'home' => '/modules/faculty/index.php'],
+    'hr' => ['mode' => 'admin_modules', 'module' => 'faculty', 'dashboard' => true, 'home' => '/dashboard/index.php'],
     'superadmin' => ['mode' => 'admin_modules', 'module' => 'user-management', 'dashboard' => true, 'home' => '/dashboard/index.php'],
 ];
 
