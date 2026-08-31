@@ -363,9 +363,9 @@ renderBreadcrumbs($breadcrumbs);
             'rubric' => $rubric,
             'title' => 'Academic Adviser Evaluation',
             'submit_label' => 'Submit Adviser Evaluation',
-            'form_attrs' => ['data-adviser-eval' => '1'],
-            'comments_placeholder' => 'Your comments on the proposal…',
+            'comments_placeholder' => 'General comments on the proposal…',
             'recommendations_placeholder' => 'Your recommendations…',
+            'recommendation_hint' => 'Disapprove ends the proposal. Require Revisions sends it back to the researcher. Recommend lets you proceed to Approval Workflows sign-off.',
         ]); ?>
         <?php endif; ?>
 
@@ -395,11 +395,11 @@ renderBreadcrumbs($breadcrumbs);
             'application_id' => (int) $selected['id'],
             'rubric' => $rubric,
             'title' => $approverRoleLabel . ' Evaluation',
-            'description' => 'Enter your scores for each criterion. Total is computed automatically (max 100).',
+            'description' => 'Enter scores for each criterion. Total is computed automatically (max 100).',
             'submit_label' => 'Submit ' . $approverRoleLabel . ' Evaluation',
-            'form_attrs' => ['data-approver-eval' => '1'],
-            'comments_placeholder' => 'Your comments on the proposal…',
+            'comments_placeholder' => 'General comments on the proposal…',
             'recommendations_placeholder' => 'Your recommendations…',
+            'recommendation_hint' => 'Disapprove ends the proposal. Require Revisions sends it back to the researcher. Recommend lets you proceed to Approval Workflows sign-off.',
         ]); ?>
 
         <?php
@@ -480,7 +480,6 @@ renderBreadcrumbs($breadcrumbs);
             'rubric' => $rubric,
             'title' => 'Review Committee Evaluation',
             'submit_label' => 'Submit Evaluation',
-            'show_recommendation' => true,
             'comments_placeholder' => 'General comments on the proposal…',
             'recommendations_placeholder' => 'Committee recommendations…',
         ]); ?>
