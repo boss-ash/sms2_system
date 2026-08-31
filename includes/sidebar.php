@@ -289,7 +289,7 @@ if ($roleKey === 'adviser') {
     $facultyAccountNavGroups = $facultyInsert;
 }
 
-$grantApprovalSidebarRoles = ['hr', 'qa', 'finance', 'research_coordinator'];
+$grantApprovalSidebarRoles = ['hr', 'qa', 'research_coordinator'];
 $grantApprovalSidebarItem = [
     'slug' => 'approval-workflows',
     'href' => BASE_URL . '/modules/crad/pages/approval-workflows.php',
