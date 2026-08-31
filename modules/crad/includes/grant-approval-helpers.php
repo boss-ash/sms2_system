@@ -850,15 +850,21 @@ function grantSubmitApprovalSignoff(
                  WHERE id = ?
             ")->execute([$workflowId]);
 
+            $finalStatus = grantStatusApprovedFunded();
             $crad->prepare("
                 UPDATE grant_applications
-                   SET status = 'Approved', updated_at = NOW()
+                   SET status = ?, updated_at = NOW()
                  WHERE id = ?
-            ")->execute([$applicationId]);
+            ")->execute([$finalStatus, $applicationId]);
+
+            $app = grantGetApplicationForEvaluation($crad, $applicationId);
+            if ($app !== null) {
+                grantNotifyApplicantApprovedFunded($crad, $app, $userName);
+            }
 
             $crad->commit();
 
-            return ['ok' => true, 'completed' => true];
+            return ['ok' => true, 'completed' => true, 'funded' => true];
         }
 
         $crad->prepare("

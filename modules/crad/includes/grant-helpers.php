@@ -425,6 +425,28 @@ function grantRevisionsRequestedUrl(): string
     return BASE_URL . '/modules/crad/pages/revisions-requested.php';
 }
 
+function grantApprovedFundedUrl(): string
+{
+    return BASE_URL . '/modules/crad/pages/approved-funded.php';
+}
+
+/** Final grant status after Finance (Level 6) approves. */
+function grantStatusApprovedFunded(): string
+{
+    return 'Approved & Funded';
+}
+
+function grantApplicationStatusLabel(string $status): string
+{
+    return match ($status) {
+        grantStatusApprovedFunded() => 'APPROVED & FUNDED',
+        'Submitted'                 => 'Pending Evaluation',
+        'Revision Required'         => 'REVISION REQUIRED',
+        'Rejected'                  => 'REJECTED',
+        default                     => $status,
+    };
+}
+
 function grantReviseProposalUrl(int $applicationId): string
 {
     return BASE_URL . '/modules/crad/pages/revise-proposal.php?id=' . $applicationId;
@@ -651,6 +673,9 @@ function grantResubmitProposal(PDO $crad, int $applicationId, array $data, array
             $applicationId,
         ]);
 
+        require_once __DIR__ . '/grant-approval-helpers.php';
+        grantClearApprovalWorkflowForResubmit($crad, $applicationId);
+
         $crad->commit();
 
         return [
@@ -688,7 +713,8 @@ function _grantEnsureApplicationStatusEnum(PDO $crad): void
         }
         if (strpos($columnType, 'Rejected') !== false
             && strpos($columnType, 'Revision Required') !== false
-            && strpos($columnType, 'Resubmitted') !== false) {
+            && strpos($columnType, 'Resubmitted') !== false
+            && strpos($columnType, 'Approved & Funded') !== false) {
             return;
         }
 
@@ -698,6 +724,7 @@ function _grantEnsureApplicationStatusEnum(PDO $crad): void
                 'Submitted',
                 'Under Review',
                 'Approved',
+                'Approved & Funded',
                 'Denied',
                 'Withdrawn',
                 'Rejected',
