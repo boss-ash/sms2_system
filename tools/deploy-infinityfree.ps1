@@ -2,9 +2,11 @@
 param(
     [string]$FtpPass = $env:SMS2_FTP_PASS,
     [string]$ZipPath = 'C:\xampp\htdocs\sms2_deploy.zip',
-    [string]$Staging = 'C:\xampp\htdocs\sms2_deploy_staging',
-$ftpHosts = @('ftpupload.net', 'ftp.epizy.com', '185.27.134.11')
+    [string]$Staging = 'C:\xampp\htdocs\sms2_deploy_staging'
 )
+
+$ftpHosts = @('ftpupload.net', 'ftp.epizy.com', '185.27.134.11')
+$FtpHost = $ftpHosts[0]
 
 $ErrorActionPreference = 'Stop'
 
