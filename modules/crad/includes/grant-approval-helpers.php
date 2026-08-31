@@ -790,7 +790,9 @@ function grantGetApprovalWorkflowDetail(PDO $crad, int $applicationId): ?array
         'current_step'           => $currentStep,
         'can_act'                => $canAct,
         'adviser_eval_complete'  => $adviserEvalComplete,
+        'approver_eval_complete' => $approverEvalComplete,
         'needs_adviser_score'    => $needsAdviserScore,
+        'needs_rubric_score'     => $needsRubricScore,
         'role_label'             => grantApprovalRoleLabel($roleKey),
         'current_approver_label' => grantApprovalRoleLabel((string) ($currentStep['approver_role_key'] ?? '')),
         'is_monitor'             => $isMonitor,
@@ -894,7 +896,9 @@ function grantApprovalDetailFingerprint(?array $detail): string
         (string) ($wf['updated_at'] ?? ''),
         !empty($detail['can_act']) ? '1' : '0',
         !empty($detail['adviser_eval_complete']) ? '1' : '0',
+        !empty($detail['approver_eval_complete']) ? '1' : '0',
         !empty($detail['needs_adviser_score']) ? '1' : '0',
+        !empty($detail['needs_rubric_score']) ? '1' : '0',
     ];
 
     foreach ($detail['steps'] ?? [] as $step) {
