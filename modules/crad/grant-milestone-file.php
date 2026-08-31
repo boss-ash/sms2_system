@@ -65,19 +65,36 @@ if ($stored === '') {
     exit('Document not found.');
 }
 
-$uploadRoot = dirname(__DIR__, 2) . '/uploads/grant_milestones';
+$uploadRoot = ROOT_PATH . '/storage/uploads/grant_milestones';
 $path = $uploadRoot . '/' . basename($stored);
-if (!is_file($path)) {
+$realPath = realpath($path);
+$uploadsDir = realpath(ROOT_PATH . '/storage/uploads');
+
+if (
+    $realPath === false
+    || !is_file($realPath)
+    || $uploadsDir === false
+    || strncmp($realPath, $uploadsDir, strlen($uploadsDir)) !== 0
+) {
     http_response_code(404);
-    exit('File missing on server.');
+    exit('File not found on disk.');
 }
 
-$original = trim((string) ($row['supporting_doc_original'] ?? ''));
-$downloadName = $original !== '' ? $original : basename($path);
-$mime = mime_content_type($path) ?: 'application/octet-stream';
+$ext = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+$mime = match ($ext) {
+    'pdf'  => 'application/pdf',
+    'doc'  => 'application/msword',
+    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'jpg', 'jpeg' => 'image/jpeg',
+    'png'  => 'image/png',
+    default => mime_content_type($realPath) ?: 'application/octet-stream',
+};
+
+$downloadName = $original !== '' ? $original : basename($realPath);
 
 header('Content-Type: ' . $mime);
-header('Content-Disposition: inline; filename="' . str_replace('"', '', $downloadName) . '"');
-header('Content-Length: ' . (string) filesize($path));
-readfile($path);
+header('Content-Disposition: inline; filename="' . rawurlencode($downloadName) . '"');
+header('Content-Length: ' . (string) filesize($realPath));
+header('Cache-Control: private, no-store');
+readfile($realPath);
 exit;
