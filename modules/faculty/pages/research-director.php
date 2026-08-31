@@ -1987,6 +1987,91 @@ renderBreadcrumbs($breadcrumbs);
         width: 100%;
     }
     .director-scheduler-form .is-wide { grid-column: 1 / -1; }
+    .director-ai-scheduler {
+        grid-column: 1 / -1;
+        padding: 1rem 1.1rem;
+        border: 1px solid #c7d2fe;
+        border-radius: 12px;
+        background: linear-gradient(180deg, rgba(99,102,241,.06), rgba(59,130,246,.04));
+        display: grid;
+        gap: .75rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .director-ai-scheduler h3 {
+        grid-column: 1 / -1;
+        margin: 0;
+        font-size: .95rem;
+        font-weight: 800;
+        color: var(--sms-primary);
+    }
+    .director-ai-scheduler p {
+        grid-column: 1 / -1;
+        margin: 0;
+        font-size: .82rem;
+        color: var(--sms-text-muted);
+    }
+    .director-ai-scheduler label span {
+        color: var(--sms-text-muted);
+        display: block;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        margin-bottom: .25rem;
+        text-transform: uppercase;
+    }
+    .director-ai-scheduler input {
+        background: var(--sms-input-bg);
+        border: 1px solid var(--sms-input-border);
+        border-radius: 10px;
+        color: var(--sms-text);
+        min-height: 40px;
+        outline: 0;
+        padding: .45rem .65rem;
+        width: 100%;
+    }
+    .director-ai-generate-btn {
+        align-self: end;
+        background: linear-gradient(135deg, #4f46e5, #2563eb);
+        border: 0;
+        border-radius: 10px;
+        color: #fff;
+        cursor: pointer;
+        font-size: .8rem;
+        font-weight: 800;
+        min-height: 40px;
+        padding: .5rem .85rem;
+    }
+    .director-ai-generate-btn:hover { filter: brightness(1.05); }
+    .director-ai-generate-btn:disabled { opacity: .65; cursor: wait; }
+    .director-ai-summary {
+        grid-column: 1 / -1;
+        display: none;
+        padding: .75rem .85rem;
+        border-radius: 10px;
+        background: rgba(16,185,129,.08);
+        border: 1px solid rgba(16,185,129,.25);
+        color: #047857;
+        font-size: .82rem;
+    }
+    .director-ai-summary.is-error {
+        background: rgba(239,68,68,.08);
+        border-color: rgba(239,68,68,.25);
+        color: #b91c1c;
+    }
+    .director-ai-slot-hints {
+        grid-column: 1 / -1;
+        display: grid;
+        gap: .5rem;
+    }
+    .director-ai-slot-hint {
+        padding: .55rem .7rem;
+        border-radius: 8px;
+        background: var(--sms-surface-muted, #f8fafc);
+        border: 1px solid var(--sms-border);
+        font-size: .78rem;
+        color: var(--sms-text-muted);
+    }
+    .director-ai-slot-hint strong { color: var(--sms-text); }
     .director-action-btn,
     .director-finalize-btn {
         align-items: center;
@@ -2215,6 +2300,7 @@ renderBreadcrumbs($breadcrumbs);
         .director-verify-grid      { grid-template-columns: 1fr; }
         .director-venue-grid       { grid-template-columns: 1fr; }
         .director-scheduler-form   { grid-template-columns: 1fr; }
+        .director-ai-scheduler     { grid-template-columns: 1fr; }
         .director-venue-grid > div { grid-column: 1; }
     }
 </style>
@@ -2334,11 +2420,34 @@ renderBreadcrumbs($breadcrumbs);
                     </div>
                     <small><?= count($selectedPanelRows) ?> of <?= RD_SCHEDULE_MAX_PANEL_MEMBERS ?> Panel Members assigned</small>
                 </div>
-                <form method="post" class="director-scheduler-box director-scheduler-form">
+                <form method="post" class="director-scheduler-box director-scheduler-form" id="directorSchedulerForm" data-group-id="<?= (int) $selectedGroupId ?>" data-defense-type="<?= htmlspecialchars($requestedDefenseType) ?>">
                     <?= csrfField() ?>
                     <input type="hidden" name="schedule_action" value="save_proposed">
                     <input type="hidden" name="research_group_id" value="<?= (int) $selectedGroupId ?>">
                     <input type="hidden" name="defense_type" value="<?= htmlspecialchars($requestedDefenseType) ?>">
+                    <?php if ($view === 'manual-scheduling-optimizer'): ?>
+                    <div class="director-ai-scheduler" id="directorAiScheduler">
+                        <h3><?= smsIcon('magic', ['class' => 'me-1']) ?> AI Scheduling Optimizer</h3>
+                        <p>Set your defense period (e.g. one month). AI will pick conflict-free slots with comfortable venue capacity for adviser, panel, and venue availability.</p>
+                        <label>
+                            <span>Period Start</span>
+                            <input type="date" id="aiPeriodStart" min="<?= htmlspecialchars(date('Y-m-d')) ?>" value="<?= htmlspecialchars(date('Y-m-d')) ?>">
+                        </label>
+                        <label>
+                            <span>Period End</span>
+                            <input type="date" id="aiPeriodEnd" min="<?= htmlspecialchars(date('Y-m-d')) ?>" value="<?= htmlspecialchars(date('Y-m-d', strtotime('+30 days'))) ?>">
+                        </label>
+                        <label>
+                            <span>Expected Attendees</span>
+                            <input type="number" id="aiExpectedAttendees" min="1" max="500" value="15" inputmode="numeric">
+                        </label>
+                        <button type="button" class="director-ai-generate-btn" id="aiGenerateSlotsBtn">
+                            <?= smsIcon('wand-magic-sparkles', ['class' => 'me-1']) ?> Generate Optimal Slots
+                        </button>
+                        <div class="director-ai-summary" id="aiScheduleSummary" role="status"></div>
+                        <div class="director-ai-slot-hints" id="aiSlotHints"></div>
+                    </div>
+                    <?php endif; ?>
                     <label class="is-wide">
                         <span>Research Group</span>
                         <input type="text" value="<?= htmlspecialchars((string) ($selectedReadyGroup['group_name'] ?? 'Research Group')) ?>" readonly>
@@ -2347,11 +2456,11 @@ renderBreadcrumbs($breadcrumbs);
                     <?php for ($slotNumber = 1; $slotNumber <= $visibleSlotCount; $slotNumber++): ?>
                         <label>
                             <span>Slot <?= $slotNumber ?> Date</span>
-                            <input type="date" name="defense_date[]" min="<?= htmlspecialchars(date('Y-m-d')) ?>" <?= $slotNumber <= 2 && $view === 'manual-scheduling-optimizer' ? 'required' : '' ?>>
+                            <input type="date" name="defense_date[]" class="js-defense-date" min="<?= htmlspecialchars(date('Y-m-d')) ?>" <?= $slotNumber <= 2 && $view === 'manual-scheduling-optimizer' ? 'required' : '' ?>>
                         </label>
                         <label>
                             <span>Slot <?= $slotNumber ?> Venue</span>
-                            <select name="venue_id[]" <?= $slotNumber <= 2 && $view === 'manual-scheduling-optimizer' ? 'required' : '' ?>>
+                            <select name="venue_id[]" class="js-venue-id" <?= $slotNumber <= 2 && $view === 'manual-scheduling-optimizer' ? 'required' : '' ?>>
                                 <option value="">Select venue</option>
                                 <?php foreach ($allVenueRows as $venueRow): ?>
                                     <option value="<?= (int) ($venueRow['id'] ?? 0) ?>">
@@ -2362,11 +2471,11 @@ renderBreadcrumbs($breadcrumbs);
                         </label>
                         <label>
                             <span>Slot <?= $slotNumber ?> Start</span>
-                            <input type="time" name="start_time[]" <?= $slotNumber <= 2 && $view === 'manual-scheduling-optimizer' ? 'required' : '' ?>>
+                            <input type="time" name="start_time[]" class="js-start-time" <?= $slotNumber <= 2 && $view === 'manual-scheduling-optimizer' ? 'required' : '' ?>>
                         </label>
                         <label>
                             <span>Slot <?= $slotNumber ?> End</span>
-                            <input type="time" name="end_time[]" <?= $slotNumber <= 2 && $view === 'manual-scheduling-optimizer' ? 'required' : '' ?>>
+                            <input type="time" name="end_time[]" class="js-end-time" <?= $slotNumber <= 2 && $view === 'manual-scheduling-optimizer' ? 'required' : '' ?>>
                         </label>
                     <?php endfor; ?>
                     <div class="is-wide">
