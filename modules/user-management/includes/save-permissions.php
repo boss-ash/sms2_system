@@ -110,6 +110,11 @@ try {
         exit;
     }
 
+    if ($role === 'adviser') {
+        echo json_encode(['ok' => false, 'error' => 'Adviser permissions are managed separately and are not editable here']);
+        exit;
+    }
+
     if (!in_array($role, $validRoles, true) || !in_array($module, $validModules, true)) {
         http_response_code(400);
         echo json_encode(['ok' => false, 'error' => 'Unknown role or module']);
