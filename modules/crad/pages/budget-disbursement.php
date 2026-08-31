@@ -202,7 +202,7 @@ renderBreadcrumbs($breadcrumbs);
             <h3 id="gfdReleaseTitle"><?= smsIcon('money-bill-wave') ?> Record Fund Release</h3>
             <p class="gfd-dialog-lead" id="gfdReleaseTrancheLabel">Tranche 1</p>
         </div>
-        <form id="gfdReleaseForm" class="gfd-form gfd-dialog-form">
+        <form id="gfdReleaseForm" class="gfd-form gfd-dialog-form" method="post" data-no-loader>
             <input type="hidden" id="gfdReleaseDisbursementId" name="disbursement_id" value="">
             <div class="gfd-dialog-body">
                 <label for="gfdReleaseAmount">Amount Released (₱)</label>
@@ -229,5 +229,5 @@ renderBreadcrumbs($breadcrumbs);
 </div>
 <?php endif; ?>
 
-<script src="<?= BASE_URL ?>/assets/js/grant-funding-live.js?v=3"></script>
+<script src="<?= BASE_URL ?>/assets/js/grant-funding-live.js?v=4"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

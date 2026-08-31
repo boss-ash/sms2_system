@@ -337,6 +337,9 @@
                             closeReleaseDialog();
                             fetchOverview(false);
                         }
+                        if (window.SMS2Loader && typeof window.SMS2Loader.forceHide === 'function') {
+                            window.SMS2Loader.forceHide();
+                        }
                         return;
                     }
 
@@ -358,6 +361,9 @@
                 })
                 .catch(function () {
                     alert('Release request failed.');
+                    if (window.SMS2Loader && typeof window.SMS2Loader.forceHide === 'function') {
+                        window.SMS2Loader.forceHide();
+                    }
                 })
                 .finally(function () {
                     submitting = false;
