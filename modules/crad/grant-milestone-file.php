@@ -90,6 +90,7 @@ $mime = match ($ext) {
     default => mime_content_type($realPath) ?: 'application/octet-stream',
 };
 
+$original = trim((string) ($row['supporting_doc_original'] ?? ''));
 $downloadName = $original !== '' ? $original : basename($realPath);
 
 header('Content-Type: ' . $mime);
