@@ -507,6 +507,7 @@ function grantApproverEvaluationQueue(PDO $crad): array
         WHERE w.workflow_status = 'In Progress'
           AND w.current_step_key = ?
           AND my_step.status IN ('Pending', 'Queued')
+          {$financeVpaaClause}
         ORDER BY w.updated_at ASC, ga.id ASC
     ");
     $stmt->execute([$stepKey, $committeeType, $adviserType, $stepKey]);
