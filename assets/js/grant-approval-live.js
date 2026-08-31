@@ -114,6 +114,8 @@
 
         return html;
     }
+
+    function buildPipelineScoresHtml(detail) {
         var pills = (detail && detail.pipeline_score_pills) ? detail.pipeline_score_pills : [];
         if (!pills.length) return '';
 
