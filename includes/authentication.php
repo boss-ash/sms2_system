@@ -527,6 +527,8 @@ function requireModuleAccess(string $moduleKey): void
         $grantResearcherPages = [
             '/modules/crad/pages/grant-opportunities.php',
             '/modules/crad/pages/proposals-applications.php',
+            '/modules/crad/pages/revisions-requested.php',
+            '/modules/crad/pages/revise-proposal.php',
         ];
         $grantReviewerPages = [
             '/modules/crad/pages/reviewer-evaluation.php',

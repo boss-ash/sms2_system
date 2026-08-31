@@ -170,6 +170,7 @@ $studentNavGroups = [
     'Core System' => [
         ['slug' => 'grant-opportunities', 'href' => BASE_URL . '/modules/crad/pages/grant-opportunities.php', 'icon' => 'fa-hand-holding-usd', 'label' => 'Grant Opportunities', 'locked' => false],
         ['slug' => 'proposals-applications', 'href' => BASE_URL . '/modules/crad/pages/proposals-applications.php', 'icon' => 'fa-file-alt', 'label' => 'Proposals & Applications', 'locked' => false],
+        ['slug' => 'revisions-requested', 'href' => BASE_URL . '/modules/crad/pages/revisions-requested.php', 'icon' => 'fa-edit', 'label' => 'Revisions Requested', 'locked' => false],
     ],
     'System' => [
         ['slug' => 'security-settings', 'href' => BASE_URL . '/account/module-security.php?module=student_portal', 'icon' => 'fa-shield-alt', 'label' => 'Security Settings', 'locked' => false],
@@ -266,6 +267,7 @@ if ($roleKey === 'adviser') {
     $coreSystemItems = [
         ['slug' => 'grant-opportunities', 'href' => BASE_URL . '/modules/crad/pages/grant-opportunities.php', 'icon' => 'fa-hand-holding-usd', 'label' => 'Grant Opportunities'],
         ['slug' => 'proposals-applications', 'href' => BASE_URL . '/modules/crad/pages/proposals-applications.php', 'icon' => 'fa-file-alt', 'label' => 'Proposals & Applications'],
+        ['slug' => 'revisions-requested', 'href' => BASE_URL . '/modules/crad/pages/revisions-requested.php', 'icon' => 'fa-edit', 'label' => 'Revisions Requested'],
     ];
     $facultyInsert = [];
     foreach ($facultyAccountNavGroups as $groupKey => $groupItems) {
