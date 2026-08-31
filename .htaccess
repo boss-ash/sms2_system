@@ -1,6 +1,11 @@
 Options -Indexes
 
 RewriteEngine On
+
+# Never rewrite static assets (prevents redirect loops on CSS/JS/images)
+RewriteRule ^assets/ - [L]
+RewriteRule ^images/ - [L]
+
 RewriteRule ^up$ up.php [END]
 
 <IfModule mod_headers.c>
