@@ -1,0 +1,364 @@
+/* SMS 2 – Grant Budget & Disbursement */
+
+.gfd {
+    --gfd-green: #166534;
+    --gfd-red: #dc2626;
+    --gfd-amber: #d97706;
+    --gfd-border: #e2e8f0;
+    --gfd-muted: #64748b;
+    padding-bottom: 2rem;
+}
+
+.gfd-alert {
+    background: rgba(239, 68, 68, .08);
+    color: #b91c1c;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border-radius: 8px;
+    font-size: .88rem;
+}
+
+.gfd-page-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.gfd-page-header h1 {
+    margin: 0 0 .35rem;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+
+.gfd-page-header p {
+    margin: 0;
+    color: var(--gfd-muted);
+    font-size: .88rem;
+    max-width: 720px;
+}
+
+.gfd-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #166534;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    padding: .2rem .5rem;
+    border-radius: 999px;
+}
+
+.gfd-stat-row {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.gfd-stat {
+    background: #f8fafc;
+    border: 1px solid var(--gfd-border);
+    border-radius: 999px;
+    padding: .35rem .75rem;
+    font-size: .78rem;
+    color: var(--gfd-muted);
+}
+
+.gfd-stat strong {
+    color: #0f172a;
+    font-size: .95rem;
+}
+
+.gfd-stat.pending strong {
+    color: var(--gfd-amber);
+}
+
+.gfd-project-bar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.gfd-project-bar label {
+    font-size: .84rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.gfd-project-select {
+    min-width: min(100%, 520px);
+    flex: 1;
+    border: 1px solid var(--gfd-border);
+    border-radius: 8px;
+    padding: .55rem .75rem;
+    font-size: .86rem;
+    background: #fff;
+}
+
+.gfd-panel {
+    background: #fff;
+    border: 1px solid var(--gfd-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    transition: box-shadow .25s ease;
+}
+
+.gfd-panel-updated {
+    box-shadow: 0 0 0 2px rgba(22, 101, 52, .25);
+}
+
+.gfd-panel-title {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.gfd-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.gfd-summary-card {
+    background: #f8fafc;
+    border: 1px solid var(--gfd-border);
+    border-radius: 10px;
+    padding: .75rem .85rem;
+}
+
+.gfd-summary-card span {
+    display: block;
+    font-size: .72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--gfd-muted);
+    margin-bottom: .25rem;
+}
+
+.gfd-summary-card strong {
+    font-size: 1rem;
+    color: #0f172a;
+}
+
+.gfd-summary-card.released strong {
+    color: var(--gfd-green);
+}
+
+.gfd-summary-card.pending strong {
+    color: var(--gfd-amber);
+}
+
+.gfd-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: .84rem;
+    color: #475569;
+    margin-bottom: 1.1rem;
+}
+
+.gfd-section-title {
+    margin: 0 0 .75rem;
+    font-size: .92rem;
+    font-weight: 800;
+    color: #334155;
+}
+
+.gfd-tranche-list {
+    display: grid;
+    gap: .75rem;
+}
+
+.gfd-tranche-card {
+    border: 1px solid var(--gfd-border);
+    border-radius: 10px;
+    padding: .9rem 1rem;
+    background: #fff;
+}
+
+.gfd-tranche-card.released {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+}
+
+.gfd-tranche-card.pending {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.gfd-tranche-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .75rem;
+    margin-bottom: .5rem;
+}
+
+.gfd-tranche-amount {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: .15rem;
+}
+
+.gfd-tranche-status {
+    font-size: .72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: .25rem .55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.gfd-tranche-status.is-released {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.gfd-tranche-status.is-pending {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.gfd-tranche-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: .5rem .75rem;
+    font-size: .82rem;
+    margin-top: .5rem;
+}
+
+.gfd-tranche-details span {
+    display: block;
+    color: var(--gfd-muted);
+    font-weight: 600;
+    font-size: .72rem;
+    text-transform: uppercase;
+}
+
+.gfd-tranche-details strong {
+    color: #1e293b;
+}
+
+.gfd-tranche-remarks {
+    grid-column: 1 / -1;
+}
+
+.gfd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: .84rem;
+    padding: .55rem 1rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.gfd-btn-release {
+    background: var(--gfd-green) !important;
+    border-color: var(--gfd-green) !important;
+    color: #fff !important;
+    margin-top: .35rem;
+}
+
+.gfd-btn-release:hover {
+    background: #14532d !important;
+}
+
+.gfd-btn-ghost {
+    background: #fff !important;
+    border-color: var(--gfd-border) !important;
+    color: #334155 !important;
+}
+
+.gfd-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--gfd-muted);
+}
+
+.gfd-dialog {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, .45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    padding: 1rem;
+}
+
+.gfd-dialog.show {
+    display: flex;
+}
+
+.gfd-dialog-box {
+    width: min(100%, 460px);
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.1rem 1.15rem;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, .18);
+}
+
+.gfd-dialog-box h3 {
+    margin: 0 0 .25rem;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.gfd-dialog-lead {
+    margin: 0 0 .85rem;
+    color: var(--gfd-muted);
+    font-size: .86rem;
+}
+
+.gfd-form label {
+    display: block;
+    margin: .55rem 0 .25rem;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.gfd-form input,
+.gfd-form textarea {
+    width: 100%;
+    border: 1px solid var(--gfd-border);
+    border-radius: 8px;
+    padding: .5rem .65rem;
+    font-size: .86rem;
+}
+
+.gfd-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+    .gfd-tranche-head {
+        flex-direction: column;
+    }
+}
