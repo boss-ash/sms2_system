@@ -348,6 +348,19 @@
         });
     }
 
+    function parseJsonResponse(response) {
+        return response.text().then(function (text) {
+            if (!text) {
+                return { success: false, message: 'Empty server response.' };
+            }
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                return { success: false, message: 'Server error while submitting evidence. Please try again.' };
+            }
+        });
+    }
+
     if (evidenceForm) {
         evidenceForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -364,7 +377,14 @@
                 credentials: 'same-origin',
                 body: formData
             })
-                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    return parseJsonResponse(r).then(function (data) {
+                        if (!r.ok && data && !data.message) {
+                            data.message = 'Submission failed.';
+                        }
+                        return data;
+                    });
+                })
                 .then(function (data) {
                     if (!data || !data.success) {
                         alert((data && data.message) || 'Submission failed.');
@@ -383,10 +403,9 @@
                     if (typeof window.SMSRefreshNotifications === 'function') {
                         window.SMSRefreshNotifications();
                     }
-                    alert(data.message || 'Progress evidence submitted successfully.');
                 })
                 .catch(function () {
-                    alert('Submission request failed.');
+                    alert('Submission request failed. Check your connection and try again.');
                     forceHideLoader();
                 })
                 .finally(function () {

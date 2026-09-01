@@ -8,6 +8,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../../config/config.php';
 require_once __DIR__ . '/../../../includes/authentication.php';
+require_once __DIR__ . '/../../../includes/uploads.php';
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../includes/grant-funded-research-helpers.php';
 
@@ -89,6 +90,15 @@ switch ($action) {
                 ],
             ]
         );
+
+        if (empty($upload['ok'])) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => trim((string) ($upload['error'] ?? '')) ?: 'File upload failed.',
+            ]);
+            break;
+        }
 
         $result = grantSubmitFundedProgressEvidence(
             $crad,
