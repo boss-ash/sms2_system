@@ -233,16 +233,22 @@
     inset: 0;
     z-index: 1080;
     background: rgba(15, 23, 42, .45);
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 1rem;
+    overflow-y: auto;
 }
 
 .gpip-dialog.open { display: flex; }
 
+.gpip-dialog.open .gpip-dialog-box {
+    margin: auto;
+}
+
 .gpip-dialog-box {
     width: min(100%, 640px);
-    max-height: 90vh;
+    max-height: min(90vh, 720px);
+    min-height: 0;
     background: #fff;
     border-radius: 14px;
     box-shadow: 0 20px 50px rgba(15, 23, 42, .2);
@@ -254,6 +260,7 @@
 .gpip-dialog-header {
     padding: 1rem 1.25rem .5rem;
     border-bottom: 1px solid var(--gpip-border);
+    flex-shrink: 0;
 }
 
 .gpip-dialog-header h3 {
@@ -267,10 +274,23 @@
 
 .gpip-dialog-lead { margin: 0; font-size: .84rem; color: var(--gpip-muted); }
 
+.gpip-dialog-form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
 .gpip-dialog-body {
     padding: 1rem 1.25rem;
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: .5rem;
+    padding-right: .35rem;
 }
 
 .gpip-dialog-body label {
@@ -308,6 +328,7 @@
     padding: .85rem 1.25rem;
     border-top: 1px solid var(--gpip-border);
     background: #f8fafc;
+    flex-shrink: 0;
 }
 
 @media (max-width: 640px) {

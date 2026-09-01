@@ -58,7 +58,7 @@ $pendingVerifyCount = count(array_filter($overview, static fn(array $r): bool =>
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-publications-ip.css?v=3" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-publications-ip.css?v=4" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gpip-alert" role="alert"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?></div>
