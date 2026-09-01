@@ -1117,17 +1117,23 @@ function grantGetDashboardMetrics(PDO $crad): array
     grantEnsureTables($crad);
     grantExpireDeadlines($crad);
 
-    if (function_exists('grantEnsureFinalOutputTables')) {
+    if (is_file(__DIR__ . '/grant-final-output-helpers.php')) {
         require_once __DIR__ . '/grant-final-output-helpers.php';
-        grantEnsureFinalOutputTables($crad);
+        if (function_exists('grantEnsureFinalOutputTables')) {
+            grantEnsureFinalOutputTables($crad);
+        }
     }
-    if (function_exists('grantEnsureDocumentRepositoryTables')) {
+    if (is_file(__DIR__ . '/grant-document-repository-helpers.php')) {
         require_once __DIR__ . '/grant-document-repository-helpers.php';
-        grantEnsureDocumentRepositoryTables($crad);
+        if (function_exists('grantEnsureDocumentRepositoryTables')) {
+            grantEnsureDocumentRepositoryTables($crad);
+        }
     }
-    if (function_exists('grantEnsureFundingTables')) {
+    if (is_file(__DIR__ . '/grant-funding-helpers.php')) {
         require_once __DIR__ . '/grant-funding-helpers.php';
-        grantEnsureFundingTables($crad);
+        if (function_exists('grantEnsureFundingTables')) {
+            grantEnsureFundingTables($crad);
+        }
     }
 
     $defaults = grantDashboardMetricsDefaults();
@@ -1269,7 +1275,14 @@ function grantFormatDashboardMetricValue(string $key, array $metrics): string
 {
     $value = $metrics[$key] ?? 0;
     if ($key === 'total_funding') {
-        return grantFormatPeso((float) $value);
+        if (!function_exists('grantFormatPeso') && is_file(__DIR__ . '/grant-funding-helpers.php')) {
+            require_once __DIR__ . '/grant-funding-helpers.php';
+        }
+        if (function_exists('grantFormatPeso')) {
+            return grantFormatPeso((float) $value);
+        }
+
+        return '₱' . number_format((float) $value, 0, '.', ',');
     }
 
     return number_format((int) $value);
