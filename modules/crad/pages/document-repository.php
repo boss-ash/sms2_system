@@ -53,7 +53,7 @@ $pendingArchiveCount = count(array_filter($overview, static fn(array $r): bool =
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link href="<?= BASE_URL ?>/assets/css/grant-document-repository.css?v=2" rel="stylesheet">
+<link href="<?= BASE_URL ?>/assets/css/grant-document-repository.css?v=3" rel="stylesheet">
 
 <?php if ($dbError !== ''): ?>
 <div class="gdr-alert" role="alert"><?= smsIcon('exclamation-triangle', ['class' => 'me-1']) ?><?= $dbError ?></div>
@@ -73,9 +73,21 @@ renderBreadcrumbs($breadcrumbs);
             <p>Archive permanent grant research records — proposal, revisions, reviewer scores, approval history, approved budget, project progress, final output, publication, and IP documentation.</p>
         </div>
         <?php if ($overview !== []): ?>
-        <div class="gdr-stat-row">
-            <span class="gdr-stat"><strong data-gdr-project-count><?= count($overview) ?></strong> project<?= count($overview) === 1 ? '' : 's' ?></span>
-            <span class="gdr-stat warn"><strong data-gdr-pending-count><?= $pendingArchiveCount ?></strong> ready to archive</span>
+        <div class="gdr-stat-row" aria-label="Repository summary">
+            <article class="gdr-stat-card">
+                <div class="gdr-stat-icon blue" aria-hidden="true"><?= smsIcon('folder-open') ?></div>
+                <div class="gdr-stat-body">
+                    <strong data-gdr-project-count><?= count($overview) ?></strong>
+                    <span>Funded Project<?= count($overview) === 1 ? '' : 's' ?></span>
+                </div>
+            </article>
+            <article class="gdr-stat-card warn">
+                <div class="gdr-stat-icon amber" aria-hidden="true"><?= smsIcon('archive') ?></div>
+                <div class="gdr-stat-body">
+                    <strong data-gdr-pending-count><?= $pendingArchiveCount ?></strong>
+                    <span>Ready to Archive</span>
+                </div>
+            </article>
         </div>
         <?php endif; ?>
     </header>

@@ -22,8 +22,14 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 1rem;
+    align-items: flex-start;
+    gap: 1rem 1.25rem;
     margin-bottom: 1.25rem;
+}
+
+.gdr-page-header-main {
+    flex: 1 1 320px;
+    min-width: 0;
 }
 
 .gdr-page-header h1 {
@@ -54,17 +60,92 @@
     border-radius: 999px;
 }
 
-.gdr-stat-row { display: flex; gap: .6rem; flex-wrap: wrap; }
-.gdr-stat {
-    background: #f8fafc;
-    border: 1px solid var(--gdr-border);
-    border-radius: 999px;
-    padding: .35rem .75rem;
-    font-size: .78rem;
-    color: var(--gdr-muted);
+.gdr-stat-row {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+    align-items: stretch;
+    flex-shrink: 0;
 }
-.gdr-stat strong { color: #0f172a; font-size: .95rem; }
-.gdr-stat.warn strong { color: var(--gdr-amber); }
+
+.gdr-stat-card {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 168px;
+    padding: .75rem .95rem;
+    background: #fff;
+    border: 1px solid var(--gdr-border);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 4px 12px rgba(15, 23, 42, .03);
+    transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+.gdr-stat-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .06);
+}
+
+.gdr-stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.gdr-stat-icon.blue {
+    color: #2563eb;
+    background: rgba(37, 99, 235, .1);
+}
+
+.gdr-stat-icon.amber {
+    color: #d97706;
+    background: rgba(245, 158, 11, .14);
+}
+
+.gdr-stat-body {
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+    min-width: 0;
+}
+
+.gdr-stat-body strong {
+    display: block;
+    font-size: 1.35rem;
+    line-height: 1.1;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -.02em;
+}
+
+.gdr-stat-card.warn .gdr-stat-body strong {
+    color: #c2410c;
+}
+
+.gdr-stat-body span {
+    display: block;
+    font-size: .72rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--gdr-muted);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+@media (max-width: 640px) {
+    .gdr-stat-row {
+        width: 100%;
+    }
+
+    .gdr-stat-card {
+        flex: 1 1 calc(50% - .375rem);
+        min-width: 0;
+    }
+}
 
 .gdr-project-bar { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
 .gdr-project-bar label { font-size: .84rem; font-weight: 700; color: #334155; }
