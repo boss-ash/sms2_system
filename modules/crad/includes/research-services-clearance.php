@@ -1285,6 +1285,7 @@ function rscPublicRow(array $row): array
         'uploaded_original' => (string) ($row['uploaded_original'] ?? ''),
         'uploaded_url' => rscUploadPublicUrl($row),
         'uploaded_at' => (string) ($row['uploaded_at'] ?? ''),
+        'uploaded_at_label' => rscFormatDateTimeLabel((string) ($row['uploaded_at'] ?? '')),
         'has_upload' => trim((string) ($row['uploaded_file'] ?? '')) !== '',
         'form_verified' => (int) ($row['form_verified'] ?? 0) === 1,
         'has_adviser_signature' => trim((string) ($row['adviser_signature'] ?? '')) !== '',
@@ -1301,8 +1302,6 @@ function rscPublicRow(array $row): array
         'can_student_upload' => in_array((string) ($row['status'] ?? ''), ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received', 'rejected'], true)
             && !empty($row['payment_approved']),
         'crad_remarks' => (string) ($row['crad_remarks'] ?? ''),
-        'uploaded_at' => (string) ($row['uploaded_at'] ?? ''),
-        'uploaded_at_label' => rscFormatDateTimeLabel((string) ($row['uploaded_at'] ?? '')),
         'sent_at' => (string) ($row['sent_at'] ?? ''),
         'sent_at_label' => rscFormatDateTimeLabel((string) ($row['sent_at'] ?? '')),
         'updated_at' => (string) ($row['updated_at'] ?? ''),
