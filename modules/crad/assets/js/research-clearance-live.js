@@ -334,9 +334,13 @@
             approveBtn.disabled = true;
             if (rejectBtn) rejectBtn.disabled = true;
             post('crad_approve').then(function (data) {
-                if (data && data.ok && data.clearance) applyClearance(data.clearance);
-                else if (data && data.error) alert(data.error);
-                refresh();
+                if (data && data.ok) {
+                    selectedId = '';
+                    applyClearance(null);
+                    refresh();
+                } else if (data && data.error) {
+                    alert(data.error);
+                }
             }).finally(function () {
                 approveBtn.disabled = false;
                 if (rejectBtn) rejectBtn.disabled = false;
@@ -362,6 +366,8 @@
             post('crad_reject', { reason: reason }).then(function (data) {
                 if (data && data.ok) {
                     alert('Rejected. The student was notified to re-upload.');
+                    selectedId = '';
+                    applyClearance(null);
                     refresh();
                 } else if (data && data.error) {
                     alert(data.error);
