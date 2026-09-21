@@ -640,6 +640,13 @@ renderBreadcrumbs($breadcrumbs);
                         <p>SMTP settings used to email password-reset links to each user’s Gmail/email.</p>
                     </div>
                 </div>
+                <?php if ($smtpNeedsPassword): ?>
+                    <div class="alert alert-warning py-2 small mb-3">
+                        SMTP username <strong><?= e($smtpUser) ?></strong> is set, but the App Password is missing
+                        (previous value could not be decrypted after <code>app.key</code> changed).
+                        Paste your Gmail App Password below, Save, then click <strong>Test</strong>.
+                    </div>
+                <?php endif; ?>
                 <form method="POST" autocomplete="off">
                     <?= csrfField() ?>
                     <input type="hidden" name="settings_section" value="notifications">
