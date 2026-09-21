@@ -13,15 +13,24 @@ define('RD_AI_OPTIMIZER_TEST', true);
 require ROOT_PATH . '/modules/crad/config/config.php';
 require ROOT_PATH . '/includes/authentication.php';
 require ROOT_PATH . '/modules/faculty/includes/research-director-panel-assignment.php';
-require ROOT_PATH . '/modules/crad/includes/research-services-clearance.php';
 require ROOT_PATH . '/modules/faculty/pages/research-director.php';
 
 $crad = cradDb();
 $r = rdScheduleGenerateOptimizedSlots($crad, 75, CRAD_DEFENSE_TYPE_FINAL, '2026-09-21', '2026-10-21', 15);
-$out = [
+$slots = [];
+foreach (($r['slots'] ?? []) as $s) {
+    $slots[] = [
+        'start' => $s['defense_datetime'] ?? $s['start_at'] ?? $s['start_time'] ?? null,
+        'end' => $s['defense_end_datetime'] ?? $s['end_at'] ?? $s['end_time'] ?? null,
+        'venue' => is_array($s['venue'] ?? null) ? ($s['venue']['venue_name'] ?? '') : ($s['venue_name'] ?? $s['venue'] ?? ''),
+        'date' => $s['defense_date'] ?? null,
+    ];
+}
+echo json_encode([
     'ok' => $r['ok'] ?? null,
     'message' => $r['message'] ?? null,
     'summary' => $r['summary'] ?? null,
-    'slots' => $r['slots'] ?? [],
-];
-echo json_encode($out, JSON_PRETTY_PRINT) . PHP_EOL;
+    'slot_count' => count($slots),
+    'slots' => $slots,
+    'sample_keys' => array_keys(($r['slots'][0] ?? [])),
+], JSON_PRETTY_PRINT) . PHP_EOL;
