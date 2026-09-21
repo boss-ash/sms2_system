@@ -835,12 +835,22 @@ html[data-theme="dark"] .forgot-glass .sms-cf-widget.is-verified {
             <form method="POST" class="mt-3" novalidate id="otpForm">
                 <?= csrfField() ?>
                 <input type="hidden" name="forgot_action" value="verify_otp">
+                <input type="hidden" name="otp_code" id="otp_code" value="">
                 <div class="mb-2">
-                    <label class="form-label" for="otp_code">6-digit code</label>
-                    <input type="text" class="form-control forgot-otp-input" id="otp_code" name="otp_code"
-                           inputmode="numeric" pattern="[0-9]{6}" maxlength="6" minlength="6"
-                           autocomplete="one-time-code" autofocus required
-                           placeholder="••••••">
+                    <label class="form-label" for="otp_d0">6-digit code</label>
+                    <div class="forgot-otp-boxes" role="group" aria-label="6-digit verification code">
+                        <?php for ($i = 0; $i < 6; $i++): ?>
+                            <input type="text"
+                                   class="form-control forgot-otp-digit"
+                                   id="otp_d<?= $i ?>"
+                                   inputmode="numeric"
+                                   maxlength="1"
+                                   autocomplete="<?= $i === 0 ? 'one-time-code' : 'off' ?>"
+                                   aria-label="Digit <?= $i + 1 ?>"
+                                   <?= $otpRemaining <= 0 ? 'disabled' : '' ?>
+                                   <?= $i === 0 ? 'autofocus' : '' ?>>
+                        <?php endfor; ?>
+                    </div>
                 </div>
                 <div class="forgot-timer<?= $otpRemaining <= 0 ? ' is-expired' : '' ?>" id="otpTimer"
                      data-expires="<?= (int) $otpExpiresAt ?>">
@@ -930,19 +940,93 @@ document.addEventListener('DOMContentLoaded', function () {
         syncSendEnabled();
     }
 
-    var otpInput = document.getElementById('otp_code');
-    if (otpInput) {
-        otpInput.addEventListener('input', function () {
-            otpInput.value = otpInput.value.replace(/\D+/g, '').slice(0, 6);
+    var otpHidden = document.getElementById('otp_code');
+    var otpDigits = Array.prototype.slice.call(document.querySelectorAll('.forgot-otp-digit'));
+    var otpForm = document.getElementById('otpForm');
+    var otpSubmitBtn = document.getElementById('otpSubmitBtn');
+    var resendBtn = document.getElementById('resendBtn');
+
+    function syncOtpHidden() {
+        if (!otpHidden) return '';
+        var code = otpDigits.map(function (el) { return (el.value || '').replace(/\D/g, '').slice(0, 1); }).join('');
+        otpHidden.value = code;
+        otpDigits.forEach(function (el) {
+            if ((el.value || '').trim() !== '') el.classList.add('is-filled');
+            else el.classList.remove('is-filled');
+        });
+        return code;
+    }
+
+    function fillOtpFromString(raw) {
+        var digits = String(raw || '').replace(/\D/g, '').slice(0, 6).split('');
+        otpDigits.forEach(function (el, i) {
+            el.value = digits[i] || '';
+        });
+        syncOtpHidden();
+        var nextIdx = Math.min(digits.length, otpDigits.length - 1);
+        if (otpDigits[nextIdx]) otpDigits[nextIdx].focus();
+    }
+
+    if (otpDigits.length === 6) {
+        otpDigits.forEach(function (el, idx) {
+            el.addEventListener('input', function () {
+                var v = (el.value || '').replace(/\D/g, '');
+                if (v.length > 1) {
+                    // Paste into one box or autofill dump
+                    fillOtpFromString(v);
+                    return;
+                }
+                el.value = v.slice(0, 1);
+                syncOtpHidden();
+                if (el.value && idx < otpDigits.length - 1) {
+                    otpDigits[idx + 1].focus();
+                }
+            });
+            el.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !el.value && idx > 0) {
+                    otpDigits[idx - 1].focus();
+                    otpDigits[idx - 1].value = '';
+                    syncOtpHidden();
+                    e.preventDefault();
+                } else if (e.key === 'ArrowLeft' && idx > 0) {
+                    otpDigits[idx - 1].focus();
+                    e.preventDefault();
+                } else if (e.key === 'ArrowRight' && idx < otpDigits.length - 1) {
+                    otpDigits[idx + 1].focus();
+                    e.preventDefault();
+                }
+            });
+            el.addEventListener('paste', function (e) {
+                e.preventDefault();
+                var text = (e.clipboardData || window.clipboardData).getData('text') || '';
+                fillOtpFromString(text);
+            });
+            el.addEventListener('focus', function () {
+                el.select();
+            });
+        });
+        syncOtpHidden();
+    }
+
+    if (otpForm) {
+        otpForm.addEventListener('submit', function (e) {
+            var code = syncOtpHidden();
+            if (code.length !== 6) {
+                e.preventDefault();
+                if (otpDigits[0]) otpDigits[0].focus();
+                return;
+            }
+            if (otpSubmitBtn) otpSubmitBtn.disabled = true;
         });
     }
 
     var timerEl = document.getElementById('otpTimer');
     var countdownEl = document.getElementById('otpCountdown');
-    var otpSubmitBtn = document.getElementById('otpSubmitBtn');
-    var resendBtn = document.getElementById('resendBtn');
     if (timerEl) {
         var expires = parseInt(timerEl.getAttribute('data-expires') || '0', 10);
+        function setDigitsDisabled(disabled) {
+            otpDigits.forEach(function (el) { el.disabled = disabled; });
+        }
         function tick() {
             var left = Math.max(0, expires - Math.floor(Date.now() / 1000));
             if (left <= 0) {
@@ -950,6 +1034,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 timerEl.textContent = 'Code expired — request a new one';
                 if (otpSubmitBtn) otpSubmitBtn.disabled = true;
                 if (resendBtn) resendBtn.disabled = false;
+                setDigitsDisabled(true);
                 return;
             }
             var m = Math.floor(left / 60);
@@ -959,6 +1044,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (otpSubmitBtn) otpSubmitBtn.disabled = false;
             if (resendBtn) resendBtn.disabled = true;
+            setDigitsDisabled(false);
             setTimeout(tick, 250);
         }
         tick();
