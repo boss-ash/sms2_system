@@ -535,8 +535,11 @@ body.login-page.forgot-page {
 .forgot-otp-input {
     text-align: center !important;
     letter-spacing: 0.35em !important;
-    font-size: 1.35rem !important;
+    font-size: 1.45rem !important;
     font-weight: 800 !important;
+    font-family: Consolas, "Courier New", monospace !important;
+    border-color: #a5b4fc !important;
+    background: linear-gradient(180deg, #ffffff 0%, #eef2ff 100%) !important;
 }
 
 .forgot-timer {
@@ -545,28 +548,58 @@ body.login-page.forgot-page {
     font-size: 0.9rem;
     font-weight: 700;
     color: #4338ca;
+    padding: 0.45rem 0.65rem;
+    border-radius: 10px;
+    background: rgba(238, 242, 255, 0.95);
+    border: 1px solid #c7d2fe;
 }
 
 .forgot-timer.is-expired {
     color: #be123c;
+    background: rgba(255, 241, 242, 0.95);
+    border-color: #fecdd3;
 }
 
 .forgot-otp-box {
     margin-top: 0.65rem;
-    padding: 0.75rem 0.85rem;
-    border-radius: 12px;
-    border: 1px solid #93c5fd;
-    background: rgba(239, 246, 255, 0.95);
+    padding: 0.85rem 0.95rem;
+    border-radius: 14px;
+    border: 1px solid #c7d2fe;
+    background: linear-gradient(180deg, #eef2ff 0%, #e0e7ff 100%);
     color: #1e3a8a;
     font-size: 0.9rem;
     font-weight: 700;
     text-align: center;
+    box-shadow: 0 10px 24px rgba(83, 80, 214, 0.12);
 }
 
 .forgot-otp-box code {
-    font-size: 1.35rem;
-    letter-spacing: 0.25em;
+    display: inline-block;
+    margin-top: 0.25rem;
+    font-size: 1.45rem;
+    letter-spacing: 0.28em;
     font-weight: 800;
+    font-family: Consolas, "Courier New", monospace;
+    color: #0f172a;
+}
+
+.forgot-step-pills {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 0 0 0.85rem;
+}
+
+.forgot-step-pills span {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #cbd5e1;
+}
+
+.forgot-step-pills span.is-active {
+    width: 22px;
+    background: #5350d6;
 }
 
 .forgot-glass .btn-auth-primary {
@@ -721,6 +754,11 @@ html[data-theme="dark"] .forgot-glass .sms-cf-widget.is-verified {
     <section class="forgot-glass" aria-label="Forgot password">
         <div class="forgot-brand">
             <img src="<?= e(smsBrandLogoUrl()) ?>?v=crest3" alt="Bestlink College of the Philippines" width="82" height="82">
+        </div>
+        <div class="forgot-step-pills" aria-hidden="true">
+            <span class="<?= $step === 'email' ? 'is-active' : '' ?>"></span>
+            <span class="<?= $step === 'otp' ? 'is-active' : '' ?>"></span>
+            <span class="<?= $step === 'password' ? 'is-active' : '' ?>"></span>
         </div>
 
         <?php if ($step === 'email'): ?>
