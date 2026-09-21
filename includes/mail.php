@@ -197,6 +197,46 @@ function smsSendMailSmtp(
 }
 
 /**
+ * Shared BCP-branded HTML email shell (matches auth / login UI colors).
+ */
+function smsMailWrapHtml(string $title, string $innerHtml): string
+{
+    $safeTitle = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+    $inst = htmlspecialchars(INSTITUTION, ENT_QUOTES, 'UTF-8');
+    $short = htmlspecialchars(APP_SHORT_NAME, ENT_QUOTES, 'UTF-8');
+
+    return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
+        . '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        . '<title>' . $safeTitle . '</title></head>'
+        . '<body style="margin:0;padding:0;background:#e8eef7;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e8eef7;padding:28px 12px;">'
+        . '<tr><td align="center">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 18px 40px rgba(5,22,55,0.14);border:1px solid #dbe4f0;">'
+        // Header — same blue gradient as login / forgot password
+        . '<tr><td style="background:linear-gradient(145deg,#051637 0%,#0b2a6b 42%,#1a6fc4 100%);padding:22px 24px;text-align:center;">'
+        . '<div style="display:inline-block;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.28);border-radius:999px;padding:6px 14px;margin-bottom:10px;">'
+        . '<span style="color:#fff;font-size:12px;font-weight:800;letter-spacing:0.06em;">' . $short . '</span>'
+        . '</div>'
+        . '<div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:-0.02em;line-height:1.25;">' . $safeTitle . '</div>'
+        . '<div style="color:rgba(226,232,240,0.92);font-size:12px;font-weight:600;margin-top:6px;">' . $inst . '</div>'
+        . '</td></tr>'
+        // Body
+        . '<tr><td style="padding:26px 24px 8px;color:#0f172a;font-size:15px;line-height:1.55;font-weight:500;">'
+        . $innerHtml
+        . '</td></tr>'
+        // Footer
+        . '<tr><td style="padding:8px 24px 22px;text-align:center;">'
+        . '<div style="height:1px;background:#e2e8f0;margin:0 0 16px;"></div>'
+        . '<div style="color:#64748b;font-size:12px;font-weight:600;line-height:1.45;">'
+        . 'This message was sent by ' . $inst . ' · ' . $short
+        . '<br>Do not reply to this email.</div>'
+        . '</td></tr>'
+        . '</table>'
+        . '</td></tr></table>'
+        . '</body></html>';
+}
+
+/**
  * Send password-reset link to the account email (or an explicit recipient).
  *
  * @param array<string,mixed> $user
@@ -221,17 +261,17 @@ function smsSendPasswordResetEmail(array $user, string $resetUrl, ?string $toOve
     $safeName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
     $safeUrl = htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8');
     $app = htmlspecialchars(APP_NAME, ENT_QUOTES, 'UTF-8');
-    $inst = htmlspecialchars(INSTITUTION, ENT_QUOTES, 'UTF-8');
 
-    $html = '<div style="font-family:Segoe UI,Arial,sans-serif;line-height:1.5;color:#0f172a;">'
-        . '<p>Hi ' . $safeName . ',</p>'
-        . '<p>We received a request to reset your password for <strong>' . $app . '</strong>.</p>'
-        . '<p><a href="' . $safeUrl . '" style="display:inline-block;padding:12px 18px;background:#294ecb;color:#fff;text-decoration:none;border-radius:8px;font-weight:700;">Reset your password</a></p>'
-        . '<p>Or copy this link into your browser:</p>'
-        . '<p style="word-break:break-all;color:#1d4ed8;">' . $safeUrl . '</p>'
-        . '<p>This link expires in <strong>1 hour</strong>. If you did not request this, you can ignore this email.</p>'
-        . '<p style="color:#64748b;font-size:13px;">' . $inst . ' · ' . $app . '</p>'
-        . '</div>';
+    $inner = '<p style="margin:0 0 12px;">Hi <strong>' . $safeName . '</strong>,</p>'
+        . '<p style="margin:0 0 18px;color:#334155;">We received a request to reset your password for <strong>' . $app . '</strong>.</p>'
+        . '<p style="margin:0 0 22px;text-align:center;">'
+        . '<a href="' . $safeUrl . '" style="display:inline-block;padding:13px 22px;background:#5350d6;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:800;font-size:14px;box-shadow:0 8px 18px rgba(83,80,214,0.28);">Reset your password</a>'
+        . '</p>'
+        . '<p style="margin:0 0 8px;color:#64748b;font-size:13px;">Or copy this link:</p>'
+        . '<p style="margin:0 0 16px;word-break:break-all;color:#4338ca;font-size:12px;font-weight:600;">' . $safeUrl . '</p>'
+        . '<p style="margin:0;color:#64748b;font-size:13px;">This link expires in <strong>1 hour</strong>. If you did not request this, you can ignore this email.</p>';
+
+    $html = smsMailWrapHtml('Password reset', $inner);
 
     $text = "Hi {$name},\n\n"
         . "We received a request to reset your password for " . APP_NAME . ".\n\n"
@@ -273,16 +313,24 @@ function smsSendOtpEmail(array $user, string $code, string $purposeLabel = 'pass
     $safeCode = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
     $safePurpose = htmlspecialchars($purposeLabel, ENT_QUOTES, 'UTF-8');
     $app = htmlspecialchars(APP_NAME, ENT_QUOTES, 'UTF-8');
-    $inst = htmlspecialchars(INSTITUTION, ENT_QUOTES, 'UTF-8');
 
-    $html = '<div style="font-family:Segoe UI,Arial,sans-serif;line-height:1.5;color:#0f172a;">'
-        . '<p>Hi ' . $safeName . ',</p>'
-        . '<p>Your one-time verification code for <strong>' . $safePurpose . '</strong> on <strong>' . $app . '</strong> is:</p>'
-        . '<p style="font-size:28px;font-weight:800;letter-spacing:0.2em;margin:16px 0;">' . $safeCode . '</p>'
-        . '<p>This code expires in <strong>' . (int) $ttlMinutes . ' minutes</strong>. Do not share it with anyone.</p>'
-        . '<p>If you did not request this, you can ignore this email.</p>'
-        . '<p style="color:#64748b;font-size:13px;">' . $inst . ' · ' . $app . '</p>'
-        . '</div>';
+    // Spaced digits for readability in email clients
+    $spacedCode = implode(' ', str_split($safeCode));
+
+    $inner = '<p style="margin:0 0 10px;">Hi <strong>' . $safeName . '</strong>,</p>'
+        . '<p style="margin:0 0 20px;color:#334155;">Your one-time verification code for <strong>' . $safePurpose . '</strong> on <strong>' . $app . '</strong> is:</p>'
+        . '<div style="margin:0 0 20px;text-align:center;">'
+        . '<div style="display:inline-block;min-width:220px;padding:18px 22px;border-radius:14px;border:1px solid #c7d2fe;background:linear-gradient(180deg,#eef2ff 0%,#e0e7ff 100%);box-shadow:0 10px 24px rgba(83,80,214,0.12);">'
+        . '<div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#4338ca;margin-bottom:8px;">Verification code</div>'
+        . '<div style="font-size:32px;font-weight:800;letter-spacing:0.28em;color:#0f172a;font-family:Consolas,\'Courier New\',monospace;">' . $spacedCode . '</div>'
+        . '</div></div>'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;background:#fff7ed;border:1px solid #fdba74;border-radius:12px;">'
+        . '<tr><td style="padding:12px 14px;color:#9a3412;font-size:13px;font-weight:700;text-align:center;">'
+        . 'Expires in ' . (int) $ttlMinutes . ' minute' . ((int) $ttlMinutes === 1 ? '' : 's') . ' · Do not share this code'
+        . '</td></tr></table>'
+        . '<p style="margin:0;color:#64748b;font-size:13px;">If you did not request this, you can ignore this email. Someone may have typed your address by mistake.</p>';
+
+    $html = smsMailWrapHtml('Verification code', $inner);
 
     $text = "Hi {$name},\n\n"
         . "Your one-time verification code for {$purposeLabel} on " . APP_NAME . " is:\n\n"
