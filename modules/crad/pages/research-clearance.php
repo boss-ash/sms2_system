@@ -11,14 +11,14 @@ if (!rscCanManageAsCrad()) {
     exit('Forbidden');
 }
 
-$pageTitle = 'Research Services Clearance';
+$pageTitle = 'Approve Signed Clearance';
 $activeModule = 'crad';
 $activePage = 'research-clearance';
 $pageBannerIcon = 'fa-stamp';
-$pageBannerDescription = 'Review student-uploaded signed clearance images for Research 1 and Research 2, then approve.';
+$pageBannerDescription = 'Review student-uploaded signed clearance images. Approve if qualified, or reject so the student can re-upload.';
 $breadcrumbs = [
     ['label' => 'CRAD', 'url' => BASE_URL . '/modules/crad/index.php'],
-    ['label' => 'Research Services Clearance', 'url' => null],
+    ['label' => 'Approve Signed Clearance', 'url' => null],
 ];
 
 $crad = rscDb();
@@ -31,7 +31,7 @@ $public = $current ? rscPublicRow($current) : null;
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link rel="stylesheet" href="<?= BASE_URL ?>/modules/crad/assets/css/research-clearance.css?v=rsc-flow-3">
+<link rel="stylesheet" href="<?= BASE_URL ?>/modules/crad/assets/css/research-clearance.css?v=rsc-flow-4">
 
 <div class="glass-dashboard rsc-print-root"
      data-rsc-live
@@ -60,22 +60,23 @@ renderBreadcrumbs($breadcrumbs);
                 <input type="file" id="rscClearanceFile" class="d-none" data-rsc-file accept=".png,.jpg,.jpeg,image/png,image/jpeg">
                 <label for="rscClearanceFile" class="btn btn-outline-primary mb-0" data-rsc-accept <?= ($public && in_array($public['status'], ['crad_received', 'adviser_signed', 'clearance_done'], true)) ? '' : 'hidden' ?>><?= smsIcon('upload', ['class' => 'me-1']) ?><span data-rsc-upload-label><?= !empty($public['has_upload']) ? 'Re-upload Image' : 'Upload Image' ?></span></label>
                 <button type="button" class="btn btn-outline-secondary" data-rsc-print <?= ($public && !empty($public['has_upload'])) ? '' : 'hidden' ?>><?= smsIcon('print', ['class' => 'me-1']) ?>Print</button>
-                <button type="button" class="btn btn-success" data-rsc-approve <?= ($public && !empty($public['can_crad_sign'])) ? '' : 'hidden' ?>><?= smsIcon('check', ['class' => 'me-1']) ?>Approve signature</button>
+                <button type="button" class="btn btn-success" data-rsc-approve <?= ($public && !empty($public['can_crad_sign'])) ? '' : 'hidden' ?>><?= smsIcon('check', ['class' => 'me-1']) ?>Approve</button>
+                <button type="button" class="btn btn-outline-danger" data-rsc-reject <?= ($public && !empty($public['can_crad_sign'])) ? '' : 'hidden' ?>><?= smsIcon('times', ['class' => 'me-1']) ?>Reject</button>
             </div>
         </div>
 
         <div class="alert alert-warning" data-rsc-upload-gate <?= ($public && !empty($public['has_upload'])) ? 'hidden' : '' ?>>
             <?= smsIcon('upload', ['class' => 'me-2']) ?>
-            Waiting for the student to upload their <strong>signed clearance</strong> image. You can also re-upload here if needed.
+            Waiting for the student to upload their <strong>signed clearance</strong> image.
         </div>
 
         <div class="alert alert-info" data-rsc-mis-aa-note <?= ($public && !empty($public['has_upload']) && ($public['status'] ?? '') !== 'clearance_done') ? '' : 'hidden' ?>>
             <?= smsIcon('info-circle', ['class' => 'me-2']) ?>
-            Review the uploaded signed form. If the signatures look correct, click <strong>Approve signature</strong>.
+            Review the uploaded signed form. <strong>Approve</strong> if qualified, or <strong>Reject</strong> so the student can re-upload.
         </div>
 
         <div class="rsc-wrap" data-rsc-form <?= ($public && !empty($public['has_upload'])) ? '' : 'hidden' ?>></div>
     </div>
 </div>
-<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-3"></script>
+<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-4"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

@@ -73,7 +73,17 @@ renderBreadcrumbs($breadcrumbs);
 
     <div class="alert alert-light border mb-3" data-rsc-student-hint>
         <?= smsIcon('info-circle', ['class' => 'me-2 text-primary']) ?>
-        After payment is approved: <strong>Print</strong> → get signatures on paper → <strong>Upload signed image</strong> → CRAD approves.
+        After payment is approved: <strong>Print</strong> → get signatures on paper → <strong>Upload signed image</strong> → CRAD approves or rejects.
+    </div>
+    <div class="alert alert-danger mb-3" data-rsc-reject-note
+         <?= ($public && ($public['status'] ?? '') === 'rejected') ? '' : 'hidden' ?>>
+        <?= smsIcon('exclamation-triangle', ['class' => 'me-2']) ?>
+        <span data-rsc-reject-text>
+            <?php if ($public && ($public['status'] ?? '') === 'rejected'): ?>
+                CRAD rejected your clearance<?= !empty($public['crad_remarks']) ? ': ' . e((string) $public['crad_remarks']) : '.' ?>
+                Please re-upload a corrected signed image.
+            <?php endif; ?>
+        </span>
     </div>
 
     <section class="glass-panel p-4 mb-3">
@@ -129,5 +139,5 @@ renderBreadcrumbs($breadcrumbs);
     <div class="rsc-wrap" data-rsc-form><?= $public['form_html'] ?? '' ?></div>
 </div>
 
-<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-3"></script>
+<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-4"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

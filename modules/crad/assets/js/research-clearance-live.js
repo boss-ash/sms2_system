@@ -12,12 +12,15 @@
     var acceptBtn = root.querySelector('[data-rsc-accept]');
     var signBtn = root.querySelector('[data-rsc-sign]');
     var approveBtn = root.querySelector('[data-rsc-approve]');
+    var rejectBtn = root.querySelector('[data-rsc-reject]');
     var printBtn = root.querySelector('[data-rsc-print]');
     var downloadBtn = root.querySelector('[data-rsc-download]');
     var fileInput = root.querySelector('[data-rsc-file]');
     var emptyEl = root.querySelector('[data-rsc-empty]');
     var uploadGate = root.querySelector('[data-rsc-upload-gate]');
     var misAaNote = root.querySelector('[data-rsc-mis-aa-note]');
+    var rejectNote = root.querySelector('[data-rsc-reject-note]');
+    var rejectText = root.querySelector('[data-rsc-reject-text]');
     var detailEl = root.querySelector('[data-rsc-detail]');
     var pickEl = root.querySelector('[data-rsc-pick]');
     var closeBtn = root.querySelector('[data-rsc-close]');
