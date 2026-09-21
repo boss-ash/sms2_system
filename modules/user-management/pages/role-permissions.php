@@ -93,7 +93,7 @@ $roleKeys = array_keys($roles);
 $csrf = csrfToken();
 ?>
 
-<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=faculty-role-badges-2" rel="stylesheet">
+<link href="<?= BASE_URL ?>/modules/user-management/assets/css/user-management.css?v=dept-head-badge-2" rel="stylesheet">
 <meta name="csrf-token" content="<?= e($csrf) ?>">
 
 <!-- Toast container -->

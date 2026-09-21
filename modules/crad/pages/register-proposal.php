@@ -900,10 +900,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div style="padding:3mm;border:1px solid #8998ab;border-radius:4px;font-size:8pt;text-align:center;background:#fbfdff;">
                     <div style="font-size:8pt;font-weight:800;background:#17366f;color:#fff;padding:2px 6px;margin:-3mm -3mm 3mm;border-radius:3px 3px 0 0;text-align:left;">IX. Approval (Name, signature and date)</div>
                     <div style="position:relative;width:80%;margin:4mm auto 0;height:54px;"><div style="position:absolute;bottom:0;left:0;right:0;border-bottom:1px solid #111;"></div>${adviserSig}</div>
-                    <strong style="display:block;font-size:8.5pt;margin-top:1mm;">${esc(row.adviser_name || 'Research Adviser')}</strong>
+                    <strong style="display:block;font-size:8.5pt;margin-top:1mm;">${esc(row.adviser_name || '')}</strong>
                     <span style="font-size:7.5pt;color:#555;">Research Adviser</span>
                     <div style="position:relative;width:80%;margin:5mm auto 0;height:54px;"><div style="position:absolute;bottom:0;left:0;right:0;border-bottom:1px solid #111;"></div>${coordSig}</div>
-                    <strong style="display:block;font-size:8.5pt;margin-top:1mm;">${esc(row.coordinator_name || 'Mrs. Kris Guevarra')}</strong>
+                    <strong style="display:block;font-size:8.5pt;margin-top:1mm;">${esc(row.coordinator_name || '')}</strong>
                     <span style="font-size:7.5pt;color:#555;">Program Research Coordinator</span>
                     <div style="margin:5mm 0 2mm;border-top:1px dashed #7c8da5;padding-top:3mm;text-align:left;font-size:7pt;color:#475569;">Received:</div>
                     <div style="position:relative;width:80%;margin:2mm auto 0;height:42px;"><div style="position:absolute;bottom:0;left:0;right:0;border-bottom:1px solid #111;"></div>${cradSig}</div>

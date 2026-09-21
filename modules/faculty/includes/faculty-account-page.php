@@ -1262,7 +1262,7 @@ function renderFacultyAccountPage(string $title, string $activePage, string $mod
             '<strong style="display:block;font-size:8.5pt;margin-top:1mm;">'+esc(r.adviser_name||'')+'</strong>'+
             '<span style="font-size:7.5pt;color:#555;">Research Adviser</span>'+
             '<div style="margin:5mm 0 2mm;border-bottom:1px solid #111;width:80%;margin-left:auto;margin-right:auto;"></div>'+
-            '<strong style="display:block;font-size:8.5pt;">'+esc(r.coordinator_name||'Program Research Coordinator')+'</strong>'+
+            '<strong style="display:block;font-size:8.5pt;">'+esc(r.coordinator_name||'')+'</strong>'+
             '<span style="font-size:7.5pt;color:#555;">Program Research Coordinator</span>'+
             '<div style="margin:5mm 0 2mm;border-top:1px dashed #7c8da5;padding-top:3mm;text-align:left;font-size:7pt;color:#475569;">Received:</div>'+
             '<div style="border-bottom:1px solid #111;width:80%;margin:2mm auto;"></div>'+

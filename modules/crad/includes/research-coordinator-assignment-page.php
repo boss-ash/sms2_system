@@ -9,11 +9,12 @@ require_once __DIR__ . '/../config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/breadcrumbs.php';
 require_once ROOT_PATH . '/includes/notifications.php';
+require_once __DIR__ . '/title-approval-assignees.php';
 
 requireAuth();
 
 $roleKey = getCurrentUserRoleKey();
-if (!in_array($roleKey, ['research_coordinator', 'superadmin'], true)) {
+if (!smsCanManageCoordinatorAssignments($roleKey)) {
     header('Location: ' . BASE_URL . '/dashboard/index.php');
     exit;
 }
@@ -73,6 +74,7 @@ function rcAssignmentEnsureSchema(PDO $pdo): void
     ");
 
     smsAssignmentNotificationEnsureSentSchema($pdo);
+    cradEnsureAssigneeSchema($pdo);
     cradEnsureTitleApprovalAdviserAssignmentConsistency($pdo);
 
     try {
@@ -91,16 +93,14 @@ function rcAssignmentEnsureSchema(PDO $pdo): void
             INNER JOIN research_adviser_assignments keep
               ON LOWER(TRIM(a.adviser_email)) = LOWER(TRIM(keep.adviser_email))
              AND LOWER(TRIM(a.adviser_name)) = LOWER(TRIM(keep.adviser_name))
+             AND IFNULL(a.group_number, '') = IFNULL(keep.group_number, '')
              AND a.id < keep.id
             WHERE TRIM(a.adviser_email) <> ''
               AND TRIM(a.adviser_name) <> ''
         ");
 
-        if (!$pdo->query("SHOW INDEX FROM research_adviser_assignments WHERE Key_name = 'uniq_raa_adviser_identity'")->fetch()) {
-            $pdo->exec("
-                ALTER TABLE research_adviser_assignments
-                ADD UNIQUE KEY uniq_raa_adviser_identity (adviser_email, adviser_name)
-            ");
+        if ($pdo->query("SHOW INDEX FROM research_adviser_assignments WHERE Key_name = 'uniq_raa_adviser_identity'")->fetch()) {
+            $pdo->exec("ALTER TABLE research_adviser_assignments DROP INDEX uniq_raa_adviser_identity");
         }
     } catch (Throwable $e) {
         error_log('Research adviser duplicate guard skipped: ' . $e->getMessage());
@@ -216,6 +216,7 @@ function rcAssignmentSyncApprovedTitleGroups(PDO $pdo): void
 
             $lastRow = $pdo->query("SELECT MAX(id) AS max_id FROM research_groups")->fetch();
             $seq = (int) ($lastRow['max_id'] ?? 0) + 1;
+            $newGroupNumber = rcAssignmentBuildGroupNumber($seq);
             $ins = $pdo->prepare("
                 INSERT INTO research_groups
                     (proposal_id, title_approval_id, proposal_number, group_number, group_name,
@@ -231,7 +232,7 @@ function rcAssignmentSyncApprovedTitleGroups(PDO $pdo): void
             $ins->execute([
                 ':title_approval_id' => (int) $approval['id'],
                 ':proposal_number' => $proposalNumber,
-                ':group_number' => rcAssignmentBuildGroupNumber($seq),
+                ':group_number' => $newGroupNumber,
                 ':group_name' => rcAssignmentBuildGroupName($seq),
                 ':research_title' => (string) $approval['proposed_title'],
                 ':college_dept' => (string) $approval['department'],
@@ -241,6 +242,12 @@ function rcAssignmentSyncApprovedTitleGroups(PDO $pdo): void
                 ':leader_id' => (string) $approval['student_id'],
                 ':date_assigned' => date('Y-m-d'),
                 ':created_by' => (int) ($_SESSION['user_id'] ?? 0) ?: null,
+            ]);
+            $newGroupId = (int) $pdo->lastInsertId();
+            cradMigrateStudentAssignmentsToOfficialGroup($pdo, (string) $approval['student_id'], [
+                'id' => $newGroupId,
+                'group_number' => $newGroupNumber,
+                'title_approval_id' => (int) $approval['id'],
             ]);
         }
     } catch (Throwable $e) {
@@ -297,23 +304,7 @@ function rcAssignmentResetStaleAssignments(PDO $pdo): void
                 SELECT 1
                 FROM research_groups g
                 LEFT JOIN research_proposals p ON p.id = g.proposal_id
-                LEFT JOIN title_approvals t ON t.id = g.title_approval_id
-                WHERE (
-                    (p.id IS NOT NULL AND p.status = 'Approved' AND p.registration_status = 'Registered')
-                 OR (
-                    t.id IS NOT NULL
-                    AND t.status = 'Approved'
-                    AND t.coordinator_status = 'Approved'
-                    AND t.crad_status = 'Approved'
-                    AND t.adviser_signature_data IS NOT NULL
-                    AND t.adviser_signature_data <> ''
-                    AND t.coordinator_signature_data IS NOT NULL
-                    AND t.coordinator_signature_data <> ''
-                    AND t.crad_signature_data IS NOT NULL
-                    AND t.crad_signature_data <> ''
-                 )
-                  )
-                  AND g.group_number IS NOT NULL
+                WHERE g.group_number IS NOT NULL
                   AND g.group_number <> ''
                   AND (
                     (a.research_group_id IS NOT NULL AND a.research_group_id = g.id)
@@ -418,13 +409,15 @@ function rcAssignmentRows(PDO $pdo, string $kind): array
                 a.adviser_user_id AS assignee_user_id,
                 a.adviser_name AS assignee_name,
                 a.adviser_email AS assignee_email,
-                '' AS assignee_role,
+                'Research Adviser' AS assignee_role,
                 a.expertise,
                 a.availability_status,
                 a.assignment_status,
                 a.notes,
                 a.assigned_at,
                 a.updated_at,
+                a.student_id,
+                g.leader_id,
                 g.group_number,
                 g.group_name,
                 COALESCE(NULLIF(g.research_title, ''), p.research_title, t.proposed_title) AS research_title,
@@ -435,7 +428,9 @@ function rcAssignmentRows(PDO $pdo, string $kind): array
                 OR CONVERT(g.group_number USING utf8mb4) COLLATE utf8mb4_unicode_ci = CONVERT(a.group_number USING utf8mb4) COLLATE utf8mb4_unicode_ci
              LEFT JOIN research_proposals p ON p.id = COALESCE(a.proposal_id, g.proposal_id)
              LEFT JOIN title_approvals t ON t.id = g.title_approval_id
-             WHERE (
+             WHERE g.group_number IS NOT NULL
+               AND g.group_number <> ''
+               AND (
                     (p.id IS NOT NULL AND p.status = 'Approved' AND p.registration_status = 'Registered' AND p.proposal_number IS NOT NULL)
                  OR (
                     t.id IS NOT NULL
@@ -449,9 +444,17 @@ function rcAssignmentRows(PDO $pdo, string $kind): array
                     AND t.crad_signature_data IS NOT NULL
                     AND t.crad_signature_data <> ''
                  )
+                 OR EXISTS (
+                    SELECT 1
+                    FROM research_coordinator_assignments ca
+                    WHERE ca.status = 'Active'
+                      AND (
+                            ca.research_group_id = g.id
+                         OR ca.group_number = g.group_number
+                         OR (g.leader_id IS NOT NULL AND g.leader_id <> '' AND ca.student_id = g.leader_id)
+                      )
+                 )
                )
-               AND g.group_number IS NOT NULL
-               AND g.group_number <> ''
         ";
     }
 
@@ -572,6 +575,66 @@ function rcAssignmentApprovedGroups(PDO $pdo): array
     ");
 
     $groups = $stmt->fetchAll() ?: [];
+    $byNumber = [];
+    foreach ($groups as $group) {
+        $key = (string) ($group['group_number'] ?? '');
+        if ($key !== '') {
+            $byNumber[$key] = $group;
+        }
+    }
+
+    try {
+        $coordGroups = $pdo->query("
+            SELECT
+                g.id AS research_group_id,
+                g.proposal_id,
+                g.title_approval_id,
+                COALESCE(p.proposal_number, t.proposal_number, g.proposal_number) AS proposal_number,
+                g.group_number,
+                g.group_name,
+                COALESCE(NULLIF(g.research_title, ''), p.research_title, t.proposed_title, 'Pending Title Approval') AS research_title,
+                COALESCE(NULLIF(g.college_dept, ''), p.college_department, t.department) AS college_dept,
+                COALESCE(NULLIF(g.adviser, ''), p.research_adviser, t.adviser_name, '') AS approved_adviser_name,
+                COALESCE(t.adviser_email, '') AS approved_adviser_email,
+                COALESCE(t.status, '') AS adviser_approval_status,
+                COALESCE(t.coordinator_name, '') AS coordinator_approved_name,
+                COALESCE(t.coordinator_status, '') AS coordinator_approval_status,
+                COALESCE(t.coordinator_reviewed_at, t.updated_at, t.created_at) AS coordinator_approved_at,
+                COALESCE(t.crad_status, '') AS crad_approval_status,
+                COALESCE(t.crad_reviewed_at, t.updated_at, t.created_at) AS crad_approved_at,
+                g.leader_name,
+                g.leader_id,
+                g.leader_email,
+                g.leader_contact,
+                g.status AS group_status,
+                COALESCE(p.status, t.status) AS proposal_status,
+                COALESCE(p.registration_status, 'Title Approved') AS registration_status,
+                COALESCE(g.created_at, p.registered_at, p.approved_at, t.crad_reviewed_at, t.updated_at, p.created_at) AS updated_at
+             FROM research_groups g
+             INNER JOIN research_coordinator_assignments ca
+               ON ca.status = 'Active'
+              AND (
+                    ca.research_group_id = g.id
+                 OR ca.group_number = g.group_number
+                 OR (g.leader_id IS NOT NULL AND g.leader_id <> '' AND ca.student_id = g.leader_id)
+              )
+             LEFT JOIN research_proposals p ON p.id = g.proposal_id
+             LEFT JOIN title_approvals t ON t.id = g.title_approval_id
+             WHERE g.group_number IS NOT NULL
+               AND g.group_number <> ''
+             ORDER BY updated_at DESC, g.id DESC
+        ")->fetchAll() ?: [];
+        foreach ($coordGroups as $group) {
+            $key = (string) ($group['group_number'] ?? '');
+            if ($key !== '' && !isset($byNumber[$key])) {
+                $byNumber[$key] = $group;
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('Coordinator-ready assignment groups skipped: ' . $e->getMessage());
+    }
+
+    $groups = array_values($byNumber);
     foreach ($groups as &$group) {
         $group['required_expertise'] = rcAssignmentRequiredExpertise((string) ($group['research_title'] ?? ''));
     }
@@ -595,11 +658,14 @@ function rcAssignmentAdviserAccountPool(): array
     try {
         $smsPdo = getDatabaseConnection();
         $stmt = $smsPdo->query("
-            SELECT id AS assignee_user_id, full_name AS assignee_name, email AS assignee_email
+            SELECT id AS assignee_user_id, full_name AS assignee_name, email AS assignee_email, role_key
             FROM users
-            WHERE role_key = 'adviser'
-              AND status = 'active'
-              AND full_name <> ''
+            WHERE status = 'active'
+              AND TRIM(full_name) <> ''
+              AND (
+                    role_key IN ('adviser', 'research_adviser')
+                 OR LOWER(REPLACE(role_key, ' ', '_')) LIKE '%adviser%'
+              )
             ORDER BY full_name ASC, id ASC
         ");
         $rows = $stmt->fetchAll() ?: [];
@@ -620,6 +686,181 @@ function rcAssignmentAdviserAccountPool(): array
     ], $rows);
 }
 
+/**
+ * Live User Management advisers, attached to each assignment group so they
+ * appear immediately on Find/Contact, Availability, and Assign pages.
+ *
+ * @param array<int, array<string, mixed>> $groups
+ * @return array<int, array<string, mixed>>
+ */
+function rcAssignmentLiveAdviserDisplayRows(PDO $pdo, array $groups): array
+{
+    $accounts = rcAssignmentAdviserAccountPool();
+    if ($accounts === []) {
+        return [];
+    }
+
+    $groupList = $groups !== [] ? $groups : [[
+        'research_group_id' => 0,
+        'proposal_id' => 0,
+        'title_approval_id' => 0,
+        'proposal_number' => '',
+        'group_number' => '',
+        'group_name' => '',
+        'research_title' => '',
+        'college_dept' => '',
+        'required_expertise' => 'General Research Methods',
+    ]];
+
+    $find = $pdo->prepare("
+        SELECT id, expertise, availability_status, assignment_status, notes, assigned_at, updated_at, group_number
+        FROM research_adviser_assignments
+        WHERE (
+                (:uid_a > 0 AND adviser_user_id = :uid_b)
+             OR (:email_a <> '' AND LOWER(TRIM(adviser_email)) = :email_b)
+             OR (:name_a <> '' AND LOWER(TRIM(adviser_name)) = :name_b)
+        )
+          AND (
+                (:gn_a = '' AND (group_number IS NULL OR group_number = ''))
+             OR (:gn_b <> '' AND (
+                    group_number = :gn_c
+                 OR (:gid_a > 0 AND research_group_id = :gid_b)
+                 OR (:sid_a <> '' AND student_id = :sid_b)
+                 OR (:stu_a <> '' AND group_number = :stu_b)
+             ))
+          )
+        ORDER BY
+            (assignment_status = 'Assigned') DESC,
+            (assignment_status = 'Confirmed') DESC,
+            id DESC
+        LIMIT 1
+    ");
+    $update = $pdo->prepare("
+        UPDATE research_adviser_assignments
+           SET adviser_user_id = COALESCE(:adviser_user_id, adviser_user_id),
+               adviser_name = :adviser_name,
+               adviser_email = :adviser_email,
+               availability_status = CASE
+                   WHEN assignment_status = 'Assigned' THEN availability_status
+                   ELSE 'Available'
+               END,
+               notes = COALESCE(NULLIF(notes, ''), 'Synced from adviser user account.'),
+               updated_at = NOW()
+         WHERE id = :id
+         LIMIT 1
+    ");
+
+    $out = [];
+    foreach ($groupList as $group) {
+        $groupNumber = (string) ($group['group_number'] ?? '');
+        foreach ($accounts as $account) {
+            $email = strtolower(trim((string) ($account['assignee_email'] ?? '')));
+            $name = trim((string) ($account['assignee_name'] ?? ''));
+            $userId = (int) ($account['assignee_user_id'] ?? 0);
+            $groupId = (int) ($group['research_group_id'] ?? $group['id'] ?? 0);
+            $leaderId = trim((string) ($group['leader_id'] ?? $group['student_id'] ?? ''));
+            $stuNumber = $leaderId !== '' ? cradStudentAssignmentGroupNumber($leaderId) : '';
+            $find->execute([
+                ':uid_a' => $userId,
+                ':uid_b' => $userId,
+                ':email_a' => $email,
+                ':email_b' => $email,
+                ':name_a' => strtolower($name),
+                ':name_b' => strtolower($name),
+                ':gn_a' => $groupNumber,
+                ':gn_b' => $groupNumber,
+                ':gn_c' => $groupNumber,
+                ':gid_a' => $groupId,
+                ':gid_b' => $groupId,
+                ':sid_a' => $leaderId,
+                ':sid_b' => $leaderId,
+                ':stu_a' => $stuNumber,
+                ':stu_b' => $stuNumber,
+            ]);
+            $db = $find->fetch(PDO::FETCH_ASSOC) ?: null;
+            if (!$db) {
+                $db = [
+                    'id' => 0,
+                    'expertise' => 'General Research Methods',
+                    'availability_status' => 'Available',
+                    'assignment_status' => 'Pending',
+                    'notes' => 'Synced from adviser user account.',
+                    'assigned_at' => null,
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ];
+            } else {
+                try {
+                    $update->execute([
+                        ':adviser_user_id' => $userId > 0 ? $userId : null,
+                        ':adviser_name' => $name,
+                        ':adviser_email' => (string) ($account['assignee_email'] ?? ''),
+                        ':id' => (int) ($db['id'] ?? 0),
+                    ]);
+                } catch (Throwable $e) {
+                    error_log('Live adviser row update skipped: ' . $e->getMessage());
+                }
+            }
+
+            $out[] = [
+                'assignment_kind' => 'adviser',
+                'assignment_id' => (int) ($db['id'] ?? 0),
+                'title_approval_id' => (int) ($group['title_approval_id'] ?? 0),
+                'assignee_user_id' => $userId,
+                'assignee_name' => $name,
+                'assignee_email' => (string) ($account['assignee_email'] ?? ''),
+                'assignee_role' => 'Research Adviser',
+                'expertise' => (string) (($db['expertise'] ?? '') !== '' ? $db['expertise'] : ($account['expertise'] ?? 'General Research Methods')),
+                'availability_status' => (string) (($db['availability_status'] ?? '') !== '' ? $db['availability_status'] : 'Available'),
+                'assignment_status' => (string) (($db['assignment_status'] ?? '') !== '' ? $db['assignment_status'] : 'Pending'),
+                'notes' => (string) ($db['notes'] ?? 'Synced from adviser user account.'),
+                'assigned_at' => $db['assigned_at'] ?? null,
+                'updated_at' => (string) ($db['updated_at'] ?? date('Y-m-d H:i:s')),
+                'group_number' => $groupNumber,
+                'group_name' => (string) ($group['group_name'] ?? ''),
+                'research_title' => (string) ($group['research_title'] ?? ''),
+                'college_dept' => (string) ($group['college_dept'] ?? ''),
+                'proposal_number' => (string) ($group['proposal_number'] ?? ''),
+                'leader_id' => $leaderId,
+                'student_id' => $leaderId,
+                'source' => 'user_account',
+            ];
+        }
+    }
+
+    return $out;
+}
+
+function rcAssignmentMergeLiveAdviserRows(array $rows, array $liveRows): array
+{
+    $seen = [];
+    $isAssigned = static function (array $row): bool {
+        return strcasecmp((string) ($row['assignment_status'] ?? ''), 'Assigned') === 0
+            || strcasecmp((string) ($row['assignment_status'] ?? ''), 'Confirmed') === 0;
+    };
+
+    foreach (array_merge($rows, $liveRows) as $row) {
+        $key = strtolower(trim((string) ($row['group_number'] ?? ''))) . '|' . rcAssignmentCandidateKey(
+            (string) ($row['assignee_email'] ?? ''),
+            (string) ($row['assignee_name'] ?? '')
+        );
+        if ($key === '|' || $key === '|name:') {
+            continue;
+        }
+        if (!isset($seen[$key])) {
+            $seen[$key] = $row;
+            continue;
+        }
+        $current = $seen[$key];
+        if ($isAssigned($row) && !$isAssigned($current)) {
+            $seen[$key] = $row;
+        } elseif ((int) ($row['assignment_id'] ?? 0) > (int) ($current['assignment_id'] ?? 0) && $isAssigned($row) === $isAssigned($current)) {
+            $seen[$key] = $row;
+        }
+    }
+
+    return array_values($seen);
+}
+
 function rcAssignmentResolveAdviserUserId(string $email, string $name): ?int
 {
     $email = strtolower(trim($email));
@@ -633,7 +874,7 @@ function rcAssignmentResolveAdviserUserId(string $email, string $name): ?int
         $stmt = $smsPdo->prepare("
             SELECT id
             FROM users
-            WHERE role_key = 'adviser'
+            WHERE role_key IN ('adviser', 'research_adviser')
               AND status = 'active'
               AND (
                     (:email_gate <> '' AND LOWER(TRIM(email)) = :email_match)
@@ -678,7 +919,7 @@ function rcAssignmentCandidatePool(PDO $pdo): array
     ")->fetchAll() ?: [];
 
     $pool = [];
-    foreach (array_merge($rows, rcAssignmentAdviserAccountPool()) as $row) {
+    foreach (array_merge(rcAssignmentAdviserAccountPool(), $rows) as $row) {
         $key = rcAssignmentCandidateKey((string) ($row['assignee_email'] ?? ''), (string) ($row['assignee_name'] ?? ''));
         if ($key === 'name:' || isset($pool[$key])) {
             continue;
@@ -703,7 +944,16 @@ function rcAssignmentEnsureGroupCandidateRows(PDO $pdo, array $groups): void
                 (:email_gate <> '' AND LOWER(TRIM(adviser_email)) = :email_match)
              OR (:name_gate <> '' AND LOWER(TRIM(adviser_name)) = :name_match)
         )
-        ORDER BY id DESC
+          AND (
+                (:group_number_gate <> '' AND group_number = :group_number_match)
+             OR (:research_group_id_gate > 0 AND research_group_id = :research_group_id_match)
+             OR (:student_id_gate <> '' AND student_id = :student_id_match)
+             OR (:stu_gate <> '' AND group_number = :stu_match)
+          )
+        ORDER BY
+            (assignment_status = 'Assigned') DESC,
+            (assignment_status = 'Confirmed') DESC,
+            id DESC
         LIMIT 1
     ");
     $updateAdviser = $pdo->prepare("
@@ -712,6 +962,7 @@ function rcAssignmentEnsureGroupCandidateRows(PDO $pdo, array $groups): void
                proposal_id = COALESCE(:proposal_id, proposal_id),
                proposal_number = COALESCE(NULLIF(:proposal_number, ''), proposal_number),
                group_number = COALESCE(NULLIF(:group_number, ''), group_number),
+               student_id = COALESCE(NULLIF(:student_id, ''), student_id),
                adviser_user_id = COALESCE(:adviser_user_id, adviser_user_id),
                adviser_name = COALESCE(NULLIF(:adviser_name, ''), adviser_name),
                adviser_email = COALESCE(NULLIF(:adviser_email, ''), adviser_email),
@@ -730,9 +981,9 @@ function rcAssignmentEnsureGroupCandidateRows(PDO $pdo, array $groups): void
     ");
     $insertAdviser = $pdo->prepare("
         INSERT INTO research_adviser_assignments
-            (research_group_id, proposal_id, proposal_number, group_number, adviser_user_id, adviser_name, adviser_email, expertise, availability_status, assignment_status, notes, assigned_by, assigned_at, created_at, updated_at, notification_sent_at, notification_sent_by)
+            (research_group_id, proposal_id, proposal_number, group_number, student_id, adviser_user_id, adviser_name, adviser_email, expertise, availability_status, assignment_status, notes, assigned_by, assigned_at, created_at, updated_at, notification_sent_at, notification_sent_by)
         VALUES
-            (:research_group_id, :proposal_id, :proposal_number, :group_number, :adviser_user_id, :adviser_name, :adviser_email, :expertise, :availability_status, 'Pending', :notes, NULL, NULL, NOW(), NOW(), NULL, NULL)
+            (:research_group_id, :proposal_id, :proposal_number, :group_number, NULLIF(:student_id, ''), :adviser_user_id, :adviser_name, :adviser_email, :expertise, :availability_status, 'Pending', :notes, NULL, NULL, NOW(), NOW(), NULL, NULL)
     ");
 
     foreach ($groups as $group) {
@@ -756,16 +1007,27 @@ function rcAssignmentEnsureGroupCandidateRows(PDO $pdo, array $groups): void
             ':proposal_id' => rcAssignmentNullableInt($group['proposal_id'] ?? null),
             ':proposal_number' => (string) ($group['proposal_number'] ?? ''),
             ':group_number' => (string) ($group['group_number'] ?? ''),
+            ':student_id' => trim((string) ($group['leader_id'] ?? $group['student_id'] ?? '')),
         ];
 
         foreach ($groupAdvisers as $adviser) {
             $email = strtolower(trim((string) ($adviser['assignee_email'] ?? '')));
             $name = strtolower(trim((string) ($adviser['assignee_name'] ?? '')));
+            $leaderId = trim((string) ($group['leader_id'] ?? $group['student_id'] ?? ''));
+            $stuNumber = $leaderId !== '' ? cradStudentAssignmentGroupNumber($leaderId) : '';
             $adviserExists->execute([
                 ':email_gate' => $email,
                 ':email_match' => $email,
                 ':name_gate' => $name,
                 ':name_match' => $name,
+                ':group_number_gate' => (string) ($group['group_number'] ?? ''),
+                ':group_number_match' => (string) ($group['group_number'] ?? ''),
+                ':research_group_id_gate' => (int) ($group['research_group_id'] ?? 0),
+                ':research_group_id_match' => (int) ($group['research_group_id'] ?? 0),
+                ':student_id_gate' => $leaderId,
+                ':student_id_match' => $leaderId,
+                ':stu_gate' => $stuNumber,
+                ':stu_match' => $stuNumber,
             ]);
             $existing = $adviserExists->fetch();
             $adviserUserId = rcAssignmentNullableInt($adviser['assignee_user_id'] ?? null)
@@ -787,7 +1049,11 @@ function rcAssignmentEnsureGroupCandidateRows(PDO $pdo, array $groups): void
                 ]);
                 continue;
             }
-            $insertAdviser->execute($groupParams + $adviserParams);
+            try {
+                $insertAdviser->execute($groupParams + $adviserParams);
+            } catch (Throwable $e) {
+                error_log('Adviser candidate insert skipped: ' . $e->getMessage());
+            }
         }
     }
 }
@@ -936,6 +1202,45 @@ function rcAssignmentResetOtherRowsForGroup(PDO $pdo, string $table, int $keepId
     ]);
 }
 
+function rcAssignmentCollapseDuplicatePendingRows(PDO $pdo, int $keepId, array $candidate, array $selectedGroup): void
+{
+    if ($keepId <= 0) {
+        return;
+    }
+
+    $email = strtolower(trim((string) ($candidate['adviser_email'] ?? '')));
+    $name = strtolower(trim((string) ($candidate['adviser_name'] ?? '')));
+    $userId = (int) ($candidate['adviser_user_id'] ?? 0);
+
+    $stmt = $pdo->prepare("
+        DELETE FROM research_adviser_assignments
+         WHERE id <> :keep_id
+           AND assignment_status <> 'Assigned'
+           AND (
+                (:uid_a > 0 AND adviser_user_id = :uid_b)
+             OR (:email_a <> '' AND LOWER(TRIM(adviser_email)) = :email_b)
+             OR (:name_a <> '' AND LOWER(TRIM(adviser_name)) = :name_b)
+           )
+           AND (
+                research_group_id = :research_group_id
+             OR group_number = :group_number
+             OR proposal_id = :proposal_id
+           )
+    ");
+    $stmt->execute([
+        ':keep_id' => $keepId,
+        ':uid_a' => $userId,
+        ':uid_b' => $userId,
+        ':email_a' => $email,
+        ':email_b' => $email,
+        ':name_a' => $name,
+        ':name_b' => $name,
+        ':research_group_id' => (int) ($selectedGroup['id'] ?? 0),
+        ':group_number' => (string) ($selectedGroup['group_number'] ?? ''),
+        ':proposal_id' => (int) ($selectedGroup['proposal_id'] ?? 0),
+    ]);
+}
+
 function rcAssignmentFindCandidateRowForGroup(PDO $pdo, string $kind, array $candidate, array $selectedGroup): ?array
 {
     if ($kind !== 'adviser') {
@@ -960,7 +1265,10 @@ function rcAssignmentFindCandidateRowForGroup(PDO $pdo, string $kind, array $can
              OR group_number = :group_number
              OR proposal_id = :proposal_id
           )
-        ORDER BY id DESC
+        ORDER BY
+            (assignment_status = 'Assigned') DESC,
+            (assignment_status = 'Confirmed') DESC,
+            id DESC
         LIMIT 1
     ");
     $stmt->execute([
@@ -1014,18 +1322,147 @@ function rcAssignmentMaybeSendCompletionNotifications(PDO $pdo, array $candidate
     smsMarkResearchAdviserAssignmentNotificationSent($pdo, $groupNumber, $userId);
 }
 
+function rcAssignmentApplyOfficialAssignedState(PDO $pdo, array $groups): void
+{
+    foreach ($groups as $group) {
+        $groupNumber = trim((string) ($group['group_number'] ?? ''));
+        if ($groupNumber === '' || str_starts_with($groupNumber, 'STU-')) {
+            continue;
+        }
+        $groupId = (int) ($group['research_group_id'] ?? $group['id'] ?? 0);
+        $leaderId = trim((string) ($group['leader_id'] ?? $group['student_id'] ?? ''));
+        $stuNumber = $leaderId !== '' ? cradStudentAssignmentGroupNumber($leaderId) : '';
+
+        try {
+            $assigned = $pdo->prepare("
+                SELECT id, adviser_name, adviser_email, adviser_user_id
+                FROM research_adviser_assignments
+                WHERE assignment_status IN ('Assigned', 'Confirmed')
+                  AND (
+                        group_number = :gn_a
+                     OR (:gid_a > 0 AND research_group_id = :gid_b)
+                     OR (:sid_a <> '' AND student_id = :sid_b)
+                     OR (:stu_a <> '' AND group_number = :stu_b)
+                  )
+                ORDER BY (assignment_status = 'Confirmed') DESC, assigned_at DESC, id DESC
+            ");
+            $assigned->execute([
+                ':gn_a' => $groupNumber,
+                ':gid_a' => $groupId,
+                ':gid_b' => $groupId,
+                ':sid_a' => $leaderId,
+                ':sid_b' => $leaderId,
+                ':stu_a' => $stuNumber,
+                ':stu_b' => $stuNumber,
+            ]);
+            $keep = $assigned->fetch(PDO::FETCH_ASSOC);
+            if (!$keep) {
+                continue;
+            }
+            $keepId = (int) ($keep['id'] ?? 0);
+            if ($keepId <= 0) {
+                continue;
+            }
+
+            $pdo->prepare("
+                UPDATE research_adviser_assignments
+                   SET research_group_id = COALESCE(:gid, research_group_id),
+                       group_number = :gn,
+                       student_id = COALESCE(NULLIF(:sid, ''), student_id),
+                       assignment_status = 'Assigned',
+                       updated_at = NOW()
+                 WHERE id = :id
+                 LIMIT 1
+            ")->execute([
+                ':gid' => $groupId > 0 ? $groupId : null,
+                ':gn' => $groupNumber,
+                ':sid' => $leaderId,
+                ':id' => $keepId,
+            ]);
+
+            $email = strtolower(trim((string) ($keep['adviser_email'] ?? '')));
+            $name = strtolower(trim((string) ($keep['adviser_name'] ?? '')));
+            $userId = (int) ($keep['adviser_user_id'] ?? 0);
+            $pdo->prepare("
+                DELETE FROM research_adviser_assignments
+                 WHERE id <> :keep_id
+                   AND assignment_status <> 'Assigned'
+                   AND (
+                        (:uid_a > 0 AND adviser_user_id = :uid_b)
+                     OR (:email_a <> '' AND LOWER(TRIM(adviser_email)) = :email_b)
+                     OR (:name_a <> '' AND LOWER(TRIM(adviser_name)) = :name_b)
+                   )
+                   AND (
+                        group_number = :gn
+                     OR (:gid > 0 AND research_group_id = :gid2)
+                     OR (:sid <> '' AND student_id = :sid2)
+                     OR (:stu <> '' AND group_number = :stu2)
+                   )
+            ")->execute([
+                ':keep_id' => $keepId,
+                ':uid_a' => $userId,
+                ':uid_b' => $userId,
+                ':email_a' => $email,
+                ':email_b' => $email,
+                ':name_a' => $name,
+                ':name_b' => $name,
+                ':gn' => $groupNumber,
+                ':gid' => $groupId,
+                ':gid2' => $groupId,
+                ':sid' => $leaderId,
+                ':sid2' => $leaderId,
+                ':stu' => $stuNumber,
+                ':stu2' => $stuNumber,
+            ]);
+        } catch (Throwable $e) {
+            error_log('Official adviser assigned-state apply skipped: ' . $e->getMessage());
+        }
+    }
+}
+
 function rcAssignmentPayload(string $kind): array
 {
     try {
         $pdo = getCradDatabaseConnection();
         rcAssignmentEnsureSchema($pdo);
+        cradPruneDeletedTitleApprovalDependents($pdo);
         rcAssignmentSyncApprovedTitleGroups($pdo);
         rcAssignmentResetStaleAssignments($pdo);
         $groups = rcAssignmentApprovedGroups($pdo);
         rcAssignmentEnsureGroupCandidateRows($pdo, $groups);
+        rcAssignmentApplyOfficialAssignedState($pdo, $groups);
         $rows = rcAssignmentEnrichRows(rcAssignmentRows($pdo, $kind));
+        $liveRows = rcAssignmentLiveAdviserDisplayRows($pdo, $groups);
+        $rows = rcAssignmentEnrichRows(rcAssignmentMergeLiveAdviserRows($rows, $liveRows));
         global $rcPageSlug;
-        if (in_array(($rcPageSlug ?? ''), ['retrieve-approved-research', 'find-contact-adviser'], true)) {
+        if (($rcPageSlug ?? '') === 'assign-research-adviser') {
+            $groups = array_values(array_filter(
+                $groups,
+                static fn(array $group): bool => cradGroupHasActiveCoordinator($pdo, $group)
+            ));
+            $officialLeaders = [];
+            foreach ($groups as $group) {
+                $gn = (string) ($group['group_number'] ?? '');
+                $leader = trim((string) ($group['leader_id'] ?? ''));
+                if ($leader !== '' && $gn !== '' && !str_starts_with($gn, 'STU-')) {
+                    $officialLeaders[strtolower($leader)] = true;
+                }
+            }
+            if ($officialLeaders !== []) {
+                $groups = array_values(array_filter(
+                    $groups,
+                    static function (array $group) use ($officialLeaders): bool {
+                        $gn = (string) ($group['group_number'] ?? '');
+                        $leader = strtolower(trim((string) ($group['leader_id'] ?? '')));
+                        if (str_starts_with($gn, 'STU-') && $leader !== '' && isset($officialLeaders[$leader])) {
+                            return false;
+                        }
+                        return true;
+                    }
+                ));
+            }
+        }
+        if (($rcPageSlug ?? '') === 'retrieve-approved-research') {
             $groups = array_values(array_filter($groups, static fn(array $group): bool => (int) ($group['title_approval_id'] ?? 0) > 0));
         }
         if (($rcPageSlug ?? '') === 'retrieve-approved-research') {
@@ -1091,32 +1528,27 @@ function rcAssignmentSave(PDO $pdo, string $kind, int $assignmentId, string $gro
     }
 
     $groupStmt = $pdo->prepare("
-        SELECT g.id, g.proposal_id, COALESCE(p.proposal_number, t.proposal_number, g.proposal_number) AS proposal_number, g.group_number
+        SELECT g.id, g.proposal_id, COALESCE(p.proposal_number, t.proposal_number, g.proposal_number) AS proposal_number,
+               g.group_number, g.leader_id, g.title_approval_id
         FROM research_groups g
         LEFT JOIN research_proposals p ON p.id = g.proposal_id
         LEFT JOIN title_approvals t ON t.id = g.title_approval_id
         WHERE g.group_number = :group_number
-          AND (
-                (p.id IS NOT NULL AND p.status = 'Approved' AND p.registration_status = 'Registered')
-             OR (
-                t.id IS NOT NULL
-                AND t.status = 'Approved'
-                AND t.coordinator_status = 'Approved'
-                AND t.crad_status = 'Approved'
-                AND t.adviser_signature_data IS NOT NULL
-                AND t.adviser_signature_data <> ''
-                AND t.coordinator_signature_data IS NOT NULL
-                AND t.coordinator_signature_data <> ''
-                AND t.crad_signature_data IS NOT NULL
-                AND t.crad_signature_data <> ''
-             )
-          )
         LIMIT 1
     ");
     $groupStmt->execute([':group_number' => $groupNumber]);
     $selectedGroup = $groupStmt->fetch();
     if (!$selectedGroup) {
         throw new RuntimeException('Selected research group is not available for assignment.');
+    }
+    if (!cradGroupHasActiveCoordinator($pdo, [
+        'id' => (int) ($selectedGroup['id'] ?? 0),
+        'research_group_id' => (int) ($selectedGroup['id'] ?? 0),
+        'group_number' => (string) ($selectedGroup['group_number'] ?? ''),
+        'leader_id' => (string) ($selectedGroup['leader_id'] ?? ''),
+        'student_id' => (string) ($selectedGroup['leader_id'] ?? ''),
+    ])) {
+        throw new RuntimeException('Assign a Research Coordinator from the Coordinator Roster first.');
     }
     rcAssignmentEnsureGroupCandidateRows($pdo, [[
         'research_group_id' => rcAssignmentNullableInt($selectedGroup['id'] ?? null),
@@ -1202,11 +1634,28 @@ function rcAssignmentSave(PDO $pdo, string $kind, int $assignmentId, string $gro
                 ':assigned_by' => $userId,
                 ':id' => $assignmentId,
             ]);
+            rcAssignmentCollapseDuplicatePendingRows($pdo, $assignmentId, $candidate, $selectedGroup);
         }
         rcAssignmentMaybeSendCompletionNotifications($pdo, $candidate, $groupNumber, $userId);
 
         if ($startedTransaction) {
             $pdo->commit();
+        }
+        $studentId = cradStudentIdFromAssignmentGroup(
+            (string) ($selectedGroup['group_number'] ?? ''),
+            [
+                'leader_id' => (string) ($selectedGroup['leader_id'] ?? ''),
+                'student_id' => (string) ($selectedGroup['leader_id'] ?? ''),
+            ]
+        );
+        if ($studentId !== '') {
+            try {
+                $pdo->prepare("UPDATE research_adviser_assignments SET student_id = :sid, updated_at = NOW() WHERE id = :id LIMIT 1")
+                    ->execute([':sid' => $studentId, ':id' => $assignmentId]);
+            } catch (Throwable $e) {
+                error_log('Adviser student_id stamp skipped: ' . $e->getMessage());
+            }
+            cradSyncTitleApprovalAssigneeNames($pdo, $studentId);
         }
     } catch (Throwable $e) {
         if ($startedTransaction && $pdo->inTransaction()) {
@@ -1240,6 +1689,7 @@ if (($_POST['ajax'] ?? '') === 'assign') {
 
 if (($_GET['ajax'] ?? '') === 'assignments') {
     header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store, no-cache, must-revalidate');
     echo json_encode(rcAssignmentPayload($rcAssignmentKind));
     exit;
 }
@@ -1256,8 +1706,11 @@ $stats = $payload['stats'];
 $pageTitle = $pageConfig['title'];
 $activeModule = 'crad';
 $activePage = $rcPageSlug;
+$rcNavLabel = getCurrentUserRoleKey() === 'department_head' ? 'Research Management' : 'Research Coordinator';
 $breadcrumbs = [
-    ['label' => 'Research Coordinator', 'url' => BASE_URL . '/modules/crad/index.php'],
+    ['label' => $rcNavLabel, 'url' => getCurrentUserRoleKey() === 'department_head'
+        ? BASE_URL . '/modules/crad/pages/research-coordinator-management.php'
+        : BASE_URL . '/modules/crad/index.php'],
     ['label' => $pageTitle, 'url' => null],
 ];
 
@@ -1676,7 +2129,7 @@ renderBreadcrumbs($breadcrumbs);
     let activeContact = null;
     let refreshing = false;
     let refreshTimer = null;
-    const refreshDelay = 2000;
+    const refreshDelay = 1000;
 
     const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -1794,11 +2247,52 @@ renderBreadcrumbs($breadcrumbs);
         return Math.round((hits / requiredParts.length) * 100);
     };
 
-    const selectedGroupRows = () => rows.filter((row) => {
-        const groupNo = String(row.group_number || '');
-        const proposalNo = String(row.proposal_number || '');
-        return selectedGroup && (groupNo === selectedGroup || proposalNo === selectedGroup);
-    });
+    const selectedGroupMeta = () => groups.find((item) => {
+        const value = item.group_number || item.proposal_number || String(item.research_group_id || '');
+        return value === selectedGroup;
+    }) || null;
+    const studentGroupKeys = (group) => {
+        const keys = [];
+        const gn = String(group?.group_number || '');
+        const pn = String(group?.proposal_number || '');
+        const leader = String(group?.leader_id || group?.student_id || '').trim();
+        if (gn) keys.push(gn);
+        if (pn) keys.push(pn);
+        if (leader) {
+            keys.push(leader);
+            keys.push('STU-' + leader.toUpperCase().replace(/[^A-Z0-9_-]/g, ''));
+        }
+        return keys;
+    };
+    const selectedGroupRows = () => {
+        const group = selectedGroupMeta();
+        const keys = new Set(studentGroupKeys(group).map((v) => v.toLowerCase()));
+        if (!selectedGroup) return [];
+        keys.add(String(selectedGroup).toLowerCase());
+        return rows.filter((row) => {
+            const values = [
+                String(row.group_number || ''),
+                String(row.proposal_number || ''),
+                String(row.leader_id || ''),
+                String(row.student_id || '')
+            ].map((v) => v.toLowerCase());
+            return values.some((v) => v !== '' && keys.has(v));
+        });
+    };
+    const isRowAssigned = (row, group) => {
+        const statusAssigned = ['assigned', 'confirmed'].includes(String(row.assignment_status || '').toLowerCase());
+        if (!statusAssigned) return false;
+        if (!selectedGroup) return true;
+        const keys = new Set(studentGroupKeys(group).map((v) => v.toLowerCase()));
+        keys.add(String(selectedGroup).toLowerCase());
+        const values = [
+            String(row.group_number || ''),
+            String(row.proposal_number || ''),
+            String(row.leader_id || ''),
+            String(row.student_id || '')
+        ].map((v) => v.toLowerCase());
+        return values.some((v) => v !== '' && keys.has(v));
+    };
     const assigneeLoadCount = (row) => rows.filter((item) => (
         String(item.assignment_kind || '').toLowerCase() === String(row.assignment_kind || '').toLowerCase() &&
         String(item.assignee_name || '').toLowerCase() === String(row.assignee_name || '').toLowerCase() &&
@@ -1885,52 +2379,53 @@ renderBreadcrumbs($breadcrumbs);
 
         renderGroups();
 
-        const group = groups.find((item) => {
-            const value = item.group_number || item.proposal_number || String(item.research_group_id || '');
-            return value === selectedGroup;
-        });
+        const group = selectedGroupMeta();
         const directMatches = selectedGroupRows();
         const processTerm = (search?.value || '').trim().toLowerCase();
         const processStatus = (statusFilter?.value || '').trim().toLowerCase();
         const sourceRows = (mode === 'contact' ? rows : (directMatches.length ? directMatches : rows))
             .filter((row) => matches(row, processTerm) && statusMatches(row, processStatus));
         const usingSelectedGroupRows = mode !== 'contact' && directMatches.length > 0;
-        const seenAssignees = new Set();
-        const matchesForGroup = sourceRows
+        const seenAssignees = {};
+        sourceRows
             .map((row) => ({
                 ...row,
                 expertise_fit_score: expertiseFitScore(row, group),
                 match_score: scoreForGroup(row, group),
                 selected_group_match: usingSelectedGroupRows
             }))
-            .filter((row) => {
-                const key = `${row.assignment_kind || ''}|${row.assignee_name || ''}|${row.assignee_email || ''}`.toLowerCase();
-                if (seenAssignees.has(key)) return false;
-                seenAssignees.add(key);
-                return true;
+            .sort((a, b) => {
+                const aAssigned = isRowAssigned(a, group) ? 1 : 0;
+                const bAssigned = isRowAssigned(b, group) ? 1 : 0;
+                if (bAssigned !== aAssigned) return bAssigned - aAssigned;
+                return Number(b.match_score || 0) - Number(a.match_score || 0);
             })
-            .sort((a, b) => Number(b.match_score || 0) - Number(a.match_score || 0));
+            .forEach((row) => {
+                const key = `${row.assignment_kind || ''}|${row.assignee_name || ''}|${row.assignee_email || ''}`.toLowerCase();
+                const current = seenAssignees[key];
+                if (!current || (isRowAssigned(row, group) && !isRowAssigned(current, group))) {
+                    seenAssignees[key] = row;
+                }
+            });
+        const matchesForGroup = Object.values(seenAssignees);
 
         if (!group) {
-            topic.textContent = 'No approved research group yet';
-            required.textContent = 'Approved and registered proposals will appear here automatically.';
-            matchList.innerHTML = '';
-            if (matchCount) matchCount.textContent = '0';
-            matchEmpty.hidden = false;
-            return;
+            topic.textContent = 'Adviser accounts from User Management';
+            required.textContent = 'Users with the Adviser role appear here in real time.';
+        } else {
+            topic.textContent = group.research_title || 'Untitled research';
+            required.textContent = mode === 'availability'
+                ? `Availability check: ${group.group_number || group.proposal_number || 'Approved group'}`
+                : `Required Expertise: ${group.required_expertise || 'General Research Methods'}`;
         }
 
-        topic.textContent = group.research_title || 'Untitled research';
-        required.textContent = mode === 'availability'
-            ? `Availability check: ${group.group_number || group.proposal_number || 'Approved group'}`
-            : `Required Expertise: ${group.required_expertise || 'General Research Methods'}`;
         matchList.innerHTML = matchesForGroup.map((row) => {
             const email = String(row.assignee_email || '').trim();
             const sourceNote = directMatches.length ? '' : '<div class="rcas-muted">Recommended from assignment database</div>';
             const encoded = attr(JSON.stringify(row));
             const loadCount = assigneeLoadCount(row);
             if (mode === 'assign') {
-                const isAssigned = Boolean(row.selected_group_match) && String(row.assignment_status || '').toLowerCase() === 'assigned';
+                const isAssigned = isRowAssigned(row, group);
                 const isAvailable = String(row.availability_status || '').toLowerCase() === 'available';
                 const disabled = isAssigned || !isAvailable;
                 const actionLabel = isAssigned ? 'Assigned' : (isAvailable ? 'Assign' : 'Not Available');
@@ -2132,12 +2627,32 @@ renderBreadcrumbs($breadcrumbs);
             });
             const data = await res.json();
             if (!data.ok) throw new Error(data.error || 'Failed to assign.');
-            rows = Array.isArray(data.rows) ? data.rows : rows;
+            const markAssigned = (list) => (Array.isArray(list) ? list : []).map((item) => {
+                const sameAdviser = Number(item.assignment_id || 0) === Number(row.assignment_id || 0)
+                    || (String(item.assignee_email || '').toLowerCase() !== '' && String(item.assignee_email || '').toLowerCase() === String(row.assignee_email || '').toLowerCase())
+                    || String(item.assignee_name || '').toLowerCase() === String(row.assignee_name || '').toLowerCase();
+                const keys = new Set(studentGroupKeys(group).map((v) => String(v).toLowerCase()));
+                keys.add(String(selectedGroup || '').toLowerCase());
+                const itemKeys = [
+                    String(item.group_number || ''),
+                    String(item.proposal_number || ''),
+                    String(item.leader_id || ''),
+                    String(item.student_id || '')
+                ].map((v) => v.toLowerCase());
+                const sameGroup = itemKeys.some((v) => v !== '' && keys.has(v));
+                if (sameAdviser && sameGroup) {
+                    return { ...item, assignment_status: 'Assigned' };
+                }
+                return item;
+            });
+            rows = markAssigned(Array.isArray(data.rows) ? data.rows : rows);
             groups = Array.isArray(data.groups) ? data.groups : groups;
+            const assignedCount = rows.filter((item) => String(item.assignment_status || '').toLowerCase() === 'assigned').length;
+            const pendingCount = rows.filter((item) => String(item.assignment_status || '').toLowerCase() === 'pending').length;
             if (total) total.textContent = data.stats?.total ?? rows.length;
-            if (pending) pending.textContent = data.stats?.pending ?? 0;
+            if (pending) pending.textContent = pendingCount;
             if (available) available.textContent = data.stats?.available ?? 0;
-            if (assigned) assigned.textContent = data.stats?.assigned ?? 0;
+            if (assigned) assigned.textContent = assignedCount;
             if (lastSync) lastSync.textContent = `Synced ${data.last_sync || 'just now'}`;
             showNotice(data.message || 'Assignment saved.', 'ok');
             if (typeof window.SMSRefreshNotifications === 'function') {

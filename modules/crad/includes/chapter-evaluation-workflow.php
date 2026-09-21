@@ -12,6 +12,60 @@ require_once ROOT_PATH . '/modules/crad/config/config.php';
 require_once ROOT_PATH . '/includes/icons.php';
 require_once ROOT_PATH . '/modules/crad/includes/research-progress-helpers.php';
 
+/**
+ * Grammarian scoring: five criteria at 20% each = 100%.
+ *
+ * @return list<array{key:string,label:string,weight:float}>
+ */
+function chapterEvaluationCriteria(): array
+{
+    return [
+        ['key' => 'content', 'label' => 'Content', 'weight' => 20.0],
+        ['key' => 'methodology', 'label' => 'Methodology', 'weight' => 20.0],
+        ['key' => 'references', 'label' => 'References', 'weight' => 20.0],
+        ['key' => 'format', 'label' => 'Format', 'weight' => 20.0],
+        ['key' => 'grammar', 'label' => 'Grammar', 'weight' => 20.0],
+    ];
+}
+
+function chapterLiveEvaluatorName(): string
+{
+    $fallback = trim((string) ($_SESSION['user_name'] ?? ''));
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    $sms = function_exists('db') ? db() : null;
+    if ($sms instanceof PDO && $userId > 0) {
+        try {
+            $stmt = $sms->prepare(
+                "SELECT full_name FROM users
+                 WHERE id = ? AND TRIM(COALESCE(full_name, '')) <> ''
+                 LIMIT 1"
+            );
+            $stmt->execute([$userId]);
+            $name = trim((string) $stmt->fetchColumn());
+            if ($name !== '') {
+                return $name;
+            }
+        } catch (Throwable $e) {
+            // keep session fallback
+        }
+    }
+    return $fallback;
+}
+
+function chapterEvaluationMaxPoints(): float
+{
+    return 20.0;
+}
+
+function chapterEvaluationTotalMax(): float
+{
+    $total = 0.0;
+    foreach (chapterEvaluationCriteria() as $item) {
+        $total += (float) $item['weight'];
+    }
+    return $total;
+}
+
 function chapterRegistryFullyApprovedClause(string $alias = 't'): string
 {
     return "{$alias}.status = 'Approved'
@@ -203,10 +257,12 @@ function chapterEnsureSchema(PDO $crad): void
             methodology_score DECIMAL(5,2) NOT NULL,
             references_score DECIMAL(5,2) NOT NULL,
             format_score DECIMAL(5,2) NOT NULL,
+            grammar_score DECIMAL(5,2) NOT NULL DEFAULT 0,
             content_remarks TEXT DEFAULT NULL,
             methodology_remarks TEXT DEFAULT NULL,
             references_remarks TEXT DEFAULT NULL,
             format_remarks TEXT DEFAULT NULL,
+            grammar_remarks TEXT DEFAULT NULL,
             overall_feedback TEXT DEFAULT NULL,
             result ENUM('APPROVED','APPROVED WITH REVISION') NOT NULL,
             overall_score DECIMAL(5,2) DEFAULT NULL,
@@ -241,6 +297,19 @@ function chapterEnsureSchema(PDO $crad): void
             KEY idx_chapter_notification_created (created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
     );
+
+    try {
+        $grammarScore = $crad->query("SHOW COLUMNS FROM chapter_evaluations LIKE 'grammar_score'")->fetch();
+        if (!$grammarScore) {
+            $crad->exec("ALTER TABLE chapter_evaluations ADD COLUMN grammar_score DECIMAL(5,2) NOT NULL DEFAULT 0 AFTER format_score");
+        }
+        $grammarRemarks = $crad->query("SHOW COLUMNS FROM chapter_evaluations LIKE 'grammar_remarks'")->fetch();
+        if (!$grammarRemarks) {
+            $crad->exec("ALTER TABLE chapter_evaluations ADD COLUMN grammar_remarks TEXT DEFAULT NULL AFTER format_remarks");
+        }
+    } catch (Throwable $e) {
+        error_log('Chapter evaluation grammar column check skipped: ' . $e->getMessage());
+    }
 }
 
 function chapterDb(): PDO
@@ -324,6 +393,8 @@ function chapterSubmissionSelectSql(): string
                    rg.adviser, rg.leader_id, rg.leader_email, rg.leader_name,
                    ce.id AS evaluation_id, ce.evaluator_name, ce.result,
                    ce.content_score, ce.methodology_score, ce.references_score, ce.format_score,
+                   ce.grammar_score, ce.grammar_remarks, ce.content_remarks, ce.methodology_remarks,
+                   ce.references_remarks, ce.format_remarks,
                    ce.overall_score, ce.overall_feedback, ce.evaluated_at
             FROM chapter_submissions cs
             INNER JOIN research_groups rg ON rg.id = cs.research_group_id
@@ -829,18 +900,29 @@ function chapterSubmitEvaluation(PDO $crad, array $submission, array $data): arr
         return ['ok' => false, 'error' => 'This submission already has an evaluation.'];
     }
 
-    $scoreKeys = ['content_score', 'methodology_score', 'references_score', 'format_score'];
+    $maxPoints = chapterEvaluationMaxPoints();
     $scores = [];
-    foreach ($scoreKeys as $key) {
+    foreach (chapterEvaluationCriteria() as $item) {
+        $key = $item['key'] . '_score';
         $raw = trim((string) ($data[$key] ?? ''));
         if ($raw === '' || !is_numeric($raw)) {
             return ['ok' => false, 'error' => 'All scores must be numeric.'];
         }
         $score = (float) $raw;
-        if ($score < 0 || $score > 100) {
-            return ['ok' => false, 'error' => 'Scores must be from 0 to 100 only.'];
+        $weight = (float) $item['weight'];
+        if ($score < 0) {
+            return ['ok' => false, 'error' => $item['label'] . ' Score cannot be below 0.'];
         }
-        $scores[$key] = $score;
+        if ($score > $maxPoints || $score > $weight) {
+            return ['ok' => false, 'error' => $item['label'] . ' Score cannot exceed ' . number_format($weight, 0) . '%. Evaluation was not submitted.'];
+        }
+        $scores[$key] = round($score, 2);
+    }
+
+    $overall = round(array_sum($scores), 2);
+    $totalMax = chapterEvaluationTotalMax();
+    if ($overall > $totalMax) {
+        return ['ok' => false, 'error' => 'Total score cannot exceed ' . number_format($totalMax, 0) . '%. Evaluation was not submitted.'];
     }
 
     $result = strtoupper(trim((string) ($data['result'] ?? '')));
@@ -848,7 +930,6 @@ function chapterSubmitEvaluation(PDO $crad, array $submission, array $data): arr
         return ['ok' => false, 'error' => 'Invalid evaluation result.'];
     }
     $studentStatus = $result === 'APPROVED' ? 'Accepted' : 'Needs Revision';
-    $overall = array_sum($scores) / 4;
 
     try {
         $crad->beginTransaction();
@@ -861,28 +942,30 @@ function chapterSubmitEvaluation(PDO $crad, array $submission, array $data): arr
         $stmt = $crad->prepare(
             "INSERT INTO chapter_evaluations
                 (submission_id, research_group_id, evaluator_user_id, evaluator_name,
-                 content_score, methodology_score, references_score, format_score,
-                 content_remarks, methodology_remarks, references_remarks, format_remarks,
+                 content_score, methodology_score, references_score, format_score, grammar_score,
+                 content_remarks, methodology_remarks, references_remarks, format_remarks, grammar_remarks,
                  overall_feedback, result, overall_score)
              VALUES
                 (:submission_id, :group_id, :evaluator_user_id, :evaluator_name,
-                 :content_score, :methodology_score, :references_score, :format_score,
-                 :content_remarks, :methodology_remarks, :references_remarks, :format_remarks,
+                 :content_score, :methodology_score, :references_score, :format_score, :grammar_score,
+                 :content_remarks, :methodology_remarks, :references_remarks, :format_remarks, :grammar_remarks,
                  :overall_feedback, :result, :overall_score)"
         );
         $stmt->execute([
             ':submission_id' => (int) $submission['id'],
             ':group_id' => (int) $submission['research_group_id'],
             ':evaluator_user_id' => (int) ($_SESSION['user_id'] ?? 0),
-            ':evaluator_name' => (string) ($_SESSION['user_name'] ?? ''),
+            ':evaluator_name' => chapterLiveEvaluatorName(),
             ':content_score' => $scores['content_score'],
             ':methodology_score' => $scores['methodology_score'],
             ':references_score' => $scores['references_score'],
             ':format_score' => $scores['format_score'],
+            ':grammar_score' => $scores['grammar_score'],
             ':content_remarks' => trim((string) ($data['content_remarks'] ?? '')),
             ':methodology_remarks' => trim((string) ($data['methodology_remarks'] ?? '')),
             ':references_remarks' => trim((string) ($data['references_remarks'] ?? '')),
             ':format_remarks' => trim((string) ($data['format_remarks'] ?? '')),
+            ':grammar_remarks' => trim((string) ($data['grammar_remarks'] ?? '')),
             ':overall_feedback' => trim((string) ($data['overall_feedback'] ?? '')),
             ':result' => $result,
             ':overall_score' => $overall,
@@ -908,6 +991,12 @@ function chapterSubmitEvaluation(PDO $crad, array $submission, array $data): arr
             chapterLabel((int) $submission['chapter_number']) . ' Version ' . (int) $submission['version_number'] . ' is now ' . $studentStatus . '.'
         );
         $crad->commit();
+        try {
+            require_once __DIR__ . '/research-services-clearance.php';
+            rscEnsureForReadyGroup($crad, (int) $submission['research_group_id']);
+        } catch (Throwable $clearanceError) {
+            error_log('Clearance draft after evaluation: ' . $clearanceError->getMessage());
+        }
         logActivity('update', 'Submitted evaluation for ' . chapterLabel((int) $submission['chapter_number']) . ' Version ' . (int) $submission['version_number'], 'faculty');
         return ['ok' => true, 'status' => $studentStatus];
     } catch (PDOException $e) {

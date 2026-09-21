@@ -174,7 +174,7 @@ try {
         // Passkey is phishing-resistant — complete login without password / TOTP step.
         smsCompleteLoginSession($user, (string) ($user['email'] ?? $user['username'] ?? ''));
 
-        if (smsIsSystemInMaintenance() && getCurrentUserRoleKey() !== 'admin') {
+        if (smsIsSystemInMaintenance() && !smsCanBypassSystemControls()) {
             logout();
             smsPasskeyJson([
                 'ok' => false,

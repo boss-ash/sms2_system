@@ -226,6 +226,9 @@ $defenseDate = !empty($group['defense_datetime'])
                                         <tr><td>Methodology</td><td><?= number_format((float) $panel['methodology_score'], 2) ?></td></tr>
                                         <tr><td>References</td><td><?= number_format((float) $panel['references_score'], 2) ?></td></tr>
                                         <tr><td>Format</td><td><?= number_format((float) $panel['format_score'], 2) ?></td></tr>
+                                        <?php if (array_key_exists('defense_score', $panel) && $panel['defense_score'] !== null): ?>
+                                        <tr><td>Defense</td><td><?= number_format((float) $panel['defense_score'], 2) ?></td></tr>
+                                        <?php endif; ?>
                                     </tbody>
                                 </table>
                             <?php endif; ?>

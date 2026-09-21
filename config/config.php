@@ -69,11 +69,17 @@ if (!function_exists('sms2_detect_base_url')) {
             '/welcome/',
         ];
 
+        // Use the leftmost marker so nested module APIs
+        // (e.g. /modules/crad/api/...) do not treat /api/ as the app root.
+        $bestPos = null;
         foreach ($markers as $marker) {
             $pos = strpos($scriptName, $marker);
-            if ($pos !== false) {
-                return rtrim(substr($scriptName, 0, $pos), '/');
+            if ($pos !== false && ($bestPos === null || $pos < $bestPos)) {
+                $bestPos = $pos;
             }
+        }
+        if ($bestPos !== null) {
+            return rtrim(substr($scriptName, 0, $bestPos), '/');
         }
 
         $dir = str_replace('\\', '/', dirname($scriptName));
@@ -526,6 +532,9 @@ $MODULES = [
         'label' => 'CRAD',
         'icon'  => 'fa-flask',
         'groups' => [
+            'Research Clearance' => [
+                'research-clearance',
+            ],
             'Research Proposal' => [
                 'register-proposal',
                 'research-group-number',
@@ -583,6 +592,8 @@ $MODULES = [
             ['slug' => 'project-milestones', 'title' => 'Project Milestones'],
             ['slug' => 'publications-ip', 'title' => 'Publications & IP'],
             ['slug' => 'document-repository', 'title' => 'Document Repository'],
+            ['slug' => 'research-clearance', 'title' => 'Research Services Clearance'],
+            ['slug' => 'approval-clearance-payment', 'title' => 'Approval Clearance Payment'],
             ['slug' => 'documentation-publication-management', 'title' => 'Documentation & Publication Management'],
             ['slug' => 'final-manuscript-review', 'title' => 'Final Manuscript Review'],
             ['slug' => 'revision-compliance', 'title' => 'Revision & Compliance'],

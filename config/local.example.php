@@ -6,7 +6,8 @@
  * values. Keep config/local.php private if it contains real passwords.
  */
 
-// Optional: Cursor API key for future AI enhancements (do not commit real keys).
+// Optional: Cursor API key for AI document analysis and scheduling helpers.
+// Prefer storage/keys/cursor_api_key (gitignored) instead of committing a real key.
 // define('CURSOR_API_KEY', '');
 
 define('SMS2_LOCAL_BASE_URL', '/sms2_system');

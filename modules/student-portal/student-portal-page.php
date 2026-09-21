@@ -7,9 +7,20 @@ $studentPortalPage = $studentPortalPage ?? 'my-profile';
 require_once __DIR__ . '/../../config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/modules/crad/config/config.php';
+require_once ROOT_PATH . '/includes/announcements.php';
 require_once __DIR__ . '/../../includes/breadcrumbs.php';
+require_once __DIR__ . '/includes/student-profile.php';
 
-$studentId = $_SESSION['student_id'] ?? 'S230000001';
+$studentUserId = (int) ($_SESSION['user_id'] ?? 0);
+$studentId = strtoupper(trim((string) ($_SESSION['student_id'] ?? '')));
+$studentProfile = studentPortalLoadProfile(
+    db(),
+    $studentUserId,
+    $studentId,
+    getCurrentUserName() ?: 'Student',
+    (string) ($_SESSION['user_email'] ?? '')
+);
+$studentId = (string) ($studentProfile['student_id'] ?: $studentId);
 
 $latestTitleApproval = null;
 $researchCurrentStatus = 'Not Started';
@@ -97,22 +108,6 @@ foreach ($paymentTransactions as $txn) {
         break;
     }
 }
-
-$studentProfile = [
-    'name' => getCurrentUserName() ?: 'Student',
-    'student_id' => $studentId,
-    'program' => 'Bachelor of Science in Information Technology',
-    'year_level' => '4th Year',
-    'section' => 'BSIT 4A',
-    'semester' => '1st Semester',
-    'school_year' => '2026-2027',
-    'status' => 'Enrolled',
-    'email' => (string) ($_SESSION['user_email'] ?? 'student@bcp.edu.ph'),
-    'mobile' => '0917 000 0001',
-    'address' => 'Novaliches, Quezon City',
-    'guardian' => 'Maria Dela Cruz',
-    'guardian_contact' => '0918 000 0002',
-];
 
 if (!function_exists('spProfileInitials')) {
     function spProfileInitials(string $name): string
@@ -231,6 +226,45 @@ require_once __DIR__ . '/../../includes/layout-start.php';
     <?php endif; ?>
 
     <?php if ($studentPortalPage === 'dashboard'): ?>
+        <?php
+        $studentAnnouncements = smsAnnouncementPublicRows(smsAnnouncementFetch(true, 20));
+        $studentAnnStamp = smsAnnouncementStamp($studentAnnouncements);
+        ?>
+        <section class="academic-notices-panel student-announcements-panel mb-3"
+                 id="studentAnnouncements"
+                 aria-labelledby="studentAnnouncementsTitle"
+                 data-live-url="<?= htmlspecialchars(BASE_URL . '/account/announcements-data.php') ?>"
+                 data-stamp="<?= htmlspecialchars($studentAnnStamp) ?>">
+            <div class="academic-notices-icon" aria-hidden="true"><?= smsIcon('bullhorn') ?></div>
+            <div class="student-announcements-body">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div>
+                        <span class="ai-insight-kicker">Admin announcements</span>
+                        <h2 class="ai-insight-title" id="studentAnnouncementsTitle">From the administration</h2>
+                    </div>
+                    <span class="um-live-badge" id="studentAnnLiveBadge">
+                        <span class="um-live-dot" aria-hidden="true"></span>
+                        <span data-live-label>Live</span>
+                    </span>
+                </div>
+                <div id="studentAnnouncementsList">
+                    <?php foreach ($studentAnnouncements as $announcement): ?>
+                        <article class="student-ann-item">
+                            <h3><?= htmlspecialchars((string) $announcement['title']) ?></h3>
+                            <?php if (!empty($announcement['image_url'])): ?>
+                                <img class="student-ann-image" src="<?= htmlspecialchars((string) $announcement['image_url']) ?>" alt="">
+                            <?php endif; ?>
+                            <p><?= nl2br(htmlspecialchars((string) $announcement['body'])) ?></p>
+                            <small><?= htmlspecialchars((string) $announcement['posted_by']) ?> · <?= htmlspecialchars((string) $announcement['posted_at']) ?></small>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+                <p class="ai-insight-copy mb-0" id="studentAnnouncementsEmpty" <?= $studentAnnouncements ? 'hidden' : '' ?>>
+                    No announcements right now.
+                </p>
+            </div>
+        </section>
+
         <div class="row g-3 mb-3 dashboard-stats">
             <div class="col-md-3">
                 <section class="card stat-card primary">
@@ -371,7 +405,7 @@ require_once __DIR__ . '/../../includes/layout-start.php';
                         <div class="stat-icon me-3"><?= smsIcon('star') ?></div>
                         <div>
                             <h6 class="text-muted">Standing</h6>
-                            <h4 class="fw-bold mb-0 fs-6">Good Standing</h4>
+                            <h4 class="fw-bold mb-0 fs-6"><?= htmlspecialchars($studentProfile['standing']) ?></h4>
                         </div>
                     </div>
                 </section>
@@ -689,4 +723,7 @@ require_once __DIR__ . '/../../includes/layout-start.php';
     <?php endif; ?>
 </div>
 
+<?php if ($studentPortalPage === 'dashboard'): ?>
+<script src="<?= BASE_URL ?>/assets/js/student-announcements-live.js?v=2"></script>
+<?php endif; ?>
 <?php require_once __DIR__ . '/../../includes/layout-end.php'; ?>

@@ -18,6 +18,7 @@ function finalDefenseEnsureSchema(PDO $crad): void
             methodology_score DECIMAL(5,2) NOT NULL,
             references_score DECIMAL(5,2) NOT NULL,
             format_score DECIMAL(5,2) NOT NULL,
+            defense_score DECIMAL(5,2) NOT NULL DEFAULT 0,
             remarks TEXT DEFAULT NULL,
             result ENUM('APPROVED','APPROVED WITH REVISION','FAILED') NOT NULL,
             overall_score DECIMAL(5,2) NOT NULL,
@@ -35,12 +36,22 @@ function finalDefenseEnsureSchema(PDO $crad): void
     if ($idColumn && stripos((string) ($idColumn['Extra'] ?? ''), 'auto_increment') === false) {
         $crad->exec("ALTER TABLE final_defense_evaluations MODIFY id INT UNSIGNED NOT NULL AUTO_INCREMENT");
     }
+    try {
+        if (!$crad->query("SHOW COLUMNS FROM final_defense_evaluations LIKE 'defense_score'")->fetch()) {
+            $crad->exec(
+                "ALTER TABLE final_defense_evaluations
+                 ADD COLUMN defense_score DECIMAL(5,2) NOT NULL DEFAULT 0 AFTER format_score"
+            );
+        }
+    } catch (Throwable $e) {
+        // column may already exist
+    }
 }
 
 function finalDefenseRequirePanelMember(): void
 {
     requireAuth();
-    if (getCurrentUserRoleKey() !== 'panel') {
+    if (!smsIsPanelDefenseRole()) {
         http_response_code(403);
         exit('Forbidden');
     }
@@ -106,14 +117,29 @@ function finalDefenseCurrentPanelId(PDO $crad): int
     return (int) (getCurrentUserId() ?? 0);
 }
 
+/**
+ * Final Defense panel scoring: five criteria at 20% each = 100%.
+ *
+ * @return list<array{key:string,label:string,min:float,max:float}>
+ */
 function finalDefenseRubric(): array
 {
     return [
-        ['key' => 'content', 'label' => 'Content', 'min' => 0, 'max' => 100],
-        ['key' => 'methodology', 'label' => 'Methodology', 'min' => 0, 'max' => 100],
-        ['key' => 'references', 'label' => 'References', 'min' => 0, 'max' => 100],
-        ['key' => 'format', 'label' => 'Format', 'min' => 0, 'max' => 100],
+        ['key' => 'content', 'label' => 'Content', 'min' => 0, 'max' => 20],
+        ['key' => 'methodology', 'label' => 'Methodology', 'min' => 0, 'max' => 20],
+        ['key' => 'references', 'label' => 'References', 'min' => 0, 'max' => 20],
+        ['key' => 'format', 'label' => 'Format', 'min' => 0, 'max' => 20],
+        ['key' => 'defense', 'label' => 'Defense', 'min' => 0, 'max' => 20],
     ];
+}
+
+function finalDefenseEvaluationTotalMax(): float
+{
+    $total = 0.0;
+    foreach (finalDefenseRubric() as $criterion) {
+        $total += (float) $criterion['max'];
+    }
+    return $total;
 }
 
 function finalDefenseAssignedSchedule(PDO $crad, int $scheduleId): ?array
@@ -220,9 +246,22 @@ function finalDefenseSubmitEvaluation(PDO $crad, int $scheduleId, array $data): 
         }
         $score = (float) $raw;
         if ($score < $criterion['min'] || $score > $criterion['max']) {
-            return ['ok' => false, 'error' => $criterion['label'] . ' score must be between 0 and 100.'];
+            return [
+                'ok' => false,
+                'error' => $criterion['label'] . ' Score cannot exceed ' . (int) $criterion['max']
+                    . '%. Evaluation cannot be submitted.',
+            ];
         }
         $scores[$criterion['key']] = $score;
+    }
+
+    $overall = round(array_sum($scores), 2);
+    $totalMax = finalDefenseEvaluationTotalMax();
+    if ($overall > $totalMax) {
+        return [
+            'ok' => false,
+            'error' => 'Total score cannot exceed ' . (int) $totalMax . '%. Evaluation cannot be submitted.',
+        ];
     }
 
     $result = strtoupper(trim((string) ($data['result'] ?? '')));
@@ -234,9 +273,9 @@ function finalDefenseSubmitEvaluation(PDO $crad, int $scheduleId, array $data): 
         $stmt = $crad->prepare(
             "INSERT INTO final_defense_evaluations
                 (defense_schedule_id, research_group_id, panel_user_id, panel_name,
-                 content_score, methodology_score, references_score, format_score,
+                 content_score, methodology_score, references_score, format_score, defense_score,
                  remarks, result, overall_score, status, submitted_at, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Submitted', NOW(), NOW())"
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Submitted', NOW(), NOW())"
         );
         $stmt->execute([
             $scheduleId,
@@ -247,9 +286,10 @@ function finalDefenseSubmitEvaluation(PDO $crad, int $scheduleId, array $data): 
             $scores['methodology'],
             $scores['references'],
             $scores['format'],
+            $scores['defense'],
             trim((string) ($data['remarks'] ?? '')),
             $result,
-            round(array_sum($scores) / count($scores), 2),
+            $overall,
         ]);
         return ['ok' => true, 'message' => 'Final Defense evaluation submitted successfully.'];
     } catch (PDOException $e) {

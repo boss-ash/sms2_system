@@ -41,8 +41,48 @@ if (!$pdo) {
 }
 
 $action = (string) ($data['action'] ?? 'save');
-$validRoles = ['superadmin', 'sms_admin', 'admission', 'registrar', 'finance', 'hr', 'adviser', 'research_director', 'grammarian', 'panel', 'it_office', 'osa', 'qa', 'crad', 'crad_officer', 'research_coordinator', 'department_chair', 'research_office', 'vpaa', 'research_grant', 'review_committee', 'student'];
+$validRoles = ['superadmin', 'sms_admin', 'admission', 'registrar', 'finance', 'hr', 'adviser', 'research_director', 'grammarian', 'panel', 'it_office', 'osa', 'qa', 'crad', 'crad_officer', 'research_coordinator', 'department_head', 'department_chair', 'research_office', 'vpaa', 'review_committee', 'student'];
 $validStatus = ['active', 'inactive', 'locked', 'suspended'];
+
+/**
+ * Password posted from User Accounts (new_password preferred; password kept for compatibility).
+ */
+function umPostedPassword(array $data): string
+{
+    $password = (string) ($data['new_password'] ?? '');
+    if ($password === '') {
+        $password = (string) ($data['password'] ?? '');
+    }
+    return $password;
+}
+
+/**
+ * Optional confirmation field. Empty confirm is allowed only when password is also empty.
+ */
+function umRequirePasswordConfirm(string $password, array $data): void
+{
+    if ($password === '') {
+        return;
+    }
+    $confirm = (string) ($data['new_password_confirm'] ?? $data['password_confirm'] ?? '');
+    if ($confirm === '') {
+        throw new InvalidArgumentException('Please confirm the new password.');
+    }
+    if (!hash_equals($password, $confirm)) {
+        throw new InvalidArgumentException('New password and confirmation do not match.');
+    }
+}
+
+function umApplyUserPassword(int $userId, string $password): void
+{
+    $strength = smsValidatePasswordStrength($password);
+    if (!$strength['ok']) {
+        throw new InvalidArgumentException($strength['message']);
+    }
+    if (!smsSetUserPassword($userId, $password, false)) {
+        throw new RuntimeException('Could not update password');
+    }
+}
 
 /**
  * Ensure the optional users.id link column exists on the adviser assignment
@@ -108,19 +148,23 @@ function rcSyncAssignmentFromUserAccount(int $userId, string $role, string $full
             $existing = $stmt->fetch();
 
             if ($existing) {
-                $linked = (int) ($existing['adviser_user_id'] ?? 0) === $userId;
-                if (!$linked) {
-                    $crad->prepare("UPDATE research_adviser_assignments SET adviser_user_id = :uid, updated_at = NOW() WHERE id = :id")
-                        ->execute([':uid' => $userId, ':id' => (int) $existing['id']]);
-                } else {
-                    $hasGroup = !empty($existing['research_group_id'])
-                        || !empty($existing['proposal_id'])
-                        || trim((string) ($existing['group_number'] ?? '')) !== '';
-                    if (!$hasGroup) {
-                        $crad->prepare("UPDATE research_adviser_assignments SET adviser_name = :name, adviser_email = :email, updated_at = NOW() WHERE id = :id")
-                            ->execute([':name' => $fullName, ':email' => $email, ':id' => (int) $existing['id']]);
-                    }
-                }
+                $crad->prepare(
+                    "UPDATE research_adviser_assignments
+                        SET adviser_user_id = :uid,
+                            adviser_name = :name,
+                            adviser_email = :email,
+                            availability_status = CASE
+                                WHEN assignment_status = 'Assigned' THEN availability_status
+                                ELSE 'Available'
+                            END,
+                            updated_at = NOW()
+                      WHERE id = :id"
+                )->execute([
+                    ':uid' => $userId,
+                    ':name' => $fullName,
+                    ':email' => $email,
+                    ':id' => (int) $existing['id'],
+                ]);
                 return;
             }
 
@@ -251,9 +295,10 @@ try {
     $email = strtolower(trim((string) ($data['email'] ?? '')));
     $role = smsNormalizeRoleKey(trim((string) ($data['role'] ?? '')));
     $status = trim((string) ($data['status'] ?? 'active'));
-    $password = (string) ($data['password'] ?? '');
+    $password = umPostedPassword($data);
     $notes = trim((string) ($data['notes'] ?? ''));
     $studentId = null;
+    umRequirePasswordConfirm($password, $data);
 
     if ($fullName === '' || $username === '' || $email === '' || !in_array($role, $validRoles, true)) {
         throw new InvalidArgumentException('Missing or invalid fields');
@@ -270,39 +315,52 @@ try {
     }
 
     if ($id > 0) {
-        $pdo->beginTransaction();
+        $passwordUpdated = false;
+        if ($password !== '' && $status === 'locked') {
+            $status = 'active';
+        }
+        $updateSql = 'UPDATE users SET full_name=?, username=?, email=?, role_key=?, status=?, notes=?';
+        $updateParams = [$fullName, $username, $email, $role, $status, $notes !== '' ? $notes : null];
+        if ($studentId !== null) {
+            $updateSql .= ', student_id=?';
+            $updateParams[] = $studentId;
+        }
+        $updateSql .= ' WHERE id=?';
+        $updateParams[] = $id;
+        $pdo->prepare($updateSql)->execute($updateParams);
+        if ($password !== '') {
+            umApplyUserPassword($id, $password);
+            $passwordUpdated = true;
+        }
         try {
-            if ($password !== '') {
-                $strength = smsValidatePasswordStrength($password);
-                if (!$strength['ok']) {
-                    throw new InvalidArgumentException($strength['message']);
-                }
-                $pdo->prepare(
-                    'UPDATE users SET full_name=?, username=?, email=?, role_key=?, status=?, notes=?, student_id=?,
-                     password_hash=?, password_changed_at=NOW(), must_change_password=0
-                     WHERE id=?'
-                )->execute([
-                    $fullName, $username, $email, $role, $status, $notes ?: null, $studentId,
-                    password_hash($password, PASSWORD_DEFAULT), $id,
-                ]);
-            } else {
-                $pdo->prepare(
-                    'UPDATE users SET full_name=?, username=?, email=?, role_key=?, status=?, notes=?, student_id=?
-                     WHERE id=?'
-                )->execute([
-                    $fullName, $username, $email, $role, $status, $notes ?: null, $studentId, $id,
-                ]);
-            }
             rcSyncAssignmentFromUserAccount($id, $role, $fullName, $email, $status);
-            $pdo->commit();
         } catch (Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            error_log('Assignment sync after user save: ' . $e->getMessage());
             throw $e;
         }
-        logActivity('update', 'Updated user ' . $username, 'user-management');
-        echo json_encode(['ok' => true, 'updated' => true]);
+        if ($role === 'student') {
+            require_once ROOT_PATH . '/modules/student-portal/includes/student-profile.php';
+            studentPortalEnsureProfileForUser($id, (string) ($studentId ?? ''), $role);
+        }
+        logActivity(
+            $passwordUpdated ? 'password_reset' : 'update',
+            ($passwordUpdated ? 'Updated user and password for ' : 'Updated user ') . $username,
+            'user-management'
+        );
+        echo json_encode([
+            'ok' => true,
+            'updated' => true,
+            'password_updated' => $passwordUpdated,
+            'user' => [
+                'id' => $id,
+                'full_name' => $fullName,
+                'username' => $username,
+                'email' => $email,
+                'role' => $role,
+                'status' => $status,
+                'notes' => $notes,
+            ],
+        ]);
         exit;
     }
 
@@ -333,6 +391,10 @@ try {
 
         $newUserId = (int) $pdo->lastInsertId();
         rcSyncAssignmentFromUserAccount($newUserId, $role, $fullName, $email, $status);
+        if ($role === 'student') {
+            require_once ROOT_PATH . '/modules/student-portal/includes/student-profile.php';
+            studentPortalEnsureProfileForUser($newUserId, (string) ($studentId ?? ''), $role);
+        }
         $pdo->commit();
     } catch (Throwable $e) {
         if ($pdo->inTransaction()) {
@@ -342,8 +404,22 @@ try {
     }
 
     logActivity('create', 'Created user ' . $username, 'user-management');
-    echo json_encode(['ok' => true, 'created' => true, 'id' => $newUserId]);
+    echo json_encode([
+        'ok' => true,
+        'created' => true,
+        'id' => $newUserId,
+        'user' => [
+            'id' => $newUserId,
+            'full_name' => $fullName,
+            'username' => $username,
+            'email' => $email,
+            'role' => $role,
+            'status' => $status,
+            'notes' => $notes,
+        ],
+    ]);
 } catch (PDOException $e) {
+    error_log('save-user PDO: ' . $e->getMessage());
     http_response_code(400);
     $msg = 'Could not save user';
     if (str_contains($e->getMessage(), 'Duplicate')) {
@@ -351,6 +427,7 @@ try {
     }
     echo json_encode(['ok' => false, 'error' => $msg]);
 } catch (Throwable $e) {
+    error_log('save-user: ' . $e->getMessage());
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
 }

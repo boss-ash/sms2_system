@@ -429,11 +429,14 @@ function smsPasskeyLoginVerify(array $cred): array
     $ust = $pdo->prepare(
         'SELECT u.*, r.label AS role_label
          FROM users u
-         INNER JOIN roles r ON r.role_key = u.role_key
+         LEFT JOIN roles r ON r.role_key = u.role_key
          WHERE u.id = ? LIMIT 1'
     );
     $ust->execute([(int) $pk['user_id']]);
     $user = $ust->fetch() ?: null;
+    if ($user && ($user['role_label'] ?? '') === '') {
+        $user['role_label'] = (string) ($user['role_key'] ?? '');
+    }
     if (!$user || (string) ($user['status'] ?? '') !== 'active') {
         return ['ok' => false, 'error' => 'Account is not available.'];
     }

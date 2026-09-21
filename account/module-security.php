@@ -76,6 +76,7 @@ $accountContext = [
     'research_director' => ['module' => 'faculty', 'label' => 'Research Director Account', 'icon' => 'fa-user-shield'],
     'hr' => ['module' => 'faculty', 'label' => 'HR Account', 'icon' => 'fa-chalkboard-teacher'],
     'research_coordinator' => ['module' => 'crad', 'label' => 'Research Coordinator', 'icon' => 'fa-microscope'],
+    'department_head' => ['module' => 'crad', 'label' => 'Department Head', 'icon' => 'fa-user-tie'],
     'department_chair' => ['module' => 'crad', 'label' => 'Department Chair', 'icon' => 'fa-user-tie'],
     'research_office' => ['module' => 'crad', 'label' => 'Research Office', 'icon' => 'fa-flask'],
     'crad_officer' => ['module' => 'crad', 'label' => 'CRAD Officer', 'icon' => 'fa-flask'],

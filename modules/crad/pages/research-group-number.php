@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../../config/config.php';
 require_once __DIR__ . '/../config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
 require_once ROOT_PATH . '/includes/security.php';
+require_once __DIR__ . '/../includes/title-approval-assignees.php';
 
 requireAuth();
 
@@ -273,6 +274,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (($_POST['process'] ?? '') === 'gen
 
             $cradPdo->commit();
 
+            try {
+                cradEnsureAssigneeSchema($cradPdo);
+                $officialId = (int) ($cradPdo->query(
+                    'SELECT id FROM research_groups WHERE title_approval_id = ' . (int) $approval['id'] . ' LIMIT 1'
+                )->fetchColumn() ?: 0);
+                cradMigrateStudentAssignmentsToOfficialGroup($cradPdo, (string) ($approval['student_id'] ?? ''), [
+                    'id' => $officialId,
+                    'group_number' => $groupNumber,
+                    'title_approval_id' => (int) $approval['id'],
+                ]);
+            } catch (Throwable $e) {
+                error_log('Title approval group assignment migrate skipped: ' . $e->getMessage());
+            }
+
             if (function_exists('logActivity')) {
                 logActivity('create', 'Generated title approval research group number: ' . $groupNumber, 'crad');
             }
@@ -361,6 +376,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (($_POST['process'] ?? '') === 'gen
             }
 
             $cradPdo->commit();
+
+            try {
+                cradEnsureAssigneeSchema($cradPdo);
+                $officialId = (int) ($cradPdo->query(
+                    'SELECT id FROM research_groups WHERE proposal_id = ' . (int) $proposalId . ' LIMIT 1'
+                )->fetchColumn() ?: 0);
+                cradMigrateStudentAssignmentsToOfficialGroup($cradPdo, (string) ($proposal['rep_id'] ?? ''), [
+                    'id' => $officialId,
+                    'group_number' => $groupNumber,
+                    'title_approval_id' => 0,
+                ]);
+            } catch (Throwable $e) {
+                error_log('Proposal group assignment migrate skipped: ' . $e->getMessage());
+            }
 
             if (function_exists('logActivity')) {
                 logActivity('create', 'Generated research group number: ' . $groupNumber, 'crad');

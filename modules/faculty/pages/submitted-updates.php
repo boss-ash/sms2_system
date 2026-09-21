@@ -15,6 +15,7 @@ require_once __DIR__ . '/../../../config/config.php';
 require_once __DIR__ . '/../../../includes/breadcrumbs.php';
 require_once __DIR__ . '/../../../modules/crad/config/config.php';
 require_once __DIR__ . '/../../../modules/crad/includes/research-progress-helpers.php';
+require_once __DIR__ . '/../../../modules/crad/includes/ai-document-analysis.php';
 
 $breadcrumbs = [
     ['label' => 'Faculty',                   'url' => BASE_URL . '/modules/faculty/index.php'],
@@ -66,6 +67,7 @@ $statusFilter    = $_GET['status'] ?? 'all';
 
 $plan = rpGetResearchPlan($crad, $groupId);
 rpEnsureProgressAttachmentSchema($crad);
+rpEnsureAiAnalysisSchema($crad);
 
 $whereConditions = ["rpu.research_group_id = ?"];
 $params = [$groupId];
@@ -79,6 +81,8 @@ try {
         SELECT rpu.*,
                rm.milestone_name, rm.milestone_order, rm.status AS milestone_current_status,
                rpa.id AS attachment_id, rpa.file_name AS attachment_name,
+               rpai.id AS ai_analysis_id, rpai.verdict AS ai_verdict, rpai.grammar_quality AS ai_grammar_quality,
+               rpai.summary AS ai_summary, rpai.notes_json AS ai_notes_json, rpai.created_at AS ai_analyzed_at,
                (SELECT COUNT(*) FROM research_progress_feedback rpf WHERE rpf.progress_update_id = rpu.id) AS feedback_count
         FROM research_progress_updates rpu
         LEFT JOIN research_milestones rm ON rm.id = rpu.milestone_id
@@ -87,6 +91,13 @@ try {
             FROM research_progress_attachments rpa2
             WHERE rpa2.progress_update_id = rpu.id
             ORDER BY rpa2.id DESC
+            LIMIT 1
+        )
+        LEFT JOIN research_progress_ai_analyses rpai ON rpai.id = (
+            SELECT rpai2.id
+            FROM research_progress_ai_analyses rpai2
+            WHERE rpai2.progress_update_id = rpu.id
+            ORDER BY rpai2.id DESC
             LIMIT 1
         )
         WHERE {$whereClause}
@@ -272,6 +283,22 @@ $statusMeta = [
                     $progressDelta = (float)$update['new_progress'] - (float)$update['previous_progress'];
                     $feedbackCount = (int) $update['feedback_count'];
                     $sc = $statusMeta[$update['milestone_status']] ?? ['color'=>'#64748b','bg'=>'#f1f5f9','accent'=>'#64748b'];
+                    $aiNotes = [];
+                    if (!empty($update['ai_notes_json'])) {
+                        $decodedNotes = json_decode((string) $update['ai_notes_json'], true);
+                        $aiNotes = is_array($decodedNotes) ? $decodedNotes : [];
+                    }
+                    $hasAiAnalysis = !empty($update['ai_analysis_id']);
+                    $aiVerdict = (string) ($update['ai_verdict'] ?? '');
+                    $needsAiBeforeDecision = ($update['milestone_status'] === 'Submitted for Review') && !empty($update['attachment_id']);
+                    $aiRevisionText = $hasAiAnalysis
+                        ? rpFormatAiNotesForRevision([
+                            'milestone_name' => (string) ($update['milestone_name'] ?? ''),
+                            'verdict' => $aiVerdict,
+                            'summary' => (string) ($update['ai_summary'] ?? ''),
+                            'notes' => $aiNotes,
+                        ])
+                        : '';
                 ?>
                     <div class="glass-panel rm-update-card" style="--rm-accent:<?= $sc['accent'] ?>;" data-update-id="<?= $updateId ?>">
                         <div class="glass-panel-body">
@@ -352,7 +379,7 @@ $statusMeta = [
                                     <?php if (!empty($update['attachment_id'])): ?>
                                         <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
                                             <span><?= htmlspecialchars((string) $update['attachment_name']) ?></span>
-                                            <span class="d-flex gap-2">
+                                            <span class="d-flex gap-2 flex-wrap">
                                                 <a class="btn btn-sm btn-outline-primary" target="_blank"
                                                    href="<?= htmlspecialchars(rpProgressAttachmentUrl((int) $update['attachment_id'])) ?>">
                                                     <?= smsIcon('eye', ['class' => 'me-1']) ?>View
@@ -361,6 +388,12 @@ $statusMeta = [
                                                    href="<?= htmlspecialchars(rpProgressAttachmentUrl((int) $update['attachment_id'], true)) ?>">
                                                     <?= smsIcon('download', ['class' => 'me-1']) ?>Download
                                                 </a>
+                                                <button type="button"
+                                                        class="btn btn-sm rm-ai-generate-btn"
+                                                        data-ai-generate
+                                                        data-update-id="<?= $updateId ?>">
+                                                    <?= smsIcon('robot', ['class' => 'me-1']) ?>Generate to AI
+                                                </button>
                                             </span>
                                         </div>
                                     <?php else: ?>
@@ -369,18 +402,63 @@ $statusMeta = [
                                 </div>
                             </div>
 
+                            <div class="rm-ai-panel<?= $hasAiAnalysis ? '' : ' d-none' ?>"
+                                 data-ai-panel
+                                 data-update-id="<?= $updateId ?>"
+                                 data-verdict="<?= htmlspecialchars($aiVerdict) ?>"
+                                 data-revision-text="<?= htmlspecialchars($aiRevisionText) ?>">
+                                <div class="rm-ai-panel-head">
+                                    <div>
+                                        <div class="rm-ai-panel-title"><?= smsIcon('robot') ?>AI Grammar Review</div>
+                                        <div class="rm-ai-panel-sub">Review these notes before you Approve or Request Revision.</div>
+                                    </div>
+                                    <span class="rm-ai-verdict" data-ai-verdict-pill>
+                                        <?= $hasAiAnalysis ? htmlspecialchars($aiVerdict === 'acceptable' ? 'Acceptable grammar' : 'Needs revision') : '' ?>
+                                    </span>
+                                </div>
+                                <div class="rm-ai-summary" data-ai-summary><?= $hasAiAnalysis ? nl2br(htmlspecialchars((string) $update['ai_summary'])) : '' ?></div>
+                                <ul class="rm-ai-notes" data-ai-notes>
+                                    <?php foreach ($aiNotes as $note): ?>
+                                        <li>
+                                            <strong><?= htmlspecialchars((string) ($note['issue'] ?? '')) ?></strong>
+                                            <?php if (!empty($note['suggestion'])): ?>
+                                                <div><?= htmlspecialchars((string) $note['suggestion']) ?></div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($note['example'])): ?>
+                                                <div class="rm-ai-example">“<?= htmlspecialchars((string) $note['example']) ?>”</div>
+                                            <?php endif; ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <?php if ($needsAiBeforeDecision): ?>
+                                    <button type="button" class="btn btn-sm btn-outline-warning" data-ai-use-notes data-update-id="<?= $updateId ?>">
+                                        <?= smsIcon('redo', ['class' => 'me-1']) ?>Use notes in Request Revision
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+
                             <!-- Action buttons -->
                             <div class="rm-action-row" data-action-controls>
+                                <?php if ($needsAiBeforeDecision && !$hasAiAnalysis): ?>
+                                    <div class="rm-ai-gate-note" data-ai-gate-note>
+                                        <?= smsIcon('info-circle') ?>
+                                        Run <strong>Generate to AI</strong> before <strong>Approve</strong> (grammar check).
+                                        You can still click <strong>Request Revision</strong> anytime — including when the file is an image or AI cannot read it — so the student can revise in the portal.
+                                    </div>
+                                <?php endif; ?>
                                 <button type="button" class="rm-btn rm-btn-comment"
                                         data-bs-toggle="modal" data-bs-target="#feedbackModal<?= $updateId ?>">
                                     <?= smsIcon('comment') ?>Comment
                                 </button>
                                 <button type="button" class="rm-btn rm-btn-revision"
-                                        data-bs-toggle="modal" data-bs-target="#revisionModal<?= $updateId ?>">
+                                        data-bs-toggle="modal" data-bs-target="#revisionModal<?= $updateId ?>"
+                                        data-decision-btn="revision">
                                     <?= smsIcon('redo') ?>Request Revision
                                 </button>
                                 <button type="button" class="rm-btn rm-btn-approve"
-                                        data-bs-toggle="modal" data-bs-target="#approveModal<?= $updateId ?>">
+                                        data-bs-toggle="modal" data-bs-target="#approveModal<?= $updateId ?>"
+                                        data-decision-btn="approve"
+                                        <?= ($needsAiBeforeDecision && !$hasAiAnalysis) ? 'disabled' : '' ?>>
                                     <?= smsIcon('check-circle') ?>Approve
                                 </button>
                                 <?php if ($feedbackCount > 0): ?>
@@ -597,6 +675,126 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    document.querySelectorAll('[data-ai-generate]').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+            const updateId = this.getAttribute('data-update-id');
+            const card = this.closest('.rm-update-card');
+            const origHTML = this.innerHTML;
+            this.disabled = true;
+            this.innerHTML = '<?= smsIcon('spinner', ['class' => 'fa-spin me-1']) ?>Analyzing…';
+            try {
+                const resp = await fetch('<?= BASE_URL ?>/modules/crad/api/ai-document-analysis.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'analyze', update_id: parseInt(updateId, 10) })
+                });
+                const result = await resp.json();
+                if (!resp.ok || !result.success || !result.analysis) {
+                    // Keep Request Revision available so adviser can send the student back to revise.
+                    if (card) {
+                        const revisionBtn = card.querySelector('[data-decision-btn="revision"]');
+                        if (revisionBtn) revisionBtn.disabled = false;
+                        const gate = card.querySelector('[data-ai-gate-note]');
+                        if (gate) {
+                            gate.innerHTML = '<?= smsIcon('info-circle') ?>AI could not analyze this file. You can still <strong>Request Revision</strong> so the student can upload a .docx or .txt in the portal. <strong>Approve</strong> stays locked until AI succeeds.';
+                        }
+                    }
+                    alert((result.message || 'AI analysis failed.') + '\n\nYou can still click Request Revision to notify the student.');
+                    this.disabled = false;
+                    this.innerHTML = origHTML;
+                    return;
+                }
+                renderAiAnalysis(card, result.analysis, result.revision_text || '');
+            } catch (err) {
+                console.error(err);
+                if (card) {
+                    const revisionBtn = card.querySelector('[data-decision-btn="revision"]');
+                    if (revisionBtn) revisionBtn.disabled = false;
+                }
+                alert('AI analysis could not be completed.\n\nYou can still click Request Revision to notify the student.');
+                this.disabled = false;
+                this.innerHTML = origHTML;
+                return;
+            }
+            this.disabled = false;
+            this.innerHTML = origHTML;
+        });
+    });
+
+    document.querySelectorAll('[data-ai-use-notes]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const updateId = this.getAttribute('data-update-id');
+            const panel = document.querySelector('[data-ai-panel][data-update-id="' + updateId + '"]');
+            const textarea = document.querySelector('#revisionModal' + updateId + ' textarea[name="feedback_text"]');
+            if (textarea && panel) {
+                textarea.value = panel.getAttribute('data-revision-text') || '';
+            }
+            const modalEl = document.getElementById('revisionModal' + updateId);
+            if (modalEl && window.bootstrap) {
+                window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
+        });
+    });
+
+    function renderAiAnalysis(card, analysis, revisionText) {
+        if (!card || !analysis) return;
+        const panel = card.querySelector('[data-ai-panel]');
+        if (!panel) return;
+        const verdict = String(analysis.verdict || 'needs_revision');
+        panel.classList.remove('d-none');
+        panel.setAttribute('data-verdict', verdict);
+        panel.setAttribute('data-revision-text', revisionText || '');
+        const pill = panel.querySelector('[data-ai-verdict-pill]');
+        if (pill) {
+            pill.textContent = verdict === 'acceptable' ? 'Acceptable grammar' : 'Needs revision';
+        }
+        const summary = panel.querySelector('[data-ai-summary]');
+        if (summary) {
+            summary.innerHTML = escapeHtml(String(analysis.summary || '')).replace(/\n/g, '<br>');
+        }
+        const list = panel.querySelector('[data-ai-notes]');
+        if (list) {
+            const notes = Array.isArray(analysis.notes) ? analysis.notes : [];
+            list.innerHTML = notes.map(function (note) {
+                const issue = escapeHtml(String(note.issue || ''));
+                const suggestion = note.suggestion ? '<div>' + escapeHtml(String(note.suggestion)) + '</div>' : '';
+                const example = note.example ? '<div class="rm-ai-example">“' + escapeHtml(String(note.example)) + '”</div>' : '';
+                return '<li><strong>' + issue + '</strong>' + suggestion + example + '</li>';
+            }).join('');
+        }
+        card.querySelectorAll('[data-decision-btn]').forEach(function (decisionBtn) {
+            decisionBtn.disabled = false;
+        });
+        const gate = card.querySelector('[data-ai-gate-note]');
+        if (gate) gate.remove();
+        if (!panel.querySelector('[data-ai-use-notes]')) {
+            const useBtn = document.createElement('button');
+            useBtn.type = 'button';
+            useBtn.className = 'btn btn-sm btn-outline-warning';
+            useBtn.setAttribute('data-ai-use-notes', '1');
+            useBtn.setAttribute('data-update-id', card.getAttribute('data-update-id') || '');
+            useBtn.textContent = 'Use notes in Request Revision';
+            useBtn.addEventListener('click', function () {
+                const updateId = this.getAttribute('data-update-id');
+                const textarea = document.querySelector('#revisionModal' + updateId + ' textarea[name="feedback_text"]');
+                if (textarea) textarea.value = panel.getAttribute('data-revision-text') || '';
+                const modalEl = document.getElementById('revisionModal' + updateId);
+                if (modalEl && window.bootstrap) {
+                    window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                }
+            });
+            panel.appendChild(useBtn);
+        }
+    }
+
+    function escapeHtml(value) {
+        return value
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
     document.querySelectorAll('.feedback-form').forEach(function (form) {
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -609,6 +807,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (action !== 'approve' && !feedbackText) {
                 alert('Please provide feedback text.'); return;
+            }
+            if (action === 'approve') {
+                const card = document.querySelector('.rm-update-card[data-update-id="' + updateId + '"]');
+                const panel = card ? card.querySelector('[data-ai-panel]') : null;
+                if (panel && panel.getAttribute('data-verdict') === 'needs_revision') {
+                    const proceed = confirm('AI found grammar issues in this research file. Approve anyway?');
+                    if (!proceed) return;
+                }
             }
 
             submitBtn.disabled = true;

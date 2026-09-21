@@ -7,7 +7,7 @@ require_once ROOT_PATH . '/modules/crad/includes/research-progress-helpers.php';
 require_once ROOT_PATH . '/modules/faculty/includes/research-director-panel-assignment.php';
 
 requireAuth();
-if (getCurrentUserRoleKey() !== 'research_director') {
+if (!smsCanManageDefenseScheduling()) {
     http_response_code(403);
     exit('Forbidden');
 }
@@ -17,7 +17,7 @@ $directorPages = [
     'defense-scheduling-queue' => ['title' => 'Defense Scheduling Queue', 'group' => 'Defense Management', 'icon' => 'fa-list-alt'],
     'verify-research-defense' => ['title' => 'Verify Research for Defense', 'group' => 'Defense Management', 'icon' => 'fa-check-double'],
     'defense-schedule' => ['title' => 'Defense Schedule', 'group' => 'Defense Management', 'icon' => 'fa-calendar-check'],
-    'manual-scheduling-optimizer' => ['title' => 'Manual Scheduling Optimizer', 'group' => 'Manual Scheduling', 'icon' => 'fa-calendar-check'],
+    'manual-scheduling-optimizer' => ['title' => 'AI Scheduling Optimizer', 'group' => 'Manual Scheduling', 'icon' => 'fa-calendar-check'],
     'proposed-schedules' => ['title' => 'Proposed Schedules', 'group' => 'Manual Scheduling', 'icon' => 'fa-calendar-plus'],
     'alternative-time-slots' => ['title' => 'Alternative Time Slots', 'group' => 'Manual Scheduling', 'icon' => 'fa-clock'],
     'calendar' => ['title' => 'Calendar', 'group' => 'Schedule Management', 'icon' => 'fa-calendar-alt'],
@@ -302,6 +302,14 @@ function rdScheduleAutoDefenseType(PDO $pdo, int $groupId, string $requestedType
 
 function rdScheduleReadyRows(PDO $pdo, bool $includeScheduled = false, string $defenseType = CRAD_DEFENSE_TYPE_PRE_ORAL): array
 {
+        // Never run DDL (schema ensure) while a transaction is open — MySQL implicitly
+        // commits on ALTER/CREATE and PDO then throws "There is no active transaction".
+        if ($defenseType === CRAD_DEFENSE_TYPE_FINAL
+            && function_exists('rscEnsureSchema')
+            && !$pdo->inTransaction()
+        ) {
+            rscEnsureSchema($pdo);
+        }
         $finalDefenseJoins = '';
         $finalDefenseWhere = '';
         if ($defenseType === CRAD_DEFENSE_TYPE_FINAL) {
@@ -309,6 +317,12 @@ function rdScheduleReadyRows(PDO $pdo, bool $includeScheduled = false, string $d
                  INNER JOIN final_defense_recommendations fdr
                      ON fdr.research_group_id = rg.id
                     AND fdr.status = 'Recommended'
+                 INNER JOIN research_services_clearances rsc2
+                     ON rsc2.research_group_id = rg.id
+                    AND rsc2.research_stage = 'research_2'
+                    AND rsc2.status = 'clearance_done'
+                    AND TRIM(COALESCE(rsc2.adviser_signature, '')) <> ''
+                    AND TRIM(COALESCE(rsc2.crad_signature, '')) <> ''
                  INNER JOIN manuscript_submissions fms
                      ON fms.id = (
                                 SELECT ms.id
@@ -693,6 +707,10 @@ function rdScheduleConflictMessages(PDO $pdo, int $groupId, int $venueId, string
 }
 
 require_once __DIR__ . '/../includes/rd-scheduling-optimizer.php';
+
+if (defined('RD_AI_OPTIMIZER_TEST') && RD_AI_OPTIMIZER_TEST) {
+    return;
+}
 
 $requestedDefenseType = trim((string) ($_GET['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL));
 if (!in_array($requestedDefenseType, [CRAD_DEFENSE_TYPE_PRE_ORAL, CRAD_DEFENSE_TYPE_FINAL], true)) {
@@ -1106,8 +1124,7 @@ if ($crad) {
         }
         $scheduleId = (int) ($_POST['schedule_id'] ?? 0);
         try {
-            $crad->beginTransaction();
-            $stmt = $crad->prepare("SELECT * FROM research_defense_schedules WHERE id = ? AND LOWER(status) IN ('proposed', 'selected') FOR UPDATE");
+            $stmt = $crad->prepare("SELECT * FROM research_defense_schedules WHERE id = ? AND LOWER(status) IN ('proposed', 'selected')");
             $stmt->execute([$scheduleId]);
             $slot = $stmt->fetch();
             if (!$slot) {
@@ -1131,13 +1148,13 @@ if ($crad) {
                 "SELECT id FROM research_defense_schedules
                  WHERE id <> ?
                    AND research_group_id = ?
-                                     AND defense_type = ?
+                   AND defense_type = ?
                    AND LOWER(status) IN ('scheduled', 'finalized', 'final')
                  LIMIT 1"
             );
-                        $official->execute([$scheduleId, $groupId, (string) ($slot['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL)]);
+            $official->execute([$scheduleId, $groupId, (string) ($slot['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL)]);
             if ($official->fetchColumn()) {
-                                $conflicts[] = 'This research group already has an official ' . (string) ($slot['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL) . ' schedule.';
+                $conflicts[] = 'This research group already has an official ' . (string) ($slot['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL) . ' schedule.';
             }
             if ($conflicts) {
                 throw new RuntimeException(implode(' ', $conflicts));
@@ -1158,73 +1175,89 @@ if ($crad) {
                 throw new RuntimeException('No active panel members are assigned to this research group.');
             }
             $scheduleDefenseType = (string) ($slot['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL);
-            if ($scheduleDefenseType === CRAD_DEFENSE_TYPE_FINAL) {
+
+            $crad->beginTransaction();
+            try {
+                $lockStmt = $crad->prepare("SELECT * FROM research_defense_schedules WHERE id = ? AND LOWER(status) IN ('proposed', 'selected') FOR UPDATE");
+                $lockStmt->execute([$scheduleId]);
+                if (!$lockStmt->fetch()) {
+                    throw new RuntimeException('Proposed schedule was not found.');
+                }
+                if ($scheduleDefenseType === CRAD_DEFENSE_TYPE_FINAL) {
+                    $crad->prepare(
+                        "INSERT INTO research_panel_assignments
+                            (research_group_id, defense_schedule_id, proposal_id, title_approval_id, proposal_number,
+                             group_number, research_title, panel_user_id, panel_name, panel_email, expertise,
+                             availability_status, assignment_status, defense_phase, assigned_by, assigned_at, created_at, updated_at)
+                         SELECT research_group_id, ?, proposal_id, title_approval_id, proposal_number,
+                                group_number, research_title, panel_user_id, panel_name, panel_email, expertise,
+                                availability_status, 'Assigned', ?, assigned_by, NOW(), NOW(), NOW()
+                         FROM research_panel_assignments
+                         WHERE research_group_id = ?
+                           AND defense_phase = ?
+                           AND assignment_status = 'Assigned'
+                         ON DUPLICATE KEY UPDATE defense_schedule_id = VALUES(defense_schedule_id), assignment_status = 'Assigned', updated_at = NOW()"
+                    )->execute([$scheduleId, CRAD_DEFENSE_PHASE_FINAL, $groupId, CRAD_DEFENSE_PHASE_PRE_ORAL]);
+                }
+                $crad->prepare("UPDATE research_defense_schedules SET status = 'Rejected', updated_at = NOW() WHERE research_group_id = ? AND id <> ? AND defense_type = ? AND LOWER(status) IN ('proposed', 'selected')")
+                    ->execute([$groupId, $scheduleId, $scheduleDefenseType]);
+                $crad->prepare("UPDATE research_defense_schedules SET status = 'Finalized', finalized_by = ?, finalized_at = NOW(), updated_at = NOW() WHERE id = ?")
+                    ->execute([(int) getCurrentUserId(), $scheduleId]);
                 $crad->prepare(
-                    "INSERT INTO research_panel_assignments
-                        (research_group_id, defense_schedule_id, proposal_id, title_approval_id, proposal_number,
-                         group_number, research_title, panel_user_id, panel_name, panel_email, expertise,
-                         availability_status, assignment_status, defense_phase, assigned_by, assigned_at, created_at, updated_at)
-                     SELECT research_group_id, ?, proposal_id, title_approval_id, proposal_number,
-                            group_number, research_title, panel_user_id, panel_name, panel_email, expertise,
-                            availability_status, 'Assigned', ?, assigned_by, NOW(), NOW(), NOW()
-                     FROM research_panel_assignments
+                    "UPDATE research_panel_assignments
+                     SET defense_schedule_id = ?, updated_at = NOW()
                      WHERE research_group_id = ?
                        AND defense_phase = ?
-                       AND assignment_status = 'Assigned'
-                     ON DUPLICATE KEY UPDATE defense_schedule_id = VALUES(defense_schedule_id), assignment_status = 'Assigned', updated_at = NOW()"
-                )->execute([$scheduleId, CRAD_DEFENSE_PHASE_FINAL, $groupId, CRAD_DEFENSE_PHASE_PRE_ORAL]);
-            }
-            $crad->prepare("UPDATE research_defense_schedules SET status = 'Rejected', updated_at = NOW() WHERE research_group_id = ? AND id <> ? AND defense_type = ? AND LOWER(status) IN ('proposed', 'selected')")
-                ->execute([$groupId, $scheduleId, $scheduleDefenseType]);
-            $crad->prepare("UPDATE research_defense_schedules SET status = 'Finalized', finalized_by = ?, finalized_at = NOW(), updated_at = NOW() WHERE id = ?")
-                ->execute([(int) getCurrentUserId(), $scheduleId]);
-            $crad->prepare(
-                "UPDATE research_panel_assignments
-                 SET defense_schedule_id = ?, updated_at = NOW()
-                                 WHERE research_group_id = ?
-                                     AND defense_phase = ?
-                   AND assignment_status = 'Assigned'
-                ")->execute([$scheduleId, $groupId, $scheduleDefenseType === CRAD_DEFENSE_TYPE_FINAL ? CRAD_DEFENSE_PHASE_FINAL : CRAD_DEFENSE_PHASE_PRE_ORAL]);
-            $planStmt = $crad->prepare("SELECT id FROM research_plans WHERE research_group_id = ? LIMIT 1");
-            $planStmt->execute([$groupId]);
-            $planId = (int) ($planStmt->fetchColumn() ?: 0);
-            if ($planId > 0 && $scheduleDefenseType === CRAD_DEFENSE_TYPE_PRE_ORAL) {
-                rpSetCurrentStageIfFirstSemesterComplete($crad, $planId, $groupId);
-            }
-            $notify = $crad->prepare(
-                "INSERT IGNORE INTO panel_assignment_notifications
-                    (event_key, recipient_user_id, recipient_role, recipient_email, panel_assignment_id,
-                     research_group_id, title, body, url, is_read, created_at)
-                 VALUES
-                    (:event_key, :recipient_user_id, 'panel', :recipient_email, :panel_assignment_id,
-                     :research_group_id, :title, :body, :url, 0, NOW())"
-            );
-            $startLabel = rdScheduleDate((string) ($slot['defense_datetime'] ?? ''), 'M j, Y h:i A');
-            $endLabel = rdScheduleDate((string) ($slot['defense_end_datetime'] ?? ''), 'h:i A');
-            $timeLabel = trim($startLabel . ($endLabel !== '' ? ' - ' . $endLabel : ''));
-            $venueLabel = (string) (($slot['venue'] ?? '') ?: 'TBA');
-            $groupLabel = (string) (($slot['group_number'] ?? '') ?: ($slot['research_group'] ?? 'Research Group'));
-            $notificationBody = $groupLabel . "\n"
-                . (string) ($slot['research_title'] ?? '') . "\n"
-                . 'Date/Time: ' . $timeLabel . "\n"
-                . 'Venue: ' . $venueLabel;
-            foreach ($assignedPanels as $panel) {
-                $panelUserId = (int) ($panel['panel_user_id'] ?? 0);
-                if ($panelUserId <= 0) {
-                    continue;
+                       AND assignment_status = 'Assigned'"
+                )->execute([$scheduleId, $groupId, $scheduleDefenseType === CRAD_DEFENSE_TYPE_FINAL ? CRAD_DEFENSE_PHASE_FINAL : CRAD_DEFENSE_PHASE_PRE_ORAL]);
+                $planStmt = $crad->prepare("SELECT id FROM research_plans WHERE research_group_id = ? LIMIT 1");
+                $planStmt->execute([$groupId]);
+                $planId = (int) ($planStmt->fetchColumn() ?: 0);
+                if ($planId > 0 && $scheduleDefenseType === CRAD_DEFENSE_TYPE_PRE_ORAL) {
+                    rpSetCurrentStageIfFirstSemesterComplete($crad, $planId, $groupId);
                 }
-                $notify->execute([
-                    ':event_key' => strtolower(str_replace(' ', '-', $scheduleDefenseType)) . '-finalized:s' . $scheduleId . ':u' . $panelUserId,
-                    ':recipient_user_id' => $panelUserId,
-                    ':recipient_email' => (string) ($panel['panel_email'] ?? ''),
-                    ':panel_assignment_id' => (int) ($panel['id'] ?? 0) ?: null,
-                    ':research_group_id' => $groupId,
-                    ':title' => $scheduleDefenseType . ' Scheduled',
-                    ':body' => $notificationBody,
-                    ':url' => BASE_URL . '/modules/faculty/pages/defense-details.php?id=' . $scheduleId,
-                ]);
+                $notify = $crad->prepare(
+                    "INSERT IGNORE INTO panel_assignment_notifications
+                        (event_key, recipient_user_id, recipient_role, recipient_email, panel_assignment_id,
+                         research_group_id, title, body, url, is_read, created_at)
+                     VALUES
+                        (:event_key, :recipient_user_id, 'panel', :recipient_email, :panel_assignment_id,
+                         :research_group_id, :title, :body, :url, 0, NOW())"
+                );
+                $startLabel = rdScheduleDate((string) ($slot['defense_datetime'] ?? ''), 'M j, Y h:i A');
+                $endLabel = rdScheduleDate((string) ($slot['defense_end_datetime'] ?? ''), 'h:i A');
+                $timeLabel = trim($startLabel . ($endLabel !== '' ? ' - ' . $endLabel : ''));
+                $venueLabel = (string) (($slot['venue'] ?? '') ?: 'TBA');
+                $groupLabel = (string) (($slot['group_number'] ?? '') ?: ($slot['research_group'] ?? 'Research Group'));
+                $notificationBody = $groupLabel . "\n"
+                    . (string) ($slot['research_title'] ?? '') . "\n"
+                    . 'Date/Time: ' . $timeLabel . "\n"
+                    . 'Venue: ' . $venueLabel;
+                foreach ($assignedPanels as $panel) {
+                    $panelUserId = (int) ($panel['panel_user_id'] ?? 0);
+                    if ($panelUserId <= 0) {
+                        continue;
+                    }
+                    $notify->execute([
+                        ':event_key' => strtolower(str_replace(' ', '-', $scheduleDefenseType)) . '-finalized:s' . $scheduleId . ':u' . $panelUserId,
+                        ':recipient_user_id' => $panelUserId,
+                        ':recipient_email' => (string) ($panel['panel_email'] ?? ''),
+                        ':panel_assignment_id' => (int) ($panel['id'] ?? 0) ?: null,
+                        ':research_group_id' => $groupId,
+                        ':title' => $scheduleDefenseType . ' Scheduled',
+                        ':body' => $notificationBody,
+                        ':url' => BASE_URL . '/modules/faculty/pages/defense-details.php?id=' . $scheduleId,
+                    ]);
+                }
+                if ($crad->inTransaction()) {
+                    $crad->commit();
+                }
+            } catch (Throwable $inner) {
+                if ($crad->inTransaction()) {
+                    $crad->rollBack();
+                }
+                throw $inner;
             }
-            $crad->commit();
             echo json_encode(['ok' => true, 'message' => $scheduleDefenseType . ' schedule confirmed.']);
         } catch (Throwable $e) {
             if ($crad->inTransaction()) {
@@ -1260,16 +1293,18 @@ if ($crad) {
             exit;
         }
         $scheduleId = (int) ($_POST['schedule_id'] ?? 0);
-        $lockName = 'rd_choose_preoral_' . $scheduleId;
+        $lockName = 'rd_choose_schedule_' . $scheduleId;
         $lockAcquired = false;
         try {
-            $lockStmt = $crad->prepare("SELECT GET_LOCK(?, 5)");
+            $lockStmt = $crad->prepare('SELECT GET_LOCK(?, 5)');
             $lockStmt->execute([$lockName]);
             $lockAcquired = (int) $lockStmt->fetchColumn() === 1;
             if (!$lockAcquired) {
                 throw new RuntimeException('Schedule is being selected. Please wait and try again.');
             }
-            $crad->beginTransaction();
+
+            // Validate outside the transaction so readiness/schema checks cannot
+            // implicitly commit and break PDO::commit().
             $slot = rdScheduleOne($crad, $scheduleId);
             if (!$slot || !in_array(strtolower((string) ($slot['status'] ?? '')), ['proposed', 'selected'], true)) {
                 throw new RuntimeException('Proposed schedule was not found.');
@@ -1279,26 +1314,49 @@ if ($crad) {
                 throw new RuntimeException('This proposed schedule has a current conflict. Please find an alternative slot.');
             }
             $groupId = (int) ($slot['research_group_id'] ?? 0);
+            $defenseType = (string) ($slot['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL);
             $official = $crad->prepare(
                 "SELECT id FROM research_defense_schedules
                  WHERE research_group_id = ?
-                                     AND defense_type = ?
+                   AND defense_type = ?
                    AND LOWER(status) IN ('scheduled', 'finalized', 'final')
                  LIMIT 1"
             );
-                        $official->execute([$groupId, (string) ($slot['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL)]);
+            $official->execute([$groupId, $defenseType]);
             if ($official->fetchColumn()) {
                 throw new RuntimeException('This research group already has an official finalized schedule.');
             }
-            $crad->prepare("UPDATE research_defense_schedules SET status = 'Proposed', updated_at = NOW() WHERE research_group_id = ? AND id <> ? AND LOWER(status) = 'selected'")
-                ->execute([$groupId, $scheduleId]);
-            $crad->prepare("UPDATE research_defense_schedules SET status = 'Selected', updated_at = NOW() WHERE id = ?")
-                ->execute([$scheduleId]);
-            $crad->commit();
+
+            $crad->beginTransaction();
+            try {
+                $crad->prepare(
+                    "UPDATE research_defense_schedules
+                     SET status = 'Proposed', updated_at = NOW()
+                     WHERE research_group_id = ?
+                       AND id <> ?
+                       AND defense_type = ?
+                       AND LOWER(status) = 'selected'"
+                )->execute([$groupId, $scheduleId, $defenseType]);
+                $crad->prepare(
+                    "UPDATE research_defense_schedules
+                     SET status = 'Selected', updated_at = NOW()
+                     WHERE id = ?
+                       AND LOWER(status) IN ('proposed', 'selected')"
+                )->execute([$scheduleId]);
+                if ($crad->inTransaction()) {
+                    $crad->commit();
+                }
+            } catch (Throwable $inner) {
+                if ($crad->inTransaction()) {
+                    $crad->rollBack();
+                }
+                throw $inner;
+            }
+
             echo json_encode([
                 'ok' => true,
                 'message' => 'Proposed schedule selected for final review.',
-                'redirect' => rdScheduleTypedUrl('finalize-defense-schedule', (string) ($slot['defense_type'] ?? CRAD_DEFENSE_TYPE_PRE_ORAL), ['schedule_id' => $scheduleId]),
+                'redirect' => rdScheduleTypedUrl('finalize-defense-schedule', $defenseType, ['schedule_id' => $scheduleId]),
             ]);
         } catch (Throwable $e) {
             if ($crad->inTransaction()) {
@@ -1308,7 +1366,7 @@ if ($crad) {
         } finally {
             if ($lockAcquired) {
                 try {
-                    $releaseStmt = $crad->prepare("SELECT RELEASE_LOCK(?)");
+                    $releaseStmt = $crad->prepare('SELECT RELEASE_LOCK(?)');
                     $releaseStmt->execute([$lockName]);
                 } catch (Throwable $e) {
                     error_log('RD choose schedule lock release failed: ' . $e->getMessage());
@@ -1593,6 +1651,14 @@ if (($_GET['ajax'] ?? '') === 'director-schedules') {
         'synced_at' => date('M j, Y h:i:s A'),
     ]);
     exit;
+}
+
+if (smsIsGrantedAdminRole(getCurrentUserRoleKey())) {
+    $activeModule = 'crad';
+    $breadcrumbs = [
+        ['label' => 'CRAD', 'url' => BASE_URL . '/modules/faculty/pages/research-director.php?view=defense-scheduling-queue'],
+        ['label' => $pageTitle, 'url' => null],
+    ];
 }
 
 require_once ROOT_PATH . '/includes/layout-start.php';
@@ -2378,7 +2444,7 @@ renderBreadcrumbs($breadcrumbs);
 <?php if ($isSchedulerView): ?>
     <section class="director-scheduler">
         <div class="director-scheduler__head">
-            <h2><?= $view === 'alternative-time-slots' ? 'Add Alternative Time Slot' : ($requestedDefenseType === CRAD_DEFENSE_TYPE_FINAL ? 'Final Defense Manual Scheduling Optimizer' : 'Manual Scheduling Optimizer') ?></h2>
+            <h2><?= $view === 'alternative-time-slots' ? 'Add Alternative Time Slot' : ($requestedDefenseType === CRAD_DEFENSE_TYPE_FINAL ? 'Final Defense AI Scheduling Optimizer' : 'AI Scheduling Optimizer') ?></h2>
             <p><?= $selectedReadyGroup ? 'Create proposed ' . htmlspecialchars($defenseTypeLabel) . ' slots from current database records.' : 'Select a defense-ready research before creating a ' . htmlspecialchars($defenseTypeLabel) . ' schedule.' ?></p>
         </div>
         <?php if (!$hasExplicitGroupSelection): ?>
@@ -2428,7 +2494,7 @@ renderBreadcrumbs($breadcrumbs);
                     <?php if ($view === 'manual-scheduling-optimizer'): ?>
                     <div class="director-ai-scheduler" id="directorAiScheduler">
                         <h3><?= smsIcon('magic', ['class' => 'me-1']) ?> AI Scheduling Optimizer</h3>
-                        <p>Set your defense period (e.g. one month). AI will pick conflict-free slots with comfortable venue capacity for adviser, panel, and venue availability.</p>
+                        <p>Set your defense period. AI checks live free schedules and picks different dates, times, and venues where the adviser, panel, and rooms are free.</p>
                         <label>
                             <span>Period Start</span>
                             <input type="date" id="aiPeriodStart" min="<?= htmlspecialchars(date('Y-m-d')) ?>" value="<?= htmlspecialchars(date('Y-m-d')) ?>">
@@ -3379,6 +3445,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const expectedAttendees = document.getElementById('aiExpectedAttendees');
         if (!schedulerForm || !generateBtn || !summaryEl) return;
 
+        const normalizeTime = function (value) {
+            const raw = String(value || '').trim();
+            if (!raw) return '';
+            const match = raw.match(/^(\d{1,2}):(\d{2})/);
+            if (!match) return raw;
+            return String(match[1]).padStart(2, '0') + ':' + match[2];
+        };
+
         generateBtn.addEventListener('click', async function () {
             const groupId = parseInt(schedulerForm.getAttribute('data-group-id') || '0', 10);
             if (groupId < 1) {
@@ -3387,11 +3461,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 summaryEl.textContent = 'Select a defense-ready research group first.';
                 return;
             }
+            if (periodStart && periodEnd && periodStart.value && periodEnd.value && periodEnd.value < periodStart.value) {
+                summaryEl.style.display = '';
+                summaryEl.classList.add('is-error');
+                summaryEl.textContent = 'Period End must be on or after Period Start.';
+                return;
+            }
 
+            const originalLabel = generateBtn.innerHTML;
             generateBtn.disabled = true;
-            summaryEl.style.display = 'none';
+            generateBtn.innerHTML = 'Scanning free schedules…';
+            summaryEl.style.display = '';
             summaryEl.classList.remove('is-error');
+            summaryEl.textContent = 'Checking live venue, adviser, and panel availability…';
             if (hintsEl) hintsEl.innerHTML = '';
+
+            const dates = schedulerForm.querySelectorAll('.js-defense-date');
+            const venues = schedulerForm.querySelectorAll('.js-venue-id');
+            const starts = schedulerForm.querySelectorAll('.js-start-time');
+            const ends = schedulerForm.querySelectorAll('.js-end-time');
+            dates.forEach(function (el) { el.value = ''; });
+            venues.forEach(function (el) { el.value = ''; });
+            starts.forEach(function (el) { el.value = ''; });
+            ends.forEach(function (el) { el.value = ''; });
 
             const body = new URLSearchParams();
             body.set('schedule_action', 'ai_generate_slots');
@@ -3407,33 +3499,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-store'
                     },
                     credentials: 'same-origin',
+                    cache: 'no-store',
                     body: body.toString()
                 });
-                const data = await res.json();
-                if (!data.ok) throw new Error(data.message || 'AI scheduling failed.');
-
-                const dates = schedulerForm.querySelectorAll('.js-defense-date');
-                const venues = schedulerForm.querySelectorAll('.js-venue-id');
-                const starts = schedulerForm.querySelectorAll('.js-start-time');
-                const ends = schedulerForm.querySelectorAll('.js-end-time');
+                const text = await res.text();
+                let data = null;
+                try { data = JSON.parse(text); } catch (e) { data = null; }
+                if (!data || !data.ok) {
+                    throw new Error((data && data.message) || 'AI scheduling failed.');
+                }
 
                 (data.slots || []).forEach(function (slot, index) {
                     if (dates[index]) dates[index].value = slot.date || '';
                     if (venues[index]) venues[index].value = String(slot.venue_id || '');
-                    if (starts[index]) starts[index].value = slot.start_time || '';
-                    if (ends[index]) ends[index].value = slot.end_time || '';
+                    if (starts[index]) starts[index].value = normalizeTime(slot.start_time);
+                    if (ends[index]) ends[index].value = normalizeTime(slot.end_time);
                 });
 
                 summaryEl.style.display = '';
-                summaryEl.textContent = data.summary || 'AI generated optimal slots. Review and save when ready.';
+                summaryEl.textContent = data.summary || 'AI generated varied free slots. Review and save when ready.';
 
                 if (hintsEl && Array.isArray(data.slots)) {
                     hintsEl.innerHTML = data.slots.map(function (slot, index) {
                         return '<div class="director-ai-slot-hint"><strong>Slot ' + (index + 1) + ':</strong> '
-                            + esc(slot.date) + ' · ' + esc(slot.start_time) + '–' + esc(slot.end_time)
+                            + esc(slot.date) + ' · ' + esc(normalizeTime(slot.start_time)) + '–' + esc(normalizeTime(slot.end_time))
                             + ' · ' + esc(slot.venue_name) + ' (' + esc(slot.capacity) + ' cap) — '
                             + esc(slot.reason || '') + '</div>';
                     }).join('');
@@ -3445,6 +3538,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             generateBtn.disabled = false;
+            generateBtn.innerHTML = originalLabel;
         });
     };
 

@@ -26,6 +26,7 @@ $pdo->exec(
         methodology_score DECIMAL(5,2) NOT NULL,
         references_score DECIMAL(5,2) NOT NULL,
         format_score DECIMAL(5,2) NOT NULL,
+        defense_score DECIMAL(5,2) NOT NULL DEFAULT 0,
         remarks TEXT DEFAULT NULL,
         result ENUM('APPROVED','APPROVED WITH REVISION','FAILED') NOT NULL,
         overall_score DECIMAL(5,2) NOT NULL,

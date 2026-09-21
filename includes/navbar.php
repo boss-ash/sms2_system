@@ -242,10 +242,10 @@ $navNotificationUnreadCount = count(array_filter($navNotifications, static fn(ar
             <div class="dropdown">
                 <button class="btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <?= smsIcon('user-circle', ['class' => 'ti-lg']) ?>
-                    <span class="d-none d-md-inline"><?= htmlspecialchars(getCurrentUserName()) ?></span>
+                    <span class="d-none d-md-inline" data-sms-user-name><?= htmlspecialchars(getCurrentUserName()) ?></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow">
-                    <li><h6 class="dropdown-header"><?= htmlspecialchars(getCurrentUserRole()) ?></h6></li>
+                    <li><h6 class="dropdown-header" data-sms-user-role><?= htmlspecialchars(getCurrentUserRole()) ?></h6></li>
                     <?php
                     $navRole = getCurrentUserRoleKey();
                     if ($navRole === 'student') {
@@ -317,7 +317,7 @@ window.SMS2_SEARCH_INDEX = (function() {
     var items = [];
     <?php foreach ($visibleModulesNav as $navModuleKey => $module): ?>
     items.push({type:'module',label:<?= json_encode($module['label']) ?>,icon:<?= json_encode($module['icon']) ?>,url:base+'/modules/<?= $navModuleKey ?>/index.php',keywords:<?= json_encode(strtolower($module['label'])) ?>});
-    <?php foreach ($module['pages'] as $page): ?>
+    <?php foreach (($module['pages'] ?? []) as $page): ?>
     items.push({type:'page',label:<?= json_encode($page['title']) ?>,parent:<?= json_encode($module['label']) ?>,icon:<?= json_encode($module['icon']) ?>,url:<?= json_encode(($page['slug'] ?? '') === 'security-settings' ? BASE_URL . '/account/module-security.php?module=' . urlencode((string) $navModuleKey) : BASE_URL . '/modules/' . $navModuleKey . '/pages/' . $page['slug'] . '.php') ?>,keywords:<?= json_encode(strtolower($page['title'].' '.$module['label'])) ?>});
     <?php endforeach; ?>
     <?php endforeach; ?>
@@ -409,6 +409,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await res.json();
             if (data && data.ok) {
                 renderNotifications(data.items || []);
+                if (data.user) {
+                    var nameEl = document.querySelector('[data-sms-user-name]');
+                    if (nameEl && data.user.name) nameEl.textContent = data.user.name;
+                    var roleEl = document.querySelector('[data-sms-user-role]');
+                    if (roleEl && data.user.role) roleEl.textContent = data.user.role;
+                }
             }
         } catch (error) {
             return;

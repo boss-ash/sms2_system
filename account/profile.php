@@ -242,7 +242,7 @@ if ($pdo) {
 
 $pageTitle = 'Account Settings';
 $activeModule = 'dashboard';
-$activePage = '';
+$activePage = $tab === 'security' ? 'security-settings' : '';
 $breadcrumbs = [
     ['label' => 'Account Settings', 'url' => null],
 ];

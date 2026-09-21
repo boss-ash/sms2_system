@@ -7,6 +7,34 @@ require_once ROOT_PATH . '/includes/uploads.php';
 require_once ROOT_PATH . '/modules/faculty/includes/final-defense-evaluation.php';
 require_once ROOT_PATH . '/modules/crad/includes/research-progress-helpers.php';
 
+/**
+ * Final manuscript scoring: eight criteria totaling 100%.
+ *
+ * @return list<array{key:string,label:string,weight:float}>
+ */
+function manuscriptEvaluationCriteria(): array
+{
+    return [
+        ['key' => 'content', 'label' => 'Content', 'weight' => 12.5],
+        ['key' => 'methodology', 'label' => 'Methodology', 'weight' => 12.5],
+        ['key' => 'results', 'label' => 'Results', 'weight' => 12.5],
+        ['key' => 'conclusions', 'label' => 'Conclusions', 'weight' => 12.5],
+        ['key' => 'recommendations', 'label' => 'Recommendations', 'weight' => 12.5],
+        ['key' => 'references', 'label' => 'References', 'weight' => 12.5],
+        ['key' => 'formatting', 'label' => 'Formatting', 'weight' => 12.5],
+        ['key' => 'compliance', 'label' => 'Compliance', 'weight' => 12.5],
+    ];
+}
+
+function manuscriptEvaluationTotalMax(): float
+{
+    $total = 0.0;
+    foreach (manuscriptEvaluationCriteria() as $item) {
+        $total += (float) $item['weight'];
+    }
+    return $total;
+}
+
 function finalPhaseEnsureSchema(PDO $crad): void
 {
     finalDefenseEnsureSchema($crad);

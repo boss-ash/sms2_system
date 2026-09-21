@@ -25,4 +25,9 @@ echo json_encode([
     'ok' => true,
     'count' => count($items),
     'items' => $items,
+    'user' => [
+        'name' => getCurrentUserName(),
+        'role' => getCurrentUserRole(),
+        'email' => (string) ($_SESSION['user_email'] ?? ''),
+    ],
 ]);

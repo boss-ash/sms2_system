@@ -281,16 +281,40 @@ function smsCurrentUserNotifications(int $limit = 8): array
             });
             $rows = array_slice($rows, 0, max(1, min(50, $limit)));
         }
+
+        $clearanceTable = $crad->query("SHOW TABLES LIKE 'research_clearance_notifications'")->fetchColumn();
+        if ($clearanceTable) {
+            $clearanceStmt = $crad->prepare(
+                "SELECT id, event_key, type, title, body, url, is_read, created_at
+                 FROM research_clearance_notifications
+                 WHERE {$where['sql']}
+                 ORDER BY created_at DESC, id DESC
+                 LIMIT :limit"
+            );
+            foreach ($where['params'] as $key => $value) {
+                $clearanceStmt->bindValue($key, $value);
+            }
+            $clearanceStmt->bindValue(':limit', max(1, min(50, $limit)), PDO::PARAM_INT);
+            $clearanceStmt->execute();
+            $rows = array_merge($rows, $clearanceStmt->fetchAll() ?: []);
+            usort($rows, static function (array $a, array $b): int {
+                return strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? ''));
+            });
+            $rows = array_slice($rows, 0, max(1, min(50, $limit)));
+        }
     } catch (Throwable $e) {
         error_log('Chapter notification load failed: ' . $e->getMessage());
         return [];
     }
 
     return array_map(static function (array $row): array {
+        $type = (string) ($row['type'] ?? '');
+        $isPanel = $type === 'panel_assignment';
+        $isClearance = in_array($type, ['sent_to_adviser', 'adviser_signed', 'mis_aa_signed', 'clearance_done', 'payment_approved'], true);
         return [
-            'id' => (string) ($row['type'] ?? '') === 'panel_assignment' ? -1 * (int) $row['id'] : (int) $row['id'],
+            'id' => $isPanel ? -1 * (int) $row['id'] : ($isClearance ? (800000000 + (int) $row['id']) : (int) $row['id']),
             'batch_key' => (string) ($row['event_key'] ?? ''),
-            'icon' => (string) ($row['type'] ?? '') === 'panel_assignment' ? 'fa-user-friends' : 'fa-file-alt',
+            'icon' => $isClearance ? 'fa-stamp' : ($isPanel ? 'fa-user-friends' : 'fa-file-alt'),
             'status' => ((int) ($row['is_read'] ?? 0) === 1) ? 'read' : 'unread',
             'title' => (string) ($row['title'] ?? 'Notification'),
             'body' => (string) ($row['body'] ?? ''),
@@ -326,6 +350,27 @@ function smsMarkCurrentUserNotificationRead(int $notificationId): void
 
     $crad = cradDb();
     if (!$crad) {
+        return;
+    }
+
+    if ($notificationId >= 800000000 && $notificationId < 900000000) {
+        try {
+            $where = smsCurrentUserNotificationWhere();
+            $stmt = $crad->prepare(
+                "UPDATE research_clearance_notifications
+                 SET is_read = 1
+                 WHERE id = :notification_id
+                   AND {$where['sql']}
+                 LIMIT 1"
+            );
+            $stmt->bindValue(':notification_id', $notificationId - 800000000, PDO::PARAM_INT);
+            foreach ($where['params'] as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->execute();
+        } catch (Throwable $e) {
+            error_log('Clearance notification mark-read failed: ' . $e->getMessage());
+        }
         return;
     }
 

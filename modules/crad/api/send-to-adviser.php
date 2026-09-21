@@ -12,6 +12,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../config/config.php';
 require_once __DIR__ . '/../config/config.php';
 require_once ROOT_PATH . '/includes/authentication.php';
+require_once __DIR__ . '/../includes/title-approval-assignees.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -43,9 +44,9 @@ $studentId     = trim((string) ($body['student_id']       ?? ''));
 $studentUserId = isset($body['student_user_id']) && $body['student_user_id'] !== ''
                     ? (int) $body['student_user_id'] : null;
 $studentName   = trim((string) ($body['student_name']     ?? ''));
-$adviserName   = trim((string) ($body['adviser_name']     ?? ''));
-$adviserEmail  = trim((string) ($body['adviser_email']    ?? ''));
-$coordName     = trim((string) ($body['coordinator_name'] ?? ''));
+$adviserName   = '';
+$adviserEmail  = '';
+$coordName     = '';
 $title         = trim((string) ($body['research_title']   ?? ''));
 $dept          = trim((string) ($body['department']       ?? ''));
 $dateStr       = trim((string) ($body['submission_date']  ?? date('Y-m-d')));
@@ -56,51 +57,9 @@ $justification = trim((string) ($body['justification']    ?? ''));
 $membersRaw    = $body['members'] ?? '[]';
 $submissionId  = (int) ($body['submission_id'] ?? 0);
 
-if ($coordName === '' || strcasecmp($coordName, 'Research Coordinator') === 0 || strcasecmp($coordName, 'Program Research Coordinator') === 0) {
-    $coordName = 'Mrs. Kris Guevarra';
-}
-
 if ($title === '') {
     http_response_code(422);
     saJson(false, 'Research title is required.');
-}
-if ($adviserName === '' && $adviserEmail === '') {
-    http_response_code(422);
-    saJson(false, 'No assigned adviser found for this student.');
-}
-
-/* ── Check adviser has an account in sms2_db ─────────────── */
-try {
-    $mainPdo = db();
-    if ($mainPdo) {
-        /* Match by email first (most reliable), then by full_name */
-        $chk = $mainPdo->prepare(
-            "SELECT id, full_name, email FROM users
-             WHERE status = 'active'
-               AND (
-                    (email != '' AND LOWER(email) = LOWER(:email))
-                 OR LOWER(full_name) = LOWER(:name)
-               )
-             LIMIT 1"
-        );
-        $chk->execute([':email' => $adviserEmail, ':name' => $adviserName]);
-        $adviserUser = $chk->fetch();
-
-        if (!$adviserUser) {
-            /* Adviser has no account — tell the client */
-            saJson(false, 'The message cannot be sent because the adviser does not have an account.', [
-                'no_account' => true,
-                'adviser'    => $adviserName ?: $adviserEmail,
-            ]);
-        }
-
-        /* Use the exact name/email from the system account */
-        $adviserName  = (string) $adviserUser['full_name'];
-        $adviserEmail = (string) $adviserUser['email'];
-    }
-} catch (Throwable $e) {
-    error_log('Adviser account check failed: ' . $e->getMessage());
-    /* Non-fatal — proceed if main DB is unavailable */
 }
 
 /* ── Normalise date ──────────────────────────────────────── */
@@ -120,6 +79,45 @@ try {
 } catch (Throwable $e) {
     http_response_code(503);
     saJson(false, 'Database unavailable: ' . $e->getMessage());
+}
+
+$official = cradStudentOfficialAssignees($pdo, $studentId);
+$adviserName = trim((string) ($official['adviser_name'] ?? ''));
+$adviserEmail = trim((string) ($official['adviser_email'] ?? ''));
+$coordName = trim((string) ($official['coordinator_name'] ?? ''));
+if ($adviserName === '' || $coordName === '') {
+    http_response_code(422);
+    saJson(false, 'Wait until Admin assigns both a Research Coordinator (from the Coordinator Roster) and a Research Adviser. Names stay blank on the Title Approval Form until then.');
+}
+
+/* ── Check adviser has an account in sms2_db ─────────────── */
+try {
+    $mainPdo = db();
+    if ($mainPdo) {
+        $chk = $mainPdo->prepare(
+            "SELECT id, full_name, email FROM users
+             WHERE status = 'active'
+               AND (
+                    (email != '' AND LOWER(email) = LOWER(:email))
+                 OR LOWER(full_name) = LOWER(:name)
+               )
+             LIMIT 1"
+        );
+        $chk->execute([':email' => $adviserEmail, ':name' => $adviserName]);
+        $adviserUser = $chk->fetch();
+
+        if (!$adviserUser) {
+            saJson(false, 'The message cannot be sent because the adviser does not have an account.', [
+                'no_account' => true,
+                'adviser'    => $adviserName ?: $adviserEmail,
+            ]);
+        }
+
+        $adviserName  = (string) $adviserUser['full_name'];
+        $adviserEmail = (string) $adviserUser['email'];
+    }
+} catch (Throwable $e) {
+    error_log('Adviser account check failed: ' . $e->getMessage());
 }
 
 try {
