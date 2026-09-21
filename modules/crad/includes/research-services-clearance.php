@@ -1066,37 +1066,46 @@ function rscHasPhysicalSignature(array $clearance, string $field): bool
 
 function rscCanCradSign(array $clearance): bool
 {
-    return rscHasPhysicalSignature($clearance, 'adviser_signature')
-        && trim((string) ($clearance['uploaded_file'] ?? '')) !== ''
-        && (int) ($clearance['form_verified'] ?? 0) === 1
-        && in_array((string) ($clearance['status'] ?? ''), ['adviser_signed', 'crad_received'], true);
+    return rscCanCradApprove($clearance);
+}
+
+/** CRAD can approve when student uploaded a signed clearance image. */
+function rscCanCradApprove(array $clearance): bool
+{
+    return trim((string) ($clearance['uploaded_file'] ?? '')) !== ''
+        && in_array((string) ($clearance['status'] ?? ''), ['crad_received', 'adviser_signed'], true);
 }
 
 function rscCradSign(PDO $crad, array $clearance, string $signature, string $signerName): array
 {
-    if (!rscCanCradSign($clearance)) {
-        return ['ok' => false, 'error' => 'Upload the printed clearance form with the Adviser, MIS, and AA signatures first.'];
+    // Signature pad optional — approving the uploaded signed form is enough.
+    return rscCradApproveSigned($crad, $clearance, $signerName);
+}
+
+/**
+ * CRAD approves the student-uploaded signed clearance (no digital pad required).
+ */
+function rscCradApproveSigned(PDO $crad, array $clearance, string $approverName = ''): array
+{
+    if (!rscCanCradApprove($clearance)) {
+        return ['ok' => false, 'error' => 'Upload/signed clearance image is required before CRAD can approve.'];
     }
-    $sig = rscNormalizeSignature($signature);
-    if ($sig === '') {
-        return ['ok' => false, 'error' => 'Please provide your signature before approving.'];
-    }
+    $name = trim($approverName) !== '' ? trim($approverName) : getCurrentUserName();
     $crad->prepare(
         "UPDATE research_services_clearances
          SET status = 'clearance_done',
-             crad_signature = :sig,
              crad_signed_at = NOW(),
              crad_name = :name,
-             crad_user_id = :uid
+             crad_user_id = :uid,
+             form_verified = 1
          WHERE id = :id"
     )->execute([
-        ':sig' => $sig,
-        ':name' => $signerName,
+        ':name' => $name,
         ':uid' => (int) ($_SESSION['user_id'] ?? 0) ?: null,
         ':id' => (int) $clearance['id'],
     ]);
 
-    $fresh = rscPersistUploadedSignatures($crad, rscFindById($crad, (int) $clearance['id']) ?: $clearance);
+    $fresh = rscFindById($crad, (int) $clearance['id']) ?: $clearance;
     foreach (rscStudentRecipients($crad, $clearance) as $recipient) {
         rscNotify(
             $crad,
@@ -1104,8 +1113,8 @@ function rscCradSign(PDO $crad, array $clearance, string $signature, string $sig
             (int) $clearance['id'],
             $recipient,
             'clearance_done',
-            'Clearance done',
-            'Your Research Services Clearance is complete. The latest CRAD signature is now on your form.',
+            'Clearance approved',
+            'CRAD approved your signed Research Services Clearance. Your clearance is complete.',
             rscStudentUrl()
         );
     }
@@ -1158,10 +1167,10 @@ function rscStoreUpload(int $clearanceId, array $file): array
 function rscStatusLabel(string $status): string
 {
     return match ($status) {
-        'draft' => 'Ready to send',
-        'sent_to_adviser' => 'Sent to Adviser',
-        'adviser_signed' => 'Adviser signed',
-        'crad_received' => 'Received by CRAD',
+        'draft' => 'Ready to print',
+        'sent_to_adviser' => 'Ready to print',
+        'adviser_signed' => 'Awaiting signed upload',
+        'crad_received' => 'Awaiting CRAD approval',
         'clearance_done' => 'Clearance done',
         default => $status,
     };
@@ -1234,7 +1243,9 @@ function rscPublicRow(array $row): array
         'has_crad_signature' => trim((string) ($row['crad_signature'] ?? '')) !== '',
         'mis_verified' => (int) ($row['mis_verified'] ?? 0) === 1 || rscUploadedFormHasPhysicalMarks($row),
         'aa_verified' => (int) ($row['aa_verified'] ?? 0) === 1 || rscUploadedFormHasPhysicalMarks($row),
-        'can_crad_sign' => rscCanCradSign($row),
+        'can_crad_sign' => rscCanCradApprove($row),
+        'can_student_upload' => in_array((string) ($row['status'] ?? ''), ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received'], true)
+            && !empty($row['payment_approved']),
         'updated_at' => (string) ($row['updated_at'] ?? ''),
         'form_html' => rscRenderFormHtml($row),
     ];
@@ -1554,8 +1565,9 @@ function rscListForCrad(PDO $crad): array
     rscEnsureSchema($crad);
     $stmt = $crad->query(
         "SELECT * FROM research_services_clearances
-         WHERE status IN ('adviser_signed','crad_received','clearance_done')
-         ORDER BY FIELD(status,'adviser_signed','crad_received','clearance_done'), updated_at DESC"
+         WHERE status IN ('crad_received','adviser_signed','clearance_done')
+           AND TRIM(COALESCE(uploaded_file, '')) <> ''
+         ORDER BY FIELD(status,'crad_received','adviser_signed','clearance_done'), updated_at DESC"
     );
     return rscRefreshRows($crad, $stmt->fetchAll() ?: []);
 }
@@ -1569,8 +1581,6 @@ function rscClearanceDoneExists(PDO $crad, int $groupId, string $stage = 'resear
          WHERE research_group_id = ?
            AND research_stage = ?
            AND status = 'clearance_done'
-           AND TRIM(COALESCE(adviser_signature, '')) <> ''
-           AND TRIM(COALESCE(crad_signature, '')) <> ''
          LIMIT 1"
     );
     $stmt->execute([$groupId, $stage]);
