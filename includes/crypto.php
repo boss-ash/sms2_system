@@ -124,7 +124,11 @@ function smsSecretDecrypt(string $stored): string
         $iv,
         $tag
     );
-    return is_string($plain) ? $plain : '';
+    if (!is_string($plain)) {
+        error_log('SMS2: secret decrypt failed (wrong app.key or corrupt ciphertext). Re-save the secret in System Settings.');
+        return '';
+    }
+    return $plain;
 }
 
 /** Setting keys stored encrypted at rest. */
