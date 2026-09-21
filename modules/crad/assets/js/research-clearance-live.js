@@ -253,20 +253,17 @@
                     if (emptyEl) emptyEl.hidden = !!(data.rows && data.rows.length);
                     if (selectedId && data.clearance && String(data.clearance.id) === String(selectedId)) {
                         applyClearance(data.clearance);
-                    } else if (selectedId && data.rows) {
-                        var match = data.rows.filter(function (row) { return String(row.id) === String(selectedId); })[0] || null;
-                        if (match) {
-                            // Need full clearance with image — request again with id already set
-                            applyClearance(data.clearance && String(data.clearance.id) === String(selectedId) ? data.clearance : null);
-                            if (!data.clearance || String(data.clearance.id) !== String(selectedId)) {
-                                // keep selectedId; next poll with id= will fill
-                            }
-                        } else {
-                            selectedId = '';
-                            applyClearance(null);
-                        }
-                    } else {
+                    } else if (!selectedId) {
                         applyClearance(null);
+                    } else if (selectedId && (!data.clearance || String(data.clearance.id) !== String(selectedId))) {
+                        // Keep waiting for matching payload; don't wipe selection mid-click
+                        if (data.rows) {
+                            var stillThere = data.rows.some(function (row) { return String(row.id) === String(selectedId); });
+                            if (!stillThere) {
+                                selectedId = '';
+                                applyClearance(null);
+                            }
+                        }
                     }
                     if (pickEl) pickEl.hidden = !!(selectedId) || !(data.rows && data.rows.length);
                 } else if (role === 'adviser') {
