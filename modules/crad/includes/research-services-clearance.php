@@ -846,98 +846,44 @@ function rscNormalizeSignature(string $signature): string
 
 function rscSendToAdviser(PDO $crad, array $clearance): array
 {
-    if ((string) ($clearance['status'] ?? '') !== 'draft') {
-        return ['ok' => false, 'error' => 'Clearance was already sent to the adviser.'];
-    }
-    if (!rscPaymentUnlocksClearance($crad, (int) ($clearance['research_group_id'] ?? 0), $clearance)) {
-        return ['ok' => false, 'error' => 'Admin must approve the college payment before you can send the clearance form.'];
-    }
-    $id = (int) $clearance['id'];
-    $crad->prepare("UPDATE research_services_clearances SET status = 'sent_to_adviser', sent_at = NOW() WHERE id = ?")
-        ->execute([$id]);
-
-    $recipient = [
-        'id' => (int) ($clearance['adviser_user_id'] ?? 0),
-        'role_key' => 'adviser',
-        'email' => (string) ($clearance['adviser_email'] ?? ''),
+    return [
+        'ok' => false,
+        'error' => 'Send to Adviser is no longer used. Print your clearance, get it signed, then upload the signed image for CRAD approval.',
     ];
-    rscNotify(
-        $crad,
-        'clearance-sent:' . $id,
-        $id,
-        $recipient,
-        'sent_to_adviser',
-        'Research Services Clearance',
-        'A student sent a Research Services Clearance form for your signature.',
-        rscAdviserUrl($id)
-    );
-    return ['ok' => true, 'clearance' => rscFindById($crad, $id)];
 }
 
 function rscAdviserSign(PDO $crad, array $clearance, string $signature, string $signerName): array
 {
-    if ((string) ($clearance['status'] ?? '') !== 'sent_to_adviser') {
-        return ['ok' => false, 'error' => 'This clearance is not waiting for the adviser signature.'];
-    }
-    $sig = rscNormalizeSignature($signature);
-    if ($sig === '') {
-        return ['ok' => false, 'error' => 'Please provide your signature before approving.'];
-    }
-    $crad->prepare(
-        "UPDATE research_services_clearances
-         SET status = 'adviser_signed',
-             adviser_signature = :sig,
-             adviser_signed_at = NOW(),
-             adviser_name = CASE WHEN TRIM(adviser_name) = '' THEN :name ELSE adviser_name END
-         WHERE id = :id"
-    )->execute([
-        ':sig' => $sig,
-        ':name' => $signerName,
-        ':id' => (int) $clearance['id'],
-    ]);
-
-    $fresh = rscFindById($crad, (int) $clearance['id']);
-    $sms = function_exists('db') ? db() : null;
-    if ($sms instanceof PDO) {
-        $officers = $sms->query("SELECT id, email, role_key FROM users WHERE role_key = 'crad_officer' AND status = 'active'")->fetchAll() ?: [];
-        foreach ($officers as $officer) {
-            rscNotify(
-                $crad,
-                'clearance-adviser:' . (int) $clearance['id'] . ':u' . (int) $officer['id'],
-                (int) $clearance['id'],
-                $officer,
-                'adviser_signed',
-                'Clearance ready for CRAD',
-                'An adviser signed a Research Services Clearance. After MIS and AA sign the printed form, upload that picture to computerize their signatures.',
-                rscCradUrl((int) $clearance['id'])
-            );
-        }
-    }
-    return ['ok' => true, 'clearance' => $fresh];
+    return [
+        'ok' => false,
+        'error' => 'Adviser digital signing is no longer used for Research Services Clearance. Students upload the signed form for CRAD approval.',
+    ];
 }
 
-function rscCradReceive(PDO $crad, array $clearance, array $file = []): array
+/**
+ * Student uploads the printed & physically signed clearance image → CRAD queue.
+ */
+function rscStudentUploadSigned(PDO $crad, array $clearance, array $file = []): array
 {
     $status = (string) ($clearance['status'] ?? '');
-    if (!in_array($status, ['adviser_signed', 'crad_received', 'clearance_done'], true)) {
-        return ['ok' => false, 'error' => 'The adviser must sign first before CRAD can upload this clearance.'];
+    $allowed = ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received'];
+    if (!in_array($status, $allowed, true)) {
+        if ($status === 'clearance_done') {
+            return ['ok' => false, 'error' => 'This clearance is already approved.'];
+        }
+        return ['ok' => false, 'error' => 'This clearance cannot accept an upload right now.'];
     }
-    if (trim((string) ($clearance['adviser_signature'] ?? '')) === '') {
-        return ['ok' => false, 'error' => 'This clearance has no adviser signature yet.'];
+    if (!rscPaymentUnlocksClearance($crad, (int) ($clearance['research_group_id'] ?? 0), $clearance)) {
+        return ['ok' => false, 'error' => 'Admin must approve the collage payment before you can upload the signed clearance.'];
     }
 
     $hasNewFile = $file !== [] && (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK;
     if (!$hasNewFile) {
-        return ['ok' => false, 'error' => 'Choose the Research Services Clearance picture to upload or re-upload.'];
+        return ['ok' => false, 'error' => 'Choose a PNG or JPG picture of your signed clearance form.'];
     }
     $saved = rscStoreUpload((int) $clearance['id'], $file);
     if (empty($saved['ok'])) {
         return $saved;
-    }
-    $check = rscVerifyOfficialFormImage($clearance, (string) $saved['path'], (string) $saved['original']);
-    if (empty($check['ok'])) {
-        @unlink((string) $saved['path']);
-        return $check;
     }
 
     $oldFile = basename(str_replace('\\', '/', trim((string) ($clearance['uploaded_file'] ?? ''))));
@@ -948,15 +894,87 @@ function rscCradReceive(PDO $crad, array $clearance, array $file = []): array
         }
     }
 
-    $extracted = ['mis' => '', 'aa' => ''];
-    try {
-        $extracted = rscExtractPhysicalSignatures((string) $saved['path'], $clearance);
-    } catch (Throwable $e) {
-        error_log('rsc extract signatures: ' . $e->getMessage());
+    $id = (int) $clearance['id'];
+    $crad->prepare(
+        "UPDATE research_services_clearances
+         SET status = 'crad_received',
+             uploaded_file = :file,
+             uploaded_original = :orig,
+             uploaded_at = NOW(),
+             form_verified = 1,
+             sent_at = COALESCE(sent_at, NOW())
+         WHERE id = :id"
+    )->execute([
+        ':file' => (string) $saved['file'],
+        ':orig' => (string) $saved['original'],
+        ':id' => $id,
+    ]);
+
+    $fresh = rscFindById($crad, $id);
+    $sms = function_exists('db') ? db() : null;
+    if ($sms instanceof PDO) {
+        $officers = $sms->query(
+            "SELECT id, email, role_key FROM users WHERE role_key = 'crad_officer' AND status = 'active'"
+        )->fetchAll() ?: [];
+        foreach ($officers as $officer) {
+            rscNotify(
+                $crad,
+                'clearance-student-upload:' . $id . ':u' . (int) $officer['id'],
+                $id,
+                $officer,
+                'student_signed_upload',
+                'Signed clearance for review',
+                'A student uploaded a signed Research Services Clearance. Please review and approve the signature.',
+                rscCradUrl($id)
+            );
+        }
     }
-    $hasMis = trim((string) ($extracted['mis'] ?? '')) !== '';
-    $hasAa = trim((string) ($extracted['aa'] ?? '')) !== '';
+    return ['ok' => true, 'clearance' => $fresh];
+}
+
+function rscCradReceive(PDO $crad, array $clearance, array $file = []): array
+{
+    // Legacy CRAD upload path — students now upload; CRAD may still re-upload if needed.
+    $status = (string) ($clearance['status'] ?? '');
+    if (!in_array($status, ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received', 'clearance_done'], true)) {
+        return ['ok' => false, 'error' => 'This clearance is not ready for an image upload.'];
+    }
+
+    $hasNewFile = $file !== [] && (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK;
+    if (!$hasNewFile) {
+        return ['ok' => false, 'error' => 'Choose the Research Services Clearance picture to upload or re-upload.'];
+    }
+    $saved = rscStoreUpload((int) $clearance['id'], $file);
+    if (empty($saved['ok'])) {
+        return $saved;
+    }
+
+    $oldFile = basename(str_replace('\\', '/', trim((string) ($clearance['uploaded_file'] ?? ''))));
+    if ($oldFile !== '' && $oldFile !== (string) $saved['file']) {
+        $oldPath = ROOT_PATH . '/uploads/research-clearance/' . $oldFile;
+        if (is_file($oldPath)) {
+            @unlink($oldPath);
+        }
+    }
+
     $nextStatus = $status === 'clearance_done' ? 'clearance_done' : 'crad_received';
+    $crad->prepare(
+        "UPDATE research_services_clearances
+         SET status = :status,
+             uploaded_file = :file,
+             uploaded_original = :orig,
+             uploaded_at = NOW(),
+             form_verified = 1
+         WHERE id = :id"
+    )->execute([
+        ':status' => $nextStatus,
+        ':file' => (string) $saved['file'],
+        ':orig' => (string) $saved['original'],
+        ':id' => (int) $clearance['id'],
+    ]);
+
+    return ['ok' => true, 'clearance' => rscFindById($crad, (int) $clearance['id'])];
+}
     $crad->prepare(
         "UPDATE research_services_clearances
          SET status = :status,
