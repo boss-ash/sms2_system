@@ -451,7 +451,8 @@ function smsIssueOtpToEmail(
 
     $sent = smsSendOtpEmail($user, $code, $purposeLabel, $ttlMinutes);
     $showLocal = empty($sent['ok']) && smsSetting('mail_show_link_on_failure', '0') === '1';
-    // Never surface OTP on public login 2FA (anti-leak)
+    // Never surface OTP on public login 2FA (anti-leak).
+    // Forgot-password may show local OTP when mail_show_link_on_failure=1 (local/dev).
     if (strtolower(trim($purpose)) === 'login_2fa') {
         $showLocal = false;
     }
