@@ -1298,8 +1298,9 @@ function rscPublicRow(array $row): array
         'mis_verified' => (int) ($row['mis_verified'] ?? 0) === 1 || rscUploadedFormHasPhysicalMarks($row),
         'aa_verified' => (int) ($row['aa_verified'] ?? 0) === 1 || rscUploadedFormHasPhysicalMarks($row),
         'can_crad_sign' => rscCanCradApprove($row),
-        'can_student_upload' => in_array((string) ($row['status'] ?? ''), ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received'], true)
+        'can_student_upload' => in_array((string) ($row['status'] ?? ''), ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received', 'rejected'], true)
             && !empty($row['payment_approved']),
+        'crad_remarks' => (string) ($row['crad_remarks'] ?? ''),
         'updated_at' => (string) ($row['updated_at'] ?? ''),
         'form_html' => rscRenderFormHtml($row),
     ];

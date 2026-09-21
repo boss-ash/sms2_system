@@ -113,6 +113,15 @@ try {
             exit;
         }
 
+        if ($action === 'crad_reject') {
+            if (!rscCanManageAsCrad()) {
+                throw new RuntimeException('Forbidden');
+            }
+            $result = rscCradRejectSigned($crad, $row, (string) ($_POST['reason'] ?? ''));
+            echo json_encode(['ok' => !empty($result['ok']), 'error' => $result['error'] ?? null, 'clearance' => isset($result['clearance']) ? rscPublicRow($result['clearance']) : null]);
+            exit;
+        }
+
         throw new InvalidArgumentException('Unknown action.');
     }
 

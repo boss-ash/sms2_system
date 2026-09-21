@@ -310,7 +310,7 @@ function smsCurrentUserNotifications(int $limit = 8): array
     return array_map(static function (array $row): array {
         $type = (string) ($row['type'] ?? '');
         $isPanel = $type === 'panel_assignment';
-        $isClearance = in_array($type, ['sent_to_adviser', 'adviser_signed', 'mis_aa_signed', 'clearance_done', 'payment_approved', 'student_signed_upload'], true);
+        $isClearance = in_array($type, ['sent_to_adviser', 'adviser_signed', 'mis_aa_signed', 'clearance_done', 'payment_approved', 'student_signed_upload', 'clearance_rejected'], true);
         return [
             'id' => $isPanel ? -1 * (int) $row['id'] : ($isClearance ? (800000000 + (int) $row['id']) : (int) $row['id']),
             'batch_key' => (string) ($row['event_key'] ?? ''),
