@@ -1,7 +1,15 @@
 <?php
 declare(strict_types=1);
-define('RD_AI_OPTIMIZER_TEST', true);
+
 require __DIR__ . '/config/config.php';
+require __DIR__ . '/config/session.php';
+$_SESSION['user_id'] = 1;
+$_SESSION['user_role_key'] = 'superadmin';
+$_SESSION['user_role'] = 'Super Admin';
+$_SESSION['user_name'] = 'Test';
+$_SESSION['last_activity'] = time();
+
+define('RD_AI_OPTIMIZER_TEST', true);
 require ROOT_PATH . '/modules/crad/config/config.php';
 require ROOT_PATH . '/includes/authentication.php';
 require ROOT_PATH . '/modules/faculty/includes/research-director-panel-assignment.php';
@@ -14,15 +22,6 @@ $out = [
     'ok' => $r['ok'] ?? null,
     'message' => $r['message'] ?? null,
     'summary' => $r['summary'] ?? null,
-    'slots' => [],
+    'slots' => $r['slots'] ?? [],
 ];
-foreach (($r['slots'] ?? []) as $s) {
-    $out['slots'][] = [
-        'date' => $s['defense_date'] ?? $s['date'] ?? null,
-        'start' => $s['start_time'] ?? ($s['defense_datetime'] ?? null),
-        'end' => $s['end_time'] ?? ($s['defense_end_datetime'] ?? null),
-        'venue' => $s['venue_name'] ?? ($s['venue'] ?? null),
-        'keys' => array_keys($s),
-    ];
-}
 echo json_encode($out, JSON_PRETTY_PRINT) . PHP_EOL;
