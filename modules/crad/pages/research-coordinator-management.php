@@ -1831,8 +1831,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (confirmModal && confirmModal.classList.contains('show')) {
             return true;
         }
-        const detailModal = document.querySelector('[data-rcm-modal].open, [data-rcm-modal].show, .rcm-modal-overlay.open');
-        if (detailModal) {
+        const detailModal = document.querySelector('[data-rcm-modal]');
+        if (detailModal && detailModal.hidden === false) {
             return true;
         }
         const reassignModal = document.getElementById('rcmReassignModal');
