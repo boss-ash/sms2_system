@@ -1024,17 +1024,21 @@ document.addEventListener('DOMContentLoaded', function () {
     var countdownEl = document.getElementById('otpCountdown');
     if (timerEl) {
         var expires = parseInt(timerEl.getAttribute('data-expires') || '0', 10);
+        var expiredDone = false;
         function setDigitsDisabled(disabled) {
             otpDigits.forEach(function (el) { el.disabled = disabled; });
         }
         function tick() {
             var left = Math.max(0, expires - Math.floor(Date.now() / 1000));
             if (left <= 0) {
-                timerEl.classList.add('is-expired');
-                timerEl.textContent = 'Code expired — request a new one';
-                if (otpSubmitBtn) otpSubmitBtn.disabled = true;
-                if (resendBtn) resendBtn.disabled = false;
-                setDigitsDisabled(true);
+                if (!expiredDone) {
+                    expiredDone = true;
+                    timerEl.classList.add('is-expired');
+                    timerEl.textContent = 'Code expired — request a new one';
+                    if (otpSubmitBtn) otpSubmitBtn.disabled = true;
+                    if (resendBtn) resendBtn.disabled = false;
+                    setDigitsDisabled(true);
+                }
                 return;
             }
             var m = Math.floor(left / 60);
@@ -1042,9 +1046,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (countdownEl) {
                 countdownEl.textContent = m + ':' + String(s).padStart(2, '0');
             }
-            if (otpSubmitBtn) otpSubmitBtn.disabled = false;
             if (resendBtn) resendBtn.disabled = true;
-            setDigitsDisabled(false);
             setTimeout(tick, 250);
         }
         tick();
