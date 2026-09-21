@@ -1986,7 +1986,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function render(data) {
-        if (!data || !data.ok) return;
+        if (!data || data.ok === false) return;
+        const fp = payloadFingerprint(data);
+        if (fp && fp === lastPayloadFp) {
+            CURRENT = data;
+            const syncSkip = document.querySelector('[data-rcm-sync]');
+            if (syncSkip && data.server_time) {
+                const dSkip = new Date(String(data.server_time).replace(' ', 'T'));
+                if (!isNaN(dSkip.getTime())) {
+                    const monthsSkip = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    syncSkip.textContent = 'Synced ' + monthsSkip[dSkip.getMonth()] + ' ' + dSkip.getDate() + ', ' + dSkip.getFullYear() + ' ' + dSkip.toLocaleTimeString('en-US', { hour12: true });
+                }
+            }
+            return;
+        }
+        lastPayloadFp = fp;
         CURRENT = data;
         renderStats(data);
         const cards = document.querySelectorAll('[data-rcm-card]');
@@ -2007,13 +2021,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function pollNow() {
-        if (pendingRequest) return;
+        if (pendingRequest || isAssignUiBusy()) return;
         pendingRequest = true;
         fetch(endpoint + '?ajax=coordinator-assignments&t=' + Date.now(), {
             headers: { 'X-Requested-With': 'fetch' }
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {
+                if (isAssignUiBusy()) return;
                 render(data);
                 if (data && data.message) showFlash(data.message, data.ok !== false);
             })
@@ -2067,9 +2082,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let pendingAssignData = null;
 
-    function openAssignConfirm(btn, groupNumber, coordinatorLabel, researchTitle) {
+    function openAssignConfirm(btn, groupNumber, coordinatorLabel, researchTitle, coordinatorValue) {
         ensureAssignConfirmModal();
-        pendingAssignData = { btn: btn, groupNumber: groupNumber };
+        pendingAssignData = {
+            btn: btn,
+            groupNumber: groupNumber,
+            coordinator: coordinatorValue || ''
+        };
 
         const grpEl = document.getElementById('rcmConfirmGroupNumber');
         const titleEl = document.getElementById('rcmConfirmResearchTitle');
@@ -2090,7 +2109,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     window.bootstrap.Modal.getOrCreateInstance(modalEl).hide();
                 }
                 if (pendingAssignData) {
-                    doAssign(pendingAssignData.btn);
+                    doAssign(pendingAssignData.btn, pendingAssignData.coordinator);
                     pendingAssignData = null;
                 }
             };
@@ -2104,10 +2123,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function doAssign(btn) {
+    function doAssign(btn, coordinatorValue) {
         const tr = btn.closest('tr');
         const select = tr ? tr.querySelector('.rcm-coordinator-select') : null;
-        if (!select || !select.value) {
+        const coordinator = coordinatorValue || (select ? select.value : '') || '';
+        if (!coordinator) {
             showFlash('Please select a Research Coordinator first.', false);
             return;
         }
@@ -2120,7 +2140,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fd.append('_token', CSRF);
         fd.append('group_number', btn.dataset.group);
         fd.append('student_id', btn.dataset.student || '');
-        fd.append('coordinator', select.value);
+        fd.append('coordinator', coordinator);
 
         fetch(endpoint, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'fetch' } })
             .then(function (r) { return r.json(); })
@@ -2167,10 +2187,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const groupNumber = btn.dataset.group || '—';
                 const selectedOption = select.options[select.selectedIndex];
                 const coordinatorLabel = selectedOption ? selectedOption.text : '—';
+                const coordinatorValue = select.value;
+                rememberCoordinatorSelection(select);
                 const titleCell = tr.querySelector('td:nth-child(2) .rcm-title');
                 const researchTitle = titleCell ? titleCell.textContent.trim() : '—';
 
-                openAssignConfirm(btn, groupNumber, coordinatorLabel, researchTitle);
+                openAssignConfirm(btn, groupNumber, coordinatorLabel, researchTitle, coordinatorValue);
             };
         });
     }
