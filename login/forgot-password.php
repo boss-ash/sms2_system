@@ -532,18 +532,45 @@ body.login-page.forgot-page {
     background: rgba(255, 241, 242, 0.98) !important;
 }
 
-.forgot-otp-input {
+.forgot-otp-boxes {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.4rem;
+    margin: 0.15rem 0 0.15rem;
+}
+
+.forgot-otp-digit {
+    width: 100%;
+    max-width: 48px;
+    min-height: 52px !important;
+    padding: 0.35rem 0 !important;
     text-align: center !important;
-    letter-spacing: 0.35em !important;
-    font-size: 1.45rem !important;
+    font-size: 1.35rem !important;
     font-weight: 800 !important;
     font-family: Consolas, "Courier New", monospace !important;
-    border-color: #a5b4fc !important;
+    letter-spacing: 0 !important;
+    border: 1.5px solid #a5b4fc !important;
+    border-radius: 12px !important;
     background: linear-gradient(180deg, #ffffff 0%, #eef2ff 100%) !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    caret-color: #5350d6;
+}
+
+.forgot-otp-digit:focus {
+    border-color: #5350d6 !important;
+    box-shadow: 0 0 0 3px rgba(83, 80, 214, 0.2) !important;
+    outline: none !important;
+    background: #fff !important;
+}
+
+.forgot-otp-digit.is-filled {
+    border-color: #6366f1 !important;
+    background: #eef2ff !important;
 }
 
 .forgot-timer {
-    margin: 0.35rem 0 0.85rem;
+    margin: 0.55rem 0 0.85rem;
     text-align: center;
     font-size: 0.9rem;
     font-weight: 700;
