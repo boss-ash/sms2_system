@@ -132,7 +132,22 @@
         }
         if (downloadBtn) downloadBtn.hidden = !row;
         if (detailEl) detailEl.hidden = !row;
-        if (pickEl) pickEl.hidden = !(role === 'adviser') || !!row;
+        if (pickEl) {
+            if (isCrad) pickEl.hidden = !!row || !(listBody && listBody.querySelector('[data-rsc-open]'));
+            else pickEl.hidden = !(role === 'adviser') || !!row;
+        }
+
+        var metaTitle = root.querySelector('[data-rsc-meta-title]');
+        var metaOr = root.querySelector('[data-rsc-meta-or]');
+        var metaUploaded = root.querySelector('[data-rsc-meta-uploaded]');
+        var metaFile = root.querySelector('[data-rsc-meta-file]');
+        if (metaTitle) metaTitle.textContent = (row && row.research_title) ? row.research_title : '—';
+        if (metaOr) metaOr.textContent = (row && row.or_number) ? row.or_number : '—';
+        if (metaUploaded) metaUploaded.textContent = (row && row.uploaded_at_label) ? row.uploaded_at_label : '—';
+        if (metaFile) metaFile.textContent = (row && row.uploaded_original) ? row.uploaded_original : '—';
+
+        var closeBtnEl = root.querySelector('[data-rsc-close]');
+        if (closeBtnEl) closeBtnEl.hidden = !(isCrad && row);
 
         if (emptyEl) {
             if (role === 'student') {
@@ -159,7 +174,9 @@
         if (!listBody) return;
         var isStudent = role === 'student';
         if (!rows || !rows.length) {
-            listBody.innerHTML = '<tr><td colspan="' + (isStudent ? 4 : 6) + '" class="text-muted">No clearance forms yet.</td></tr>';
+            listBody.innerHTML = '<tr><td colspan="' + (isStudent ? 4 : (isCrad ? 7 : 6)) + '" class="text-muted">'
+                + (isCrad ? 'No signed clearances waiting for review.' : 'No clearance forms yet.')
+                + '</td></tr>';
             return;
         }
         listBody.innerHTML = rows.map(function (row) {
@@ -172,6 +189,17 @@
                     + '<td>' + (row.or_number || '—') + '</td>'
                     + '<td>' + (row.status_label || row.status || 'Not available yet') + '</td>'
                     + '<td><button type="button" class="btn btn-sm btn-outline-primary" data-rsc-open="' + (row.id || 0) + '" data-rsc-stage="' + (row.research_stage || 'research_1') + '">Open</button></td>'
+                    + '</tr>';
+            }
+            if (isCrad) {
+                return '<tr' + active + ' data-rsc-open="' + row.id + '">'
+                    + '<td>' + (row.leader_group_no || '—') + '</td>'
+                    + '<td><strong>' + (row.stage_label || 'Research 1') + '</strong></td>'
+                    + '<td>' + (row.research_title || '—') + '</td>'
+                    + '<td>' + (row.or_number || '—') + '</td>'
+                    + '<td>' + (row.uploaded_at_label || '—') + '</td>'
+                    + '<td>' + (row.status_label || row.status || '') + '</td>'
+                    + '<td><button type="button" class="btn btn-sm btn-outline-primary" data-rsc-open="' + row.id + '">View</button></td>'
                     + '</tr>';
             }
             return '<tr' + active + ' data-rsc-open="' + row.id + '">'
@@ -221,27 +249,26 @@
                         }
                     }
                 } else if (isCrad) {
-                    var cradRow = data.clearance;
-                    if (!cradRow && data.rows && data.rows.length) {
-                        cradRow = data.rows[0];
-                    }
-                    if (cradRow) {
-                        selectedId = String(cradRow.id);
-                        applyClearance(cradRow);
+                    if (data.rows) renderRows(data.rows);
+                    if (emptyEl) emptyEl.hidden = !!(data.rows && data.rows.length);
+                    if (selectedId && data.clearance && String(data.clearance.id) === String(selectedId)) {
+                        applyClearance(data.clearance);
+                    } else if (selectedId && data.rows) {
+                        var match = data.rows.filter(function (row) { return String(row.id) === String(selectedId); })[0] || null;
+                        if (match) {
+                            // Need full clearance with image — request again with id already set
+                            applyClearance(data.clearance && String(data.clearance.id) === String(selectedId) ? data.clearance : null);
+                            if (!data.clearance || String(data.clearance.id) !== String(selectedId)) {
+                                // keep selectedId; next poll with id= will fill
+                            }
+                        } else {
+                            selectedId = '';
+                            applyClearance(null);
+                        }
                     } else {
-                        selectedId = '';
                         applyClearance(null);
                     }
-                    if (emptyEl) emptyEl.hidden = !!(data.rows && data.rows.length);
-                    if (groupSelect && data.rows) {
-                        var gid = selectedId;
-                        groupSelect.innerHTML = data.rows.map(function (row) {
-                            return '<option value="' + row.id + '"' + (String(row.id) === String(gid) ? ' selected' : '') + '>'
-                                + ((row.stage_label ? row.stage_label + ' · ' : '') + (row.leader_group_no || ('#' + row.id))) + '</option>';
-                        }).join('');
-                        groupSelect.hidden = data.rows.length < 2;
-                    }
-                    if (data.rows) renderRows(data.rows);
+                    if (pickEl) pickEl.hidden = !!(selectedId) || !(data.rows && data.rows.length);
                 } else if (role === 'adviser') {
                     if (data.rows) renderRows(data.rows);
                     applyClearance(null);
