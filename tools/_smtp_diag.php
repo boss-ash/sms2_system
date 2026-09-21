@@ -3,6 +3,7 @@
  * Diagnose SMTP secret decrypt without printing the password.
  */
 require_once __DIR__ . '/../config/config.php';
+require_once ROOT_PATH . '/config/database.php';
 require_once ROOT_PATH . '/includes/security.php';
 require_once ROOT_PATH . '/includes/crypto.php';
 
