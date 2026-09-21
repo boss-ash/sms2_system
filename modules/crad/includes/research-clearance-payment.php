@@ -233,19 +233,56 @@ function rcpEnsureOrFromImage(PDO $crad, array $row): array
     return $row;
 }
 
+function rcpIsFinalManuscriptApproved(PDO $crad, int $groupId): bool
+{
+    if ($groupId <= 0) {
+        return false;
+    }
+    if (function_exists('fpIsManuscriptApproved')) {
+        return fpIsManuscriptApproved($crad, $groupId);
+    }
+    try {
+        $stmt = $crad->prepare(
+            "SELECT ms.status AS ms_status, me.result AS me_result
+             FROM manuscript_submissions ms
+             LEFT JOIN manuscript_evaluations me ON me.id = (
+                SELECT me2.id FROM manuscript_evaluations me2
+                WHERE me2.submission_id = ms.id
+                ORDER BY me2.id DESC
+                LIMIT 1
+             )
+             WHERE ms.research_group_id = ?
+             ORDER BY ms.version_number DESC, ms.id DESC
+             LIMIT 1"
+        );
+        $stmt->execute([$groupId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        return (string) ($row['ms_status'] ?? '') === 'Approved'
+            && strtoupper(trim((string) ($row['me_result'] ?? ''))) === 'APPROVED';
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
 function rcpCanUploadStage(PDO $crad, int $groupId, string $stage): array
 {
     $stage = rcpNormalizeStage($stage);
     if ($stage === 'research_1') {
         return ['ok' => true, 'reason' => ''];
     }
-    if (function_exists('rscClearanceDoneExists') && rscClearanceDoneExists($crad, $groupId, 'research_1')) {
-        return ['ok' => true, 'reason' => ''];
+    if (!function_exists('rscClearanceDoneExists') || !rscClearanceDoneExists($crad, $groupId, 'research_1')) {
+        return [
+            'ok' => false,
+            'reason' => 'Finish Research 1 clearance (Pre-Oral) before uploading Research 2 collage payment.',
+        ];
     }
-    return [
-        'ok' => false,
-        'reason' => 'Finish Research 1 clearance (Pre-Oral) before uploading Research 2 collage payment.',
-    ];
+    if (!rcpIsFinalManuscriptApproved($crad, $groupId)) {
+        return [
+            'ok' => false,
+            'reason' => 'Final Manuscript must be approved before uploading Research 2 collage payment.',
+        ];
+    }
+    return ['ok' => true, 'reason' => ''];
 }
 
 function rcpStoreUpload(int $groupId, array $file): array
