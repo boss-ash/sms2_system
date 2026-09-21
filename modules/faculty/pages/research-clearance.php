@@ -21,11 +21,6 @@ $breadcrumbs = [
     ['label' => 'Research Services Clearance', 'url' => null],
 ];
 
-$crad = rscDb();
-rscEnsureSchema($crad);
-$rows = [];
-$public = null;
-
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
@@ -38,14 +33,4 @@ renderBreadcrumbs($breadcrumbs);
         Students print the form, upload the signed image, and <strong>CRAD</strong> approves it.
     </div>
 </div>
-<?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
-                <button type="button" class="btn btn-outline-secondary" data-rsc-download <?= $public ? '' : 'hidden' ?>><?= smsIcon('download', ['class' => 'me-1']) ?>Download Image</button>
-                <button type="button" class="btn btn-success" data-rsc-sign <?= ($public && $public['status'] === 'sent_to_adviser') ? '' : 'hidden' ?>><?= smsIcon('signature', ['class' => 'me-1']) ?>Sign Clearance</button>
-            </div>
-        </div>
-        <div class="rsc-wrap" data-rsc-form><?= $public['form_html'] ?? '' ?></div>
-    </div>
-</div>
-<?php require __DIR__ . '/../../crad/includes/research-clearance-sig-modal.php'; ?>
-<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-stage-2"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
