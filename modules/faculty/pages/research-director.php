@@ -321,8 +321,6 @@ function rdScheduleReadyRows(PDO $pdo, bool $includeScheduled = false, string $d
                      ON rsc2.research_group_id = rg.id
                     AND rsc2.research_stage = 'research_2'
                     AND rsc2.status = 'clearance_done'
-                    AND TRIM(COALESCE(rsc2.adviser_signature, '')) <> ''
-                    AND TRIM(COALESCE(rsc2.crad_signature, '')) <> ''
                  INNER JOIN manuscript_submissions fms
                      ON fms.id = (
                                 SELECT ms.id
