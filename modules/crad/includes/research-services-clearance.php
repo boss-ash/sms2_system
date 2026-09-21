@@ -975,49 +975,6 @@ function rscCradReceive(PDO $crad, array $clearance, array $file = []): array
 
     return ['ok' => true, 'clearance' => rscFindById($crad, (int) $clearance['id'])];
 }
-    $crad->prepare(
-        "UPDATE research_services_clearances
-         SET status = :status,
-             uploaded_file = :file,
-             uploaded_original = :original,
-             uploaded_at = NOW(),
-             form_verified = 1,
-             mis_signature = :mis_sig,
-             aa_signature = :aa_sig,
-             mis_verified = :mis_ok,
-             aa_verified = :aa_ok,
-             mis_verified_at = :mis_at,
-             aa_verified_at = :aa_at
-         WHERE id = :id"
-    )->execute([
-        ':status' => $nextStatus,
-        ':file' => (string) $saved['file'],
-        ':original' => (string) $saved['original'],
-        ':mis_sig' => $hasMis ? (string) $extracted['mis'] : '',
-        ':aa_sig' => $hasAa ? (string) $extracted['aa'] : '',
-        ':mis_ok' => $hasMis ? 1 : 0,
-        ':aa_ok' => $hasAa ? 1 : 0,
-        ':mis_at' => $hasMis ? date('Y-m-d H:i:s') : null,
-        ':aa_at' => $hasAa ? date('Y-m-d H:i:s') : null,
-        ':id' => (int) $clearance['id'],
-    ]);
-    $fresh = rscFindById($crad, (int) $clearance['id']);
-    if ($fresh) {
-        foreach (rscStudentRecipients($crad, $clearance) as $recipient) {
-            rscNotify(
-                $crad,
-                'clearance-mis-aa:' . (int) $clearance['id'],
-                (int) $clearance['id'],
-                $recipient,
-                'mis_aa_signed',
-                'MIS and AA signatures added',
-                'The MIS and AA signatures from your printed clearance are now on your Research Services Clearance form.',
-                rscStudentUrl()
-            );
-        }
-    }
-    return ['ok' => true, 'clearance' => $fresh];
-}
 
 function rscVerifyOfficialFormImage(array $clearance, string $path, string $originalName = ''): array
 {
