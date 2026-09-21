@@ -867,7 +867,7 @@ function rscAdviserSign(PDO $crad, array $clearance, string $signature, string $
 function rscStudentUploadSigned(PDO $crad, array $clearance, array $file = []): array
 {
     $status = (string) ($clearance['status'] ?? '');
-    $allowed = ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received'];
+    $allowed = ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received', 'rejected'];
     if (!in_array($status, $allowed, true)) {
         if ($status === 'clearance_done') {
             return ['ok' => false, 'error' => 'This clearance is already approved.'];
@@ -903,6 +903,7 @@ function rscStudentUploadSigned(PDO $crad, array $clearance, array $file = []): 
              uploaded_original = :orig,
              uploaded_at = NOW(),
              form_verified = 1,
+             crad_remarks = '',
              sent_at = COALESCE(sent_at, NOW())
          WHERE id = :id"
     )->execute([
@@ -1098,7 +1099,8 @@ function rscCradApproveSigned(PDO $crad, array $clearance, string $approverName 
              crad_signed_at = NOW(),
              crad_name = :name,
              crad_user_id = :uid,
-             form_verified = 1
+             form_verified = 1,
+             crad_remarks = ''
          WHERE id = :id"
     )->execute([
         ':name' => $name,
@@ -1110,12 +1112,62 @@ function rscCradApproveSigned(PDO $crad, array $clearance, string $approverName 
     foreach (rscStudentRecipients($crad, $clearance) as $recipient) {
         rscNotify(
             $crad,
-            'clearance-done:' . (int) $clearance['id'],
+            'clearance-done:' . (int) $clearance['id'] . ':' . time(),
             (int) $clearance['id'],
             $recipient,
             'clearance_done',
             'Clearance approved',
             'CRAD approved your signed Research Services Clearance. Your clearance is complete.',
+            rscStudentUrl()
+        );
+    }
+    return ['ok' => true, 'clearance' => $fresh];
+}
+
+/**
+ * CRAD rejects the signed upload — student must re-upload.
+ */
+function rscCradRejectSigned(PDO $crad, array $clearance, string $reason = ''): array
+{
+    $status = (string) ($clearance['status'] ?? '');
+    if (!in_array($status, ['crad_received', 'adviser_signed'], true)) {
+        return ['ok' => false, 'error' => 'This clearance is not waiting for CRAD review.'];
+    }
+    if (trim((string) ($clearance['uploaded_file'] ?? '')) === '') {
+        return ['ok' => false, 'error' => 'There is no uploaded clearance image to reject.'];
+    }
+    $reason = trim($reason);
+    if ($reason === '') {
+        $reason = 'Please re-upload a clearer signed clearance form.';
+    }
+    if (strlen($reason) > 500) {
+        $reason = substr($reason, 0, 500);
+    }
+
+    $crad->prepare(
+        "UPDATE research_services_clearances
+         SET status = 'rejected',
+             form_verified = 0,
+             crad_remarks = :remarks,
+             crad_signed_at = NULL,
+             crad_name = '',
+             crad_user_id = NULL
+         WHERE id = :id"
+    )->execute([
+        ':remarks' => $reason,
+        ':id' => (int) $clearance['id'],
+    ]);
+
+    $fresh = rscFindById($crad, (int) $clearance['id']) ?: $clearance;
+    foreach (rscStudentRecipients($crad, $clearance) as $recipient) {
+        rscNotify(
+            $crad,
+            'clearance-rejected:' . (int) $clearance['id'] . ':' . time(),
+            (int) $clearance['id'],
+            $recipient,
+            'clearance_rejected',
+            'Clearance returned — re-upload needed',
+            'CRAD rejected your signed clearance. Reason: ' . $reason . ' Please print/sign again and re-upload.',
             rscStudentUrl()
         );
     }
@@ -1172,6 +1224,7 @@ function rscStatusLabel(string $status): string
         'sent_to_adviser' => 'Ready to print',
         'adviser_signed' => 'Awaiting signed upload',
         'crad_received' => 'Awaiting CRAD approval',
+        'rejected' => 'Rejected — re-upload',
         'clearance_done' => 'Clearance done',
         default => $status,
     };
