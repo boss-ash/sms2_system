@@ -92,10 +92,13 @@
     .module-page-banner,
     .rsc-toolbar,
     .rsc-inbox,
+    .rsc-no-print,
     .rsc-pick,
     [data-rsc-empty],
     [data-rsc-close],
     [data-rsc-check-wrap],
+    [data-rsc-student-hint],
+    [data-rsc-reject-note],
     .alert,
     .sms-page-loader {
         display: none !important;

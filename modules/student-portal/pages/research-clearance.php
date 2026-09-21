@@ -46,8 +46,7 @@ if (!$public && $selectedStage !== '') {
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link rel="stylesheet" href="<?= BASE_URL ?>/modules/crad/assets/css/research-clearance.css?v=rsc-flow-3">
-
+<link rel="stylesheet" href="<?= BASE_URL ?>/modules/crad/assets/css/research-clearance.css?v=rsc-flow-5">
 <div class="glass-dashboard rsc-print-root"
      data-rsc-live
      data-rsc-role="student"
@@ -71,11 +70,11 @@ renderBreadcrumbs($breadcrumbs);
         </div>
     </div>
 
-    <div class="alert alert-light border mb-3" data-rsc-student-hint>
+    <div class="alert alert-light border mb-3 rsc-no-print" data-rsc-student-hint>
         <?= smsIcon('info-circle', ['class' => 'me-2 text-primary']) ?>
         After payment is approved: <strong>Print</strong> → get signatures on paper → <strong>Upload signed image</strong> → CRAD approves or rejects.
     </div>
-    <div class="alert alert-danger mb-3" data-rsc-reject-note
+    <div class="alert alert-danger mb-3 rsc-no-print" data-rsc-reject-note
          <?= ($public && ($public['status'] ?? '') === 'rejected') ? '' : 'hidden' ?>>
         <?= smsIcon('exclamation-triangle', ['class' => 'me-2']) ?>
         <span data-rsc-reject-text>
@@ -86,7 +85,7 @@ renderBreadcrumbs($breadcrumbs);
         </span>
     </div>
 
-    <section class="glass-panel p-4 mb-3">
+    <section class="glass-panel p-4 mb-3 rsc-inbox rsc-no-print">
         <h5 class="mb-3"><?= smsIcon('inbox', ['class' => 'me-2 text-primary']) ?>Clearance Inbox</h5>
         <div class="table-responsive">
             <table class="table table-hover mb-0">
