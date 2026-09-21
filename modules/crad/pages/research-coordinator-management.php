@@ -2125,6 +2125,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(endpoint, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'fetch' } })
             .then(function (r) { return r.json(); })
             .then(function (data) {
+                clearPendingCoordinator(btn.dataset.group, btn.dataset.student || '');
+                lastPayloadFp = '';
                 render(data);
                 if (data && data.message) showFlash(data.message, data.ok !== false);
             })
@@ -2137,7 +2139,21 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    function bindCoordinatorSelectMemory() {
+        document.querySelectorAll('.rcm-coordinator-select').forEach(function (select) {
+            if (select.dataset.rcmRememberBound === '1') return;
+            select.dataset.rcmRememberBound = '1';
+            select.addEventListener('change', function () {
+                rememberCoordinatorSelection(select);
+            });
+            select.addEventListener('focus', function () {
+                rememberCoordinatorSelection(select);
+            });
+        });
+    }
+
     function bindActions() {
+        bindCoordinatorSelectMemory();
         document.querySelectorAll('.rcm-assign-btn').forEach(function (btn) {
             btn.onclick = function () {
                 const tr = btn.closest('tr');
