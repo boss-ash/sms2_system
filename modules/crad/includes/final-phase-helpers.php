@@ -652,7 +652,7 @@ function fpIsFinalManuscriptApproved(PDO $crad, int $groupId): bool
     return (string) (fpGetFinalManuscriptApproval($crad, $groupId)['status'] ?? '') === 'Approved';
 }
 
-function fpNotifyFinalManuscriptApproval(PDO $crad, array $submission, string $title, string $body): void
+function fpNotifyFinalManuscriptApproval(PDO $crad, array $submission, string $title, string $body, ?string $url = null): void
 {
     $submissionId = (int) ($submission['id'] ?? 0);
     if ($submissionId <= 0) {
@@ -671,7 +671,9 @@ function fpNotifyFinalManuscriptApproval(PDO $crad, array $submission, string $t
             $submissionId,
             $title,
             $body,
-            BASE_URL . '/modules/student-portal/pages/final-manuscript.php',
+            $url !== null && $url !== ''
+                ? $url
+                : BASE_URL . '/modules/student-portal/pages/final-manuscript.php',
         ]);
     } catch (Throwable $e) {
         error_log('Final manuscript approval notification failed: ' . $e->getMessage());

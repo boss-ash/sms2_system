@@ -105,6 +105,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $overall,
                         ]);
                         $crad->commit();
+                        if ($action === 'approve') {
+                            fpNotifyFinalManuscriptApproval(
+                                $crad,
+                                $submission,
+                                'Final Manuscript Approved — Research 2 Open',
+                                'Your final manuscript was approved. Upload Research 2 collage payment, then complete Research 2 clearance after Admin approves it. Final Defense can be scheduled once Research 2 clearance is done.',
+                                BASE_URL . '/modules/student-portal/pages/college-payment.php?stage=research_2'
+                            );
+                        }
                         logActivity(
                             'update',
                             ($action === 'approve' ? 'Approved' : 'Returned') . ' final manuscript submission #' . $submissionId,

@@ -1668,8 +1668,9 @@ function rscStudentInbox(PDO $crad, int $groupId): array
         $stage = rscNormalizeStage((string) $stage);
         $chapterOk = !$needChapter || rscIsChapterReady($crad, $groupId);
         $r1Done = $stage === 'research_1' || rscClearanceDoneExists($crad, $groupId, 'research_1');
+        $manuscriptOk = $stage === 'research_1' || rcpIsFinalManuscriptApproved($crad, $groupId);
         $paymentOk = rscPaymentUnlocksClearance($crad, $groupId, null, $stage);
-        $ready = $chapterOk && $r1Done && $paymentOk;
+        $ready = $chapterOk && $r1Done && $manuscriptOk && $paymentOk;
         $row = null;
         if ($ready) {
             $row = rscEnsureForReadyGroup($crad, $groupId, $stage);
@@ -1691,6 +1692,8 @@ function rscStudentInbox(PDO $crad, int $groupId): array
         $locked = '';
         if ($stage === 'research_2' && !rscClearanceDoneExists($crad, $groupId, 'research_1')) {
             $locked = 'Finish Research 1 clearance first.';
+        } elseif ($stage === 'research_2' && !$manuscriptOk) {
+            $locked = 'Final Manuscript must be approved before Research 2 clearance.';
         } elseif ($needChapter && !$chapterOk) {
             $locked = 'Chapter 1-3 must be scored first.';
         } elseif (!$paymentOk) {

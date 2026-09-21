@@ -15,7 +15,7 @@ $pageTitle = 'Upload Collage Payment';
 $activeModule = 'student_portal';
 $activePage = 'college-payment';
 $pageBannerIcon = 'fa-receipt';
-$pageBannerDescription = 'Upload Research 1 or Research 2 collage payment. Admin must approve it before that clearance form opens.';
+$pageBannerDescription = 'Upload Research 1 or Research 2 collage payment. Research 2 unlocks after Final Manuscript approval. Admin must approve payment before that clearance form opens.';
 $breadcrumbs = [
     ['label' => 'Student Portal', 'url' => BASE_URL . '/modules/student-portal/pages/dashboard.php'],
     ['label' => 'Upload Collage Payment', 'url' => null],

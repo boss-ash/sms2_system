@@ -130,7 +130,7 @@ renderBreadcrumbs($breadcrumbs);
                     <a href="<?= e(BASE_URL . '/modules/student-portal/pages/college-payment.php?stage=' . urlencode((string) ($public['research_stage'] ?? 'research_1'))) ?>">Upload Collage Payment</a>
                 <?php endif; ?>
             <?php else: ?>
-                Open a clearance in the inbox. Research 1 is for Pre-Oral. Research 2 opens after Research 1 is finished and its payment is approved.
+                Open a clearance in the inbox. Research 1 is for Pre-Oral. Research 2 opens after Final Manuscript approval, then Research 2 payment is approved.
             <?php endif; ?>
         </span>
     </div>
