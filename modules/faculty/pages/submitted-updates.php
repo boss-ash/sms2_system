@@ -698,6 +698,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (gate) {
                             gate.innerHTML = '<?= smsIcon('info-circle') ?>AI could not analyze this file. You can still <strong>Request Revision</strong> so the student can upload a .docx or .txt in the portal. <strong>Approve</strong> stays locked until AI succeeds.';
                         }
+                        const updateIdForModal = this.getAttribute('data-update-id');
+                        const revisionTextarea = document.querySelector('#revisionModal' + updateIdForModal + ' textarea[name="feedback_text"]');
+                        if (revisionTextarea && !revisionTextarea.value.trim()) {
+                            revisionTextarea.value = 'Please re-upload your research document as a .docx or .txt file (not an image), then resubmit this milestone for review.';
+                        }
                     }
                     alert((result.message || 'AI analysis failed.') + '\n\nYou can still click Request Revision to notify the student.');
                     this.disabled = false;
