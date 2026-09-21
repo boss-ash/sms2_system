@@ -21,6 +21,7 @@ if (isAuthenticated()) {
 $message = '';
 $error = '';
 $emailValue = '';
+$devResetLink = '';
 
 /**
  * Find user by email address only (not username / student ID).
@@ -89,16 +90,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 . BASE_URL . '/login/reset-password.php?token=' . urlencode($token);
 
                             $sent = smsSendPasswordResetEmail($user, $resetUrl, $sendTo);
-                            logActivity(
-                                'password_reset_request',
-                                !empty($sent['ok'])
-                                    ? 'Password reset link emailed'
-                                    : 'Password reset email failed: ' . ($sent['error'] ?? 'unknown'),
-                                'System',
-                                (int) $user['id'],
-                                (string) $user['full_name'],
-                                (string) $user['role_key']
-                            );
+                            if (!empty($sent['ok'])) {
+                                logActivity(
+                                    'password_reset_request',
+                                    'Password reset link emailed',
+                                    'System',
+                                    (int) $user['id'],
+                                    (string) $user['full_name'],
+                                    (string) $user['role_key']
+                                );
+                            } else {
+                                logActivity(
+                                    'password_reset_request',
+                                    'Password reset email failed: ' . ($sent['error'] ?? 'unknown'),
+                                    'System',
+                                    (int) $user['id'],
+                                    (string) $user['full_name'],
+                                    (string) $user['role_key'],
+                                    false
+                                );
+                                // Local/dev helper: show link only when explicitly enabled in System Settings.
+                                if (smsSetting('mail_show_link_on_failure', '0') === '1') {
+                                    $devResetLink = $resetUrl;
+                                    $message = 'Email could not be sent (' . ($sent['error'] ?? 'SMTP error') . '). '
+                                        . 'Use the reset link below (shown because “Show reset link if email fails” is enabled).';
+                                }
+                            }
                         } else {
                             logActivity(
                                 'password_reset_request',
@@ -512,6 +529,12 @@ html[data-theme="dark"] .forgot-glass .sms-cf-widget.is-verified {
         <?php endif; ?>
         <?php if ($message): ?>
             <div class="alert alert-success mb-2"><?= e($message) ?></div>
+        <?php endif; ?>
+        <?php if ($devResetLink !== ''): ?>
+            <div class="forgot-reset-box" role="status">
+                <div style="font-weight:800;margin-bottom:.35rem;">Password reset link</div>
+                <a href="<?= e($devResetLink) ?>"><?= e($devResetLink) ?></a>
+            </div>
         <?php endif; ?>
 
         <form method="POST" class="mt-3" novalidate id="forgotForm">

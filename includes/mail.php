@@ -74,8 +74,24 @@ function smsSendMailSmtp(
         ];
     }
 
+    if ($user !== '' && $pass === '') {
+        return [
+            'ok' => false,
+            'error' => 'SMTP password is missing or could not be decrypted. Open System Settings → Notifications / Email, re-enter your App Password, then Save and send a test email.',
+        ];
+    }
+
     if ($port <= 0) {
         $port = $enc === 'ssl' ? 465 : 587;
+    }
+
+    // Gmail (and many providers) require From to match the authenticated mailbox.
+    if ($user !== '' && filter_var($user, FILTER_VALIDATE_EMAIL)) {
+        $fromDomain = strtolower((string) substr(strrchr($fromEmail, '@') ?: '', 1));
+        $userDomain = strtolower((string) substr(strrchr($user, '@') ?: '', 1));
+        if ($fromEmail === '' || !filter_var($fromEmail, FILTER_VALIDATE_EMAIL) || $fromDomain !== $userDomain) {
+            $fromEmail = $user;
+        }
     }
 
     $phpmailerRoot = ROOT_PATH . DIRECTORY_SEPARATOR . 'PHPMailer' . DIRECTORY_SEPARATOR . 'src';
