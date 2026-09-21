@@ -1331,8 +1331,7 @@ function rscPersistUploadedSignatures(PDO $crad, array $row): array
 function rscUploadedFormHasPhysicalMarks(array $row): bool
 {
     return trim((string) ($row['uploaded_file'] ?? '')) !== ''
-        && (int) ($row['form_verified'] ?? 0) === 1
-        && trim((string) ($row['adviser_signature'] ?? '')) !== '';
+        && (int) ($row['form_verified'] ?? 0) === 1;
 }
 
 function rscParseFlexibleDate(?string $value): ?int
