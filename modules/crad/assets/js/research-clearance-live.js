@@ -91,7 +91,7 @@
         }
 
         var canStudentUpload = !!(role === 'student' && row && row.can_student_upload);
-        var canCradUpload = !!(isCrad && row && (row.status === 'crad_received' || row.status === 'adviser_signed' || row.status === 'clearance_done'));
+        var canCradUpload = false; // CRAD reviews only — student uploads signed image
         if (acceptBtn) {
             acceptBtn.hidden = !(canStudentUpload || canCradUpload);
             acceptBtn.disabled = false;
@@ -127,8 +127,8 @@
             }
         }
         if (printBtn) {
-            if (role === 'student') printBtn.hidden = !row || !row.form_html;
-            else printBtn.hidden = !row || !row.has_upload;
+            // Print only for students (form). Hide for CRAD officers.
+            printBtn.hidden = !(role === 'student' && row && row.form_html);
         }
         if (downloadBtn) downloadBtn.hidden = !row;
         if (detailEl) detailEl.hidden = !row;

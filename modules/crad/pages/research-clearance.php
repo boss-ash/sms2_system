@@ -57,9 +57,6 @@ renderBreadcrumbs($breadcrumbs);
                         <?php endforeach; ?>
                     </select>
                 <?php endif; ?>
-                <input type="file" id="rscClearanceFile" class="d-none" data-rsc-file accept=".png,.jpg,.jpeg,image/png,image/jpeg">
-                <label for="rscClearanceFile" class="btn btn-outline-primary mb-0" data-rsc-accept <?= ($public && in_array($public['status'], ['crad_received', 'adviser_signed', 'clearance_done'], true)) ? '' : 'hidden' ?>><?= smsIcon('upload', ['class' => 'me-1']) ?><span data-rsc-upload-label><?= !empty($public['has_upload']) ? 'Re-upload Image' : 'Upload Image' ?></span></label>
-                <button type="button" class="btn btn-outline-secondary" data-rsc-print <?= ($public && !empty($public['has_upload'])) ? '' : 'hidden' ?>><?= smsIcon('print', ['class' => 'me-1']) ?>Print</button>
                 <button type="button" class="btn btn-success" data-rsc-approve <?= ($public && !empty($public['can_crad_sign'])) ? '' : 'hidden' ?>><?= smsIcon('check', ['class' => 'me-1']) ?>Approve</button>
                 <button type="button" class="btn btn-outline-danger" data-rsc-reject <?= ($public && !empty($public['can_crad_sign'])) ? '' : 'hidden' ?>><?= smsIcon('times', ['class' => 'me-1']) ?>Reject</button>
             </div>
@@ -78,5 +75,5 @@ renderBreadcrumbs($breadcrumbs);
         <div class="rsc-wrap" data-rsc-form <?= ($public && !empty($public['has_upload'])) ? '' : 'hidden' ?>></div>
     </div>
 </div>
-<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-6"></script>
+<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-7"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
