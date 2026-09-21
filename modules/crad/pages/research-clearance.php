@@ -31,7 +31,7 @@ $public = $current ? rscPublicRow($current) : null;
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link rel="stylesheet" href="<?= BASE_URL ?>/modules/crad/assets/css/research-clearance.css?v=rsc-flow-4">
+<link rel="stylesheet" href="<?= BASE_URL ?>/modules/crad/assets/css/research-clearance.css?v=rsc-flow-6">
 
 <div class="glass-dashboard rsc-print-root"
      data-rsc-live
@@ -78,5 +78,5 @@ renderBreadcrumbs($breadcrumbs);
         <div class="rsc-wrap" data-rsc-form <?= ($public && !empty($public['has_upload'])) ? '' : 'hidden' ?>></div>
     </div>
 </div>
-<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-4"></script>
+<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-6"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>

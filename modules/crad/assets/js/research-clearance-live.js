@@ -71,8 +71,8 @@
         if (formBox) {
             if (showUploadImg) {
                 formBox.hidden = false;
-                formBox.innerHTML = '<img class="rsc-upload-img" alt="Uploaded clearance form" src="'
-                    + row.uploaded_url + '">';
+                formBox.innerHTML = '<div class="rsc-upload-frame"><img class="rsc-upload-img" alt="Uploaded clearance form" src="'
+                    + row.uploaded_url + '"></div>';
             } else if (showForm) {
                 formBox.hidden = false;
                 formBox.innerHTML = row.form_html;
