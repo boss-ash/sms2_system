@@ -253,7 +253,7 @@ if (!empty($_SESSION['flash_settings_error'])) {
     unset($_SESSION['flash_settings_error']);
 }
 
-$sessionTimeout = (int) smsSetting('session_timeout_minutes', '30');
+$sessionTimeout = (int) smsSetting('session_timeout_minutes', '2');
 $maxFails = (int) smsSetting('max_failed_logins', '3');
 $lockSeconds = (int) smsSetting('lockout_seconds', '0');
 if ($lockSeconds <= 0) {

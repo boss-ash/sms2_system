@@ -3010,7 +3010,7 @@ INSERT INTO `system_settings` (`setting_key`, `setting_value`, `updated_at`) VAL
 ('module_maintenance_msg_crad', 'The system is currently under maintenance. Some services may be temporarily unavailable.\r\n\r\nThank you for your patience and understanding.', '2026-07-23 15:05:14'),
 ('password_expiry_days', '0', '2026-07-22 22:24:44'),
 ('require_password_change_first_login', '0', '2026-07-22 22:24:44'),
-('session_timeout_minutes', '30', '2026-07-22 22:24:44'),
+('session_timeout_minutes', '2', '2026-07-22 22:24:44'),
 ('smtp_encryption', 'tls', '2026-07-23 10:33:25'),
 ('smtp_host', 'smtp.gmail.com', '2026-07-23 10:51:48'),
 ('smtp_password', 'sms2enc1.BnNN43RIftF9bLKe7buHTa6/qaxuGXWg5XruC7mKh67ZYei7aPH7AeOKNpdXJ7A=', '2026-08-06 12:08:17'),
