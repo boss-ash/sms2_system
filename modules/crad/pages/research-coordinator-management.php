@@ -1831,6 +1831,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (confirmModal && confirmModal.classList.contains('show')) {
             return true;
         }
+        const detailModal = document.querySelector('[data-rcm-modal].open, [data-rcm-modal].show, .rcm-modal-overlay.open');
+        if (detailModal) {
+            return true;
+        }
         const reassignModal = document.getElementById('rcmReassignModal');
         if (reassignModal && (reassignModal.classList.contains('show') || reassignModal.style.display === 'block')) {
             return true;
@@ -2206,6 +2210,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(endpoint, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'fetch' } })
             .then(function (r) { return r.json(); })
             .then(function (data) {
+                lastPayloadFp = '';
                 render(data);
                 if (data && data.message) showFlash(data.message, data.ok !== false);
             })
@@ -2383,6 +2388,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     closeModal();
+                    lastPayloadFp = '';
                     render(data);
                     if (data && data.message) showFlash(data.message, data.ok !== false);
                 })
