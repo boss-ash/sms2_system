@@ -9,35 +9,25 @@
     var statusEl = root.querySelector('[data-rsc-status]');
     var syncEl = root.querySelector('[data-rsc-sync]');
     var listBody = root.querySelector('[data-rsc-rows]');
-    var sendBtn = root.querySelector('[data-rsc-send]');
     var acceptBtn = root.querySelector('[data-rsc-accept]');
-    var uploadOk = null;
     var signBtn = root.querySelector('[data-rsc-sign]');
+    var approveBtn = root.querySelector('[data-rsc-approve]');
     var printBtn = root.querySelector('[data-rsc-print]');
     var downloadBtn = root.querySelector('[data-rsc-download]');
     var fileInput = root.querySelector('[data-rsc-file]');
     var emptyEl = root.querySelector('[data-rsc-empty]');
-    var checkWrap = root.querySelector('[data-rsc-check-wrap]');
-    var checkAdviser = root.querySelector('[data-rsc-check-adviser]');
-    var checkMis = root.querySelector('[data-rsc-check-mis]');
-    var checkAa = root.querySelector('[data-rsc-check-aa]');
-    var uploadName = root.querySelector('[data-rsc-upload-name]');
     var uploadGate = root.querySelector('[data-rsc-upload-gate]');
     var misAaNote = root.querySelector('[data-rsc-mis-aa-note]');
-    var uploadPreview = root.querySelector('[data-rsc-upload-preview]');
-    var uploadView = root.querySelector('[data-rsc-upload-view]');
     var detailEl = root.querySelector('[data-rsc-detail]');
     var pickEl = root.querySelector('[data-rsc-pick]');
     var closeBtn = root.querySelector('[data-rsc-close]');
     var groupSelect = root.querySelector('[data-rsc-group]');
     var current = null;
     var selectedId = root.getAttribute('data-rsc-id') || '';
-    var shouldScroll = false;
     var uploading = false;
     var isCrad = role === 'crad_officer' || role === 'admin' || role === 'sms_admin' || role === 'superadmin';
     var selectedStage = root.getAttribute('data-rsc-stage') || '';
     var emptyText = root.querySelector('[data-rsc-empty-text]');
-    var isInboxRole = role === 'adviser' || role === 'student';
 
     function post(action, extra) {
         var fd = extra instanceof FormData ? extra : new FormData();
@@ -58,7 +48,7 @@
                 try {
                     return JSON.parse(text);
                 } catch (e) {
-                    return { ok: false, error: 'Upload failed. Please refresh and try the clearance PNG again.' };
+                    return { ok: false, error: 'Request failed. Please refresh and try again.' };
                 }
             });
         });
@@ -66,72 +56,84 @@
 
     function applyClearance(row) {
         current = row;
-        var signedDone = !!(row && row.status === 'clearance_done' && row.form_html);
-        var showUpload = !!(isCrad && row && row.has_upload && row.uploaded_url && !signedDone);
-        var showForm = !showUpload && !!(row && row.form_html) && (!isCrad || signedDone || !!(row && row.form_verified && row.has_upload));
+        var signedDone = !!(row && row.status === 'clearance_done');
+        var showUploadImg = !!(row && row.has_upload && row.uploaded_url && (isCrad || signedDone || row.status === 'crad_received'));
+        var showForm = !!(row && row.form_html) && (!isCrad || signedDone) && !showUploadImg;
+
+        if (isCrad && row && row.has_upload && row.uploaded_url) {
+            showUploadImg = true;
+            showForm = false;
+        }
+
         if (formBox) {
-            if (showUpload) {
+            if (showUploadImg) {
                 formBox.hidden = false;
                 formBox.innerHTML = '<img class="rsc-upload-img" alt="Uploaded clearance form" src="'
                     + row.uploaded_url + '">';
-            } else if (showForm || !(formBox.innerHTML || '').trim()) {
-                formBox.hidden = !showForm;
-                formBox.innerHTML = showForm ? row.form_html : '';
+            } else if (showForm) {
+                formBox.hidden = false;
+                formBox.innerHTML = row.form_html;
+            } else if (row && row.form_html && role === 'student') {
+                formBox.hidden = false;
+                formBox.innerHTML = row.form_html;
+            } else {
+                formBox.hidden = true;
+                if (!(formBox.innerHTML || '').trim()) formBox.innerHTML = '';
             }
         }
+
         if (statusEl) {
             var stageBit = row && row.stage_label ? (row.stage_label + ' — ') : '';
             statusEl.textContent = row ? (stageBit + (row.status_label || row.status)) : '';
         }
-        if (sendBtn) sendBtn.hidden = !(row && row.status === 'draft' && role === 'student');
-        var canUpload = !!(row && isCrad && (row.status === 'adviser_signed' || row.status === 'crad_received' || row.status === 'clearance_done'));
+
+        var canStudentUpload = !!(role === 'student' && row && row.can_student_upload);
+        var canCradUpload = !!(isCrad && row && (row.status === 'crad_received' || row.status === 'adviser_signed' || row.status === 'clearance_done'));
         if (acceptBtn) {
-            acceptBtn.hidden = !canUpload;
+            acceptBtn.hidden = !(canStudentUpload || canCradUpload);
             acceptBtn.disabled = false;
             var uploadLabel = acceptBtn.querySelector('[data-rsc-upload-label]');
-            if (uploadLabel) uploadLabel.textContent = row && row.has_upload ? 'Re-upload Image' : 'Upload Image';
+            if (uploadLabel) {
+                if (role === 'student') {
+                    uploadLabel.textContent = row && row.has_upload ? 'Re-upload signed image' : 'Upload signed image';
+                } else {
+                    uploadLabel.textContent = row && row.has_upload ? 'Re-upload Image' : 'Upload Image';
+                }
+            }
         }
-        if (fileInput) fileInput.hidden = false;
-        if (signBtn) {
-            var canAdviser = role === 'adviser' && row && row.status === 'sent_to_adviser';
-            var canCrad = isCrad && row && row.status !== 'clearance_done' && (
-                !!row.can_crad_sign
-                || !!(row.form_verified && row.has_upload && row.has_adviser_signature)
-            );
-            signBtn.hidden = !(canAdviser || canCrad);
-            signBtn.disabled = false;
-            signBtn.title = '';
+
+        if (signBtn) signBtn.hidden = true;
+        if (approveBtn) {
+            approveBtn.hidden = !(isCrad && row && row.can_crad_sign);
+            approveBtn.disabled = false;
         }
-        if (printBtn) printBtn.hidden = !row || (isCrad && !(row && row.form_verified && row.has_upload));
+        if (printBtn) {
+            if (role === 'student') printBtn.hidden = !row || !row.form_html;
+            else printBtn.hidden = !row || !row.has_upload;
+        }
         if (downloadBtn) downloadBtn.hidden = !row;
         if (detailEl) detailEl.hidden = !row;
         if (pickEl) pickEl.hidden = !(role === 'adviser') || !!row;
+
         if (emptyEl) {
             if (role === 'student') {
                 emptyEl.hidden = !!(row && row.form_html);
                 if (emptyText) {
                     emptyText.textContent = (row && row.locked_reason)
                         ? row.locked_reason
-                        : 'Open a clearance in the inbox. Research 1 is for Pre-Oral. Research 2 opens after Research 1 is finished and its payment is approved.';
+                        : 'Open a clearance in the inbox. Print, get it signed, then upload the image for CRAD approval.';
                 }
             } else if (role === 'adviser') {
                 emptyEl.hidden = true;
-            } else {
-                emptyEl.hidden = true;
+            } else if (isCrad) {
+                emptyEl.hidden = !!row;
             }
         }
-        if (uploadGate) uploadGate.hidden = !(isCrad && row && !(row.form_verified && row.has_upload));
+
+        if (uploadGate) uploadGate.hidden = !(isCrad && row && !row.has_upload);
         if (misAaNote) {
-            misAaNote.hidden = true;
+            misAaNote.hidden = !(isCrad && row && row.has_upload && row.status !== 'clearance_done');
         }
-        if (uploadPreview) uploadPreview.hidden = true;
-        if (uploadView) uploadView.innerHTML = '';
-        if (checkWrap) checkWrap.hidden = !(isCrad && row && row.has_upload);
-        if (checkAdviser) checkAdviser.checked = !!(row && row.has_adviser_signature);
-        if (checkMis) checkMis.checked = !!(row && row.mis_verified);
-        if (checkAa) checkAa.checked = !!(row && row.aa_verified);
-        if (uploadName) uploadName.textContent = row && row.uploaded_original ? row.uploaded_original : '';
-        shouldScroll = false;
     }
 
     function renderRows(rows) {
@@ -221,17 +223,18 @@
                         groupSelect.hidden = data.rows.length < 2;
                     }
                     if (data.rows) renderRows(data.rows);
+                } else if (role === 'adviser') {
+                    if (data.rows) renderRows(data.rows);
+                    applyClearance(null);
+                    if (emptyEl) {
+                        emptyEl.hidden = false;
+                        emptyEl.textContent = 'Adviser signing is no longer required. Students upload signed clearances for CRAD approval.';
+                    }
+                    if (pickEl) pickEl.hidden = true;
                 } else if (selectedId && data.clearance) {
                     selectedId = String(data.clearance.id);
                     applyClearance(data.clearance);
                     if (data.rows) renderRows(data.rows);
-                    if (emptyEl && role === 'adviser') emptyEl.hidden = !!(data.rows && data.rows.length);
-                    if (pickEl && role === 'adviser') pickEl.hidden = !!(selectedId || !(data.rows && data.rows.length));
-                } else if (!selectedId) {
-                    applyClearance(null);
-                    if (data.rows) renderRows(data.rows);
-                    if (emptyEl && role === 'adviser') emptyEl.hidden = !!(data.rows && data.rows.length);
-                    if (pickEl && role === 'adviser') pickEl.hidden = !!(selectedId || !(data.rows && data.rows.length));
                 } else {
                     selectedId = '';
                     applyClearance(null);
@@ -241,47 +244,30 @@
             .catch(function () {});
     }
 
-    if (sendBtn) {
-        sendBtn.addEventListener('click', function () {
-            sendBtn.disabled = true;
-            post('send_to_adviser').then(function (data) {
-                if (data && data.ok && data.clearance) applyClearance(data.clearance);
-                else if (data && data.error) alert(data.error);
-            }).finally(function () { sendBtn.disabled = false; });
-        });
-    }
-
     function uploadPickedFile() {
         if (uploading || !fileInput || !fileInput.files || !fileInput.files[0]) {
             return;
         }
         var picked = fileInput.files[0];
         if (!/\.(png|jpe?g)$/i.test(picked.name || '')) {
-            alert('Upload a PNG or JPG picture of the Research Services Clearance form.');
+            alert('Upload a PNG or JPG picture of the signed clearance form.');
             fileInput.value = '';
             return;
         }
         var fd = new FormData();
         fd.append('clearance_file', picked);
         uploading = true;
-        post('crad_receive', fd).then(function (data) {
-            var name = picked.name;
+        var action = role === 'student' ? 'student_upload_signed' : 'crad_receive';
+        post(action, fd).then(function (data) {
             fileInput.value = '';
             if (data && data.ok) {
-                if (data.clearance && data.clearance.uploaded_url) {
-                    current = Object.assign({}, current || {}, data.clearance);
-                    if (formBox) {
-                        formBox.hidden = false;
-                        formBox.innerHTML = '<img class="rsc-upload-img" alt="Uploaded clearance form" src="'
-                            + data.clearance.uploaded_url + '">';
-                    }
-                }
+                if (data.clearance) applyClearance(data.clearance);
                 refresh();
                 return;
             }
-            alert((data && data.error) || 'Could not re-upload the clearance form. Please try again.');
+            alert((data && data.error) || 'Could not upload the clearance image. Please try again.');
         }).catch(function () {
-            alert('Could not re-upload the clearance form. Please try again.');
+            alert('Could not upload the clearance image. Please try again.');
         }).finally(function () {
             uploading = false;
         });
@@ -295,18 +281,21 @@
         });
     }
 
-    function saveVerify() {
-        if (!isCrad || !current) return;
-        post('crad_verify', {
-            mis_verified: checkMis && checkMis.checked ? '1' : '0',
-            aa_verified: checkAa && checkAa.checked ? '1' : '0'
-        }).then(function (data) {
-            if (data && data.ok && data.clearance) applyClearance(data.clearance);
-            else if (data && data.error) alert(data.error);
+    if (approveBtn) {
+        approveBtn.addEventListener('click', function () {
+            if (!current || !current.can_crad_sign) {
+                alert('A signed clearance image is required before approval.');
+                return;
+            }
+            if (!window.confirm('Approve this signed clearance?')) return;
+            approveBtn.disabled = true;
+            post('crad_approve').then(function (data) {
+                if (data && data.ok && data.clearance) applyClearance(data.clearance);
+                else if (data && data.error) alert(data.error);
+                refresh();
+            }).finally(function () { approveBtn.disabled = false; });
         });
     }
-    if (checkMis) checkMis.addEventListener('change', saveVerify);
-    if (checkAa) checkAa.addEventListener('change', saveVerify);
 
     if (printBtn) {
         printBtn.addEventListener('click', function () { window.print(); });
@@ -327,7 +316,6 @@
         selectedStage = btn.getAttribute('data-rsc-stage') || selectedStage || 'research_1';
         root.setAttribute('data-rsc-stage', selectedStage);
         if (!selectedId || selectedId === '0') selectedId = '';
-        shouldScroll = true;
         refresh();
     });
 
@@ -345,93 +333,8 @@
         });
     }
 
-    var modal = document.getElementById('rscSigModal');
-    var canvas = document.getElementById('rscSigCanvas');
-    var ctx = canvas ? canvas.getContext('2d') : null;
-    var drawing = false;
-    var dirty = false;
-
-    function sizeCanvas() {
-        if (!canvas) return;
-        var ratio = window.devicePixelRatio || 1;
-        var w = canvas.clientWidth || 460;
-        var h = canvas.clientHeight || 160;
-        canvas.width = Math.floor(w * ratio);
-        canvas.height = Math.floor(h * ratio);
-        if (ctx) {
-            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#111';
-        }
-        dirty = false;
-    }
-
-    function pos(ev) {
-        var rect = canvas.getBoundingClientRect();
-        var t = ev.touches ? ev.touches[0] : ev;
-        return { x: t.clientX - rect.left, y: t.clientY - rect.top };
-    }
-
-    function openSig() {
-        if (isCrad && (!current || !(current.can_crad_sign || (current.form_verified && current.has_upload && current.has_adviser_signature)))) {
-            alert('Upload the printed clearance form with the Adviser, MIS, and AA signatures first.');
-            return;
-        }
-        if (!modal) return;
-        modal.style.display = 'block';
-        sizeCanvas();
-    }
-
-    function closeSig() {
-        if (modal) modal.style.display = 'none';
-    }
-
-    if (signBtn) signBtn.addEventListener('click', openSig);
-    document.querySelectorAll('[data-rsc-sig-close]').forEach(function (el) {
-        el.addEventListener('click', closeSig);
-    });
-    var clearBtn = document.getElementById('rscSigClear');
-    if (clearBtn) clearBtn.addEventListener('click', sizeCanvas);
-    var confirmBtn = document.getElementById('rscSigConfirm');
-    if (confirmBtn) {
-        confirmBtn.addEventListener('click', function () {
-            if (!dirty) {
-                var err = document.getElementById('rscSigError');
-                if (err) err.style.display = 'block';
-                return;
-            }
-            var action = role === 'adviser' ? 'adviser_sign' : 'crad_sign';
-            confirmBtn.disabled = true;
-            post(action, { signature: canvas.toDataURL('image/png') }).then(function (data) {
-                if (data && data.ok && data.clearance) {
-                    applyClearance(data.clearance);
-                    closeSig();
-                } else if (data && data.error) {
-                    alert(data.error);
-                }
-            }).finally(function () { confirmBtn.disabled = false; });
-        });
-    }
-
-    if (canvas && ctx) {
-        canvas.addEventListener('pointerdown', function (ev) {
-            drawing = true;
-            var p = pos(ev);
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            canvas.setPointerCapture(ev.pointerId);
-        });
-        canvas.addEventListener('pointermove', function (ev) {
-            if (!drawing) return;
-            var p = pos(ev);
-            ctx.lineTo(p.x, p.y);
-            ctx.stroke();
-            dirty = true;
-        });
-        canvas.addEventListener('pointerup', function () { drawing = false; });
-        canvas.addEventListener('pointerleave', function () { drawing = false; });
-    }
+    // Keep adviser signature modal inert if present (legacy pages).
+    if (signBtn) signBtn.hidden = true;
 
     refresh();
     window.setInterval(refresh, 1000);

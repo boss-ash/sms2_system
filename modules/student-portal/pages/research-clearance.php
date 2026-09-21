@@ -129,5 +129,5 @@ renderBreadcrumbs($breadcrumbs);
     <div class="rsc-wrap" data-rsc-form><?= $public['form_html'] ?? '' ?></div>
 </div>
 
-<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-stage-2"></script>
+<script src="<?= BASE_URL ?>/modules/crad/assets/js/research-clearance-live.js?v=rsc-flow-3"></script>
 <?php require_once ROOT_PATH . '/includes/layout-end.php'; ?>
