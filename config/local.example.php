@@ -10,6 +10,11 @@
 // Prefer storage/keys/cursor_api_key (gitignored) instead of committing a real key.
 // define('CURSOR_API_KEY', '');
 
+// Optional SMTP overrides (local XAMPP). Prefer System Settings, or put the
+// Gmail App Password alone in storage/keys/smtp_app_password (gitignored).
+// define('SMS2_SMTP_USERNAME', 'your.account@gmail.com');
+// define('SMS2_SMTP_PASSWORD', 'xxxx xxxx xxxx xxxx');
+
 define('SMS2_LOCAL_BASE_URL', '/sms2_system');
 
 // Main SMS2 database.

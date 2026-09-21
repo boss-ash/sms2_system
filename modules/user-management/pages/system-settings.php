@@ -685,9 +685,14 @@ renderBreadcrumbs($breadcrumbs);
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" for="smtp_password">SMTP Password / App Password</label>
-                            <input type="password" class="form-control" id="smtp_password" name="smtp_password"
-                                   value="" placeholder="<?= $smtpPassSet ? '•••••••• (saved — leave blank to keep)' : 'App password' ?>"
-                                   autocomplete="new-password">
+                            <input type="password" class="form-control <?= $smtpNeedsPassword ? 'is-invalid' : '' ?>" id="smtp_password" name="smtp_password"
+                                   value="" placeholder="<?= $smtpPassSet ? '•••••••• (saved — leave blank to keep)' : '16-char Gmail App Password' ?>"
+                                   autocomplete="new-password" <?= $smtpNeedsPassword ? 'required' : '' ?>>
+                            <?php if ($smtpNeedsPassword): ?>
+                                <div class="invalid-feedback d-block">
+                                    Required: previous password could not be decrypted (app.key changed). Paste your Gmail App Password and Save, then click Test.
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-12">
                             <div class="form-check">
