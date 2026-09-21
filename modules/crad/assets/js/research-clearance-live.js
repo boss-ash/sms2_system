@@ -110,6 +110,22 @@
             approveBtn.hidden = !(isCrad && row && row.can_crad_sign);
             approveBtn.disabled = false;
         }
+        if (rejectBtn) {
+            rejectBtn.hidden = !(isCrad && row && row.can_crad_sign);
+            rejectBtn.disabled = false;
+        }
+        if (rejectNote) {
+            rejectNote.hidden = !(role === 'student' && row && row.status === 'rejected');
+        }
+        if (rejectText && role === 'student') {
+            if (row && row.status === 'rejected') {
+                rejectText.textContent = 'CRAD rejected your clearance'
+                    + (row.crad_remarks ? ': ' + row.crad_remarks : '.')
+                    + ' Please re-upload a corrected signed image.';
+            } else {
+                rejectText.textContent = '';
+            }
+        }
         if (printBtn) {
             if (role === 'student') printBtn.hidden = !row || !row.form_html;
             else printBtn.hidden = !row || !row.has_upload;
@@ -292,11 +308,44 @@
             }
             if (!window.confirm('Approve this signed clearance?')) return;
             approveBtn.disabled = true;
+            if (rejectBtn) rejectBtn.disabled = true;
             post('crad_approve').then(function (data) {
                 if (data && data.ok && data.clearance) applyClearance(data.clearance);
                 else if (data && data.error) alert(data.error);
                 refresh();
-            }).finally(function () { approveBtn.disabled = false; });
+            }).finally(function () {
+                approveBtn.disabled = false;
+                if (rejectBtn) rejectBtn.disabled = false;
+            });
+        });
+    }
+
+    if (rejectBtn) {
+        rejectBtn.addEventListener('click', function () {
+            if (!current || !current.can_crad_sign) {
+                alert('A signed clearance image is required before rejection.');
+                return;
+            }
+            var reason = window.prompt('Reason for rejection (student will see this):', 'Please re-upload a clearer signed clearance form.');
+            if (reason === null) return;
+            reason = String(reason).trim();
+            if (!reason) {
+                alert('Please enter a rejection reason.');
+                return;
+            }
+            rejectBtn.disabled = true;
+            if (approveBtn) approveBtn.disabled = true;
+            post('crad_reject', { reason: reason }).then(function (data) {
+                if (data && data.ok) {
+                    alert('Rejected. The student was notified to re-upload.');
+                    refresh();
+                } else if (data && data.error) {
+                    alert(data.error);
+                }
+            }).finally(function () {
+                rejectBtn.disabled = false;
+                if (approveBtn) approveBtn.disabled = false;
+            });
         });
     }
 
