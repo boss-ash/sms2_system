@@ -242,7 +242,9 @@ function rdScheduleAiReadinessGate(PDO $pdo, int $groupId, string $defenseType):
 
 /**
  * Load live busy windows once for the period (venues + adviser + panel + other groups).
- * Own-group proposed/selected rows are ignored so Generate can re-suggest better options.
+ * Own-group proposed/selected rows for the *current* defense type are ignored so Generate
+ * can re-suggest better options. Own-group official schedules (any type) stay busy so
+ * Final Defense cannot overlap a finalized Pre-Oral (and vice versa).
  *
  * @return list<array<string, mixed>>
  */
@@ -292,7 +294,11 @@ function rdScheduleAiBusyBlocks(PDO $pdo, int $groupId, string $periodStart, str
             WHERE rds.defense_datetime IS NOT NULL
               AND LOWER(rds.status) IN ('proposed', 'selected', 'scheduled', 'finalized', 'final')
               AND DATE(rds.defense_datetime) BETWEEN :pstart AND :pend
-              AND rds.research_group_id <> :gid_skip";
+              AND NOT (
+                    rds.research_group_id = :gid_skip
+                AND LOWER(rds.status) IN ('proposed', 'selected')
+                AND LOWER(TRIM(COALESCE(rds.defense_type, ''))) = LOWER(:dtype_skip)
+              )";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -302,6 +308,7 @@ function rdScheduleAiBusyBlocks(PDO $pdo, int $groupId, string $periodStart, str
         ':pstart' => $periodStart,
         ':pend' => $periodEnd,
         ':gid_skip' => $groupId,
+        ':dtype_skip' => $defenseType,
     ]);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
