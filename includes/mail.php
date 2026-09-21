@@ -1,6 +1,6 @@
 <?php
 /**
- * SMS 2 – Mail helper (SMTP + password reset emails)
+ * SMS 2 – Mail helper (PHPMailer SMTP + password reset / OTP emails)
  */
 require_once __DIR__ . '/security.php';
 
@@ -49,6 +49,8 @@ function smsMailEncodeAddress(string $name, string $email): string
 }
 
 /**
+ * Send via PHPMailer SMTP using System Settings credentials.
+ *
  * @return array{ok:bool,error:string}
  */
 function smsSendMailSmtp(
@@ -65,162 +67,81 @@ function smsSendMailSmtp(
     $user = trim(smsSetting('smtp_username', ''));
     $pass = (string) smsSetting('smtp_password', '');
 
+    if ($host === '') {
+        return [
+            'ok' => false,
+            'error' => 'Email is not configured yet. Open System Settings → Notifications / Email and set SMTP.',
+        ];
+    }
+
     if ($port <= 0) {
         $port = $enc === 'ssl' ? 465 : 587;
     }
 
-    $remote = ($enc === 'ssl' ? 'ssl://' : '') . $host;
-    $errno = 0;
-    $errstr = '';
-    $fp = @stream_socket_client(
-        $remote . ':' . $port,
-        $errno,
-        $errstr,
-        20,
-        STREAM_CLIENT_CONNECT
-    );
-    if (!$fp) {
-        $msg = 'SMTP connect failed: ' . $errstr . ' (' . $errno . ')';
+    $phpmailerRoot = ROOT_PATH . DIRECTORY_SEPARATOR . 'PHPMailer' . DIRECTORY_SEPARATOR . 'src';
+    $required = [
+        $phpmailerRoot . DIRECTORY_SEPARATOR . 'Exception.php',
+        $phpmailerRoot . DIRECTORY_SEPARATOR . 'PHPMailer.php',
+        $phpmailerRoot . DIRECTORY_SEPARATOR . 'SMTP.php',
+    ];
+    foreach ($required as $file) {
+        if (!is_file($file)) {
+            $msg = 'PHPMailer is missing. Expected files under PHPMailer/src/.';
+            error_log('SMS2 ' . $msg);
+            return ['ok' => false, 'error' => $msg];
+        }
+    }
+
+    require_once $required[0];
+    require_once $required[1];
+    require_once $required[2];
+
+    try {
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->isSMTP();
+        $mail->Host = $host;
+        $mail->Port = $port;
+        $mail->SMTPAuth = ($user !== '');
+        if ($user !== '') {
+            $mail->Username = $user;
+            $mail->Password = $pass;
+        }
+
+        if ($enc === 'ssl') {
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+        } elseif ($enc === 'tls') {
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+        } else {
+            $mail->SMTPSecure = '';
+            $mail->SMTPAutoTLS = false;
+        }
+
+        $mail->Timeout = 20;
+        $mail->setFrom($fromEmail, $fromName);
+        $mail->addAddress($to);
+        $mail->Subject = $subject;
+        $mail->isHTML(true);
+        $mail->Body = $htmlBody;
+        $mail->AltBody = $textBody !== '' ? $textBody : strip_tags($htmlBody);
+        $mail->XMailer = 'SMS2 / PHPMailer';
+
+        $mail->send();
+
+        return ['ok' => true, 'error' => ''];
+    } catch (\PHPMailer\PHPMailer\Exception $e) {
+        $detail = trim((string) ($mail->ErrorInfo ?? $e->getMessage()));
+        if ($detail === '') {
+            $detail = $e->getMessage();
+        }
+        $msg = 'SMTP send failed: ' . $detail;
+        error_log('SMS2 ' . $msg);
+        return ['ok' => false, 'error' => $msg];
+    } catch (Throwable $e) {
+        $msg = 'SMTP send failed: ' . $e->getMessage();
         error_log('SMS2 ' . $msg);
         return ['ok' => false, 'error' => $msg];
     }
-    stream_set_timeout($fp, 20);
-
-    $read = static function () use ($fp): string {
-        $data = '';
-        while (!feof($fp)) {
-            $line = fgets($fp, 515);
-            if ($line === false) {
-                break;
-            }
-            $data .= $line;
-            if (isset($line[3]) && $line[3] === ' ') {
-                break;
-            }
-        }
-        return $data;
-    };
-    $expect = static function (string $response, array $codes) use (&$fp): ?string {
-        $code = (int) substr($response, 0, 3);
-        if (!in_array($code, $codes, true)) {
-            return 'Unexpected SMTP response: ' . trim($response);
-        }
-        return null;
-    };
-    $write = static function (string $cmd) use ($fp): void {
-        fwrite($fp, $cmd . "\r\n");
-    };
-
-    $err = $expect($read(), [220]);
-    if ($err) {
-        fclose($fp);
-        return ['ok' => false, 'error' => $err];
-    }
-
-    $ehloHost = preg_replace('/[^a-zA-Z0-9.-]/', '', (string) ($_SERVER['SERVER_NAME'] ?? 'localhost')) ?: 'localhost';
-    $write('EHLO ' . $ehloHost);
-    $err = $expect($read(), [250]);
-    if ($err) {
-        fclose($fp);
-        return ['ok' => false, 'error' => $err];
-    }
-
-    if ($enc === 'tls') {
-        $write('STARTTLS');
-        $err = $expect($read(), [220]);
-        if ($err) {
-            fclose($fp);
-            return ['ok' => false, 'error' => $err];
-        }
-        if (!@stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-            fclose($fp);
-            return ['ok' => false, 'error' => 'SMTP STARTTLS negotiation failed.'];
-        }
-        $write('EHLO ' . $ehloHost);
-        $err = $expect($read(), [250]);
-        if ($err) {
-            fclose($fp);
-            return ['ok' => false, 'error' => $err];
-        }
-    }
-
-    if ($user !== '') {
-        $write('AUTH LOGIN');
-        $err = $expect($read(), [334]);
-        if ($err) {
-            fclose($fp);
-            return ['ok' => false, 'error' => $err];
-        }
-        $write(base64_encode($user));
-        $err = $expect($read(), [334]);
-        if ($err) {
-            fclose($fp);
-            return ['ok' => false, 'error' => $err];
-        }
-        $write(base64_encode($pass));
-        $err = $expect($read(), [235]);
-        if ($err) {
-            fclose($fp);
-            return ['ok' => false, 'error' => 'SMTP authentication failed. Check username/app password.'];
-        }
-    }
-
-    $write('MAIL FROM:<' . $fromEmail . '>');
-    $err = $expect($read(), [250]);
-    if ($err) {
-        fclose($fp);
-        return ['ok' => false, 'error' => $err];
-    }
-
-    $write('RCPT TO:<' . $to . '>');
-    $err = $expect($read(), [250, 251]);
-    if ($err) {
-        fclose($fp);
-        return ['ok' => false, 'error' => $err];
-    }
-
-    $write('DATA');
-    $err = $expect($read(), [354]);
-    if ($err) {
-        fclose($fp);
-        return ['ok' => false, 'error' => $err];
-    }
-
-    $boundary = 'sms2_' . bin2hex(random_bytes(8));
-    $headers = [
-        'Date: ' . date('r'),
-        'From: ' . smsMailEncodeAddress($fromName, $fromEmail),
-        'To: <' . $to . '>',
-        'Subject: =?UTF-8?B?' . base64_encode($subject) . '?=',
-        'MIME-Version: 1.0',
-        'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
-        'X-Mailer: SMS2',
-    ];
-
-    $dotSafe = static function (string $s): string {
-        return preg_replace('/^\./m', '..', str_replace(["\r\n", "\r"], "\n", $s)) ?? $s;
-    };
-
-    $message = implode("\r\n", $headers) . "\r\n\r\n"
-        . '--' . $boundary . "\r\n"
-        . "Content-Type: text/plain; charset=UTF-8\r\n\r\n"
-        . $dotSafe($textBody) . "\r\n\r\n"
-        . '--' . $boundary . "\r\n"
-        . "Content-Type: text/html; charset=UTF-8\r\n\r\n"
-        . $dotSafe($htmlBody) . "\r\n\r\n"
-        . '--' . $boundary . "--\r\n"
-        . '.';
-
-    $write($message);
-    $err = $expect($read(), [250]);
-    $write('QUIT');
-    fclose($fp);
-
-    if ($err) {
-        error_log('SMS2 SMTP send failed: ' . $err);
-        return ['ok' => false, 'error' => $err];
-    }
-    return ['ok' => true, 'error' => ''];
 }
 
 /**
