@@ -1601,6 +1601,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let pollTimer = null;
     let pendingRequest = false;
     let CURRENT = null;
+    let lastPayloadFp = '';
+    const pendingCoordinatorByKey = {};
 
     const esc = function (value) {
         return String(value == null ? '' : value)
@@ -1788,10 +1790,74 @@ document.addEventListener('DOMContentLoaded', function () {
         el('rcm-stat-pending', s.pending_groups ?? '-');
     }
 
+    function coordinatorSelectKey(select) {
+        return String(select.getAttribute('data-group') || '') + '|' + String(select.getAttribute('data-student') || '');
+    }
+
+    function capturePendingCoordinatorSelections() {
+        document.querySelectorAll('.rcm-coordinator-select').forEach(function (select) {
+            const key = coordinatorSelectKey(select);
+            if (!key || key === '|') return;
+            if (select.value) {
+                pendingCoordinatorByKey[key] = select.value;
+            } else {
+                delete pendingCoordinatorByKey[key];
+            }
+        });
+    }
+
+    function rememberCoordinatorSelection(select) {
+        if (!select) return;
+        const key = coordinatorSelectKey(select);
+        if (!key || key === '|') return;
+        if (select.value) {
+            pendingCoordinatorByKey[key] = select.value;
+        } else {
+            delete pendingCoordinatorByKey[key];
+        }
+    }
+
+    function clearPendingCoordinator(groupNumber, studentId) {
+        const key = String(groupNumber || '') + '|' + String(studentId || '');
+        delete pendingCoordinatorByKey[key];
+    }
+
+    function isAssignUiBusy() {
+        const active = document.activeElement;
+        if (active && active.classList && active.classList.contains('rcm-coordinator-select')) {
+            return true;
+        }
+        const confirmModal = document.getElementById('rcmAssignConfirmModal');
+        if (confirmModal && confirmModal.classList.contains('show')) {
+            return true;
+        }
+        const reassignModal = document.getElementById('rcmReassignModal');
+        if (reassignModal && (reassignModal.classList.contains('show') || reassignModal.style.display === 'block')) {
+            return true;
+        }
+        return false;
+    }
+
+    function payloadFingerprint(data) {
+        if (!data) return '';
+        try {
+            return JSON.stringify({
+                stats: data.stats || {},
+                eligible: data.eligible || [],
+                pool: data.pool || [],
+                assignments: data.assignments || [],
+                roster: data.roster || []
+            });
+        } catch (e) {
+            return String(Date.now());
+        }
+    }
+
     function renderEligible(card, data) {
         const tbody = card.querySelector('[data-rcm-tbody]');
         const empty = card.querySelector('[data-rcm-empty]');
         if (!tbody) return;
+        capturePendingCoordinatorSelections();
         const pool = data.pool || [];
         const eligible = data.eligible || [];
 
@@ -1813,6 +1879,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     defaultValue = c.user_id > 0 ? String(c.user_id) : 'name:' + c.name;
                 }
             });
+            const rowKey = String(g.group_number || '') + '|' + String(g.student_id || '');
+            if (pendingCoordinatorByKey[rowKey]) {
+                defaultValue = pendingCoordinatorByKey[rowKey];
+            }
             const searchText = [g.group_number, g.group_name, g.research_title, g.adviser, g.proposal_number, g.student_id, suggested].join(' ').toLowerCase();
             const options = ['<option value="">Select coordinator…</option>'].concat(pool.map(function (c) {
                 const optValue = c.user_id > 0 ? String(c.user_id) : 'name:' + c.name;
