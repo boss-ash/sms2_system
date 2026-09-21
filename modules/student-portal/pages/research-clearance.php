@@ -15,7 +15,7 @@ $pageTitle = 'Research Services Clearance';
 $activeModule = 'student_portal';
 $activePage = 'research-clearance';
 $pageBannerIcon = 'fa-stamp';
-$pageBannerDescription = 'Research 1 is Pre-Oral clearance. Research 2 opens after Research 1 is done and its collage payment is approved.';
+$pageBannerDescription = 'Print your clearance after payment approval, upload the signed image, then wait for CRAD to approve.';
 $breadcrumbs = [
     ['label' => 'Student Portal', 'url' => BASE_URL . '/modules/student-portal/pages/dashboard.php'],
     ['label' => 'Research Services Clearance', 'url' => null],
@@ -46,7 +46,7 @@ if (!$public && $selectedStage !== '') {
 require_once ROOT_PATH . '/includes/layout-start.php';
 renderBreadcrumbs($breadcrumbs);
 ?>
-<link rel="stylesheet" href="<?= BASE_URL ?>/modules/crad/assets/css/research-clearance.css?v=rsc-stage-1">
+<link rel="stylesheet" href="<?= BASE_URL ?>/modules/crad/assets/css/research-clearance.css?v=rsc-flow-3">
 
 <div class="glass-dashboard rsc-print-root"
      data-rsc-live
@@ -60,10 +60,20 @@ renderBreadcrumbs($breadcrumbs);
             <div class="rsc-status" data-rsc-status><?= e(($public['stage_label'] ?? 'Research Clearance') . ' — ' . ($public['status_label'] ?? 'Not available yet')) ?></div>
             <small class="text-muted" data-rsc-sync></small>
         </div>
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
             <button type="button" class="btn btn-outline-secondary" data-rsc-print <?= ($public && !empty($public['form_html'])) ? '' : 'hidden' ?>><?= smsIcon('print', ['class' => 'me-1']) ?>Print</button>
-            <button type="button" class="btn btn-sms-primary" data-rsc-send <?= ($public && ($public['status'] ?? '') === 'draft') ? '' : 'hidden' ?>><?= smsIcon('paper-plane', ['class' => 'me-1']) ?>Send to Adviser</button>
+            <input type="file" id="rscStudentClearanceFile" class="d-none" data-rsc-file accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+            <label for="rscStudentClearanceFile" class="btn btn-sms-primary mb-0" data-rsc-accept
+                   <?= ($public && !empty($public['can_student_upload'])) ? '' : 'hidden' ?>>
+                <?= smsIcon('upload', ['class' => 'me-1']) ?>
+                <span data-rsc-upload-label><?= !empty($public['has_upload']) ? 'Re-upload signed image' : 'Upload signed image' ?></span>
+            </label>
         </div>
+    </div>
+
+    <div class="alert alert-light border mb-3" data-rsc-student-hint>
+        <?= smsIcon('info-circle', ['class' => 'me-2 text-primary']) ?>
+        After payment is approved: <strong>Print</strong> → get signatures on paper → <strong>Upload signed image</strong> → CRAD approves.
     </div>
 
     <section class="glass-panel p-4 mb-3">
