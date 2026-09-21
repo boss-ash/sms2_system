@@ -49,6 +49,36 @@ function smsMailEncodeAddress(string $name, string $email): string
 }
 
 /**
+ * Resolve SMTP password: local.php override → storage/keys file → encrypted setting.
+ */
+function smsSmtpPassword(): string
+{
+    if (defined('SMS2_SMTP_PASSWORD')) {
+        $local = trim((string) constant('SMS2_SMTP_PASSWORD'));
+        if ($local !== '') {
+            return $local;
+        }
+    }
+
+    $file = ROOT_PATH . '/storage/keys/smtp_app_password';
+    if (is_readable($file)) {
+        $fromFile = trim((string) file_get_contents($file));
+        // Strip spaces (Gmail App Passwords are often copied with spaces)
+        $fromFile = preg_replace('/\s+/', '', $fromFile) ?? $fromFile;
+        if ($fromFile !== '') {
+            return $fromFile;
+        }
+    }
+
+    $fromDb = (string) smsSetting('smtp_password', '');
+    if ($fromDb !== '') {
+        return preg_replace('/\s+/', '', $fromDb) ?? $fromDb;
+    }
+
+    return '';
+}
+
+/**
  * Send via PHPMailer SMTP using System Settings credentials.
  *
  * @return array{ok:bool,error:string}
@@ -65,7 +95,13 @@ function smsSendMailSmtp(
     $port = (int) smsSetting('smtp_port', '587');
     $enc = strtolower(trim(smsSetting('smtp_encryption', 'tls')));
     $user = trim(smsSetting('smtp_username', ''));
-    $pass = (string) smsSetting('smtp_password', '');
+    if (defined('SMS2_SMTP_USERNAME')) {
+        $overrideUser = trim((string) constant('SMS2_SMTP_USERNAME'));
+        if ($overrideUser !== '') {
+            $user = $overrideUser;
+        }
+    }
+    $pass = smsSmtpPassword();
 
     if ($host === '') {
         return [
@@ -77,7 +113,7 @@ function smsSendMailSmtp(
     if ($user !== '' && $pass === '') {
         return [
             'ok' => false,
-            'error' => 'SMTP password is missing or could not be decrypted. Open System Settings → Notifications / Email, re-enter your App Password, then Save and send a test email.',
+            'error' => 'SMTP password is missing or could not be decrypted. Open System Settings → Notifications / Email, re-enter your App Password, then Save and send a test email. (Local fallback: put the App Password in storage/keys/smtp_app_password or define SMS2_SMTP_PASSWORD in config/local.php.)',
         ];
     }
 

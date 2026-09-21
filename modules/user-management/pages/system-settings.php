@@ -119,13 +119,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (($_POST['settings_section'] ?? '')
             smsSetSetting('smtp_encryption', $smtpEnc);
             smsSetSetting('smtp_username', $smtpUser);
             // Keep previous password if blank (so Save doesn't wipe it)
+            require_once ROOT_PATH . '/includes/mail.php';
+            $existingPass = smsSmtpPassword();
             if ($smtpPass !== '') {
+                $smtpPass = preg_replace('/\s+/', '', $smtpPass) ?? $smtpPass;
                 smsSetSetting('smtp_password', $smtpPass);
+                // Prove encrypt/decrypt round-trip with current app.key
+                if (isset($GLOBALS['__sms_settings_cache']) && is_array($GLOBALS['__sms_settings_cache'])) {
+                    unset($GLOBALS['__sms_settings_cache']['smtp_password']);
+                }
+                if (smsSetting('smtp_password', '') !== $smtpPass) {
+                    $_SESSION['flash_settings_error'] = 'SMTP password could not be saved securely (encryption key issue). Check that storage/keys/ is writable, then try again.';
+                    header('Location: ' . BASE_URL . '/modules/user-management/pages/system-settings.php?saved=notifications');
+                    exit;
+                }
+            } elseif ($smtpUser !== '' && $existingPass === '') {
+                $_SESSION['flash_settings_error'] = 'SMTP username is set but no App Password is stored. Enter your Gmail App Password and Save.';
+                header('Location: ' . BASE_URL . '/modules/user-management/pages/system-settings.php?saved=notifications');
+                exit;
             }
             smsSetSetting('mail_show_link_on_failure', $showLink);
 
             logActivity('update', 'Updated notification / SMTP settings', 'user-management');
-            $_SESSION['flash_settings_success'] = 'Notification settings saved.';
+            $_SESSION['flash_settings_success'] = 'Notification settings saved. Use “Test” below to confirm email delivery.';
         }
     }
     header('Location: ' . BASE_URL . '/modules/user-management/pages/system-settings.php?saved=notifications');
@@ -273,8 +289,10 @@ $smtpHost = smsSetting('smtp_host', '');
 $smtpPort = (int) smsSetting('smtp_port', '587');
 $smtpEnc = strtolower(smsSetting('smtp_encryption', 'tls'));
 $smtpUser = smsSetting('smtp_username', '');
-$smtpPassSet = smsSetting('smtp_password', '') !== '';
+require_once ROOT_PATH . '/includes/mail.php';
+$smtpPassSet = smsSmtpPassword() !== '';
 $mailShowLink = smsSetting('mail_show_link_on_failure', '0') === '1';
+$smtpNeedsPassword = $smtpUser !== '' && !$smtpPassSet;
 $captchaEnabled = smsSetting('login_captcha_enabled', '1') === '1';
 $turnstileSite = smsSetting('turnstile_site_key', '');
 $turnstileSecretSet = smsSetting('turnstile_secret_key', '') !== '';

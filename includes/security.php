@@ -154,7 +154,21 @@ function smsSetting(string $key, string $default = ''): string
                         // keep serving plaintext this request
                     }
                 } else {
-                    $raw = smsSecretDecrypt($raw);
+                    $dec = smsSecretDecrypt($raw);
+                    // Wrong app.key / corrupt ciphertext → wipe so UI forces re-entry
+                    if ($dec === '') {
+                        try {
+                            $upd = $pdo->prepare(
+                                'UPDATE system_settings SET setting_value = ? WHERE setting_key = ?'
+                            );
+                            $upd->execute(['', $key]);
+                        } catch (Throwable $e) {
+                            // ignore — still serve empty this request
+                        }
+                        $raw = '';
+                    } else {
+                        $raw = $dec;
+                    }
                 }
             }
         }
