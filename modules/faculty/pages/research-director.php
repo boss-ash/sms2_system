@@ -651,7 +651,8 @@ function rdScheduleConflictMessages(PDO $pdo, int $groupId, int $venueId, string
     }
 
     $conflict = $pdo->prepare(
-        "SELECT rds.id, rds.research_group_id, rds.venue_id, rds.group_number, rds.research_title, rds.venue, rds.status
+        "SELECT rds.id, rds.research_group_id, rds.venue_id, rds.group_number, rds.research_title, rds.venue, rds.status,
+                rds.defense_type
          FROM research_defense_schedules rds
          " . rdOfficialScheduleJoinSql() . "
          WHERE rds.id <> :ignore_id
@@ -694,7 +695,12 @@ function rdScheduleConflictMessages(PDO $pdo, int $groupId, int $venueId, string
     ]);
     foreach (($conflict->fetchAll() ?: []) as $row) {
         if ((int) ($row['research_group_id'] ?? 0) === $groupId) {
-            $messages[] = 'Research group already has a schedule in this time range.';
+            $existingType = trim((string) ($row['defense_type'] ?? ''));
+            if ($existingType !== '' && strcasecmp($existingType, $defenseType) !== 0) {
+                $messages[] = 'Overlaps this group\'s existing ' . $existingType . ' schedule.';
+            } else {
+                $messages[] = 'Research group already has a schedule in this time range.';
+            }
         } elseif ($venue && (int) ($row['venue_id'] ?? 0) === $venueId) {
             $messages[] = 'Venue is occupied by ' . (string) ($row['group_number'] ?? 'another defense') . '.';
         } else {

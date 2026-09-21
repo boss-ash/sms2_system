@@ -333,6 +333,9 @@ function rdScheduleAiHasConflict(array $blocks, int $groupId, int $venueId, stri
         if (!($bStart < $end && $bEnd > $start)) {
             continue;
         }
+        if (!empty($block['is_own_group'])) {
+            return true;
+        }
         $blockVenue = (int) ($block['venue_id'] ?? 0);
         if ($blockVenue > 0 && $blockVenue === $venueId) {
             return true;
