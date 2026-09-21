@@ -130,11 +130,11 @@ function smsSendMailSmtp(
 
         return ['ok' => true, 'error' => ''];
     } catch (\PHPMailer\PHPMailer\Exception $e) {
-        $detail = trim((string) ($mail->ErrorInfo ?? $e->getMessage()));
-        if ($detail === '') {
-            $detail = $e->getMessage();
+        $detail = trim($e->getMessage());
+        if (isset($mail) && is_object($mail) && !empty($mail->ErrorInfo)) {
+            $detail = trim((string) $mail->ErrorInfo);
         }
-        $msg = 'SMTP send failed: ' . $detail;
+        $msg = 'SMTP send failed: ' . ($detail !== '' ? $detail : 'Unknown PHPMailer error.');
         error_log('SMS2 ' . $msg);
         return ['ok' => false, 'error' => $msg];
     } catch (Throwable $e) {
