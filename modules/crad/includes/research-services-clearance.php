@@ -1301,9 +1301,27 @@ function rscPublicRow(array $row): array
         'can_student_upload' => in_array((string) ($row['status'] ?? ''), ['draft', 'sent_to_adviser', 'adviser_signed', 'crad_received', 'rejected'], true)
             && !empty($row['payment_approved']),
         'crad_remarks' => (string) ($row['crad_remarks'] ?? ''),
+        'uploaded_at' => (string) ($row['uploaded_at'] ?? ''),
+        'uploaded_at_label' => rscFormatDateTimeLabel((string) ($row['uploaded_at'] ?? '')),
+        'sent_at' => (string) ($row['sent_at'] ?? ''),
+        'sent_at_label' => rscFormatDateTimeLabel((string) ($row['sent_at'] ?? '')),
         'updated_at' => (string) ($row['updated_at'] ?? ''),
+        'updated_at_label' => rscFormatDateTimeLabel((string) ($row['updated_at'] ?? '')),
         'form_html' => rscRenderFormHtml($row),
     ];
+}
+
+function rscFormatDateTimeLabel(string $value): string
+{
+    $value = trim($value);
+    if ($value === '' || $value === '0000-00-00 00:00:00') {
+        return '—';
+    }
+    $ts = strtotime($value);
+    if ($ts === false) {
+        return $value;
+    }
+    return date('M j, Y g:i A', $ts);
 }
 
 function rscApplyUploadedSignatures(array $row): array
