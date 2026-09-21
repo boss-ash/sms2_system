@@ -27,9 +27,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/** Idle timeout in seconds (default 30 minutes). */
+/** Idle timeout in seconds (default 2 minutes). */
 if (!defined('SMS_SESSION_IDLE_SECONDS')) {
-    define('SMS_SESSION_IDLE_SECONDS', 30 * 60);
+    define('SMS_SESSION_IDLE_SECONDS', 2 * 60);
 }
 
 /**
@@ -44,9 +44,9 @@ function smsEnforceSessionTimeout(): void
     $now = time();
     $last = (int) ($_SESSION['last_activity'] ?? $now);
 
-    $idleMinutes = 30;
+    $idleMinutes = 2;
     if (function_exists('smsSetting')) {
-        $idleMinutes = max(1, (int) smsSetting('session_timeout_minutes', '30'));
+        $idleMinutes = max(1, (int) smsSetting('session_timeout_minutes', '2'));
     } elseif (defined('SMS_SESSION_IDLE_SECONDS')) {
         $idleMinutes = (int) max(1, SMS_SESSION_IDLE_SECONDS / 60);
     }

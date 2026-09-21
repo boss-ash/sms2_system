@@ -154,7 +154,7 @@ out('No demo users created — create your Super Admin via /setup/ after install
 
 /* ── System settings ───────────────────────────────────────── */
 $settings = [
-    'session_timeout_minutes' => '30',
+    'session_timeout_minutes' => '2',
     'max_failed_logins' => '3',
     'lockout_value' => '5',
     'lockout_unit' => 'minutes',

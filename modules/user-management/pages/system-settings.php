@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (($_POST['settings_section'] ?? '')
     if (!csrfVerify()) {
         $_SESSION['flash_settings_error'] = 'Security check failed. Please try again.';
     } else {
-        $sessionTimeout = (int) ($_POST['session_timeout_minutes'] ?? 30);
+        $sessionTimeout = (int) ($_POST['session_timeout_minutes'] ?? 2);
         $maxFails = (int) ($_POST['max_failed_logins'] ?? 3);
         $lockValue = (int) ($_POST['lockout_value'] ?? 5);
         $lockUnit = strtolower(trim((string) ($_POST['lockout_unit'] ?? 'minutes')));
@@ -441,7 +441,7 @@ renderBreadcrumbs($breadcrumbs);
                             <label class="form-label fw-semibold" for="session_timeout_minutes">Session Timeout (minutes)</label>
                             <input type="number" class="form-control" id="session_timeout_minutes" name="session_timeout_minutes"
                                    value="<?= (int) $sessionTimeout ?>" min="1" max="1440" step="1" required>
-                            <div class="form-text">Idle time before auto sign-out. Type any value (e.g. 15, 30, 90).</div>
+                            <div class="form-text">Idle time before auto sign-out (no mouse/keyboard). Default is 2 minutes.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" for="max_failed_logins">Max Failed Login Attempts</label>

@@ -18,6 +18,20 @@
 <script src="<?= BASE_URL ?>/assets/js/sms-security-ui.js?v=6"></script>
 <!-- Global Search -->
 <script src="<?= BASE_URL ?>/assets/js/search.js?v=3"></script>
+<?php
+    $idleMinutes = 2;
+    if (function_exists('smsSetting')) {
+        $idleMinutes = max(1, (int) smsSetting('session_timeout_minutes', '2'));
+    }
+    $idleSeconds = $idleMinutes * 60;
+?>
+<script>
+window.SMS_IDLE_LOGOUT = {
+    idleSeconds: <?= (int) $idleSeconds ?>,
+    logoutUrl: <?= json_encode(BASE_URL . '/login/logout.php?timeout=1', JSON_UNESCAPED_SLASHES) ?>
+};
+</script>
+<script src="<?= BASE_URL ?>/assets/js/idle-logout.js?v=1"></script>
 <?php endif; ?>
 
 <?php 
