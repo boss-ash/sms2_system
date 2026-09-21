@@ -133,6 +133,7 @@ function rscEnsureSchema(?PDO $crad = null): void
         'mis_signature' => "ALTER TABLE research_services_clearances ADD COLUMN mis_signature LONGTEXT DEFAULT NULL AFTER form_verified",
         'aa_signature' => "ALTER TABLE research_services_clearances ADD COLUMN aa_signature LONGTEXT DEFAULT NULL AFTER mis_signature",
         'research_stage' => "ALTER TABLE research_services_clearances ADD COLUMN research_stage VARCHAR(20) NOT NULL DEFAULT 'research_1' AFTER research_group_id",
+        'crad_remarks' => "ALTER TABLE research_services_clearances ADD COLUMN crad_remarks VARCHAR(500) NOT NULL DEFAULT '' AFTER crad_signed_at",
     ] as $column => $sql) {
         try {
             if (!$crad->query("SHOW COLUMNS FROM research_services_clearances LIKE " . $crad->quote($column))->fetch()) {

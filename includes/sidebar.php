@@ -287,12 +287,10 @@ $facultyAccountNavGroups += [
 if ($roleKey === 'adviser' && isset($facultyAccountNavGroups['My Research'])) {
     unset($facultyAccountNavGroups['My Research']);
 }
-if ($roleKey === 'adviser' && !isset($facultyAccountNavGroups['Research Clearance'])) {
-    $facultyAccountNavGroups = [
-        'Research Clearance' => [
-            ['slug' => 'research-clearance', 'href' => BASE_URL . '/modules/faculty/pages/research-clearance.php', 'icon' => 'fa-stamp', 'label' => 'Research Services Clearance'],
-        ],
-    ] + $facultyAccountNavGroups;
+// ── Adviser: Research Clearance (adviser signing) removed from sidebar.
+// Students upload signed forms; CRAD approves or rejects.
+if ($roleKey === 'adviser' && isset($facultyAccountNavGroups['Research Clearance'])) {
+    unset($facultyAccountNavGroups['Research Clearance']);
 }
 
 // ── Adviser: Core System grant pages (researchers apply to published calls) ──

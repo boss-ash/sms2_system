@@ -592,7 +592,7 @@ $MODULES = [
             ['slug' => 'project-milestones', 'title' => 'Project Milestones'],
             ['slug' => 'publications-ip', 'title' => 'Publications & IP'],
             ['slug' => 'document-repository', 'title' => 'Document Repository'],
-            ['slug' => 'research-clearance', 'title' => 'Research Services Clearance'],
+            ['slug' => 'research-clearance', 'title' => 'Approve Signed Clearance'],
             ['slug' => 'approval-clearance-payment', 'title' => 'Approval Clearance Payment'],
             ['slug' => 'documentation-publication-management', 'title' => 'Documentation & Publication Management'],
             ['slug' => 'final-manuscript-review', 'title' => 'Final Manuscript Review'],

@@ -680,7 +680,14 @@ function getVisibleModules(array $modules): array
             }
         }
         if (!$hasClearancePage) {
-            $visible['crad']['pages'][] = ['slug' => 'research-clearance', 'title' => 'Research Services Clearance'];
+            $visible['crad']['pages'][] = ['slug' => 'research-clearance', 'title' => 'Approve Signed Clearance'];
+        } else {
+            foreach ($visible['crad']['pages'] as &$cradPageRef) {
+                if (($cradPageRef['slug'] ?? '') === 'research-clearance') {
+                    $cradPageRef['title'] = 'Approve Signed Clearance';
+                }
+            }
+            unset($cradPageRef);
         }
     }
 
